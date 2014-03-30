@@ -279,5 +279,86 @@ var alert = function(msg, title) {
     else{
       alert("Make sure you've selected a symbol, or a layer that.");
     }
+  },
+  font: function( position ){
+    var self = this;
+
+    if (selection.length() > 0) {
+      var layer = selection[0],
+          current = MUGlobal.currentArtboard,
+          width = layer.frame().width(),
+          height = layer.frame().height(),
+          x = layer.frame().x(),
+          y = layer.frame().y(),
+          guide = {};
+
+      if( layer.class() == MSTextLayer ){
+        guide.group = current.addLayerOfType('group');
+        guide.group.name = 'Guide-' + ( new Date().getTime() );
+        guide.gap = guide.group.addLayerOfType('rectangle');
+        guide.label = guide.group.addLayerOfType('rectangle');
+        guide.text = guide.group.addLayerOfType('text');
+
+        guide.gap.name = 'gap';
+        guide.gap.frame().setWidth(8);
+        guide.gap.frame().setHeight(8);
+        guide.gap.setRotation(45);
+        guide.gap.style().fills().addNewStylePart();
+        self.setColor( guide.gap, MUGlobal.color.r, MUGlobal.color.g, MUGlobal.color.b );
+
+        var font = layer.fontPostscriptName();
+            size = layer.fontSize() + ' px',
+            fills = layer.style().fills(),
+            color = ( fills.length() > 0 )? fills[0].color(): layer.textColor(),
+            hex = ( color.hexValue().toString() == '0' )? '000000': color.hexValue().toString(),
+            colorRGB = '#' + hex + ' (rgb: ' + parseInt(color.red() * 255) + ',' + parseInt(color.green() * 255) + ',' + parseInt(color.blue() * 255) ) + ')';
+
+        guide.text.setStringValue( 'Font: ' + font + '\r\n' + 'Size: ' + size + '\r\n' + 'Color: ' + colorRGB );
+        guide.text.setFontSize( MUGlobal.font.size );
+        guide.text.setFontPostscriptName( MUGlobal.font.family );
+        guide.text.style().fills().addNewStylePart();
+        self.setColor( guide.text, MUGlobal.font.color.r, MUGlobal.font.color.g, MUGlobal.font.color.b );
+        guide.text.frame().setX( 5 );
+        guide.text.frame().setY( 8 );
+
+        guide.label.frame().setWidth( guide.text.frame().width() + 10 );
+        guide.label.frame().setHeight( guide.text.frame().height() + 10 );
+        guide.label.style().fills().addNewStylePart();
+        self.setColor( guide.label, MUGlobal.color.r, MUGlobal.color.g, MUGlobal.color.b );
+
+        var attrs = {};
+        attrs.label = {};
+        attrs.gap = {};
+
+        attrs.label.x = x;
+        attrs.label.y = parseInt( y - guide.label.frame().height() );
+        attrs.gap.x = attrs.label.x + 9;
+        attrs.gap.y = attrs.label.y + guide.label.frame().height() - 4;
+
+        if( position && position == 'bottom' ){
+          attrs.label.y = parseInt( y + height );
+          attrs.gap.y = attrs.label.y - 4;
+        }
+
+        guide.label.frame().setX( attrs.label.x );
+        guide.label.frame().setY( attrs.label.y );
+        guide.text.frame().addX( attrs.label.x );
+        guide.text.frame().addY( attrs.label.y );
+        guide.gap.frame().setX( attrs.gap.x );
+        guide.gap.frame().setY( attrs.gap.y );
+
+        layer.setIsSelected( 0 );
+        guide.text.setIsSelected( 1 );
+        guide.text.setIsSelected( 0 );
+        guide.group.setIsSelected( 1 );
+
+      }
+      else{
+        alert("Make sure you've selected a text layer that.");
+      }
+    }
+    else{
+      alert("Make sure you've selected a symbol, or a layer that.");
+    }
   }
 };
