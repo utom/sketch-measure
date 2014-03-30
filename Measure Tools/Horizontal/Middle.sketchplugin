@@ -1,0 +1,4 @@
+#import 'library/measure.js'
+
+Measure.init();
+Measure.horizontal('middle');
