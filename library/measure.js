@@ -1,5 +1,3 @@
-var com = {};
-
 Array.prototype.each = function(callback){
   var count = 0;
   for (var i = 0; i < this.length(); i++){
@@ -9,14 +7,11 @@ Array.prototype.each = function(callback){
   }
 }
 
-alert = function(msg, title) {
+var alert = function(msg, title) {
   if (title == undefined) { title = "Whoops" };
   var app = NSApplication.sharedApplication();
   app.displayDialog(msg).withTitle(title);
-};
-
-
-MUGlobal = {
+},MUGlobal = {
   currentArtboard: doc.currentPage().currentArtboard(),
   color: { r: 1, g: 0, b: 0 },
   font: {
@@ -24,8 +19,7 @@ MUGlobal = {
     family: 'Helvetica',
     color: { r: 1, g: 1, b: 1 }
   }
-};
-Measure = {
+},Measure = {
 
   init: function(){
     this.Measure = this.getMeasure();
