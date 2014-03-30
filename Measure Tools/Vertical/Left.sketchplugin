@@ -1,4 +1,2 @@
 #import 'library/measure.js'
-
-Measure.init();
 Measure.vertical('left');

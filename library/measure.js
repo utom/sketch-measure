@@ -20,7 +20,8 @@ var alert = function(msg, title) {
     color: { r: 1, g: 1, b: 1 }
   }
 },Measure = {
-
+  Guides: [],
+  Attrs: [],
   init: function(){
     this.Measure = this.getMeasure();
     if( !this.Measure ){
@@ -53,11 +54,14 @@ var alert = function(msg, title) {
     color.setBlue( b );
   },
   createGuide: function(){
-    var guide = {};
+    var guide = {},
+        current = this.getMeasure();
 
-    guide.group = this.getMeasure().addLayerOfType('group');
+    guide.group = current.addLayerOfType('group');
 
-    guide.gap = guide.group.addLayerOfType('rectangle');
+    current = guide.group;
+
+    guide.gap = current.addLayerOfType('rectangle');
     guide.gap.name = 'gap';
     guide.gap.frame().setWidth(8);
     guide.gap.frame().setHeight(8);
@@ -65,26 +69,28 @@ var alert = function(msg, title) {
     guide.gap.style().fills().addNewStylePart();
     this.setColor( guide.gap, MUGlobal.color.r, MUGlobal.color.g, MUGlobal.color.b );
 
-    guide.line = guide.group.addLayerOfType('rectangle');
+    guide.line = current.addLayerOfType('rectangle');
     guide.line.name = 'line';
     this.setColor( guide.line, MUGlobal.color.r, MUGlobal.color.g, MUGlobal.color.b );
 
-    guide.startArrow = guide.group.addLayerOfType('rectangle');
+    guide.startArrow = current.addLayerOfType('rectangle');
     guide.startArrow.name = 'start-arrow';
     this.setColor( guide.startArrow, MUGlobal.color.r, MUGlobal.color.g, MUGlobal.color.b );
 
-    guide.endArrow = guide.group.addLayerOfType('rectangle');
+    guide.endArrow = current.addLayerOfType('rectangle');
     guide.endArrow.name = 'end-arrow';
     this.setColor( guide.endArrow, MUGlobal.color.r, MUGlobal.color.g, MUGlobal.color.b );
 
-    guide.label = guide.group.addLayerOfType('rectangle');
+    guide.label = current.addLayerOfType('rectangle');
     guide.label.name = 'label';
     this.setColor( guide.label, MUGlobal.color.r, MUGlobal.color.g, MUGlobal.color.b );
 
     return guide;
   },
   addLabel: function( guide, length ){
-    guide.text = guide.group.addLayerOfType('text');
+    var current = guide.group;
+
+    guide.text = current.addLayerOfType('text');
     guide.text.setStringValue( length + ' px');
     guide.text.setFontSize( MUGlobal.font.size );
     guide.text.setFontPostscriptName( MUGlobal.font.family );
@@ -97,79 +103,113 @@ var alert = function(msg, title) {
     guide.label.frame().setHeight( MUGlobal.font.size + 11 );
     return guide;
   },
+  setAttr: function( i ){
+    var self = this,
+        label = self.Attrs[i].label,
+        line = self.Attrs[i].line,
+        arrow = self.Attrs[i].arrow,
+        gap = self.Attrs[i].gap,
+        guide = self.Guides[i];
+
+    guide.label.frame().setWidth( label.width );
+    guide.label.frame().setHeight( label.height );
+    guide.label.frame().setX( label.x );
+    guide.label.frame().setY( label.y );
+
+    guide.text.frame().addX( label.x );
+    guide.text.frame().addY( label.y );
+
+    guide.line.frame().setWidth( line.width );
+    guide.line.frame().setHeight( line.height );
+    guide.line.frame().setX( line.x );
+    guide.line.frame().setY( line.y );
+
+    guide.startArrow.frame().setWidth( arrow.width );
+    guide.startArrow.frame().setHeight( arrow.height );
+    guide.startArrow.frame().setX( arrow.start.x );
+    guide.startArrow.frame().setY( arrow.start.y );
+
+    guide.endArrow.frame().setWidth( arrow.width );
+    guide.endArrow.frame().setHeight( arrow.height );
+    guide.endArrow.frame().setX( arrow.end.x );
+    guide.endArrow.frame().setY( arrow.end.y );
+
+    guide.gap.frame().setX( gap.x );
+    guide.gap.frame().setY( gap.y );
+  },
   horizontal: function( position ){
     var self = this;
+    self.init();
+
     if (selection.length() > 0) {
-      var selectLayer = selection[0],
+      var i = 0,
+          selectLayer = selection[i],
           guide = self.createGuide(),
           width = selectLayer.frame().width(),
           height = selectLayer.frame().height(),
           x = selectLayer.frame().x(),
-          y = selectLayer.frame().y();
+          y = selectLayer.frame().y(),
+          label = {},
+          text = {},
+          line = {},
+          arrow = {},
+          gap = {};
+
+      arrow.start = {};
+      arrow.end = {};
 
       guide = self.addLabel( guide, width );
 
-      var labelWidth = guide.label.frame().width(),
-          labelHeight = guide.label.frame().height();
-
-      var arrowWidth = 1,
-          arrowHeight = 7,
-          labelX = parseInt(x + (width - labelWidth) / 2),
-          labelY = parseInt(y - ( labelHeight + arrowHeight ) / 2 - 2 );
+      arrow.width = 1;
+      arrow.height = 7;
+      label.width = guide.label.frame().width();
+      label.height = guide.label.frame().height();
+      label.x = parseInt( x + ( width - label.width ) / 2 );
+      label.y = parseInt( y - ( label.height + arrow.height ) / 2 - 1 );
 
       if( position && position == 'middle' ){
-        labelY = parseInt( y - ( labelHeight - height ) / 2 );
+        label.y = parseInt( y - ( label.height - height ) / 2 );
       }
       else if( position && position == 'bottom' ){
-        labelY = parseInt( y - (labelHeight - arrowHeight) / 2 + height + 2 );
+        label.y = parseInt( y + height - label.height + ( label.height + arrow.height ) / 2 + 1 );
       }
 
-      var gapX = labelX + 10,
-          gapY = labelY + 10,
-          lineWidth = width,
-          lineHeight = 1,
-          lineX = x + 0,
-          lineY = parseInt(labelY + labelHeight / 2),
-          startArrowX = x,
-          startArrowY = lineY - 3,
-          endArrowX = startArrowX + width - 1,
-          endArrowY = startArrowY;
+      line.width = width;
+      line.height = 1;
+      line.x = x;
+      line.y = parseInt( label.y + label.height / 2 );
 
-      if( labelWidth > lineWidth ){
-        labelY = parseInt( labelY - (labelHeight + arrowHeight) / 2 - 4 );
-        gapX = parseInt( labelX + (labelWidth - 8) / 2 );
-        gapY = parseInt( labelY + labelHeight - 4 );
+      arrow.start.x = x;
+      arrow.start.y = parseInt( label.y + ( label.height - arrow.height ) / 2 );
+      arrow.end.x = arrow.start.x + width - 1;
+      arrow.end.y = arrow.start.y;
 
+      gap.x = label.x + 10;
+      gap.y = label.y + 10;
+
+      if( ( label.width + 20 ) > width ){
+        gap.x = parseInt( x + ( width - 8 ) / 2 );
         if( position && position == 'bottom' ){
-          labelY = parseInt( y + height + 13 );
-          gapY = parseInt( labelY - 4 );
+          label.y = parseInt( label.y + label.height - 8 / 2 );
+          gap.y = parseInt( label.y - 4 );
+        }
+        else{
+          label.y = parseInt( label.y - label.height + 8 / 2 );
+          gap.y = parseInt( label.y + label.height - 6 );
         }
       }
 
-      guide.text.frame().addX( labelX );
-      guide.text.frame().addY( labelY );
+      self.Attrs[i] = {
+        label: label,
+        line: line,
+        arrow: arrow,
+        gap: gap
+      };
 
-      guide.label.frame().setX( labelX );
-      guide.label.frame().setY( labelY );
+      self.Guides[i] = guide;
 
-      guide.gap.frame().setX( gapX );
-      guide.gap.frame().setY( gapY );
+      self.setAttr(i);
 
-      guide.line.frame().setWidth( lineWidth );
-      guide.line.frame().setHeight( lineHeight );
-
-      guide.line.frame().setX( lineX );
-      guide.line.frame().setY( lineY );
-
-      guide.startArrow.frame().setWidth( arrowWidth );
-      guide.startArrow.frame().setHeight( arrowHeight );
-      guide.startArrow.frame().setX( startArrowX );
-      guide.startArrow.frame().setY( startArrowY );
-
-      guide.endArrow.frame().setWidth( arrowWidth );
-      guide.endArrow.frame().setHeight( arrowHeight );
-      guide.endArrow.frame().setX( endArrowX );
-      guide.endArrow.frame().setY( endArrowY );
 
     }
     else{
@@ -178,77 +218,78 @@ var alert = function(msg, title) {
   },
   vertical: function( position ){
     var self = this;
+    self.init();
+
     if (selection.length() > 0) {
-      var selectLayer = selection[0],
+      var i = 0,
+          selectLayer = selection[i],
           guide = self.createGuide(),
           width = selectLayer.frame().width(),
           height = selectLayer.frame().height(),
           x = selectLayer.frame().x(),
-          y = selectLayer.frame().y();
+          y = selectLayer.frame().y(),
+          label = {},
+          text = {},
+          line = {},
+          arrow = {},
+          gap = {};
+
+      arrow.start = {};
+      arrow.end = {};
 
       guide = self.addLabel( guide, height );
 
-      var labelWidth = guide.label.frame().width(),
-          labelHeight = guide.label.frame().height();
-
-      var arrowWidth = 7,
-          arrowHeight = 1,
-          labelX = parseInt(x - ( labelWidth + arrowWidth ) / 2 - 2),
-          labelY = parseInt(y + ( height - labelHeight) / 2);
+      arrow.width = 7;
+      arrow.height = 1;
+      label.width = guide.label.frame().width();
+      label.height = guide.label.frame().height();
+      label.x = parseInt( x - ( label.width + arrow.width ) / 2 - 1 );
+      label.y = parseInt( y + ( height - label.height) / 2 );
 
       if( position && position == 'center' ){
-        labelX = parseInt( x - ( labelWidth - width ) / 2 );
+        log( label.x );
+        label.x = parseInt( x + ( width - label.width ) / 2 );
       }
       else if( position && position == 'right' ){
-        labelX = parseInt( x - (labelWidth - arrowWidth) / 2 + width + 2 );
+        label.x = parseInt( x + width - label.width + ( label.width + arrow.width ) / 2 + 1 );
       }
 
-      var gapX = labelX + 10,
-          gapY = labelY + 10,
-          lineWidth = 1,
-          lineHeight = height,
-          lineX = parseInt(labelX + labelWidth / 2),
-          lineY = y + 0,
-          startArrowX = lineX - 3,
-          startArrowY = y,
-          endArrowX = startArrowX,
-          endArrowY = startArrowY + height - 1;
+      line.width = 1;
+      line.height = height;
+      line.x = parseInt( label.x + label.width / 2 );
+      line.y = y;
 
-      if( labelHeight > lineHeight ){
-        labelX = parseInt( labelX - (labelWidth + arrowWidth) / 2 - 4 );
-        gapX = parseInt( labelX + labelWidth - 4 );
-        gapY = parseInt( labelY + (labelHeight - 8) / 2 );
+      arrow.start.x = parseInt( line.x - arrow.width / 2 + 1 );
+      arrow.start.y = y;
+      arrow.end.x = arrow.start.x;
+      arrow.end.y = parseInt( y + height - 1 );
 
+      gap.x = label.x + 10;
+      gap.y = label.y + 10;
+
+      if( ( label.height + 20 ) > height ){
+        gap.y = parseInt( y + ( height - 8 ) / 2 );
         if( position && position == 'right' ){
-          labelX = parseInt( x + width + 13 );
-          gapX = parseInt( labelX - 4 );
+          label.x = parseInt( line.x + arrow.width );
+          gap.x = parseInt( label.x - 4 );
+        }
+        else{
+          label.x = line.x - label.width - arrow.width;
+          gap.x = parseInt( label.x + label.width - 4 );
         }
       }
 
-      guide.text.frame().addX( labelX );
-      guide.text.frame().addY( labelY );
+      self.Attrs[i] = {
+        label: label,
+        line: line,
+        arrow: arrow,
+        gap: gap
+      };
 
-      guide.label.frame().setX( labelX );
-      guide.label.frame().setY( labelY );
+      self.Guides[i] = guide;
 
-      guide.gap.frame().setX( gapX );
-      guide.gap.frame().setY( gapY );
+      self.setAttr(i);
 
-      guide.line.frame().setWidth( lineWidth );
-      guide.line.frame().setHeight( lineHeight );
-
-      guide.line.frame().setX( lineX );
-      guide.line.frame().setY( lineY );
-
-      guide.startArrow.frame().setWidth( arrowWidth );
-      guide.startArrow.frame().setHeight( arrowHeight );
-      guide.startArrow.frame().setX( startArrowX );
-      guide.startArrow.frame().setY( startArrowY );
-
-      guide.endArrow.frame().setWidth( arrowWidth );
-      guide.endArrow.frame().setHeight( arrowHeight );
-      guide.endArrow.frame().setX( endArrowX );
-      guide.endArrow.frame().setY( endArrowY );
 
     }
     else{
