@@ -22,27 +22,6 @@ var alert = function(msg, title) {
 },Measure = {
   Guides: [],
   Attrs: [],
-  init: function(){
-    this.Measure = this.getMeasure();
-    if( !this.Measure ){
-      this.Measure = MUGlobal.currentArtboard.addLayerOfType('group');
-      this.Measure.name = '_measure';
-      this.Measure.setIsLocked( true );
-    }
-  },
-  getMeasure: function(){
-    var groups = [],
-        current = MUGlobal.currentArtboard;
-        layers = current.layers();
-
-    layers.each(function(layer){
-      if( layer.class() == MSLayerGroup && layer.name().toString() == '_measure' ){
-        groups.push(layer);
-      }
-    });
-
-    return groups[0];
-  },
   setColor: function( el, r, g, b ){
     if( el.style().fills().length() <= 0 ){
       el.style().fills().addNewStylePart();
@@ -55,9 +34,10 @@ var alert = function(msg, title) {
   },
   createGuide: function(){
     var guide = {},
-        current = this.getMeasure();
+        current = MUGlobal.currentArtboard;
 
     guide.group = current.addLayerOfType('group');
+    guide.group.name = 'Guide-' + ( new Date().getTime() );
 
     current = guide.group;
 
@@ -109,7 +89,8 @@ var alert = function(msg, title) {
         line = self.Attrs[i].line,
         arrow = self.Attrs[i].arrow,
         gap = self.Attrs[i].gap,
-        guide = self.Guides[i];
+        guide = self.Guides[i],
+        current = MUGlobal.currentArtboard;
 
     guide.label.frame().setWidth( label.width );
     guide.label.frame().setHeight( label.height );
@@ -136,10 +117,14 @@ var alert = function(msg, title) {
 
     guide.gap.frame().setX( gap.x );
     guide.gap.frame().setY( gap.y );
+
+    selection[i].setIsSelected( 0 );
+    guide.text.setIsSelected( 1 );
+    guide.text.setIsSelected( 0 );
+    guide.group.setIsSelected( 1 );
   },
   horizontal: function( position ){
     var self = this;
-    self.init();
 
     if (selection.length() > 0) {
       var i = 0,
@@ -218,7 +203,6 @@ var alert = function(msg, title) {
   },
   vertical: function( position ){
     var self = this;
-    self.init();
 
     if (selection.length() > 0) {
       var i = 0,
