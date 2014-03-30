@@ -1,6 +1,6 @@
 sketch-measure
 ==============
 
-a measure tools for sketch.app
+Measure tools for sketch.app
 
 utombox@gmail.com
