@@ -12,7 +12,7 @@ var alert = function(msg, title) {
   var app = NSApplication.sharedApplication();
   app.displayDialog(msg).withTitle(title);
 },MUGlobal = {
-  currentArtboard: doc.currentPage().currentArtboard(),
+  current: ( doc.currentPage().currentArtboard() )? doc.currentPage().currentArtboard(): doc.currentPage(),
   color: { r: 1, g: 0, b: 0 },
   font: {
     size: 12,
@@ -34,7 +34,7 @@ var alert = function(msg, title) {
   },
   createGuide: function(){
     var guide = {},
-        current = MUGlobal.currentArtboard;
+        current = MUGlobal.current;
 
     guide.group = current.addLayerOfType('group');
     guide.group.name = 'Guide-' + ( new Date().getTime() );
@@ -285,7 +285,7 @@ var alert = function(msg, title) {
 
     if (selection.length() > 0) {
       var layer = selection[0],
-          current = MUGlobal.currentArtboard,
+          current = MUGlobal.current,
           width = layer.frame().width(),
           height = layer.frame().height(),
           x = layer.frame().x(),
