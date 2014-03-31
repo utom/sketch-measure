@@ -1,2 +1,2 @@
 #import 'library/measure.js'
-Measure.vertical('right');
+Measure.height('right');

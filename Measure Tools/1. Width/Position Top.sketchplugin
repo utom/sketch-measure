@@ -1,2 +1,2 @@
 #import 'library/measure.js'
-Measure.horizontal('top');
+Measure.width('top');

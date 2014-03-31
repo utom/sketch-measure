@@ -123,7 +123,7 @@ var alert = function(msg, title) {
     guide.text.setIsSelected( 0 );
     guide.group.setIsSelected( 1 );
   },
-  horizontal: function( position ){
+  width: function( position ){
     var self = this;
 
     if (selection.length() > 0) {
@@ -201,7 +201,7 @@ var alert = function(msg, title) {
       alert("Make sure you've selected a symbol, or a layer that.");
     }
   },
-  vertical: function( position ){
+  height: function( position ){
     var self = this;
 
     if (selection.length() > 0) {
