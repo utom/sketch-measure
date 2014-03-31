@@ -83,6 +83,7 @@ var alert = function(msg, title) {
     var current = guide.group;
 
     guide.text = current.addLayerOfType('text');
+    guide.text.name = 'guide-text-' + ( new Date().getTime() );
     guide.text.setStringValue( length + ' px');
     guide.text.setFontSize( MUGlobal.font.size );
     guide.text.setFontPostscriptName( MUGlobal.font.family );
@@ -326,12 +327,13 @@ var alert = function(msg, title) {
               size = layer.fontSize() + ' px',
               fills = layer.style().fills(),
               color = ( fills.length() > 0 )? fills[0].color(): layer.textColor(),
-              hex = ( color.hexValue().toString() == '0' )? '000000': color.hexValue().toString();log('666'),
+              hex = ( color.hexValue().toString() == '0' )? '000000': color.hexValue().toString(),
               red = parseInt(color.red() * 255),
               green = parseInt(color.green() * 255),
               blue = parseInt(color.blue() * 255),
               colorText = '#' + hex + ' (rgb:' + red + ',' + green + ',' + blue + ')';
 
+          guide.text.name = 'guide-text-' + ( new Date().getTime() );
           guide.text.setStringValue( 'Font: ' + font + '\r\n' + 'Size: ' + size + '\r\n' + 'Color: ' + colorText );
           guide.text.setFontSize( MUGlobal.font.size );
           guide.text.setFontPostscriptName( MUGlobal.font.family );
