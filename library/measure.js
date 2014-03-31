@@ -32,6 +32,18 @@ var alert = function(msg, title) {
     color.setGreen( g );
     color.setBlue( b );
   },
+  getPosition: function( layer ){
+    var postion = { x: 0, y: 0 },
+        getPostion = function( layer ){
+          postion.x += layer.frame().x();
+          postion.y += layer.frame().y();
+          if(layer.parentGroup().class() == MSLayerGroup){
+            getPostion(layer.parentGroup());
+          }
+        };
+    getPostion( layer );
+    return postion;
+  },
   createGuide: function(){
     var guide = {},
         current = MUGlobal.current;
@@ -129,16 +141,17 @@ var alert = function(msg, title) {
     if (selection.length() > 0) {
       var i = 0,
           selectLayer = selection[i],
-          guide = self.createGuide(),
           width = selectLayer.frame().width(),
           height = selectLayer.frame().height(),
-          x = selectLayer.frame().x(),
-          y = selectLayer.frame().y(),
+          layerPostion = self.getPosition(selectLayer),
+          x = layerPostion.x,
+          y = layerPostion.y,
           label = {},
           text = {},
           line = {},
           arrow = {},
-          gap = {};
+          gap = {},
+          guide = self.createGuide();
 
       arrow.start = {};
       arrow.end = {};
@@ -207,16 +220,17 @@ var alert = function(msg, title) {
     if (selection.length() > 0) {
       var i = 0,
           selectLayer = selection[i],
-          guide = self.createGuide(),
           width = selectLayer.frame().width(),
           height = selectLayer.frame().height(),
-          x = selectLayer.frame().x(),
-          y = selectLayer.frame().y(),
+          layerPostion = self.getPosition(selectLayer),
+          x = layerPostion.x,
+          y = layerPostion.y,
           label = {},
           text = {},
           line = {},
           arrow = {},
-          gap = {};
+          gap = {},
+          guide = self.createGuide();
 
       arrow.start = {};
       arrow.end = {};
@@ -231,7 +245,6 @@ var alert = function(msg, title) {
       label.y = parseInt( y + ( height - label.height) / 2 );
 
       if( position && position == 'center' ){
-        log( label.x );
         label.x = parseInt( x + ( width - label.width ) / 2 );
       }
       else if( position && position == 'right' ){
@@ -288,8 +301,9 @@ var alert = function(msg, title) {
           current = MUGlobal.current,
           width = layer.frame().width(),
           height = layer.frame().height(),
-          x = layer.frame().x(),
-          y = layer.frame().y(),
+          layerPostion = self.getPosition(layer),
+          x = layerPostion.x,
+          y = layerPostion.y,
           guide = {};
 
       if( layer.class() == MSTextLayer ){
