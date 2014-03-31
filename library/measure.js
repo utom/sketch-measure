@@ -139,75 +139,76 @@ var alert = function(msg, title) {
     var self = this;
 
     if (selection.length() > 0) {
-      var i = 0,
-          selectLayer = selection[i],
-          width = selectLayer.frame().width(),
-          height = selectLayer.frame().height(),
-          layerPostion = self.getPosition(selectLayer),
-          x = layerPostion.x,
-          y = layerPostion.y,
-          label = {},
-          text = {},
-          line = {},
-          arrow = {},
-          gap = {},
-          guide = self.createGuide();
+      selection.each(function( selectLayer, i ){
+        var i = i,
+            selectLayer = selectLayer,
+            width = selectLayer.frame().width(),
+            height = selectLayer.frame().height(),
+            layerPostion = self.getPosition(selectLayer),
+            x = layerPostion.x,
+            y = layerPostion.y,
+            label = {},
+            text = {},
+            line = {},
+            arrow = {},
+            gap = {},
+            guide = self.createGuide();
 
-      arrow.start = {};
-      arrow.end = {};
+        arrow.start = {};
+        arrow.end = {};
 
-      guide = self.addLabel( guide, width );
+        guide = self.addLabel( guide, width );
 
-      arrow.width = 1;
-      arrow.height = 7;
-      label.width = guide.label.frame().width();
-      label.height = guide.label.frame().height();
-      label.x = parseInt( x + ( width - label.width ) / 2 );
-      label.y = parseInt( y - ( label.height + arrow.height ) / 2 - 1 );
+        arrow.width = 1;
+        arrow.height = 7;
+        label.width = guide.label.frame().width();
+        label.height = guide.label.frame().height();
+        label.x = parseInt( x + ( width - label.width ) / 2 );
+        label.y = parseInt( y - ( label.height + arrow.height ) / 2 - 1 );
 
-      if( position && position == 'middle' ){
-        label.y = parseInt( y - ( label.height - height ) / 2 );
-      }
-      else if( position && position == 'bottom' ){
-        label.y = parseInt( y + height - label.height + ( label.height + arrow.height ) / 2 + 1 );
-      }
-
-      line.width = width;
-      line.height = 1;
-      line.x = x;
-      line.y = parseInt( label.y + label.height / 2 );
-
-      arrow.start.x = x;
-      arrow.start.y = parseInt( label.y + ( label.height - arrow.height ) / 2 );
-      arrow.end.x = arrow.start.x + width - 1;
-      arrow.end.y = arrow.start.y;
-
-      gap.x = label.x + 10;
-      gap.y = label.y + 10;
-
-      if( ( label.width + 20 ) > width ){
-        gap.x = parseInt( x + ( width - 8 ) / 2 );
-        if( position && position == 'bottom' ){
-          label.y = parseInt( label.y + label.height - 8 / 2 );
-          gap.y = parseInt( label.y - 4 );
+        if( position && position == 'middle' ){
+          label.y = parseInt( y - ( label.height - height ) / 2 );
         }
-        else{
-          label.y = parseInt( label.y - label.height + 8 / 2 );
-          gap.y = parseInt( label.y + label.height - 6 );
+        else if( position && position == 'bottom' ){
+          label.y = parseInt( y + height - label.height + ( label.height + arrow.height ) / 2 + 1 );
         }
-      }
 
-      self.Attrs[i] = {
-        label: label,
-        line: line,
-        arrow: arrow,
-        gap: gap
-      };
+        line.width = width;
+        line.height = 1;
+        line.x = x;
+        line.y = parseInt( label.y + label.height / 2 );
 
-      self.Guides[i] = guide;
+        arrow.start.x = x;
+        arrow.start.y = parseInt( label.y + ( label.height - arrow.height ) / 2 );
+        arrow.end.x = arrow.start.x + width - 1;
+        arrow.end.y = arrow.start.y;
 
-      self.setAttr(i);
+        gap.x = label.x + 10;
+        gap.y = label.y + 10;
 
+        if( ( label.width + 20 ) > width ){
+          gap.x = parseInt( x + ( width - 8 ) / 2 );
+          if( position && position == 'bottom' ){
+            label.y = parseInt( label.y + label.height - 8 / 2 );
+            gap.y = parseInt( label.y - 4 );
+          }
+          else{
+            label.y = parseInt( label.y - label.height + 8 / 2 );
+            gap.y = parseInt( label.y + label.height - 6 );
+          }
+        }
+
+        self.Attrs[i] = {
+          label: label,
+          line: line,
+          arrow: arrow,
+          gap: gap
+        };
+
+        self.Guides[i] = guide;
+
+        self.setAttr(i);
+      });
 
     }
     else{
@@ -218,75 +219,76 @@ var alert = function(msg, title) {
     var self = this;
 
     if (selection.length() > 0) {
-      var i = 0,
-          selectLayer = selection[i],
-          width = selectLayer.frame().width(),
-          height = selectLayer.frame().height(),
-          layerPostion = self.getPosition(selectLayer),
-          x = layerPostion.x,
-          y = layerPostion.y,
-          label = {},
-          text = {},
-          line = {},
-          arrow = {},
-          gap = {},
-          guide = self.createGuide();
+      selection.each(function( selectLayer, i ){
+        var i = i,
+            selectLayer = selectLayer,
+            width = selectLayer.frame().width(),
+            height = selectLayer.frame().height(),
+            layerPostion = self.getPosition(selectLayer),
+            x = layerPostion.x,
+            y = layerPostion.y,
+            label = {},
+            text = {},
+            line = {},
+            arrow = {},
+            gap = {},
+            guide = self.createGuide();
 
-      arrow.start = {};
-      arrow.end = {};
+        arrow.start = {};
+        arrow.end = {};
 
-      guide = self.addLabel( guide, height );
+        guide = self.addLabel( guide, height );
 
-      arrow.width = 7;
-      arrow.height = 1;
-      label.width = guide.label.frame().width();
-      label.height = guide.label.frame().height();
-      label.x = parseInt( x - ( label.width + arrow.width ) / 2 - 1 );
-      label.y = parseInt( y + ( height - label.height) / 2 );
+        arrow.width = 7;
+        arrow.height = 1;
+        label.width = guide.label.frame().width();
+        label.height = guide.label.frame().height();
+        label.x = parseInt( x - ( label.width + arrow.width ) / 2 - 1 );
+        label.y = parseInt( y + ( height - label.height) / 2 );
 
-      if( position && position == 'center' ){
-        label.x = parseInt( x + ( width - label.width ) / 2 );
-      }
-      else if( position && position == 'right' ){
-        label.x = parseInt( x + width - label.width + ( label.width + arrow.width ) / 2 + 1 );
-      }
-
-      line.width = 1;
-      line.height = height;
-      line.x = parseInt( label.x + label.width / 2 );
-      line.y = y;
-
-      arrow.start.x = parseInt( line.x - arrow.width / 2 + 1 );
-      arrow.start.y = y;
-      arrow.end.x = arrow.start.x;
-      arrow.end.y = parseInt( y + height - 1 );
-
-      gap.x = label.x + 10;
-      gap.y = label.y + 10;
-
-      if( ( label.height + 20 ) > height ){
-        gap.y = parseInt( y + ( height - 8 ) / 2 );
-        if( position && position == 'right' ){
-          label.x = parseInt( line.x + arrow.width );
-          gap.x = parseInt( label.x - 4 );
+        if( position && position == 'center' ){
+          label.x = parseInt( x + ( width - label.width ) / 2 );
         }
-        else{
-          label.x = line.x - label.width - arrow.width;
-          gap.x = parseInt( label.x + label.width - 4 );
+        else if( position && position == 'right' ){
+          label.x = parseInt( x + width - label.width + ( label.width + arrow.width ) / 2 + 1 );
         }
-      }
 
-      self.Attrs[i] = {
-        label: label,
-        line: line,
-        arrow: arrow,
-        gap: gap
-      };
+        line.width = 1;
+        line.height = height;
+        line.x = parseInt( label.x + label.width / 2 );
+        line.y = y;
 
-      self.Guides[i] = guide;
+        arrow.start.x = parseInt( line.x - arrow.width / 2 + 1 );
+        arrow.start.y = y;
+        arrow.end.x = arrow.start.x;
+        arrow.end.y = parseInt( y + height - 1 );
 
-      self.setAttr(i);
+        gap.x = label.x + 10;
+        gap.y = label.y + 10;
 
+        if( ( label.height + 20 ) > height ){
+          gap.y = parseInt( y + ( height - 8 ) / 2 );
+          if( position && position == 'right' ){
+            label.x = parseInt( line.x + arrow.width );
+            gap.x = parseInt( label.x - 4 );
+          }
+          else{
+            label.x = line.x - label.width - arrow.width;
+            gap.x = parseInt( label.x + label.width - 4 );
+          }
+        }
+
+        self.Attrs[i] = {
+          label: label,
+          line: line,
+          arrow: arrow,
+          gap: gap
+        };
+
+        self.Guides[i] = guide;
+
+        self.setAttr(i);
+      });
 
     }
     else{
