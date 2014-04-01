@@ -49,7 +49,7 @@ var alert = function(msg, title) {
         current = MUGlobal.current;
 
     guide.group = current.addLayerOfType('group');
-    guide.group.name = 'Guide-' + ( new Date().getTime() );
+    guide.group.name = '$Guide-' + ( new Date().getTime() );
 
     current = guide.group;
 
@@ -83,7 +83,7 @@ var alert = function(msg, title) {
     var current = guide.group;
 
     guide.text = current.addLayerOfType('text');
-    guide.text.name = 'guide-text-' + ( new Date().getTime() );
+    guide.text.name = parseInt(length);
     guide.text.setStringValue( length + ' px');
     guide.text.setFontSize( MUGlobal.font.size );
     guide.text.setFontPostscriptName( MUGlobal.font.family );
@@ -103,13 +103,20 @@ var alert = function(msg, title) {
         arrow = self.Attrs[i].arrow,
         gap = self.Attrs[i].gap,
         guide = self.Guides[i],
-        current = MUGlobal.currentArtboard;
+        current = MUGlobal.current;
 
     guide.label.frame().setWidth( label.width );
     guide.label.frame().setHeight( label.height );
+
+    if( current.class() == MSArtboardGroup && label.x < 0 ){
+      label.x = 0;
+    }
+    else if( current.class() == MSArtboardGroup && current.frame().width() < ( label.x + label.width ) ){
+      label.x = label.x - ( label.x + label.width - current.frame().width() );
+    }
+
     guide.label.frame().setX( label.x );
     guide.label.frame().setY( label.y );
-
     guide.text.frame().addX( label.x );
     guide.text.frame().addY( label.y );
 
@@ -311,7 +318,7 @@ var alert = function(msg, title) {
         if( layer.class() == MSTextLayer ){
 
           guide.group = current.addLayerOfType('group');
-          guide.group.name = 'Guide-' + ( new Date().getTime() );
+          guide.group.name = '$Guide-' + ( new Date().getTime() );
           guide.gap = guide.group.addLayerOfType('rectangle');
           guide.label = guide.group.addLayerOfType('rectangle');
           guide.text = guide.group.addLayerOfType('text');
@@ -324,7 +331,7 @@ var alert = function(msg, title) {
           self.setColor( guide.gap, MUGlobal.color.r, MUGlobal.color.g, MUGlobal.color.b );
 
           var font = layer.fontPostscriptName(),
-              size = layer.fontSize() + ' px',
+              size = parseInt(layer.fontSize()) + ' px',
               fills = layer.style().fills(),
               color = ( fills.length() > 0 )? fills[0].color(): layer.textColor(),
               hex = ( color.hexValue().toString() == '0' )? '000000': color.hexValue().toString(),
@@ -333,7 +340,7 @@ var alert = function(msg, title) {
               blue = parseInt(color.blue() * 255),
               colorText = '#' + hex + ' (rgb:' + red + ',' + green + ',' + blue + ')';
 
-          guide.text.name = 'guide-text-' + ( new Date().getTime() );
+          guide.text.name = layer.fontSize();
           guide.text.setStringValue( 'Font: ' + font + '\r\n' + 'Size: ' + size + '\r\n' + 'Color: ' + colorText );
           guide.text.setFontSize( MUGlobal.font.size );
           guide.text.setFontPostscriptName( MUGlobal.font.family );
@@ -351,14 +358,24 @@ var alert = function(msg, title) {
           attrs.label = {};
           attrs.gap = {};
 
+          attrs.label.width = guide.label.frame().width();
+          attrs.label.height = guide.label.frame().height();
+
           attrs.label.x = x;
-          attrs.label.y = parseInt( y - guide.label.frame().height() );
+          attrs.label.y = parseInt( y - attrs.label.height );
           attrs.gap.x = attrs.label.x + 9;
-          attrs.gap.y = attrs.label.y + guide.label.frame().height() - 4;
+          attrs.gap.y = attrs.label.y + attrs.label.height - 4;
 
           if( position && position == 'bottom' ){
             attrs.label.y = parseInt( y + height );
             attrs.gap.y = attrs.label.y - 4;
+          }
+
+          if( current.class() == MSArtboardGroup && attrs.label.x < 0 ){
+            attrs.label.x = 0;
+          }
+          else if( current.class() == MSArtboardGroup && current.frame().width() < ( attrs.label.x + attrs.label.width ) ){
+            attrs.label.x = attrs.label.x - ( attrs.label.x + attrs.label.width - current.frame().width() );
           }
 
           guide.label.frame().setX( attrs.label.x );
@@ -382,5 +399,35 @@ var alert = function(msg, title) {
     else{
       alert("Make sure you've selected a symbol, or a layer that.");
     }
+  },
+  unit: function( type ){
+    // 0: x.75, LDPI
+    // 1: x1, 160dpi MDPI
+    // 2: x1.5, 240dpi HDPI
+    // 3: x2, 320dpi XHDPI
+    // 4: x3, 480dpi XXHDPI
+    // 5: x4, 640dpi XXXHDPI
+    var self = this,
+        current = MUGlobal.current,
+        // guides = [],
+        resetUnit = function( layers ){
+          var layers = layers;
+          layers.each(function( layer ){
+            if( layer.class() == MSLayerGroup && layer.name().match(/\$Guide\-\d+/) ){
+              // guides.push( layer );
+            }
+            else if( layer.class() == MSLayerGroup ){
+              resetUnit( layer.layers() );
+            }
+          });
+        }
+
+    // if( type ){
+    //
+    // }
+    // else{
+    //
+    // }
+
   }
 };
