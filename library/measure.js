@@ -84,7 +84,7 @@ var alert = function(msg, title) {
 
     guide.text = current.addLayerOfType('text');
     guide.text.name = parseInt(length);
-    guide.text.setStringValue( length + ' px');
+    guide.text.setStringValue( parseInt(length) + ' px');
     guide.text.setFontSize( MUGlobal.font.size );
     guide.text.setFontPostscriptName( MUGlobal.font.family );
     this.setColor( guide.text, MUGlobal.font.color.r, MUGlobal.font.color.g, MUGlobal.font.color.b );
@@ -340,7 +340,7 @@ var alert = function(msg, title) {
               blue = parseInt(color.blue() * 255),
               colorText = '#' + hex + ' (rgb:' + red + ',' + green + ',' + blue + ')';
 
-          guide.text.name = layer.fontSize();
+          guide.text.name = parseInt( layer.fontSize() );
           guide.text.setStringValue( 'Font: ' + font + '\r\n' + 'Size: ' + size + '\r\n' + 'Color: ' + colorText );
           guide.text.setFontSize( MUGlobal.font.size );
           guide.text.setFontPostscriptName( MUGlobal.font.family );
@@ -409,25 +409,54 @@ var alert = function(msg, title) {
     // 5: x4, 640dpi XXXHDPI
     var self = this,
         current = MUGlobal.current,
-        // guides = [],
         resetUnit = function( layers ){
           var layers = layers;
           layers.each(function( layer ){
             if( layer.class() == MSLayerGroup && layer.name().match(/\$Guide\-\d+/) ){
-              // guides.push( layer );
+              var guideItems = layer.layers();
+              guideItems.each(function( item ){
+                var length = item.name() + '';
+
+                if( item.class() == MSTextLayer && length.match(/\d+/) ){
+
+                  var number = ( type == 'px' )? length: parseInt( length / scale[type] ),
+                      unit = ( type == 'px' )? 'px': 'dp',
+                      text = item.stringValue().replace( /(\d+\s[dxps]{2})/g, number + ' ' + unit),
+                      x = item.frame().x(),
+                      y = item.frame().y(),
+                      width = item.frame().width(),
+                      newItem = layer.addLayerOfType('text');
+
+                  newItem.name = length;
+                  newItem.setStringValue( text );
+                  newItem.setFontSize( MUGlobal.font.size );
+                  newItem.setFontPostscriptName( MUGlobal.font.family );
+                  newItem.style().fills().addNewStylePart();
+                  self.setColor( newItem, MUGlobal.font.color.r, MUGlobal.font.color.g, MUGlobal.font.color.b );
+
+                  newItem.frame().setX( parseInt( x + ( ( width - newItem.frame().width() ) / 2 ) ) );
+                  newItem.frame().setY( y );
+
+                  layer.removeLayer( item );
+                }
+              });
             }
             else if( layer.class() == MSLayerGroup ){
               resetUnit( layer.layers() );
             }
-          });
-        }
 
-    // if( type ){
-    //
-    // }
-    // else{
-    //
-    // }
+          });
+        },
+        scale = [
+          .75,
+          1,
+          1.5,
+          2,
+          3,
+          4
+        ];
+
+    resetUnit( current.layers() );
 
   }
 };
