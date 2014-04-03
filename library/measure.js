@@ -144,15 +144,15 @@ var alert = function(msg, title) {
     guide.group.setIsSelected( 1 );
   },
   width: function( position ){
-    var self = this;
+    var self = this,
+        layers = selection;
 
-    if (selection.length() > 0) {
-      selection.each(function( selectLayer, i ){
+    if (layers.length() > 0) {
+      layers.each(function( layer, i ){
         var i = i,
-            selectLayer = selectLayer,
-            width = selectLayer.frame().width(),
-            height = selectLayer.frame().height(),
-            layerPostion = self.getPosition(selectLayer),
+            width = layer.frame().width(),
+            height = layer.frame().height(),
+            layerPostion = self.getPosition(layer),
             x = layerPostion.x,
             y = layerPostion.y,
             label = {},
@@ -224,15 +224,15 @@ var alert = function(msg, title) {
     }
   },
   height: function( position ){
-    var self = this;
+    var self = this,
+        layers = selection;
 
-    if (selection.length() > 0) {
-      selection.each(function( selectLayer, i ){
+    if (layers.length() > 0) {
+      layers.each(function( layer, i ){
         var i = i,
-            selectLayer = selectLayer,
-            width = selectLayer.frame().width(),
-            height = selectLayer.frame().height(),
-            layerPostion = self.getPosition(selectLayer),
+            width = layer.frame().width(),
+            height = layer.frame().height(),
+            layerPostion = self.getPosition(layer),
             x = layerPostion.x,
             y = layerPostion.y,
             label = {},
