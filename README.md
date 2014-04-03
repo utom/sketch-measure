@@ -15,7 +15,7 @@ How-to
 
 Select any layer, opening the Plugins menu
 
-![Menu](http://file.is26.com/wp-image/2014/04/sketch-measure-menu.png)
+![Menu](http://file.is26.com/wp-image/2014/04/sketch-measure-menu.png?update)
 
 
 
