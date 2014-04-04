@@ -3,7 +3,7 @@ Sketch Measure
 
 Measure tools for sketch.app
 
-![Banner](http://cl.ly/image/1Q3o2n2s2a3B/banner.png)
+![Banner](http://cl.ly/image/1p3r0C1y2k40/banner@2x.png)
 
 Installation
 --------
