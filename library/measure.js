@@ -96,13 +96,12 @@ var alert = function(msg, title) {
     guide.label.frame().setHeight( MUGlobal.font.size + 11 );
     return guide;
   },
-  setAttr: function( i ){
+  setAttrs: function( guide, attrs ){
     var self = this,
-        label = self.Attrs[i].label,
-        line = self.Attrs[i].line,
-        arrow = self.Attrs[i].arrow,
-        gap = self.Attrs[i].gap,
-        guide = self.Guides[i],
+        label = attrs.label,
+        line = attrs.line,
+        arrow = attrs.arrow,
+        gap = attrs.gap,
         current = MUGlobal.current;
 
     guide.label.frame().setWidth( label.width );
@@ -138,166 +137,162 @@ var alert = function(msg, title) {
     guide.gap.frame().setX( gap.x );
     guide.gap.frame().setY( gap.y );
 
-    selection[i].setIsSelected( 0 );
     guide.text.setIsSelected( 1 );
     guide.text.setIsSelected( 0 );
     guide.group.setIsSelected( 1 );
   },
-  width: function( position ){
+  width: function( position, layer ){
     var self = this,
-        layers = selection;
+        layers = selection,
+        fn = function( layer ){
+          var width = layer.frame().width(),
+              height = layer.frame().height(),
+              layerPostion = self.getPosition(layer),
+              x = layerPostion.x,
+              y = layerPostion.y,
+              label = {},
+              text = {},
+              line = {},
+              arrow = {},
+              gap = {},
+              guide = self.createGuide();
 
-    if (layers.length() > 0) {
-      layers.each(function( layer, i ){
-        var i = i,
-            width = layer.frame().width(),
-            height = layer.frame().height(),
-            layerPostion = self.getPosition(layer),
-            x = layerPostion.x,
-            y = layerPostion.y,
-            label = {},
-            text = {},
-            line = {},
-            arrow = {},
-            gap = {},
-            guide = self.createGuide();
+          arrow.start = {};
+          arrow.end = {};
 
-        arrow.start = {};
-        arrow.end = {};
+          guide = self.addLabel( guide, width );
 
-        guide = self.addLabel( guide, width );
+          arrow.width = 1;
+          arrow.height = 7;
+          label.width = guide.label.frame().width();
+          label.height = guide.label.frame().height();
+          label.x = parseInt( x + ( width - label.width ) / 2 );
+          label.y = parseInt( y - ( label.height + arrow.height ) / 2 - 1 );
 
-        arrow.width = 1;
-        arrow.height = 7;
-        label.width = guide.label.frame().width();
-        label.height = guide.label.frame().height();
-        label.x = parseInt( x + ( width - label.width ) / 2 );
-        label.y = parseInt( y - ( label.height + arrow.height ) / 2 - 1 );
-
-        if( position && position == 'middle' ){
-          label.y = parseInt( y - ( label.height - height ) / 2 );
-        }
-        else if( position && position == 'bottom' ){
-          label.y = parseInt( y + height - label.height + ( label.height + arrow.height ) / 2 + 1 );
-        }
-
-        line.width = width;
-        line.height = 1;
-        line.x = x;
-        line.y = parseInt( label.y + label.height / 2 );
-
-        arrow.start.x = x;
-        arrow.start.y = parseInt( label.y + ( label.height - arrow.height ) / 2 );
-        arrow.end.x = arrow.start.x + width - 1;
-        arrow.end.y = arrow.start.y;
-
-        gap.x = label.x + 10;
-        gap.y = label.y + 10;
-
-        if( ( label.width + 20 ) > width ){
-          gap.x = parseInt( x + ( width - 8 ) / 2 );
-          if( position && position == 'bottom' ){
-            label.y = parseInt( label.y + label.height - 8 / 2 );
-            gap.y = parseInt( label.y - 4 );
+          if( position && position == 'middle' ){
+            label.y = parseInt( y - ( label.height - height ) / 2 );
           }
-          else{
-            label.y = parseInt( label.y - label.height + 8 / 2 );
-            gap.y = parseInt( label.y + label.height - 6 );
+          else if( position && position == 'bottom' ){
+            label.y = parseInt( y + height - label.height + ( label.height + arrow.height ) / 2 + 1 );
           }
+
+          line.width = width;
+          line.height = 1;
+          line.x = x;
+          line.y = parseInt( label.y + label.height / 2 );
+
+          arrow.start.x = x;
+          arrow.start.y = parseInt( label.y + ( label.height - arrow.height ) / 2 );
+          arrow.end.x = arrow.start.x + width - 1;
+          arrow.end.y = arrow.start.y;
+
+          gap.x = label.x + 10;
+          gap.y = label.y + 10;
+
+          if( ( label.width + 20 ) > width ){
+            gap.x = parseInt( x + ( width - 8 ) / 2 );
+            if( position && position == 'bottom' ){
+              label.y = parseInt( label.y + label.height - 8 / 2 );
+              gap.y = parseInt( label.y - 4 );
+            }
+            else{
+              label.y = parseInt( label.y - label.height + 8 / 2 );
+              gap.y = parseInt( label.y + label.height - 6 );
+            }
+          }
+
+          self.setAttrs( guide, {
+            label: label,
+            line: line,
+            arrow: arrow,
+            gap: gap
+          });
+          layer.setIsSelected( 0 );
         }
 
-        self.Attrs[i] = {
-          label: label,
-          line: line,
-          arrow: arrow,
-          gap: gap
-        };
-
-        self.Guides[i] = guide;
-
-        self.setAttr(i);
-      });
-
+    if ( layer ){
+      fn.call( this, layer );
+    }
+    else if (layers.length() > 0) {
+      layers.each(fn);
     }
     else{
       alert("Make sure you've selected a symbol, or a layer that.");
     }
   },
-  height: function( position ){
+  height: function( position, layer ){
     var self = this,
-        layers = selection;
+        layers = selection,
+        fn = function( layer ){
+          var width = layer.frame().width(),
+              height = layer.frame().height(),
+              layerPostion = self.getPosition(layer),
+              x = layerPostion.x,
+              y = layerPostion.y,
+              label = {},
+              text = {},
+              line = {},
+              arrow = {},
+              gap = {},
+              guide = self.createGuide();
 
-    if (layers.length() > 0) {
-      layers.each(function( layer, i ){
-        var i = i,
-            width = layer.frame().width(),
-            height = layer.frame().height(),
-            layerPostion = self.getPosition(layer),
-            x = layerPostion.x,
-            y = layerPostion.y,
-            label = {},
-            text = {},
-            line = {},
-            arrow = {},
-            gap = {},
-            guide = self.createGuide();
+          arrow.start = {};
+          arrow.end = {};
 
-        arrow.start = {};
-        arrow.end = {};
+          guide = self.addLabel( guide, height );
 
-        guide = self.addLabel( guide, height );
+          arrow.width = 7;
+          arrow.height = 1;
+          label.width = guide.label.frame().width();
+          label.height = guide.label.frame().height();
+          label.x = parseInt( x - ( label.width + arrow.width ) / 2 - 1 );
+          label.y = parseInt( y + ( height - label.height) / 2 );
 
-        arrow.width = 7;
-        arrow.height = 1;
-        label.width = guide.label.frame().width();
-        label.height = guide.label.frame().height();
-        label.x = parseInt( x - ( label.width + arrow.width ) / 2 - 1 );
-        label.y = parseInt( y + ( height - label.height) / 2 );
-
-        if( position && position == 'center' ){
-          label.x = parseInt( x + ( width - label.width ) / 2 );
-        }
-        else if( position && position == 'right' ){
-          label.x = parseInt( x + width - label.width + ( label.width + arrow.width ) / 2 + 1 );
-        }
-
-        line.width = 1;
-        line.height = height;
-        line.x = parseInt( label.x + label.width / 2 );
-        line.y = y;
-
-        arrow.start.x = parseInt( line.x - arrow.width / 2 + 1 );
-        arrow.start.y = y;
-        arrow.end.x = arrow.start.x;
-        arrow.end.y = parseInt( y + height - 1 );
-
-        gap.x = label.x + 10;
-        gap.y = label.y + 10;
-
-        if( ( label.height + 20 ) > height ){
-          gap.y = parseInt( y + ( height - 8 ) / 2 );
-          if( position && position == 'right' ){
-            label.x = parseInt( line.x + arrow.width );
-            gap.x = parseInt( label.x - 4 );
+          if( position && position == 'center' ){
+            label.x = parseInt( x + ( width - label.width ) / 2 );
           }
-          else{
-            label.x = line.x - label.width - arrow.width;
-            gap.x = parseInt( label.x + label.width - 4 );
+          else if( position && position == 'right' ){
+            label.x = parseInt( x + width - label.width + ( label.width + arrow.width ) / 2 + 1 );
           }
-        }
 
-        self.Attrs[i] = {
-          label: label,
-          line: line,
-          arrow: arrow,
-          gap: gap
+          line.width = 1;
+          line.height = height;
+          line.x = parseInt( label.x + label.width / 2 );
+          line.y = y;
+
+          arrow.start.x = parseInt( line.x - arrow.width / 2 + 1 );
+          arrow.start.y = y;
+          arrow.end.x = arrow.start.x;
+          arrow.end.y = parseInt( y + height - 1 );
+
+          gap.x = label.x + 10;
+          gap.y = label.y + 10;
+
+          if( ( label.height + 20 ) > height ){
+            gap.y = parseInt( y + ( height - 8 ) / 2 );
+            if( position && position == 'right' ){
+              label.x = parseInt( line.x + arrow.width );
+              gap.x = parseInt( label.x - 4 );
+            }
+            else{
+              label.x = line.x - label.width - arrow.width;
+              gap.x = parseInt( label.x + label.width - 4 );
+            }
+          }
+
+          self.setAttrs(guide, {
+            label: label,
+            line: line,
+            arrow: arrow,
+            gap: gap
+          });
+          layer.setIsSelected( 0 );
         };
-
-        self.Guides[i] = guide;
-
-        self.setAttr(i);
-      });
-
+    if ( layer ){
+      fn.call( this, layer );
+    }
+    else if (layers.length() > 0) {
+      layers.each(fn);
     }
     else{
       alert("Make sure you've selected a symbol, or a layer that.");
@@ -398,6 +393,149 @@ var alert = function(msg, title) {
     }
     else{
       alert("Make sure you've selected a symbol, or a layer that.");
+    }
+  },
+  spacing: function( position, isDistance ){
+    var self = this,
+        current = MUGlobal.current,
+        layers = selection,
+        tTemp = {},
+        lTemp = {},
+        iTemp = {},
+        distance = {},
+        layer,
+        target;
+
+    if( layers.length() == 1 && current.class() == MSArtboardGroup ){
+      layer = current;
+      target = layers[0];
+    }
+    else if( layers.length() == 2 ){
+      layer = layers[0];
+      target = layers[1];
+    }
+    else{
+      return false;
+    }
+
+    var tPosition = self.getPosition(target),
+        lPosition = self.getPosition(layer);
+
+    tTemp.width = target.frame().width();
+    tTemp.height = target.frame().height();
+    tTemp.x = tPosition.x;
+    tTemp.y = tPosition.y;
+
+    lTemp.width = layer.frame().width();
+    lTemp.height = layer.frame().height();
+    lTemp.x = lPosition.x;
+    lTemp.y = lPosition.y;
+
+    if( layer.class() == MSArtboardGroup ){
+      lTemp.x = 0;
+      lTemp.y = 0;
+    }
+
+    distance.top = tTemp.y - lTemp.y;
+    distance.right = ( lTemp.x + lTemp.width ) - ( tTemp.x + tTemp.width );
+    distance.bottom = ( lTemp.y + lTemp.height ) - ( tTemp.y + tTemp.height );
+    distance.left = tTemp.x - lTemp.x;
+
+    if( position && position == 'top' ){
+      iTemp.x = tTemp.x;
+      iTemp.y = lTemp.y;
+      iTemp.width = tTemp.width;
+      iTemp.height = distance.top;
+      if( isDistance && iTemp.height > lTemp.height ){
+        iTemp.y = lTemp.y + lTemp.height;
+        iTemp.height = iTemp.height - lTemp.height;
+      }
+
+    }
+    else if( position && position == 'right' ){
+      iTemp.x = tTemp.x + tTemp.width;
+      iTemp.y = tTemp.y;
+      iTemp.width = distance.right;
+      iTemp.height = tTemp.height;
+      if( isDistance && iTemp.width > lTemp.width ){
+        iTemp.width = iTemp.width - lTemp.width;
+      }
+    }
+    else if( position && position == 'bottom' ){
+      iTemp.x = tTemp.x;
+      iTemp.y = tTemp.y + tTemp.height;
+      iTemp.width = tTemp.width;
+      iTemp.height = distance.bottom;
+      if( isDistance && iTemp.height > lTemp.height ){
+        iTemp.height = iTemp.height - lTemp.height;
+      }
+    }
+    else if( position && position == 'left' ){
+      iTemp.x = lTemp.x;
+      iTemp.y = tTemp.y;
+      iTemp.width = distance.left;
+      iTemp.height = tTemp.height;
+
+      if( isDistance && iTemp.width > lTemp.width ){
+        iTemp.x = lTemp.x + lTemp.width;
+        iTemp.width = iTemp.width - lTemp.width;
+      }
+    }
+
+    iTemp.x = ( iTemp.width < 0 )? iTemp.x + iTemp.width: iTemp.x;
+    iTemp.y = ( iTemp.height < 0 )? iTemp.y + iTemp.height: iTemp.y;
+    iTemp.width = ( iTemp.width < 0 )? 1 - iTemp.width: iTemp.width;
+    iTemp.height = ( iTemp.height < 0 )? 1 - iTemp.height: iTemp.height;
+
+    if( iTemp.width == 0 || iTemp.height == 0 ){
+      return false;
+    }
+
+    var temp = current.addLayerOfType('rectangle');
+        temp.frame().setX( iTemp.x );
+        temp.frame().setY( iTemp.y );
+        temp.frame().setWidth( iTemp.width );
+        temp.frame().setHeight( iTemp.height );
+
+      if( position && ( position == 'top' || position == 'bottom' ) ){
+        self.height( 'center', temp );
+      }
+      else if( position && ( position == 'left' || position == 'right' ) ){
+        self.width( 'middle', temp );
+      }
+
+      current.removeLayer( temp );
+      layer.setIsSelected( 0 );
+      target.setIsSelected( 0 );
+
+  },
+  distance: function( type ){
+    var self = this,
+        layers = selection;
+
+    if( layers.length() > 0 && layers.length() < 3 ){
+      var layer = layers[0],
+          target = layers[1];
+
+      if( type && type == 'width' ){
+        if( target.frame().x() > layer.frame().x() + layer.frame().width() ){
+          self.spacing( 'left', true );
+        }
+        else if( target.frame().x() < layer.frame().x() + layer.frame().width() ){
+          self.spacing( 'right', true );
+        }
+      }
+      else if( type && type == 'height' ){
+        if( target.frame().y() > layer.frame().y() + layer.frame().height() ){
+          self.spacing( 'top', true );
+        }
+        else if( target.frame().y() < layer.frame().y() + layer.frame().height() ){
+          self.spacing( 'bottom', true );
+        }
+      }
+    }
+    else{
+      alert("Make sure you've selected two symbols, or two layers that.");
     }
   },
   unit: function( type ){
