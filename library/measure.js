@@ -538,6 +538,59 @@ var alert = function(msg, title) {
       alert("Make sure you've selected two symbols, or two layers that.");
     }
   },
+  color: function( type ){
+    var self = this,
+        type = type,
+        current = MUGlobal.current,
+        resetColor = function( layers ){
+          var layers = layers;
+          layers.each(function( layer ){
+            if( layer.class() == MSLayerGroup && layer.name().match(/\$Guide\-\d+/) ){
+              var guideItems = layer.layers();
+
+              guideItems.each(function( item ){
+
+                if( type == 'shape' && item.class() == MSShapeGroup ){
+                  self.setColor(item, color.r, color.g, color.b);
+                }
+                else if( type == 'text' && item.class() == MSTextLayer ){
+                  self.setColor(item, color.r, color.g, color.b);
+                }
+              });
+            }
+            else if( layer.class() == MSLayerGroup ){
+              resetColor( layer.layers() );
+            }
+
+          });
+        },
+        inputLabel, inputValue;
+
+        if( type == 'text' ){
+          inputLabel = 'Do you want to reset all text color (HEX: #FFFFFF)',
+          inputValue = '#FFFFFF';
+        }
+        else if( type == 'shape' ){
+          inputLabel = 'Do you want to reset all background color (HEX: #FF0000)',
+          inputValue = '#4A90E2';
+        }
+
+        var colorHex = [doc askForUserInput:inputLabel initialValue:inputValue],
+            color = {};
+
+        if( colorHex.match(/^\#([a-f\d]{2}){3}$/i) ){
+          colorRGB16 = colorHex.match(/[a-f\d]{2}/ig);
+
+          color.r = parseInt(colorRGB16[0], 16) / 255;
+          color.g = parseInt(colorRGB16[1], 16) / 255;
+          color.b = parseInt(colorRGB16[2], 16) / 255;
+
+          resetColor( current.layers() );
+        }
+        else{
+          alert( 'Error, Must be Color HEX!' );
+        }
+  },
   unit: function( type ){
     // 0: x.75, LDPI
     // 1: x1, 160dpi MDPI
