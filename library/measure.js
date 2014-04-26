@@ -598,6 +598,8 @@ var alert = function(msg, title) {
     // 3: x2, 320dpi XHDPI
     // 4: x3, 480dpi XXHDPI
     // 5: x4, 640dpi XXXHDPI
+    // 6: x.5, Standard
+    // 7: x1, Retina
     var self = this,
         current = MUGlobal.current,
         resetUnit = function( layers ){
@@ -610,8 +612,8 @@ var alert = function(msg, title) {
 
                 if( item.class() == MSTextLayer && length.match(/\d+/) ){
 
-                  var number = ( type == 'px' )? length: parseInt( length / scale[type] ),
-                      unit = ( type == 'px' )? 'px': 'dp',
+                  var number = parseInt( length / scale[type] ),
+                      unit = ( type >= 6 )? 'px': 'dp',
                       text = item.stringValue().replace( /(\d+\s[dxps]{2})/g, number + ' ' + unit),
                       x = item.frame().x(),
                       y = item.frame().y(),
@@ -644,7 +646,9 @@ var alert = function(msg, title) {
           1.5,
           2,
           3,
-          4
+          4,
+          2,
+          1
         ];
 
     resetUnit( current.layers() );
