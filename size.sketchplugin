@@ -1,0 +1,13 @@
+#import 'js/utility.js'
+#import 'js/size.js'
+#import 'js/tip.js'
+#import 'js/text.js'
+#import 'js/spacing.js'
+// var layer = selection[0];
+// label('bottom', layer);
+
+spacing('left');
+// text       = addText('text');
+// [text setStringValue: 'sadkjhaskldjaksdjklasjdlk']
+// [text setFontSize: defaultConfig.fontSize];
+// // [text setFontPostscriptName: defaultConfig.fontType];
