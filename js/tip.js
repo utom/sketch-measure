@@ -1,12 +1,12 @@
-var TipGuide = function(gapPosition, text, content){
+var TipGuide = function(gapPosition, text, content) {
     if ([text class] != MSTextLayer) {
         return false;
     }
-	var timestamp     = new Date().getTime(),
-        content       = content? '-' + content: '';
+    var timestamp = new Date().getTime(),
+        content = content ? '-' + content : '';
 
     var group = addGroup('$GUIDE' + timestamp),
-        gap   = addShape('gap', group),
+        gap = addShape('gap', group),
         label = addShape('label' + content, group);
 
     removeLayer(text);
@@ -30,19 +30,16 @@ var TipGuide = function(gapPosition, text, content){
     [[label frame] setX: [[text frame] x] - 5];
     [[label frame] setY: [[text frame] y] - 5];
 
-    if(gapPosition && gapPosition == 'top'){
+    if (gapPosition && gapPosition == 'top') {
         [[gap frame] setX: [[text frame] x] + 3];
         [[gap frame] setY: [[text frame] y] - 8];
-    }
-    else if(gapPosition && gapPosition == 'right'){
+    } else if (gapPosition && gapPosition == 'right') {
         [[gap frame] setX: [[text frame] x] + [[text frame] width]];
         [[gap frame] setY: [[text frame] y] + 3];
-    }
-    else if(gapPosition && gapPosition == 'bottom'){
+    } else if (gapPosition && gapPosition == 'bottom') {
         [[gap frame] setX: [[text frame] x] + 3];
         [[gap frame] setY: [[text frame] y] + [[text frame] height]];
-    }
-    else if(gapPosition && gapPosition == 'left'){
+    } else if (gapPosition && gapPosition == 'left') {
         [[gap frame] setX: [[text frame] x] - 8];
         [[gap frame] setY: [[text frame] y] + 3];
     }

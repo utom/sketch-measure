@@ -640,8 +640,7 @@ var alert = function(msg, title) {
 
           });
         },
-        scale = [
-          .75,
+        scale = [          .75,
           1,
           1.5,
           2,

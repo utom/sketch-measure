@@ -1,4 +1,4 @@
-var Unit = function(type){
+var AllUnit = function(type){
     var scale = {
             'LDPI': .75,
             'MDPI': 1,
@@ -24,7 +24,7 @@ var Unit = function(type){
 
               if(layerName.match(/label-(\d+)/)){
                 length = layerName.match(/label-(\d+)/)[1];
-                if([layer class] == MSLayerGroup){
+            if ([layer class] == MSLayerGroup) {
                   each([layer layers].array(), function(layer){
                     if([layer class] == MSTextLayer){
                       textLayer = layer;
