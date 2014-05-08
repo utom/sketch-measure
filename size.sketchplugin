@@ -10,6 +10,7 @@
 
 // SpacingGuide('right', 1);
 Unit('Standard');
+// Unit('XHDPI');
 // TextGuide('bottom');
 // text       = addText('text');
 // [text setStringValue: 'sadkjhaskldjaksdjklasjdlk']

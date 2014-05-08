@@ -6,8 +6,8 @@ var Unit = function(type){
            'XHDPI': 2,
           'XXHDPI': 3,
          'XXXHDPI': 4,
-        'Standard': 2,
-          'Retina': 1
+        'Standard': 1,
+          'Retina': 2
     },
     resetUnit = function( layers ){
         var layers = layers.array();
