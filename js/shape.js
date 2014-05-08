@@ -18,7 +18,7 @@ var ShapeGuide = function(position){
                             fills = [[layer style] fills].array(),
                              fill = ([fills count] > 0)? fills[0]: null,
                            border = [[layer style] border];
-// log(border);return false;
+
                 if(types['fill'] && fill) labelText += 'fill: ' + getColor(fill) + '\r\n'; count++;
                 if(types['border'] && border) labelText += 'border: ' + getColor(border) + '\r\n'; count++;
 
