@@ -2,7 +2,7 @@ var spacing = function(position){
   var layers = selection,
     layer0, layer1,
     distanceTop, distanceRight, distanceBottom, distanceLeft,
-    tempX, tempY, tempW, tempH, tempLayer = addShape('temp');
+    tempX, tempY, tempW, tempH, tempLayer;
 
   if( [layers count] == 1 && [current class] == MSArtboardGroup ){
     layer0 = current;
@@ -34,16 +34,22 @@ var spacing = function(position){
   distanceLeft   = layer0X - layer1X;
 
     if(position && position == 'top'){
-      if( distanceTop == 0 ) removeLayer(tempLayer); return false;
+      if( distanceTop == 0 ) return false;
+      tempLayer = addShape('temp');
       tempX = layer1X;
       tempY = layer0Y;
       tempW = layer1W;
       tempH = toPositive(distanceTop);
 
       if (layer0Y > layer1Y) tempY = layer1Y;
+
+      if (){
+        
+      }
     }
     else if(position && position == 'right'){
-      if( distanceRight == 0 ) removeLayer(tempLayer); return false;
+      if( distanceRight == 0 ) return false;
+      tempLayer = addShape('temp');
       tempX = layer1X + layer1W;
       tempY = layer1Y;
       tempW = toPositive(distanceRight);
@@ -52,7 +58,8 @@ var spacing = function(position){
       if (layer0X + layer0W < layer1X + layer1W) tempX = layer0X + layer0W;
     }
     else if(position && position == 'bottom'){
-      if( distanceBottom == 0 ) removeLayer(tempLayer); return false;
+      if( distanceBottom == 0 ) return false;
+      tempLayer = addShape('temp');
       tempX = layer1X;
       tempY = layer1Y + layer1H;
       tempW = layer1W;
@@ -61,7 +68,8 @@ var spacing = function(position){
       if (layer0Y + layer0H < layer1Y + layer1H) tempY = layer0Y + layer0H;
     }
     else if(position && position == 'left'){
-      if( distanceLeft == 0 ) removeLayer(tempLayer); return false;
+      if( distanceLeft == 0 ) return false;
+      tempLayer = addShape('temp');
       tempX = layer0X;
       tempY = layer1Y;
       tempW = toPositive(distanceRight);
