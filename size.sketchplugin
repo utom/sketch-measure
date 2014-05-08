@@ -6,7 +6,7 @@
 // var layer = selection[0];
 // label('bottom', layer);
 
-spacing('left');
+spacing('right');
 // text       = addText('text');
 // [text setStringValue: 'sadkjhaskldjaksdjklasjdlk']
 // [text setFontSize: defaultConfig.fontSize];

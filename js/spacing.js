@@ -1,4 +1,4 @@
-var spacing = function(position){
+var spacing = function(side, isGap){
   var layers = selection,
     layer0, layer1,
     distanceTop, distanceRight, distanceBottom, distanceLeft,
@@ -33,7 +33,7 @@ var spacing = function(position){
   distanceBottom = (layer0Y + layer0H) - (layer1Y + layer1H);
   distanceLeft   = layer0X - layer1X;
 
-    if(position && position == 'top'){
+    if(side && side == 'top'){
       if( distanceTop == 0 ) return false;
       tempLayer = addShape('temp');
       tempX = layer1X;
@@ -43,11 +43,16 @@ var spacing = function(position){
 
       if (layer0Y > layer1Y) tempY = layer1Y;
 
-      if (){
-        
+      if (isGap && layer1Y > layer0Y + layer0H){
+        tempY = layer0Y + layer0H;
+        tempH = tempH - layer0H;
+      }
+      else if(isGap && layer0Y > layer1Y + layer1H){
+        tempY = layer1Y + layer1H;
+        tempH = tempH - layer1H;
       }
     }
-    else if(position && position == 'right'){
+    else if(side && side == 'right'){
       if( distanceRight == 0 ) return false;
       tempLayer = addShape('temp');
       tempX = layer1X + layer1W;
@@ -56,8 +61,16 @@ var spacing = function(position){
       tempH = layer1H;
 
       if (layer0X + layer0W < layer1X + layer1W) tempX = layer0X + layer0W;
+
+      if (isGap && layer0X > layer1X + layer1W){
+        tempX = layer1X + layer1W;
+        tempW = tempW - layer0W;
+      }
+      else if (isGap && layer1X > layer0X + layer0W){
+        tempW = tempW - layer1W;
+      }
     }
-    else if(position && position == 'bottom'){
+    else if(side && side == 'bottom'){
       if( distanceBottom == 0 ) return false;
       tempLayer = addShape('temp');
       tempX = layer1X;
@@ -67,7 +80,7 @@ var spacing = function(position){
 
       if (layer0Y + layer0H < layer1Y + layer1H) tempY = layer0Y + layer0H;
     }
-    else if(position && position == 'left'){
+    else if(side && side == 'left'){
       if( distanceLeft == 0 ) return false;
       tempLayer = addShape('temp');
       tempX = layer0X;
@@ -82,8 +95,8 @@ var spacing = function(position){
     [[tempLayer frame] setY: tempY];
     [[tempLayer frame] setWidth: tempW];
     [[tempLayer frame] setHeight: tempH];
-    if(position && (position == 'top' || position == 'bottom')) size.height('center', tempLayer);
-    if(position && (position == 'right' || position == 'left')) size.width('middle', tempLayer);
+    if(side && (side == 'top' || side == 'bottom')) size.height('center', tempLayer);
+    if(side && (side == 'right' || side == 'left')) size.width('middle', tempLayer);
     
 
     removeLayer(tempLayer);
