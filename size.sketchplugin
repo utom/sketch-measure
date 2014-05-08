@@ -4,10 +4,12 @@
 #import 'js/text.js'
 #import 'js/spacing.js'
 #import 'js/shape.js'
+#import 'js/unit.js'
 // var layer = selection[0];
 // TipGuide('bottom', layer);
 
-SpacingGuide('right', 1);
+// SpacingGuide('right', 1);
+Unit();
 // TextGuide('bottom');
 // text       = addText('text');
 // [text setStringValue: 'sadkjhaskldjaksdjklasjdlk']

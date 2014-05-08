@@ -1,4 +1,4 @@
-var unit = function(){
+var Unit = function(){
     var scale = {
              'LDPI': .75,
             'MDPI': 1,
@@ -9,18 +9,37 @@ var unit = function(){
         'Standard': 2,
           'Retina': 1
     },
-    getText  = function(layers){
-      
-    },
+    // setText   = function(layer){
+    //     log(layer);
+    //     var layerName = [layer name];
+
+        
+    //     if(layerName.match(/\label-(\d+)/)){
+    //       var length = layerName.match(/\label-(\d+)/);
+    //       length = parseInt(length[1]);
+    //       if([layer class] == MSLayerGroup){
+    //         each([layer layers].array(), function(layer){
+
+    //         });
+    //       }
+    //     }
+    // },
+    getElementBy('')
     resetUnit = function( layers ){
         var layers = layers.array();
+
         each(layers, function(layer){
           var layerName = [layer name];
+          // log(layerName.match(/\$GUIDE\-\d+/));
           if(
-            [layers class] == MSLayerGroup &&
-            layerName.match(/\$GUIDE\-\d+/)
+            [layer class] == MSLayerGroup &&
+            layerName.match(/\$GUIDE\d+/)
           ){
+            // each([layer layers].array(), setText);
             
+          }
+          else if( [layer class] == MSLayerGroup ){
+            resetUnit([layer layers]);
           }
         });
       // layers.each(function( layer ){
@@ -58,5 +77,7 @@ var unit = function(){
       //   }
 
       // });
-    }
+    };
+
+    resetUnit([current layers]);
 }
