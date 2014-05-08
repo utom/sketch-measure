@@ -91,7 +91,16 @@ function setColor(layer, hex){
       [color setGreen: g]
       [color setBlue: b]
 }
+function getTypes(types){
+  var typeArray = types.split(','),
+          types = {};
 
+    typeArray.forEach(function(type){
+      var type = type.trim();
+      types[type] = 1;
+    });
+    return types;
+ }
 function toPositive(number){
   return (number < 0)? -(number): number;
 }

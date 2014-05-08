@@ -1,8 +1,8 @@
-var size = {
-  width: function(position, layer){
+var Size = {
+  Width: function(position, layer){
     var layers = selection,
         fn     = function(layer){
-          var timestamp     = parseInt(new Date().getTime() / 1000),
+          var timestamp     = new Date().getTime(),
               frame         = [layer frame],
               width         = [frame width],
               height        = [frame height],
@@ -106,10 +106,10 @@ var size = {
       alert("Make sure you've selected a symbol, or a layer that.");
     }
   },
-  height: function(position, layer){
+  Height: function(position, layer){
     var layers = selection,
         fn     = function(layer){
-          var timestamp    = parseInt(new Date().getTime() / 1000),
+          var timestamp    = new Date().getTime(),
               frame        = [layer frame],
               width        = [frame width],
               height       = [frame height],

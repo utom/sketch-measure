@@ -3,10 +3,12 @@
 #import 'js/tip.js'
 #import 'js/text.js'
 #import 'js/spacing.js'
+#import 'js/shape.js'
 // var layer = selection[0];
-// label('bottom', layer);
+// TipGuide('bottom', layer);
 
-spacing('right');
+SpacingGuide('right', 1);
+// TextGuide('bottom');
 // text       = addText('text');
 // [text setStringValue: 'sadkjhaskldjaksdjklasjdlk']
 // [text setFontSize: defaultConfig.fontSize];

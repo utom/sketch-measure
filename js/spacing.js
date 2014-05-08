@@ -1,4 +1,4 @@
-var spacing = function(side, isGap){
+var SpacingGuide = function(side, isGap){
   var layers = selection,
     layer0, layer1,
     distanceTop, distanceRight, distanceBottom, distanceLeft,
@@ -51,6 +51,10 @@ var spacing = function(side, isGap){
         tempY = layer1Y + layer1H;
         tempH = tempH - layer1H;
       }
+      else if(isGap) {
+        removeLayer(tempLayer);
+        return false;
+      };
     }
     else if(side && side == 'right'){
       if( distanceRight == 0 ) return false;
@@ -69,6 +73,10 @@ var spacing = function(side, isGap){
       else if (isGap && layer1X > layer0X + layer0W){
         tempW = tempW - layer1W;
       }
+      else if(isGap) {
+        removeLayer(tempLayer);
+        return false;
+      };
     }
     else if(side && side == 'bottom'){
       if( distanceBottom == 0 ) return false;
@@ -95,8 +103,8 @@ var spacing = function(side, isGap){
     [[tempLayer frame] setY: tempY];
     [[tempLayer frame] setWidth: tempW];
     [[tempLayer frame] setHeight: tempH];
-    if(side && (side == 'top' || side == 'bottom')) size.height('center', tempLayer);
-    if(side && (side == 'right' || side == 'left')) size.width('middle', tempLayer);
+    if(side && (side == 'top' || side == 'bottom')) Size.Height('center', tempLayer);
+    if(side && (side == 'right' || side == 'left')) Size.Width('middle', tempLayer);
     
 
     removeLayer(tempLayer);

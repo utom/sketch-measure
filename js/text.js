@@ -1,16 +1,6 @@
-var text = function(position){
+var TextGuide = function(position){
   var layers   = selection,
       types    = 'font, size, color, line',
-      getTypes = function(types){
-        var typeArray = types.split(','),
-            types = {};
-
-        typeArray.forEach(function(type){
-          var type = type.trim();
-          types[type] = 1;
-        });
-        return types;
-      },
       getColor = function(layer){
         var fills = [[layer style] fills].array(),
             fill  = ( [fills count] > 0 )? fills[0]: null,
@@ -40,28 +30,29 @@ var text = function(position){
 
 
         if(position && position == 'top'){
-          var guide = tip('bottom', text, parseInt([layer fontSize]));
+          var guide = TipGuide('bottom', text, parseInt([layer fontSize]));
           [[guide frame] setX: x + 5];
           [[guide frame] setY: y - ( 5 + [[text frame] height])];
         }
         else if(position && position == 'right'){
-          var guide = tip('left', text, parseInt([layer fontSize]));
+          var guide = TipGuide('left', text, parseInt([layer fontSize]));
           [[guide frame] setX: x + 5 + [[layer frame] width]];
           [[guide frame] setY: y];
         }
         else if(position && position == 'bottom'){
-          var guide = tip('top', text, parseInt([layer fontSize]));
+          var guide = TipGuide('top', text, parseInt([layer fontSize]));
           [[guide frame] setX: x + 5];
           [[guide frame] setY: y + 5 + [[layer frame] height]];
         }
         else if(position && position == 'left'){
-          var guide = tip('right', text, parseInt([layer fontSize]));
+          var guide = TipGuide('right', text, parseInt([layer fontSize]));
+
           [[guide frame] setX: x - ( 5 + [[text frame] width] )];
           [[guide frame] setY: y];
         }
       }
   if ([layers count] > 0) {
-      types = getTypes([doc askForUserInput:'' initialValue:types]);
+      types = getTypes([doc askForUserInput:types initialValue:types]);
       each(layers, fn);
   }
   else{

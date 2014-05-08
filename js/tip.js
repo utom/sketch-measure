@@ -1,8 +1,8 @@
-var tip = function(gapPosition, text, content){
+var TipGuide = function(gapPosition, text, content){
     if ([text class] != MSTextLayer) {
         return false;
     }
-	var timestamp     = parseInt(new Date().getTime() / 1000),
+	var timestamp     = new Date().getTime(),
         content       = content? '-' + content: '';
 
     var group = addGroup('$GUIDE' + timestamp),
