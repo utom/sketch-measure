@@ -81,7 +81,8 @@ function hexToRgb(hex) {
 }
 
 function setColor(layer, hex) {
-  var fills = [[layer style] fills];
+  var layer = layer,
+      fills = [[layer style] fills];
 if ([fills count] <= 0)[fills addNewStylePart];
 var fill = fills.array()[0],
   color = [fill color],
@@ -483,9 +484,7 @@ var TipGuide = function(gapPosition, text, content) {
         [[gap frame] setX: [[text frame] x] - 8];
         [[gap frame] setY: [[text frame] y] + 3];
     }
-
-    [label setIsSelected: 1];
-    [label setIsSelected: 0];
+    [text setIsSelected: 1];
     [text setIsSelected: 0];
 
     return group;
@@ -581,24 +580,24 @@ var ShapeGuide = function(position) {
 
       labelText = [labelText trim];
 
-      var text = addText('text');
-      [text setStringValue: labelText];
+      var textLayer = addText('text');
+      [textLayer setStringValue: labelText];
 
       if (position && position == 'top') {
-        var guide = TipGuide('bottom', text);
+        var guide = TipGuide('bottom', textLayer);
         [[guide frame] setX: x + 5];
-        [[guide frame] setY: y - (5 + [[text frame] height])];
+        [[guide frame] setY: y - (5 + [[textLayer frame] height])];
       } else if (position && position == 'right') {
-        var guide = TipGuide('left', text);
+        var guide = TipGuide('left', textLayer);
         [[guide frame] setX: x + 5 + [[layer frame] width]];
         [[guide frame] setY: y];
       } else if (position && position == 'bottom') {
-        var guide = TipGuide('top', text);
+        var guide = TipGuide('top', textLayer);
         [[guide frame] setX: x + 5];
         [[guide frame] setY: y + 5 + [[layer frame] height]];
       } else if (position && position == 'left') {
-        var guide = TipGuide('right', text);
-        [[guide frame] setX: x - (5 + [[text frame] width])];
+        var guide = TipGuide('right', textLayer);
+        [[guide frame] setX: x - (5 + [[textLayer frame] width])];
         [[guide frame] setY: y];
       }
     };
@@ -622,7 +621,7 @@ var AllUnit = function(type){
         'Standard': 1,
           'Retina': 2
     },
-    resetUnit = function( layers ){
+    resetUnit = function(layers){
         var layers = layers.array();
 
         each(layers, function(layer){
