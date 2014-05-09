@@ -524,15 +524,12 @@ var TextGuide = function(position) {
         [[guide frame] setX: x + 5];
         [[guide frame] setY: y - (5 + textHeight)];
       } else if (position && position == 'right') {
-        var guide = TipGuide('left', textLayer);
         [[guide frame] setX: x + 5 + width];
         [[guide frame] setY: y];
       } else if (position && position == 'bottom') {
-        var guide = TipGuide('top', textLayer);
         [[guide frame] setX: x + 5];
         [[guide frame] setY: y + 5 + height];
       } else if (position && position == 'left') {
-        var guide = TipGuide('right', textLayer);
         [[guide frame] setX: x - (5 + textWidth)];
         [[guide frame] setY: y];
       }
@@ -578,15 +575,12 @@ var ShapeGuide = function(position) {
         [[guide frame] setX: x + 5];
         [[guide frame] setY: y - (5 + textHeight)];
       } else if (position && position == 'right') {
-        var guide = TipGuide('left', textLayer);
         [[guide frame] setX: x + 5 + width];
         [[guide frame] setY: y];
       } else if (position && position == 'bottom') {
-        var guide = TipGuide('top', textLayer);
         [[guide frame] setX: x + 5];
         [[guide frame] setY: y + 5 + height];
       } else if (position && position == 'left') {
-        var guide = TipGuide('right', textLayer);
         [[guide frame] setX: x - (5 + textWidth)];
         [[guide frame] setY: y];
       }
