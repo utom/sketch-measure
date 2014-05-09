@@ -1,6 +1,6 @@
 # Sketch Measure
 
-Measure tools for sketch.app, Sketch 3.0.2+ support. 
+Measure tools for sketch.app, **Sketch 3.0.2+ support**. 
 
 ![Banner](http://cl.ly/image/1p3r0C1y2k40/banner@2x.png)
 
