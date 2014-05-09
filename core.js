@@ -497,9 +497,8 @@ var TextGuide = function(position) {
   var layers = selection,
     types = 'font, size, color, line',
     getColor = function(layer) {
-      var fills = [[layer style] fills].array(),
-        fill = ([fills count] > 0) ? fills[0] : null,
-        color = ([fills count] > 0) ? [fill color] : [layer textColor],
+      var fill = [[layer style] fill],
+        color = (fill) ? [fill color] : [layer textColor],
         hex = [color hexValue],
         rgb = hexToRgb(hex);
       return '#' + hex + ' (' + rgb.r + ', ' + rgb.g + ', ' + rgb.b + ')';
@@ -556,34 +555,32 @@ var TextGuide = function(position) {
 var ShapeGuide = function(position) {
   var layers = selection,
     types = 'fill, border',
-    getColor = function(layer) {
-      var fills = [[layer style] fills].array(),
-        fill = ([fills count] > 0) ? fills[0] : null,
-        color = ([fills count] > 0) ? [fill color] : [layer textColor],
-        hex = [color hexValue],
-        rgb = hexToRgb(hex);
+    getColor = function(color){
+      var hex = [color hexValue],
+          rgb = hexToRgb(hex);
       return '#' + hex + ' (' + rgb.r + ', ' + rgb.g + ', ' + rgb.b + ')';
     },
     fn = function(shape) {
       if ([shape class] != MSShapeGroup) return false;
-      var layerPosition = getPosition(shape),
-        width = [[shape frame] width],
-        height = [[shape frame] height],
-        x = layerPosition.x,
-        y = layerPosition.y,
-        labelText = '';
-        // border = [[layer style] border];
+      var shapePosition = getPosition(shape),
+          width = [[shape frame] width],
+          height = [[shape frame] height],
+          x = shapePosition.x,
+          y = shapePosition.y,
+          textContent = '';
 
-      if (types['fill']) labelText += 'fill: ' + getColor(shape) + '\r\n';
-      // if (types['border'] && border) labelText += 'border: ' + getColor(border) + '\r\n';
+      var shapeFill = [[shape style] fill],
+          shapeBorder = [[shape style] border];
 
-      labelText = [labelText trim];
+      if (types['fill'] && shapeFill) textContent += 'fill: ' + getColor([shapeFill color]) + '\r\n';
+      if (types['border'] && shapeBorder) textContent += 'border: ' + getColor([shapeBorder color]) + '\r\n';
 
       var textLayer = addText('text');
-      [textLayer setStringValue: labelText];
+      [textLayer setStringValue: [textContent trim]];
       [textLayer setFontSize: defaultConfig.fontSize];
       [textLayer setFontPostscriptName: defaultConfig.fontType];
       [textLayer setLineSpacing: parseInt(defaultConfig.fontSize * 1.2)];
+
 
       if (position && position == 'top') {
         var guide = TipGuide('bottom', textLayer);
