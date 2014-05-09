@@ -1,3 +1,0 @@
-#import 'library/measure.js'
-var type = [[doc askForUserInput:"0:LDPI 1:MDPI 2:HDPI 3:XHDPI 4:XXHDPI 5:XXXHDPI" initialValue:3] integerValue];
-Measure.unit(type);

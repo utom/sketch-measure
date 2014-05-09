@@ -10,8 +10,13 @@ var defaultConfig = {
 },
   otherConfig = {
     fill: '#4A90E2'
+  },
+  getGapPosition = {
+    top: 'bottom',
+    right: 'left',
+    bottom: 'top',
+    left: 'right'
   };
-
 function each(layers, callback) {
   var count = [layers count];
   for (var i = 0; i < count; i++) {
@@ -81,20 +86,15 @@ function hexToRgb(hex) {
 }
 
 function setColor(layer, hex) {
-  var layer = layer,
-      fills = [[layer style] fills];
-
-if ([fills count] <= 0)[fills addNewStylePart];
-var fill = fills.array()[0],
-  color = [fill color],
-  rgb = hexToRgb(hex),
-  r = rgb.r / 255,
-  g = rgb.g / 255,
-  b = rgb.b / 255;
-
-[color setRed: r]
-[color setGreen: g]
-[color setBlue: b]
+  if (![[layer style] fill]) [[[layer style] fills] addNewStylePart];
+  var color = [[[layer style] fill] color],
+      rgb = hexToRgb(hex),
+      r = rgb.r / 255,
+      g = rgb.g / 255,
+      b = rgb.b / 255;
+  [color setRed: r];
+  [color setGreen: g];
+  [color setBlue: b];
 }
 
 function getTypes(types) {
@@ -440,57 +440,54 @@ var SpacingGuide = function(side, isGap) {
 
 }
 
-var TipGuide = function(gapPosition, textLayer, content) {
-    if ([textLayer class] != MSTextLayer) {
-        return false;
-    }
+var LabelGuide = function(gapPosition, textContent, data) {
     var timestamp = new Date().getTime(),
-        content = content ? '-' + content : '';
+        data = data? '-' + data : '';
 
     var groupLayer = addGroup('$GUIDE' + timestamp),
         gapLayer = addShape('gap', groupLayer),
-        labelLayer = addShape('label' + content, groupLayer),
-        newTextLayer = [textLayer duplicate],
-        newPosition = getPosition(newTextLayer);
+        labelLayer = addShape('label' + data, groupLayer),
+        textLayer = addText('text', groupLayer);
 
-    removeLayer(newTextLayer);
-    [groupLayer addLayer: newTextLayer];
-    removeLayer(textLayer);
+    [textLayer setStringValue: textContent];
+    [textLayer setFontSize: defaultConfig.fontSize];
+    [textLayer setFontPostscriptName: defaultConfig.fontType];
+    [textLayer setLineSpacing: parseInt(defaultConfig.fontSize * 1.2)];
 
     [[gapLayer frame] setWidth: 8];
     [[gapLayer frame] setHeight: 8];
     [gapLayer setRotation: 45];
 
-    [newTextLayer setFontSize: defaultConfig.fontSize];
-    [newTextLayer setFontPostscriptName: defaultConfig.fontType];
-    [newTextLayer setLineSpacing: parseInt(defaultConfig.fontSize * 1.2)];
-
+    setColor(textLayer, defaultConfig.fontFill);
     setColor(gapLayer, defaultConfig.fill);
     setColor(labelLayer, defaultConfig.fill);
-    setColor(newTextLayer, defaultConfig.fontFill);
 
-    [[labelLayer frame] setWidth: [[newTextLayer frame] width] + 10]
-    [[labelLayer frame] setHeight: [[newTextLayer frame] height] + 11]
-    [[labelLayer frame] setX: [[newTextLayer frame] x] - 5];
-    [[labelLayer frame] setY: [[newTextLayer frame] y] - 5];
+    [[labelLayer frame] setWidth: [[textLayer frame] width] + 10]
+    [[labelLayer frame] setHeight: [[textLayer frame] height] + 11]
+    [[labelLayer frame] setX: [[textLayer frame] x] - 5];
+    [[labelLayer frame] setY: [[textLayer frame] y] - 5];
 
     if (gapPosition && gapPosition == 'top') {
-        [[gapLayer frame] setX: [[newTextLayer frame] x] + 3];
-        [[gapLayer frame] setY: [[newTextLayer frame] y] - 8];
+        [[gapLayer frame] setX: [[textLayer frame] x] + 3];
+        [[gapLayer frame] setY: [[textLayer frame] y] - 8];
     } else if (gapPosition && gapPosition == 'right') {
-        [[gapLayer frame] setX: [[newTextLayer frame] x] + [[newTextLayer frame] width]];
-        [[gapLayer frame] setY: [[newTextLayer frame] y] + 3];
+        [[gapLayer frame] setX: [[textLayer frame] x] + [[textLayer frame] width]];
+        [[gapLayer frame] setY: [[textLayer frame] y] + 3];
     } else if (gapPosition && gapPosition == 'bottom') {
-        [[gapLayer frame] setX: [[newTextLayer frame] x] + 3];
-        [[gapLayer frame] setY: [[newTextLayer frame] y] + [[newTextLayer frame] height]];
+        [[gapLayer frame] setX: [[textLayer frame] x] + 3];
+        [[gapLayer frame] setY: [[textLayer frame] y] + [[textLayer frame] height]];
     } else if (gapPosition && gapPosition == 'left') {
-        [[gapLayer frame] setX: [[newTextLayer frame] x] - 8];
-        [[gapLayer frame] setY: [[newTextLayer frame] y] + 3];
+        [[gapLayer frame] setX: [[textLayer frame] x] - 8];
+        [[gapLayer frame] setY: [[textLayer frame] y] + 3];
     }
     [textLayer setIsSelected: 1];
     [textLayer setIsSelected: 0];
 
-    return groupLayer;
+    return {
+      layer: groupLayer,
+      textWidth: [[textLayer frame] width],
+      textHeight: [[textLayer frame] height]
+    };
 }
 
 var TextGuide = function(position) {
@@ -509,38 +506,34 @@ var TextGuide = function(position) {
         layerPosition = getPosition(layer),
         x = layerPosition.x,
         y = layerPosition.y,
-        labelText = '';
+        textContent = '';
 
-      if (types['font']) labelText += 'font: ' + [layer fontPostscriptName] + '\r\n';
-      if (types['size']) labelText += 'size: ' + parseInt([layer fontSize]) + 'px\r\n';
-      if (types['color']) labelText += 'color: ' + getColor(layer) + '\r\n';
-      if (types['line']) labelText += 'line: ' + parseInt([layer lineSpacing] / [layer fontSize] * 100) + '%\r\n';
+      var layerFill = [[layer style] fill];
+      if (layerFill && [[layerFill color] hexValue] == 'D8D8D8') setColor(layer, 'D8D8D8'); //fix default
+      if (types['font']) textContent += 'font: ' + [layer fontPostscriptName] + '\r\n';
+      if (types['size']) textContent += 'size: ' + parseInt([layer fontSize]) + 'px\r\n';
+      if (types['color']) textContent += 'color: ' + getColor(layer) + '\r\n';
+      if (types['line']) textContent += 'line: ' + parseInt([layer lineSpacing] / [layer fontSize] * 100) + '%\r\n';
 
-      labelText = [labelText trim];
-
-      var textLayer = addText('text');
-      [textLayer setStringValue: labelText];
-      [textLayer setFontSize: defaultConfig.fontSize];
-      [textLayer setFontPostscriptName: defaultConfig.fontType];
-      [textLayer setLineSpacing: parseInt(defaultConfig.fontSize * 1.2)];
-
+      var guideInfo = LabelGuide(getGapPosition[position], [textContent trim], parseInt([layer fontSize])),
+          guide = guideInfo.layer,
+          textWidth = guideInfo.textWidth,
+          textHeight = guideInfo.textHeight;
 
       if (position && position == 'top') {
-        var guide = TipGuide('bottom', textLayer, parseInt([layer fontSize]));
         [[guide frame] setX: x + 5];
-        [[guide frame] setY: y - (5 + [[textLayer frame] height])];
+        [[guide frame] setY: y - (5 + textHeight)];
       } else if (position && position == 'right') {
-        var guide = TipGuide('left', textLayer, parseInt([layer fontSize]));
-        [[guide frame] setX: x + 5 + [[layer frame] width]];
+        var guide = TipGuide('left', textLayer);
+        [[guide frame] setX: x + 5 + width];
         [[guide frame] setY: y];
       } else if (position && position == 'bottom') {
-        var guide = TipGuide('top', textLayer, parseInt([layer fontSize]));
+        var guide = TipGuide('top', textLayer);
         [[guide frame] setX: x + 5];
-        [[guide frame] setY: y + 5 + [[layer frame] height]];
+        [[guide frame] setY: y + 5 + height];
       } else if (position && position == 'left') {
-        var guide = TipGuide('right', textLayer, parseInt([layer fontSize]));
-
-        [[guide frame] setX: x - (5 + [[textLayer frame] width])];
+        var guide = TipGuide('right', textLayer);
+        [[guide frame] setX: x - (5 + textWidth)];
         [[guide frame] setY: y];
       }
     }
@@ -572,20 +565,18 @@ var ShapeGuide = function(position) {
       var shapeFill = [[shape style] fill],
           shapeBorder = [[shape style] border];
 
+      if (shapeFill && [[shapeFill color] hexValue] == 'D8D8D8') setColor(shape, 'D8D8D8'); //fix default
       if (types['fill'] && shapeFill) textContent += 'fill: ' + getColor([shapeFill color]) + '\r\n';
       if (types['border'] && shapeBorder) textContent += 'border: ' + getColor([shapeBorder color]) + '\r\n';
 
-      var textLayer = addText('text');
-      [textLayer setStringValue: [textContent trim]];
-      [textLayer setFontSize: defaultConfig.fontSize];
-      [textLayer setFontPostscriptName: defaultConfig.fontType];
-      [textLayer setLineSpacing: parseInt(defaultConfig.fontSize * 1.2)];
-
+      var guideInfo = LabelGuide(getGapPosition[position], [textContent trim]),
+          guide = guideInfo.layer,
+          textWidth = guideInfo.textWidth,
+          textHeight = guideInfo.textHeight;
 
       if (position && position == 'top') {
-        var guide = TipGuide('bottom', textLayer);
         [[guide frame] setX: x + 5];
-        [[guide frame] setY: y - (5 + [[textLayer frame] height])];
+        [[guide frame] setY: y - (5 + textHeight)];
       } else if (position && position == 'right') {
         var guide = TipGuide('left', textLayer);
         [[guide frame] setX: x + 5 + width];
@@ -596,7 +587,7 @@ var ShapeGuide = function(position) {
         [[guide frame] setY: y + 5 + height];
       } else if (position && position == 'left') {
         var guide = TipGuide('right', textLayer);
-        [[guide frame] setX: x - (5 + [[textLayer frame] width])];
+        [[guide frame] setX: x - (5 + textWidth)];
         [[guide frame] setY: y];
       }
     };
@@ -675,10 +666,9 @@ var AllUnit = function(type){
     resetUnit([current layers]);
 }
 
-var AllFill = function(type) {
+var AllColor = function(type) {
   var setFill = function(layers) {
     each(layers, function(layer) {
-      log([layer class]);
       if (type == 'shape' && [layer class] == MSShapeGroup) {
         setColor(layer, colorHex);
       } else if (type == 'text' && [layer class] == MSTextLayer) {

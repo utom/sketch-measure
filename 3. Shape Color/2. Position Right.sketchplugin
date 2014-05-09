@@ -1,0 +1,2 @@
+#import 'core.js'
+ShapeGuide('right');

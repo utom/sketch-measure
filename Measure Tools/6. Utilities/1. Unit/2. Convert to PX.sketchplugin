@@ -1,3 +1,0 @@
-#import 'library/measure.js'
-var type = [[doc askForUserInput:"6:Standard 7:Retina" initialValue:6] integerValue];
-Measure.unit(type);

@@ -1,2 +1,2 @@
 #import 'core.js'
-ShapeGuide('top');
+AllUnit('XHDPI');
