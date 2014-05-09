@@ -496,7 +496,7 @@ var TextGuide = function(position) {
     getColor = function(layer) {
       var fill = [[layer style] fill],
         color = (fill) ? [fill color] : [layer textColor],
-        hex = [color hexValue],
+        hex = ([color hexValue] == 0)? '000000': [color hexValue],
         rgb = hexToRgb(hex);
       return '#' + hex + ' (' + rgb.r + ', ' + rgb.g + ', ' + rgb.b + ')';
     },
@@ -546,7 +546,7 @@ var ShapeGuide = function(position) {
   var layers = selection,
     types = 'fill, border',
     getColor = function(color){
-      var hex = [color hexValue],
+      var hex = ([color hexValue] == 0)? '000000': [color hexValue],
           rgb = hexToRgb(hex);
       return '#' + hex + ' (' + rgb.r + ', ' + rgb.g + ', ' + rgb.b + ')';
     },
