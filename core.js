@@ -502,7 +502,8 @@ var TextGuide = function(position) {
     },
     fn = function(layer) {
       if ([layer class] != MSTextLayer) return false;
-      var height = [[layer frame] height],
+      var width = [[layer frame] width],
+        height = [[layer frame] height],
         layerPosition = getPosition(layer),
         x = layerPosition.x,
         y = layerPosition.y,
