@@ -673,23 +673,22 @@ var AllColor = function(type) {
       }
     });
   },
-    resetFill = function(layers) {
+  resetFill = function(layers) {
 
-      var layers = layers.array();
+    var layers = layers.array();
 
-      each(layers, function(layer) {
-        var layerName = [layer name];
-        if (
-          [layer class] == MSLayerGroup &&
-          layerName.match(/\$GUIDE\d+/)
-        ) {
-          setFill([layer layers].array());
-
-        } else if ([layer class] == MSLayerGroup) {
-          resetFill([layer layers]);
-        }
-      });
-    };
+    each(layers, function(layer) {
+      var layerName = [layer name];
+      if (
+        [layer class] == MSLayerGroup &&
+        layerName.match(/\$GUIDE\d+/)
+      ) {
+        setFill([layer layers].array());
+      } else if ([layer class] == MSLayerGroup) {
+        resetFill([layer layers]);
+      }
+    });
+  };
 
   if (type == 'text') {
     inputLabel = 'Do you want to reset all text color (HEX: FFFFFF)',
