@@ -439,6 +439,19 @@ var SpacingGuide = function(side, isGap) {
   removeLayer(tempLayer);
 
 }
+var MarginGuide = function() {
+  var positions = ['null', 'top', 'right', 'bottom', 'left'];
+      index = parseInt([doc askForUserInput: '1. top; 2. right; 3. bottom; 4. left;' initialValue: '1']),
+      position = (index >= 1 && index < 4)? positions[index]: positions[1];
+    SpacingGuide(position);
+}
+
+var DistanceGuide = function() {
+  var positions = ['null', 'right', 'top'];
+      index = parseInt([doc askForUserInput: '1. width; 2. height;' initialValue: '1']),
+      position = (index >= 1 && index < 4)? positions[index]: positions[1];
+    SpacingGuide(position, 1);
+}
 
 var LabelGuide = function(gapPosition, textContent, data) {
     var timestamp = new Date().getTime(),
