@@ -595,7 +595,7 @@ var ShapeGuide = function(position) {
   }
 }
 
-var AllUnit = function(type){
+var Unit = function(type){
     var scale = {
             'LDPI': .75,
             'MDPI': 1,
@@ -662,47 +662,48 @@ var AllUnit = function(type){
     resetUnit([current layers]);
 }
 
-var AllColor = function(type) {
-  var setFill = function(layers) {
+var GuideStyle = function() {
+  var setStyle = function(layers) {
     each(layers, function(layer) {
-      if (type == 'shape' && [layer class] == MSShapeGroup) {
-        setColor(layer, colorHex);
-      } else if (type == 'text' && [layer class] == MSTextLayer) {
-        setColor(layer, colorHex);
-      } else if ([layer class] == MSLayerGroup) {
-        setFill([layer layers].array());
+      if ([layer class] == MSShapeGroup) {
+        setColor(layer, basicColor);
+      }
+
+      if ([layer class] == MSTextLayer) {
+        setColor(layer, textColor);
+      }
+
+      if ([layer class] == MSLayerGroup) {
+        setStyle([layer layers].array());
       }
     });
   },
-  resetFill = function(layers) {
-
-    var layers = layers.array();
-
+  resetStyle = function(layers) {
     each(layers, function(layer) {
       var layerName = [layer name];
       if (
         [layer class] == MSLayerGroup &&
         layerName.match(/\$GUIDE\d+/)
       ) {
-        setFill([layer layers].array());
+        setStyle([layer layers].array());
       } else if ([layer class] == MSLayerGroup) {
-        resetFill([layer layers]);
+        resetStyle([layer layers]);
       }
     });
   };
 
-  if (type == 'text') {
-    inputLabel = 'Do you want to reset all text color (HEX: FFFFFF)',
-    inputValue = 'FFFFFF';
-  } else if (type == 'shape') {
-    inputLabel = 'Do you want to reset all background color (HEX: FF0000)',
-    inputValue = '4A90E2';
-  }
+  var colorHex = [doc askForUserInput: 'Change guide style (#Basic, #Text)' initialValue: '4A90E2, FFFFFF'],
+      colorHex = colorHex.split(',');
+  var basicColor = colorHex[0].trim(),
+      textColor = colorHex[1].trim();
 
-  var colorHex = [doc askForUserInput: inputLabel initialValue: inputValue];
-
-  if (colorHex.match(/^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i)) {
-    resetFill([current layers]);
+  if (basicColor.match(/^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i) && textColor.match(/^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i)) {
+    if([selection count] > 0) {
+      resetStyle(selection);
+    }
+    else {
+      resetStyle([current layers].array());
+    }
   } else {
     alert('Error, Must be Color HEX!');
   }

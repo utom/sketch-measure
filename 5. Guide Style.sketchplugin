@@ -1,2 +1,2 @@
 #import 'core.js'
-AllColor('text');
+GuideStyle();
