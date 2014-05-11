@@ -14,8 +14,8 @@ A measure tool for measurements & design specs, **Sketch 3.0.2+ support**.
 
 _NOTE:_
 
-* _Margin feature must be selecting a layer inside an artboard or selecting two layers._
-* _Distance feature must be selecting two layers._
+* _**Margin** must be selecting a layer inside an artboard or selecting two layers._
+* _**Distance** must be selecting two layers._
 
 ##Contact
 
