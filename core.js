@@ -368,7 +368,7 @@ var SpacingGuide = function(side, isGap) {
   distanceRight = (layer0X + layer0W) - (layer1X + layer1W);
   distanceBottom = (layer0Y + layer0H) - (layer1Y + layer1H);
   distanceLeft = layer0X - layer1X;
-log(side)
+
   if (side && side == 'top') {
     if (distanceTop == 0) return false;
     tempLayer = addShape('temp');
