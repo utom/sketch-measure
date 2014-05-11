@@ -649,6 +649,7 @@ var AllUnit = function(type){
 
             var offset = parseInt( ( [[textLayer frame] width] - [[newTextLayer frame] width] ) / 2 );
             [[textLayer frame] addX: offset];
+            [[textLayer frame] setWidth: [[newTextLayer frame] width]];
             removeLayer(newTextLayer);
 
           }
