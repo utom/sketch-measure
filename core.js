@@ -705,7 +705,7 @@ var GuideStyle = function() {
     });
   };
 
-  var colorHex = [doc askForUserInput: 'Change guide style (#Basic, #Text)' initialValue: '4A90E2, FFFFFF'],
+  var colorHex = [doc askForUserInput: 'Change guide style for selecting guide layers (#Basic, #Text)' initialValue: '4A90E2, FFFFFF'],
       colorHex = colorHex.split(',');
   var basicColor = colorHex[0].trim(),
       textColor = colorHex[1].trim();
