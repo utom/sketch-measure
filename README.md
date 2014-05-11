@@ -14,8 +14,9 @@ A measure tool for measurements & design specs, **Sketch 3.0.2+ support**.
 
 _NOTE:_
 
-* _**Margin** must be selecting a layer inside an artboard or selecting two layers._
-* _**Distance** must be selecting two layers._
+* _**Margin**: must be selecting a layer inside an artboard or selecting two layers._
+* _**Distance**: must be selecting two layers._
+* _**Guide Style**: If you want to change specified $GUIDE layers, you must select them. If you are not selecting will change all $GUIDE layer._
 
 ##Contact
 
