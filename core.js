@@ -368,7 +368,7 @@ var SpacingGuide = function(side, isGap) {
   distanceRight = (layer0X + layer0W) - (layer1X + layer1W);
   distanceBottom = (layer0Y + layer0H) - (layer1Y + layer1H);
   distanceLeft = layer0X - layer1X;
-
+log(side)
   if (side && side == 'top') {
     if (distanceTop == 0) return false;
     tempLayer = addShape('temp');
@@ -442,14 +442,14 @@ var SpacingGuide = function(side, isGap) {
 var MarginGuide = function() {
   var positions = ['null', 'top', 'right', 'bottom', 'left'];
       index = parseInt([doc askForUserInput: '1. top; 2. right; 3. bottom; 4. left;' initialValue: '1']),
-      position = (index >= 1 && index < 4)? positions[index]: positions[1];
+      position = (index >= 1 && index < 5)? positions[index]: positions[1];
     SpacingGuide(position);
 }
 
 var DistanceGuide = function() {
   var positions = ['null', 'right', 'top'];
       index = parseInt([doc askForUserInput: '1. width; 2. height;' initialValue: '1']),
-      position = (index >= 1 && index < 4)? positions[index]: positions[1];
+      position = (index >= 1 && index < 5)? positions[index]: positions[1];
     SpacingGuide(position, 1);
 }
 
