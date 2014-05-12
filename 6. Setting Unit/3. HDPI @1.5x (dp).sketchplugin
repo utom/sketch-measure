@@ -1,2 +1,2 @@
 #import 'core.js'
-AllUnit('HDPI');
+Unit('HDPI');

@@ -1,2 +1,2 @@
 #import 'core.js'
-AllUnit('Retina');
+Unit('Retina');
