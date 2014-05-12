@@ -22,6 +22,9 @@ _NOTE: If your Mac has not installed GitHub client, You need to install [GitHub 
 * Beta `~/Library/Application Support/com.bohemiancoding.sketch3/Plugins`
 
 ## How-to
+
+[Demo video](https://vimeo.com/95008293)
+
 * Find any layers you want to measure
 * Run measurements by either chooing it from the Plugins menu
 
@@ -30,6 +33,7 @@ _NOTE:_
 * _**Margin**: must be selecting a layer inside an artboard or selecting two layers._
 * _**Distance**: must be selecting two layers._
 * _**Guide Style**: If you want to change specified $GUIDE layers, you must select them. If you are not selecting will change all $GUIDE layer._
+
 
 ##Contact
 
