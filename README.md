@@ -5,7 +5,7 @@ A measure tool for measurements & design specs, **Sketch 3.0.2+ support**.
 ![Banner](http://cl.ly/image/1p3r0C1y2k40/banner@2x.png)
 
 ## Installing Plugins
-### The conventional way is:
+### The conventional way:
 1. [Download the ZIP file with the Measure](https://github.com/utom/sketch-measure/archive/master.zip)
 2. Copy the contents to the plugin folder (Open up Sketch, and go to `Plugins` › `Reveal Plugins Folder…` to open it.)
 
