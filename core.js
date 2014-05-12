@@ -692,7 +692,10 @@ var GuideStyle = function() {
     });
   },
   resetStyle = function(layers) {
-    each(layers.array(), function(layer) {
+    if([layers class] == MSArray){
+      layers = layers.array();
+    }
+    each(layers, function(layer) {
       var layerName = [layer name];
       if (
         [layer class] == MSLayerGroup &&
