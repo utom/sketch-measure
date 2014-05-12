@@ -25,8 +25,8 @@ _NOTE: If your Mac has not installed GitHub client, You need to install [GitHub 
 
 [Demo video](https://vimeo.com/95008293)
 
-* Find any layers you want to measure
-* Run measurements by either chooing it from the Plugins menu
+1. Find any layers you want to measure
+2. Run measurements by either chooing it from the Plugins menu
 
 _NOTE:_
 
