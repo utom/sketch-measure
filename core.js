@@ -692,7 +692,7 @@ var GuideStyle = function() {
     });
   },
   resetStyle = function(layers) {
-    each(layers, function(layer) {
+    each(layers.array(), function(layer) {
       var layerName = [layer name];
       if (
         [layer class] == MSLayerGroup &&
@@ -715,7 +715,7 @@ var GuideStyle = function() {
       resetStyle(selection);
     }
     else {
-      resetStyle([current layers].array());
+      resetStyle([current layers]);
     }
   } else {
     alert('Error, Must be Color HEX!');
