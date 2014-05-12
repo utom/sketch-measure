@@ -11,7 +11,7 @@ A measure tool for measurements & design specs, **Sketch 3.0.2+ support**.
 
 ### The quickest way:
 
-_NOTE: If your mac has not installed GitHub client, You need to install [GitHub for mac](https://mac.github.com)_
+_NOTE: If your Mac has not installed GitHub client, You need to install [GitHub for mac](https://mac.github.com)_
 
 1. Click on the [Clone in Desktop](github-mac://openRepo/https://github.com/utom/sketch-measure) button on GitHub
 2. Press `command` + `shift` + `g` to find plugin folder, then paste plugin folder path
@@ -20,8 +20,6 @@ _NOTE: If your mac has not installed GitHub client, You need to install [GitHub 
 
 * App Store `~/Library/Containers/com.bohemiancoding.sketch3/Data/Library/Application Support/com.bohemiancoding.sketch3/Plugins`
 * Beta `~/Library/Application Support/com.bohemiancoding.sketch3/Plugins`
-
-
 
 ## How-to
 * Find any layers you want to measure
