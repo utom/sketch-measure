@@ -677,6 +677,9 @@ var Unit = function(type){
 
 var GuideStyle = function() {
   var setStyle = function(layers) {
+    if([layers class] == MSArray){
+      layers = layers.array();
+    }
     each(layers, function(layer) {
       if ([layer class] == MSShapeGroup) {
         setColor(layer, basicColor);
@@ -687,7 +690,7 @@ var GuideStyle = function() {
       }
 
       if ([layer class] == MSLayerGroup) {
-        setStyle([layer layers].array());
+        setStyle([layer layers]);
       }
     });
   },
@@ -701,7 +704,7 @@ var GuideStyle = function() {
         [layer class] == MSLayerGroup &&
         layerName.match(/\$GUIDE\d+/)
       ) {
-        setStyle([layer layers].array());
+        setStyle([layer layers]);
       } else if ([layer class] == MSLayerGroup) {
         resetStyle([layer layers]);
       }
