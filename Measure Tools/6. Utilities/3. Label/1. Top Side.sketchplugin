@@ -1,0 +1,3 @@
+#import 'library/measure.js'
+var text = [[doc askForUserInput:"" initialValue:"Type something..."] integerValue];
+Measure.label('top', text);
