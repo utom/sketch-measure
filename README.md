@@ -25,14 +25,10 @@ _NOTE: If your Mac has not installed GitHub client, You need to install [GitHub 
 
 [Demo video](https://vimeo.com/95008293)
 
-1. Find any layers you want to measure
-2. Run measurements by either chooing it from the Plugins menu
-
 _NOTE:_
 
 * _**Margin**: must be selecting a layer inside an artboard or selecting two layers._
 * _**Distance**: must be selecting two layers._
-* _**Guide Style**: If you want to change specified $GUIDE layers, you must select them. If you are not selecting will change all $GUIDE layer._
 
 
 ##Contact

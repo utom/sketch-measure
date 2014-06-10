@@ -1,0 +1,26 @@
+#import 'library/common.js'
+#import 'library/reset.js'
+
+var alert = createAlertBase(),
+    types = ['LDPI @0.75x (dp)', 'MDPI @1x (dp)', 'HDPI @1.5x (dp)', 'XHDPI @2x (dp)', 'XXHDPI @3x (dp)', 'XXXHDPI @4x (dp)', 'Standard @1x (px)', 'Retina @2x (px)'],
+    index = getIndex(types, configs.resolution);
+
+[alert setMessageText: 'Setting Design Resolution']
+[alert setInformativeText: 'Change design resolution and reset all Guide unit.']
+[alert addTextLabelWithValue: 'Resolution:']
+[alert addAccessoryView: createSelect(types, index)]
+
+var responseCode = [alert runModal];
+
+handleAlertResponse(alert, responseCode);
+
+function handleAlertResponse(alert, responseCode) {
+  if (responseCode == "1000") {
+    var resolution = valueAtIndex(alert, 1);
+    if(resolution != configs.resolution) {
+      Reset.Unit(resolution);
+      setConfig('resolution', resolution);
+    }
+
+  }
+}

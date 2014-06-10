@@ -1,0 +1,69 @@
+// (ctrl cmd 4)
+#import 'library/common.js'
+#import 'library/label.js'
+#import 'library/properties.js'
+
+var layers = selection;
+
+if([layers count] > 0){
+  var alert = createAlertBase(),
+      ats = ['top', 'right', 'bottom', 'left'],
+      atIndex = getIndex(ats, configs.remenberPropertyAt);
+
+      [alert setMessageText: 'Get Properties']
+      [alert setInformativeText: 'Customize the Property Guide that will be created.']
+      [alert addTextLabelWithValue: 'Layer Properties:']
+      [alert addAccessoryView: creatCheckbox({name: 'Font Typeface', value: 'face'}, configs.remenberPropertyFont)]
+      [alert addAccessoryView: creatCheckbox({name: 'Font Size', value: 'size'}, configs.remenberPropertySize)]
+      [alert addAccessoryView: creatCheckbox({name: 'Text Height Line', value: 'line'}, configs.remenberPropertyLine)]
+      [alert addAccessoryView: creatCheckbox({name: 'Fill / Color', value: 'color'}, configs.remenberPropertyColor)]
+      [alert addAccessoryView: creatCheckbox({name: 'Border Color', value: 'border'}, configs.remenberPropertyBorder)]
+      [alert addTextLabelWithValue: 'Show Position:']
+      [alert addAccessoryView: createSelect(ats, atIndex)]
+
+  var responseCode = [alert runModal];
+
+  handleAlertResponse(alert, responseCode);
+}
+
+function handleAlertResponse(alert, responseCode) {
+  if (responseCode == "1000") {
+    var types = [],
+        position = valueAtIndex(alert, 7);
+
+    setConfig('remenber-property-font', false);
+    setConfig('remenber-property-size', false);
+    setConfig('remenber-property-color', false);
+    setConfig('remenber-property-line', false);
+    setConfig('remenber-property-border', false);
+
+    if( checkedAtIndex(alert, 1) ) {
+      types.push('font');
+      setConfig('remenber-property-font', true);
+    }
+    if( checkedAtIndex(alert, 2) ) {
+      types.push('size');
+      setConfig('remenber-property-size', true);
+    }
+    if( checkedAtIndex(alert, 4) ) {
+      types.push('color');
+      setConfig('remenber-property-color', true);
+    }
+    if( checkedAtIndex(alert, 3) ) {
+      types.push('line');
+      setConfig('remenber-property-line', true);
+    }
+    if( checkedAtIndex(alert, 5) ) {
+      types.push('border');
+      setConfig('remenber-property-border', true);
+    }
+
+    if( /top|right|bottom|left/.exec(position) ) {
+      setConfig('remenber-property-at', position);
+    }
+
+    if(types.length > 0){
+      SelectionProperties(types, position)
+    }
+  }
+}

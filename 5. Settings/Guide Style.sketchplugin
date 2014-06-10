@@ -1,0 +1,67 @@
+#import 'library/common.js'
+#import 'library/reset.js'
+
+var alert = createAlertBase();
+
+[alert setMessageText: 'Setting Guide Style']
+[alert setInformativeText: 'Change style for any guides. (#Basic, #Text)']
+[alert addTextLabelWithValue: 'Size Guide Style:']
+[alert addTextFieldWithValue: configs.sizeBasic + ', ' + configs.sizeText]
+[alert addTextLabelWithValue: 'Distance Guide Style:']
+[alert addTextFieldWithValue: configs.distanceBasic + ', ' + configs.distanceText]
+[alert addTextLabelWithValue: 'Property Guide Style:']
+[alert addTextFieldWithValue: configs.propertyBasic + ', ' + configs.propertyText]
+
+var responseCode = [alert runModal];
+
+handleAlertResponse(alert, responseCode);
+
+function getColor(value){
+  var colors = {},
+      values = value.split(','),
+      basic = (values[0])? values[0]: null,
+      text = (values[1])? values[1]: null,
+      regx = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i;
+
+  colors.basic = ([basic trim] && regx.exec([basic trim]))? [basic trim]: null;
+  colors.text = ([text trim] && regx.exec([text trim]))? [text trim]: null;
+  return colors;
+}
+
+function handleAlertResponse(alert, responseCode) {
+  if (responseCode == "1000") {
+    var sizeStyle = getColor(valueAtIndex(alert, 1)),
+        distanceStyle = getColor(valueAtIndex(alert, 3)),
+        propertyStyle = getColor(valueAtIndex(alert, 5)),
+        styles = {};
+// log((propertyStyle.basic + propertyStyle.text) != (configs.propertyBasic + configs.propertyText));
+    if(
+       sizeStyle.basic && sizeStyle.text &&
+       (sizeStyle.basic + sizeStyle.text) != (configs.sizeBasic + configs.sizeText)
+    ){
+      setConfig('size-basic', sizeStyle.basic);
+      setConfig('size-text', sizeStyle.text);
+      styles.size = sizeStyle;
+    }
+
+    if(
+       distanceStyle.basic && distanceStyle.text &&
+       (distanceStyle.basic + distanceStyle.text) != (configs.distanceBasic + configs.distanceText)
+    ){
+      setConfig('distance-basic', distanceStyle.basic);
+      setConfig('distance-text', distanceStyle.text);
+      styles.distance = distanceStyle;
+    }
+
+    if(
+      propertyStyle.basic && propertyStyle.text &&
+      (propertyStyle.basic + propertyStyle.text) != (configs.propertyBasic + configs.propertyText)
+    ){
+      setConfig('property-basic', propertyStyle.basic);
+      setConfig('property-text', propertyStyle.text);
+      styles.property = propertyStyle;
+    }
+
+    Reset.Style(styles);
+  }
+}
