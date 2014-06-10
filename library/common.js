@@ -55,8 +55,6 @@ function setColor(layer, hex) {
   [color setRed: r];
   [color setGreen: g];
   [color setBlue: b];
-
-  log([layer name] + ' > ' + r +',' +g+','+b);
 }
 
 function getSize(layer) {
