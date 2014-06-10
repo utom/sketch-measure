@@ -213,7 +213,7 @@ function initConfigs(){
   var version = getConfig('version');
   if(!version){
     setConfig('version', '0.0.3');
-    setConfig('resolution', 'Standard @1x (PX)');
+    setConfig('resolution', 'Standard @1x (px)');
     setConfig('font-size', 12);
     setConfig('font-type', 'Helvetica');
     setConfig('size-basic', '#D0021B');
