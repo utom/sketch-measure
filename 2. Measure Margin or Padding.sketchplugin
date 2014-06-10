@@ -20,6 +20,9 @@ if(([layers count] == 1 && [current class] == MSArtboardGroup) || [layers count]
 
   handleAlertResponse(alert, responseCode);
 }
+else {
+  alert("Make sure you've selected layers that.");
+}
 
 function handleAlertResponse(alert, responseCode) {
   if (responseCode == "1000") {

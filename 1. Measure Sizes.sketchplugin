@@ -22,6 +22,9 @@ if([layers count] > 0){
 
   handleAlertResponse(alert, responseCode);
 }
+else {
+  alert("Make sure you've selected a symbol, or a layer that.");
+}
 
 function handleAlertResponse(alert, responseCode) {
   if (responseCode == "1000") {

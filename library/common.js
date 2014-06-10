@@ -188,6 +188,14 @@ function createAlertBase () {
   return alert;
 }
 
+function alert (message) {
+  var alert = [COSAlertWindow new];
+  [alert setMessageText: 'Sketch Measure']
+  [alert setInformativeText: message]
+  [alert addButtonWithTitle: 'OK'];
+  [alert runModal]
+}
+
 function createSelect (items, selectedItemIndex) {
   selectedItemIndex = selectedItemIndex || 0
   var comboBox = [[NSComboBox alloc] initWithFrame: NSMakeRect(0, 0, 300, 25)];

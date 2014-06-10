@@ -8,3 +8,6 @@ var layers = selection;
 if([layers count] == 2){
   SelectionDistances('distance');
 }
+else {
+  alert("Make sure you've selected two layers that.");
+}
