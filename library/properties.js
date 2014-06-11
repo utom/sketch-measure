@@ -31,6 +31,7 @@ var GetProperties = function(layer, types, position) {
     if(types[i] == 'color' && getColor(layer)) content += 'color: ' + getColor(layer) + '\r\n';
     if(isText(layer) && types[i] == 'line') content += 'line: ' + Math.ceil([layer lineSpacing] / [layer fontSize] * 100) + '%\r\n';
     if(types[i] == 'border' && [[layer style] border]) content += 'border: ' + getColor(layer, [[layer style] border]) + '\r\n';
+    if(types[i] == 'opacity' && [[[layer style] contextSettings] opacity]) content += 'opacity: ' + Math.round([[[layer style] contextSettings] opacity] * 100) + '%\r\n';
   };
 
   if(content == '') return false;

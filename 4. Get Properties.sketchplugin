@@ -18,6 +18,7 @@ if([layers count] > 0){
       [alert addAccessoryView: creatCheckbox({name: 'Text Height Line', value: 'line'}, configs.remenberPropertyLine)]
       [alert addAccessoryView: creatCheckbox({name: 'Fill / Color', value: 'color'}, configs.remenberPropertyColor)]
       [alert addAccessoryView: creatCheckbox({name: 'Border Color', value: 'border'}, configs.remenberPropertyBorder)]
+      [alert addAccessoryView: creatCheckbox({name: 'Layer Opacity', value: 'opacity'}, configs.remenberPropertyOpacity)]
       [alert addTextLabelWithValue: 'Show Position:']
       [alert addAccessoryView: createSelect(ats, atIndex)]
 
@@ -32,7 +33,7 @@ else {
 function handleAlertResponse(alert, responseCode) {
   if (responseCode == "1000") {
     var types = [],
-        position = valueAtIndex(alert, 7);
+        position = valueAtIndex(alert, 8);
 
     setConfig('remenber-property-font', false);
     setConfig('remenber-property-size', false);
@@ -59,6 +60,10 @@ function handleAlertResponse(alert, responseCode) {
     if( checkedAtIndex(alert, 5) ) {
       types.push('border');
       setConfig('remenber-property-border', true);
+    }
+    if( checkedAtIndex(alert, 6) ) {
+      types.push('opacity');
+      setConfig('remenber-property-opacity', true);
     }
 
     if( /top|right|bottom|left/.exec(position) ) {

@@ -237,7 +237,7 @@ function creatCheckbox (item, checked) {
 function initConfigs(){
   var version = getConfig('version');
   if(!version){
-    setConfig('version', '0.0.3');
+    setConfig('version', '0.0.3.1');
     setConfig('resolution', 'Standard @1x (px)');
     setConfig('font-size', 12);
     setConfig('font-type', 'Helvetica');
@@ -260,6 +260,7 @@ function initConfigs(){
     setConfig('remenber-property-color', true);
     setConfig('remenber-property-line', false);
     setConfig('remenber-property-border', false);
+    setConfig('remenber-property-opacity', false);
     setConfig('remenber-property-at', 'top');
   }
 
@@ -286,6 +287,7 @@ function initConfigs(){
   configs.remenberPropertyColor = getConfig('remenber-property-color');
   configs.remenberPropertyLine = getConfig('remenber-property-line');
   configs.remenberPropertyBorder = getConfig('remenber-property-border');
+  configs.remenberPropertyOpacity = getConfig('remenber-property-opacity');
   configs.remenberPropertyAt = getConfig('remenber-property-at');
 }
 
