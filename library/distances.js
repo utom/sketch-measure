@@ -77,14 +77,15 @@ var MeasureDistances = function( layers, mode, types ) {
         };
       }
       else if( mode == 'distance' ){
-        if( tDist > 0 && toPositive(tDist) > f0.height ) {
+
+        if( tDist > 0 && tDist > f1.height ) {
           var hLayer = addShape('temp'),
               tX = f1.x,
               tY = f1.y + f1.height,
               tW = f1.width,
               tH = toPositive(tDist - f1.height);
         }
-        else if( tDist < 0 && toPositive(tDist) > f1.height ) {
+        else if( tDist < 0 && toPositive(tDist) > f0.height ) {
           var hLayer = addShape('temp'),
               tX = f1.x,
               tY = f0.y + f0.height,
