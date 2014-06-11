@@ -119,7 +119,7 @@ function updateLength(length, scale){
   var scale = (scale)? scale: configs.resolution,
       length = Math.round(length / resolution[scale]),
         unit = (scale.match(/\(dp\)/))? 'dp' : 'px';
-// log(configs.resolution.match(/DPI/));
+
   return length + unit;
 }
 
