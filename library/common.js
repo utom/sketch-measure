@@ -192,7 +192,6 @@ function alert (message) {
   var alert = [COSAlertWindow new];
   [alert setMessageText: 'Sketch Measure']
   [alert setInformativeText: message]
-  [alert addButtonWithTitle: 'OK'];
   [alert runModal]
 }
 
