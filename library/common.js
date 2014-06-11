@@ -14,6 +14,23 @@ var page = [doc currentPage],
         'Retina @2x (px)': 2
   };
 
+function is(layer, theClass){
+  var klass = [layer class];
+  return klass === theClass;
+}
+
+function isGroup(layer){
+  return is(layer, MSLayerGroup);
+}
+
+function isText(layer){
+  return is(layer, MSTextLayer);
+}
+
+function isShape(layer){
+  return is(layer, MSShapeGroup);
+}
+
 function addLayer(name, type, parent) {
   var parent = parent ? parent : current,
     layer = [parent addLayerOfType: type];
@@ -39,22 +56,25 @@ function removeLayer(layer) {
 }
 
 function setColor(layer, hex) {
-  var fills = [[layer style] fills];
-
-  if([fills count] <= 0){
-    [fills addNewStylePart]
-  }
-
-  fills = [[layer style] fills].array();
-  var fill = fills[0],
-      color = [fill color],
+  var color = [[MSColor alloc] init],
       rgb = hexToRgb(hex),
-      r = rgb.r / 255,
-      g = rgb.g / 255,
-      b = rgb.b / 255;
-  [color setRed: r];
-  [color setGreen: g];
-  [color setBlue: b];
+      red = rgb.r / 255,
+      green = rgb.g / 255,
+      blue = rgb.b / 255;
+
+  [color setRed: red];
+  [color setGreen: green];
+  [color setBlue: blue];
+  [color setAlpha: 1];
+
+  if( isText(layer) ) {
+    [layer setTextColor: color];
+  }
+  else if( isShape(layer) ) {
+    var fills = [[layer style] fills];
+    if([fills count] <= 0) [fills addNewStylePart];
+    [[[layer style] fill] setColor: color];
+  }
 }
 
 function getSize(layer) {

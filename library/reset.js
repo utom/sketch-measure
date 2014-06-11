@@ -4,12 +4,12 @@ var resetAllUnit = function(layers, type){
   for (var i = 0; i < [layers count]; i++) {
     var layer = layers[i];
     if(
-      [layer class] == MSLayerGroup &&
+      isGroup(layer) &&
       /\$SIZE|\$DISTANCE|\$PROPERTY/.exec([layer name])
     ){
       resetUnit(layer, type);
     }
-    else if( [layer class] == MSLayerGroup ){
+    else if( isGroup(layer) ){
       resetAllUnit([layer layers], type);
     }
   };
@@ -30,7 +30,7 @@ var resetUnit = function(group, type){
       labelWidth = frame.width;
       labelHeight = frame.height;
     }
-    else if([layer class] == MSTextLayer){
+    else if(isText(layer)){
       textLayer = layer;
       textWidth = frame.width;
     }
@@ -71,7 +71,7 @@ var resetAllStyle = function(layers, styles){
   for (var i = 0; i < [layers count]; i++) {
     var layer = layers[i];
     if(
-      [layer class] == MSLayerGroup &&
+      isGroup(layer) &&
       /\$SIZE|\$DISTANCE|\$PROPERTY/.exec([layer name])
     ){
       if( 
@@ -96,7 +96,7 @@ var resetAllStyle = function(layers, styles){
         resetStyle(layer, styles.property.basic, styles.property.text);
       }
     }
-    else if( [layer class] == MSLayerGroup ){
+    else if( isGroup(layer) ){
       resetAllStyle([layer layers], type, basicColor, textColor);
     }
   };
@@ -106,10 +106,10 @@ var resetStyle = function(group, basicColor, textColor){
   var layers = [[group layers] array];
   for (var i = 0; i < [layers count]; i++) {
     var layer = layers[i];
-    if([layer class] == MSTextLayer){
+    if(isText(layer)){
       setColor(layer, textColor);
     }
-    else if([layer class] == MSShapeGroup){
+    else if(isShape(layer)){
       setColor(layer, basicColor);
     }
   };
