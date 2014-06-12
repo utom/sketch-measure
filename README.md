@@ -28,10 +28,10 @@ _NOTE: If your Mac has not installed GitHub client, You need to install [GitHub 
 [turn to vimeo.com](https://vimeo.com/98025780)
 
 ### Keyboard Shortcuts
-1. Measure Sizes - `Control + Cmd + 1`
-2. Measure Margin or Padding - `Control + Cmd + 2`
-3. Measure Distances - `Control + Cmd + 3`
-4. Get Properties - `Control + Cmd + 4`
+1. Measure Sizes: `control` + `command` + `1`
+2. Measure Margin or Padding: `control` + `command` + `2`
+3. Measure Distances: `control` + `command` + `3`
+4. Get Properties: `control` + `command` + `4`
 
 ### NOTE
 
