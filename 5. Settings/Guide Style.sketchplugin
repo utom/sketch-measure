@@ -34,7 +34,7 @@ function handleAlertResponse(alert, responseCode) {
         distanceStyle = getColor(valueAtIndex(alert, 3)),
         propertyStyle = getColor(valueAtIndex(alert, 5)),
         styles = {};
-// log((propertyStyle.basic + propertyStyle.text) != (configs.propertyBasic + configs.propertyText));
+
     if(
        sizeStyle.basic && sizeStyle.text &&
        (sizeStyle.basic + sizeStyle.text) != (configs.sizeBasic + configs.sizeText)

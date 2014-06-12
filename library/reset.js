@@ -97,7 +97,7 @@ var resetAllStyle = function(layers, styles){
       }
     }
     else if( isGroup(layer) ){
-      resetAllStyle([layer layers], type, basicColor, textColor);
+      resetAllStyle([layer layers], styles);
     }
   };
 }
