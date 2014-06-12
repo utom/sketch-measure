@@ -23,9 +23,16 @@ _NOTE: If your Mac has not installed GitHub client, You need to install [GitHub 
 
 ## How-to
 
-[Demo video](https://vimeo.com/95008293)
+### Demo Video
+[![video](https://i.vimeocdn.com/video/478609399_960.jpg)](https://vimeo.com/95008293)
 
-_NOTE:_
+### Keyboard Shortcuts
+1. Measure Sizes - `Control + Cmd + 1`
+2. Measure Margin or Padding - `Control + Cmd + 2`
+3. Measure Distances - `Control + Cmd + 3`
+4. Get Properties - `Control + Cmd + 4`
+
+### NOTE
 
 * _**Margin**: must be selecting a layer inside an artboard or selecting two layers._
 * _**Distance**: must be selecting two layers._
