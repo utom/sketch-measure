@@ -77,62 +77,53 @@ function setColor(layer, hex) {
   }
 }
 
-function getSize(layer) {
-  var s = {
-    width : 0,
-    height: 0
-  };
 
-  s.width  = [[layer frame] width];
-  s.height = [[layer frame] height];
-
-  return s;
-}
-
-function setSize(layer, width, height) {
-  [[layer frame] setWidth: width];
-  [[layer frame] setHeight: height];
+function setSize(layer, width, height, absolute) {
+  if(absolute){
+    [[layer absoluteRect] setWidth: width];
+    [[layer absoluteRect] setHeight: height];
+  }
+  else{
+    [[layer frame] setWidth: width];
+    [[layer frame] setHeight: height];
+  }
 
   return layer;
 }
 
-function getPosition(layer) {
-  var p = {
-    x: 0,
-    y: 0
-  },
-  fn = function(layer) {
-    p.x += [[layer frame] x];
-    p.y += [[layer frame] y];
-    if ([[layer parentGroup] class] == MSLayerGroup) {
-      fn([layer parentGroup]);
-    }
-  };
 
-  if( [layer class] != MSArtboardGroup ){
-    fn(layer);
+function setPosition(layer, x, y, absolute) {
+  if(absolute){
+    [[layer absoluteRect] setX: x];
+    [[layer absoluteRect] setY: y];
   }
-
-  return p;
-}
-
-function setPosition(layer, x, y) {
-  [[layer frame] setX: x];
-  [[layer frame] setY: y];
+  else{
+    [[layer frame] setX: x];
+    [[layer frame] setY: y];
+  }
 
   return layer;
 }
 
 function getFrame(layer) {
-  var s = getSize(layer),
-      p = getPosition(layer);
+  var frame = [layer frame];
 
   return {
-    x     : p.x,
-    y     : p.y,
-    width : s.width,
-    height: s.height
-  }
+    x: Math.round([frame x]),
+    y: Math.round([frame y]),
+    width: Math.round([frame width]),
+    height: Math.round([frame height])
+  };
+}
+
+function getRect(layer) {
+  var rect = [layer absoluteRect];
+  return {
+    x: Math.round([rect x]),
+    y: Math.round([rect y]),
+    width: Math.round([rect width]),
+    height: Math.round([rect height])
+  };
 }
 
 function updateLength(length, scale){

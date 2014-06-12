@@ -1,6 +1,5 @@
 var GetProperties = function(layer, types, position) {
-  var frame = getFrame(layer),
-      content = '',
+  var content = '',
       getColor = function(layer, fill) {
 
         var layer = layer,

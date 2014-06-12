@@ -1,10 +1,10 @@
 var MeasureDistances = function( layers, mode, types ) {
-      var f0 = getFrame(layers[0]),
-          f1 = getFrame(layers[1]),
-          tDist = f0.y - f1.y,
-          rDist = (f0.x + f0.width) - (f1.x + f1.width),
-          bDist = (f0.y + f0.height) - (f1.y + f1.height),
-          lDist = f0.x - f1.x;
+      var r0 = getRect(layers[0]),
+          r1 = getRect(layers[1]),
+          tDist = r0.y - r1.y,
+          rDist = (r0.x + r0.width) - (r1.x + r1.width),
+          bDist = (r0.y + r0.height) - (r1.y + r1.height),
+          lDist = r0.x - r1.x;
 
       if (mode == 'spacing') {
         for (var i = 0; i < types.length; i++) {
@@ -12,14 +12,14 @@ var MeasureDistances = function( layers, mode, types ) {
           if(types[i] == 'top'){
             if (tDist == 0) return false;
             var tempLayer = addShape('temp'),
-                tX = f1.x,
-                tY = f0.y,
-                tW = f1.width,
+                tX = r1.x,
+                tY = r0.y,
+                tW = r1.width,
                 tH = toPositive(tDist);
 
-            if (f0.y > f1.y) tY = f1.y;
+            if (r0.y > r1.y) tY = r1.y;
 
-            setPosition(tempLayer, tX, tY);
+            setPosition(tempLayer, tX, tY, true);
             setSize(tempLayer, tW, tH);
 
             MeasureSizes(tempLayer, 'height', 'center', 'DISTANCE');
@@ -28,14 +28,14 @@ var MeasureDistances = function( layers, mode, types ) {
           else if(types[i] == 'right'){
             if (rDist == 0) return false;
             var tempLayer = addShape('temp'),
-                tX = f1.x + f1.width,
-                tY = f1.y,
+                tX = r1.x + r1.width,
+                tY = r1.y,
                 tW = toPositive(rDist),
-                tH = f1.height;
+                tH = r1.height;
 
-            if (f0.x + f0.width < f1.x + f1.width) tX = f0.x + f0.width;
+            if (r0.x + r0.width < r1.x + r1.width) tX = r0.x + r0.width;
 
-            setPosition(tempLayer, tX, tY);
+            setPosition(tempLayer, tX, tY, true);
             setSize(tempLayer, tW, tH);
 
             MeasureSizes(tempLayer, 'width', 'middle', 'DISTANCE');
@@ -44,14 +44,14 @@ var MeasureDistances = function( layers, mode, types ) {
           else if(types[i] == 'bottom'){
             if (bDist == 0) return false;
             var tempLayer = addShape('temp'),
-                tX = f1.x,
-                tY = f1.y + f1.height,
-                tW = f1.width,
+                tX = r1.x,
+                tY = r1.y + r1.height,
+                tW = r1.width,
                 tH = toPositive(bDist);
 
-            if (f0.y + f0.height < f1.y + f1.height) tY = f0.y + f0.height;
+            if (r0.y + r0.height < r1.y + r1.height) tY = r0.y + r0.height;
 
-            setPosition(tempLayer, tX, tY);
+            setPosition(tempLayer, tX, tY, true);
             setSize(tempLayer, tW, tH);
 
             MeasureSizes(tempLayer, 'height', 'center', 'DISTANCE');
@@ -60,14 +60,14 @@ var MeasureDistances = function( layers, mode, types ) {
           else if(types[i] == 'left') {
             if (lDist == 0) return false;
             var tempLayer = addShape('temp'),
-                tX = f0.x,
-                tY = f1.y,
+                tX = r0.x,
+                tY = r1.y,
                 tW = toPositive(lDist),
-                tH = f1.height;
+                tH = r1.height;
 
-            if (f0.x > f1.x) tX = f1.x;
+            if (r0.x > r1.x) tX = r1.x;
 
-            setPosition(tempLayer, tX, tY);
+            setPosition(tempLayer, tX, tY, true);
             setSize(tempLayer, tW, tH);
 
             MeasureSizes(tempLayer, 'width', 'middle', 'DISTANCE');
@@ -78,45 +78,45 @@ var MeasureDistances = function( layers, mode, types ) {
       }
       else if( mode == 'distance' ){
 
-        if( tDist > 0 && tDist > f1.height ) {
+        if( tDist > 0 && tDist > r1.height ) {
           var hLayer = addShape('temp'),
-              tX = f1.x,
-              tY = f1.y + f1.height,
-              tW = f1.width,
-              tH = toPositive(tDist - f1.height);
+              tX = r1.x,
+              tY = r1.y + r1.height,
+              tW = r1.width,
+              tH = toPositive(tDist - r1.height);
         }
-        else if( tDist < 0 && toPositive(tDist) > f0.height ) {
+        else if( tDist < 0 && toPositive(tDist) > r0.height ) {
           var hLayer = addShape('temp'),
-              tX = f1.x,
-              tY = f0.y + f0.height,
-              tW = f1.width,
-              tH = toPositive(toPositive(tDist) - f0.height);
+              tX = r1.x,
+              tY = r0.y + r0.height,
+              tW = r1.width,
+              tH = toPositive(toPositive(tDist) - r0.height);
         }
 
         if(hLayer){
-          setPosition(hLayer, tX, tY);
+          setPosition(hLayer, tX, tY, true);
           setSize(hLayer, tW, tH);
           MeasureSizes(hLayer, 'height', 'center', 'DISTANCE');
           removeLayer(hLayer);
         }
 
-        if( lDist > 0 && lDist > f1.width ) {
+        if( lDist > 0 && lDist > r1.width ) {
           var wLayer = addShape('temp'),
-              tX = f1.x + f1.width,
-              tY = f1.y,
-              tW = lDist - f1.width,
-              tH = f1.height;
+              tX = r1.x + r1.width,
+              tY = r1.y,
+              tW = lDist - r1.width,
+              tH = r1.height;
         }
-        else if( lDist < 0 && toPositive(lDist) > f0.width ) {
+        else if( lDist < 0 && toPositive(lDist) > r0.width ) {
           var wLayer = addShape('temp'),
-              tX = f0.x + f0.width,
-              tY = f1.y,
-              tW = toPositive(toPositive(lDist) - f0.width),
-              tH = f1.height;
+              tX = r0.x + r0.width,
+              tY = r1.y,
+              tW = toPositive(toPositive(lDist) - r0.width),
+              tH = r1.height;
         }
 
         if(wLayer){
-          setPosition(wLayer, tX, tY);
+          setPosition(wLayer, tX, tY, true);
           setSize(wLayer, tW, tH);
           MeasureSizes(wLayer, 'width', 'middle', 'DISTANCE');
           removeLayer(wLayer);

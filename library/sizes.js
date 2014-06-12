@@ -1,7 +1,7 @@
 var MeasureSizes = function(layer, mode, position, idname) {
     var timestamp = new Date().getTime(),
         idname = (idname)? idname: 'SIZE',
-        frame = getFrame(layer),
+        rect = getRect(layer);
         group = addGroup('$' + idname + timestamp),
         line = addShape('line', group),
         start = addShape('start-arrow', group),
@@ -11,31 +11,31 @@ var MeasureSizes = function(layer, mode, position, idname) {
         text = addText('text', group);
 
     if(mode == 'width') {
-      [label setName: frame.width]
+      [label setName: rect.width]
 
-      setSize(line, frame.width, 1);
+      setSize(line, rect.width, 1);
       setSize(start, 1, 7);
       setSize(end, 1, 7);
       setSize(gap, 8, 8);
 
-      [text setStringValue: updateLength(frame.width)];
+      [text setStringValue: updateLength(rect.width)];
       [text setFontSize: configs.fontSize];
       [text setFontPostscriptName: configs.fontType];
       [text setLineSpacing: parseInt(configs.fontSize * 1.2)];
       [gap setRotation: 45];
 
-      var textFrame   = getFrame(text),
-          labelWidth  = textFrame.width + 10,
-          labelHeight = textFrame.height + 10;
+      var textRect   = getRect(text),
+          labelWidth  = textRect.width + 10,
+          labelHeight = textRect.height + 10;
 
       setSize(label, labelWidth, labelHeight);
 
-      var labelX = Math.round((frame.width - labelWidth) / 2),
+      var labelX = Math.round((rect.width - labelWidth) / 2),
           labelY = Math.round((7 - labelHeight) / 2),
           gapX   = Math.round(labelX + (labelWidth - 8) / 2),
           gapY   = Math.round(labelY + 5);
 
-      if( labelWidth + 20 > frame.width ) {
+      if( labelWidth + 20 > rect.width ) {
         if( position == 'bottom' ) {
           labelY = labelY + labelHeight - 5;
           gapY   = Math.round(labelY - 4);
@@ -46,47 +46,47 @@ var MeasureSizes = function(layer, mode, position, idname) {
         }
       }
 
-      setPosition(end, frame.width - 1, 0);
+      setPosition(end, rect.width - 1, 0);
       setPosition(line, 0, 3);
       setPosition(label, labelX, labelY);
       setPosition(text, labelX + 5, labelY + 5);
       setPosition(gap, gapX, gapY);
 
-      setPosition(group, frame.x, frame.y - 8);
+      setPosition(group, rect.x, rect.y - 8, true);
 
       if( position == 'middle' ) {
-       setPosition(group, frame.x, Math.round( frame.y + ( frame.height - 7 ) / 2 ) ); 
+       setPosition(group, rect.x, Math.round( rect.y + ( rect.height - 7 ) / 2 ), true ); 
       }
       else if( position == 'bottom' ) {
-        setPosition(group, frame.x, frame.y + frame.height + 1 );
+        setPosition(group, rect.x, rect.y + rect.height + 1, true );
       }
     }
     else if(mode == 'height'){
-      [label setName: frame.height]
+      [label setName: rect.height]
 
-      setSize(line, 1, frame.height);
+      setSize(line, 1, rect.height);
       setSize(start, 7, 1);
       setSize(end, 7, 1);
       setSize(gap, 8, 8);
 
-      [text setStringValue: updateLength(frame.height)];
+      [text setStringValue: updateLength(rect.height)];
       [text setFontSize: configs.fontSize];
       [text setFontPostscriptName: configs.fontType];
       [text setLineSpacing: configs.fontSize];
       [gap setRotation: 45];
 
-      var textFrame   = getFrame(text),
-          labelWidth  = textFrame.width + 10,
-          labelHeight = textFrame.height + 10;
+      var textRect   = getRect(text),
+          labelWidth  = textRect.width + 10,
+          labelHeight = textRect.height + 10;
 
       setSize(label, labelWidth, labelHeight);
 
       var labelX = Math.round((7 - labelWidth) / 2),
-          labelY = Math.round((frame.height - labelHeight) / 2),
+          labelY = Math.round((rect.height - labelHeight) / 2),
           gapX   = Math.round(labelX + 5),
           gapY   = Math.round(labelY + (labelHeight - 8) / 2);
 
-      if( labelHeight + 20 > frame.height ) {
+      if( labelHeight + 20 > rect.height ) {
         if( position == 'right' ) {
           labelX =  11;
           gapX   = Math.round(labelX - 4);
@@ -97,19 +97,19 @@ var MeasureSizes = function(layer, mode, position, idname) {
         }
       }
 
-      setPosition(end, 0, frame.height - 1);
+      setPosition(end, 0, rect.height - 1);
       setPosition(line, 3, 0);
       setPosition(label, labelX, labelY);
       setPosition(text, labelX + 5, labelY + 6);
       setPosition(gap, gapX, gapY);
 
-      setPosition(group, frame.x - 8, frame.y);
+      setPosition(group, rect.x - 8, rect.y, true);
 
       if( position == 'center' ) {
-       setPosition(group, Math.round( frame.x + ( frame.width - 7 ) / 2 ),  frame.y); 
+       setPosition(group, Math.round( rect.x + ( rect.width - 7 ) / 2 ),  rect.y, true); 
       }
       else if( position == 'right' ) {
-        setPosition(group, frame.x + frame.width + 1, frame.y );
+        setPosition(group, rect.x + rect.width + 1, rect.y, true);
       }
     }
 

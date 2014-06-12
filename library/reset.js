@@ -21,38 +21,38 @@ var resetUnit = function(group, type){
       groupName = [group name], textColor;
   for (var i = 0; i < [layers count]; i++) {
     var layer = layers[i],
-        frame = getFrame(layer),
+        rect = getRect(layer),
         layerName = [layer name];
 
     if(/^\d+$/.exec(layerName)){
       length = layerName;
       labelLayer = layer;
-      labelWidth = frame.width;
-      labelHeight = frame.height;
+      labelWidth = rect.width;
+      labelHeight = rect.height;
     }
     else if(isText(layer)){
       textLayer = layer;
-      textWidth = frame.width;
+      textWidth = rect.width;
     }
   };
 
   if(labelLayer){
     var text = textLayer.stringValue().replace( /(\d+[dxps]{2})/g, updateLength(length, type)),
         newTextLayer = addText('text', group),
-        textFrame = getFrame(textLayer);
+        textRect = getRect(textLayer);
 
     [newTextLayer setStringValue: text];
     [newTextLayer setFontSize: configs.fontSize];
     [newTextLayer setFontPostscriptName: configs.fontType];
     [newTextLayer setLineSpacing: parseInt(configs.fontSize * 1.2)];
 
-    var newTextFrame   = getFrame(newTextLayer),
-        newLabelWidth  = newTextFrame.width + 10,
+    var newTextRect   = getRect(newTextLayer),
+        newLabelWidth  = newTextRect.width + 10,
         offset = (labelWidth - newLabelWidth) / 2;
 
     [textLayer setStringValue: text];
     setSize(labelLayer, newLabelWidth, labelHeight);
-    setSize(textLayer, newTextFrame.width, newTextFrame.height);
+    setSize(textLayer, newTextRect.width, newTextRect.height);
 
     [[labelLayer frame] addX: offset]
     [[textLayer frame] addX: offset]
