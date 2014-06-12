@@ -24,8 +24,8 @@ _NOTE: If your Mac has not installed GitHub client, You need to install [GitHub 
 ## How-to
 
 ### Demo Video
-[![video](https://i.vimeocdn.com/video/478609399_960.jpg)](https://vimeo.com/95008293)
-[turn to vimeo.com](https://vimeo.com/95008293)
+[![video](https://i.vimeocdn.com/video/478609399_960.jpg)](https://vimeo.com/98025780)
+[turn to vimeo.com](https://vimeo.com/98025780)
 
 ### Keyboard Shortcuts
 1. Measure Sizes - `Control + Cmd + 1`
