@@ -4,7 +4,7 @@ var GetOverlayer = function(layer){
           rect = getRect(layer);
           group = addGroup('$' + idname + timestamp),
           overlayer = addShape('line', group);
-      setPosition(overlayer, rect.x, rect.y);
+      setPosition(overlayer, rect.x, rect.y, true);
       setSize(overlayer, rect.width, rect.height);
       setColor(overlayer, configs.sizeBasic, .3);
 
