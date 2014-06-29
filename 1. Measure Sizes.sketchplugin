@@ -1,6 +1,7 @@
 // (ctrl cmd 1)
 #import 'library/common.js'
 #import 'library/sizes.js'
+#import 'library/overlayer.js'
 
 var layers = selection;
 
@@ -17,6 +18,7 @@ if([layers count] > 0){
   [alert addAccessoryView: createSelect(widthTypes, widthIndex)]
   [alert addTextLabelWithValue: 'Height:']
   [alert addAccessoryView: createSelect(heightTypes, heightIndex)]
+  [alert addAccessoryView: creatCheckbox({name: 'Add Overlayer', value: 'overlayer'}, configs.remenberSizeOverlayer)]
 
   var responseCode = [alert runModal];
 
@@ -33,6 +35,13 @@ function handleAlertResponse(alert, responseCode) {
       height: valueAtIndex(alert, 3)
     }
 
+    setConfig('remenber-size-overlayer', false);
+
+    if( checkedAtIndex(alert, 4) ) {
+      Overlayer();
+      setConfig('remenber-size-overlayer', true);
+    }
+
     if( /top|middle|bottom/.exec(values.width) ) {
       SelectionSizes('width', values.width);
       setConfig('remenber-size-width', values.width);
@@ -42,6 +51,6 @@ function handleAlertResponse(alert, responseCode) {
       SelectionSizes('height', values.height);
       setConfig('remenber-size-height', values.height);
     }
-
+    
   }
 }

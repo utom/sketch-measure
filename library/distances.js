@@ -135,7 +135,7 @@ var MeasureDistances = function( layers, mode, types ) {
           MeasureDistances( [layers[0], layers[1]], mode, types );
         }
       } else {
-        alert("Make sure you've selected layers that.");
+        alert("You must be selected only two layers that.");
       }
 
     };

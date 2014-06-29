@@ -72,13 +72,21 @@ var resetAllStyle = function(layers, styles){
     var layer = layers[i];
     if(
       isGroup(layer) &&
-      /\$SIZE|\$DISTANCE|\$PROPERTY/.exec([layer name])
+      /\$SIZE|\$DISTANCE|\$PROPERTY|\$OVERLAYER/.exec([layer name])
     ){
       if( 
         styles.size &&
         /\$SIZE/.exec([layer name])
       ){
         resetStyle(layer, styles.size.basic, styles.size.text);
+      }
+
+      if( 
+        styles.size &&
+        /\$OVERLAYER/.exec([layer name])
+      ){
+        log([layer name]);
+        resetStyle(layer, styles.size.basic, styles.size.text, .3);
       }
 
       if( 
@@ -102,15 +110,16 @@ var resetAllStyle = function(layers, styles){
   };
 }
 
-var resetStyle = function(group, basicColor, textColor){
-  var layers = [[group layers] array];
+var resetStyle = function(group, basicColor, textColor, alpha){
+  var layers = [[group layers] array],
+      alpha = (alpha && !isNaN(alpha) && (alpha <= 1 || alpha >= 0))? alpha: 1;
   for (var i = 0; i < [layers count]; i++) {
     var layer = layers[i];
     if(isText(layer)){
-      setColor(layer, textColor);
+      setColor(layer, textColor, alpha);
     }
     else if(isShape(layer)){
-      setColor(layer, basicColor);
+      setColor(layer, basicColor, alpha);
     }
   };
 }

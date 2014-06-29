@@ -139,6 +139,6 @@ var MeasureSizes = function(layer, mode, position, idname) {
         MeasureSizes(layer, mode, position);
       }
     } else {
-      alert("Make sure you've selected a symbol, or a layer that.");
+      alert("Make sure you've selected layers that.");
     }
   };

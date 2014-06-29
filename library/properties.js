@@ -46,6 +46,6 @@ SelectionProperties = function(types, position){
       GetProperties(layer, types, position);
     }
   } else {
-    alert("Make sure you've selected a symbol, or a layer that.");
+    alert("Make sure you've selected layers that.");
   }
 }

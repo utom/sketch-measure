@@ -55,17 +55,18 @@ function removeLayer(layer) {
   if (parent)[parent removeLayer: layer];
 }
 
-function setColor(layer, hex) {
+function setColor(layer, hex, alpha) {
   var color = [[MSColor alloc] init],
       rgb = hexToRgb(hex),
       red = rgb.r / 255,
       green = rgb.g / 255,
-      blue = rgb.b / 255;
+      blue = rgb.b / 255,
+      alpha = (alpha && !isNaN(alpha) && (alpha <= 1 || alpha >= 0))? alpha: 1;
 
   [color setRed: red];
   [color setGreen: green];
   [color setBlue: blue];
-  [color setAlpha: 1];
+  [color setAlpha: alpha];
 
   if( isText(layer) ) {
     [layer setTextColor: color];
@@ -242,6 +243,7 @@ function initConfigs(){
     setConfig('property-text', '#FFFFFF');
     setConfig('remenber-size-width', 'top');
     setConfig('remenber-size-height', 'none');
+    setConfig('remenber-size-overlayer', true);
     setConfig('remenber-spacing-top', true);
     setConfig('remenber-spacing-right', false);
     setConfig('remenber-spacing-bottom', false);
@@ -269,6 +271,7 @@ function initConfigs(){
   configs.propertyText = getConfig('property-text');
   configs.remenberSizeWidth = getConfig('remenber-size-width');
   configs.remenberSizeHeight = getConfig('remenber-size-height');
+  configs.remenberSizeOverlayer = getConfig('remenber-size-overlayer');
   configs.remenberSpacingTop = getConfig('remenber-spacing-top');
   configs.remenberSpacingRight = getConfig('remenber-spacing-right');
   configs.remenberSpacingBottom = getConfig('remenber-spacing-bottom');
