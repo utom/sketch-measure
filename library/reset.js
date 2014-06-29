@@ -85,7 +85,6 @@ var resetAllStyle = function(layers, styles){
         styles.size &&
         /\$OVERLAYER/.exec([layer name])
       ){
-        log([layer name]);
         resetStyle(layer, styles.size.basic, styles.size.text, .3);
       }
 
