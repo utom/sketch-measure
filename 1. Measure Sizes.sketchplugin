@@ -42,13 +42,13 @@ function handleAlertResponse(alert, responseCode) {
       setConfig('remenber-size-overlayer', true);
     }
 
-    if( /top|middle|bottom/.exec(values.width) ) {
-      SelectionSizes('width', values.width);
+    if( /none|top|middle|bottom/.exec(values.width) ) {
+      if(values.width != 'none') SelectionSizes('width', values.width);
       setConfig('remenber-size-width', values.width);
     }
 
-    if( /left|center|right/.exec(values.height) ) {
-      SelectionSizes('height', values.height);
+    if( /none|left|center|right/.exec(values.height) ) {
+      if(values.width != 'none') SelectionSizes('height', values.height);
       setConfig('remenber-size-height', values.height);
     }
     
