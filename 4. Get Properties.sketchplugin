@@ -40,6 +40,7 @@ function handleAlertResponse(alert, responseCode) {
     setConfig('remenber-property-color', false);
     setConfig('remenber-property-line', false);
     setConfig('remenber-property-border', false);
+    setConfig('remenber-property-opacity', false);
 
     if( checkedAtIndex(alert, 1) ) {
       types.push('font');
