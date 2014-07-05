@@ -11,7 +11,7 @@ var page = [doc currentPage],
         'XXHDPI @3x (dp)': 3,
        'XXXHDPI @4x (dp)': 4,
       'Standard @1x (px)': 1,
-        'Retina @2x (px)': 2
+        'Retina @2x (pt)': 2
   };
 
 function is(layer, theClass){
@@ -130,7 +130,8 @@ function getRect(layer) {
 function updateLength(length, scale){
   var scale = (scale)? scale: configs.resolution,
       length = Math.round(length / resolution[scale]),
-        unit = (scale.match(/\(dp\)/))? 'dp' : 'px';
+        unit = (scale.match(/\(dp\)/))? 'dp' : 'px',
+        unit = (scale.match(/\(pt\)/))? 'pt' : unit;
 
   return length + unit;
 }

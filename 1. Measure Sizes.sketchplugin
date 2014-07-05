@@ -48,7 +48,7 @@ function handleAlertResponse(alert, responseCode) {
     }
 
     if( /none|left|center|right/.exec(values.height) ) {
-      if(values.width != 'none') SelectionSizes('height', values.height);
+      if(values.height != 'none') SelectionSizes('height', values.height);
       setConfig('remenber-size-height', values.height);
     }
     
