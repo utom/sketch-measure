@@ -1,0 +1,12 @@
+// (ctrl cmd 5)
+#import 'library/common.js'
+#import 'library/coordinates.js'
+
+var layers = selection;
+
+if([layers count] > 0){
+  SelectionCoordinates();
+}
+else {
+  alert("Make sure you've selected a symbol, or a layer that.");
+}

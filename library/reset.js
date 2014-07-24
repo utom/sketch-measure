@@ -5,7 +5,7 @@ var resetAllUnit = function(layers, type){
     var layer = layers[i];
     if(
       isGroup(layer) &&
-      /\$SIZE|\$DISTANCE|\$PROPERTY/.exec([layer name])
+      /\$SIZE|\$DISTANCE|\$PROPERTY|\$COORDINATE/.exec([layer name])
     ){
       resetUnit(layer, type);
     }
@@ -30,6 +30,16 @@ var resetUnit = function(group, type){
       labelWidth = rect.width;
       labelHeight = rect.height;
     }
+    else if(/^\-?\d+\,\s\-?\d+$/.exec(layerName)){
+      length = layerName.split(',');
+      var l0 = parseFloat(length[0]),
+          l1 = parseFloat(length[1]);
+
+      length = [l0, l1];
+      labelLayer = layer;
+      labelWidth = rect.width;
+      labelHeight = rect.height;
+    }
     else if(isText(layer)){
       textLayer = layer;
       textWidth = rect.width;
@@ -37,7 +47,7 @@ var resetUnit = function(group, type){
   };
 
   if(labelLayer){
-    var text = textLayer.stringValue().replace( /(\d+[dxps]{2})/g, updateLength(length, type)),
+    var text = (typeof length == 'object')? updateLength(length[0], type) + ', ' + updateLength(length[1], type): textLayer.stringValue().replace( /(\d+[dxps]{2})/g, updateLength(length, type)),
         newTextLayer = addText('text', group),
         textRect = getRect(textLayer);
 
@@ -54,8 +64,10 @@ var resetUnit = function(group, type){
     setSize(labelLayer, newLabelWidth, labelHeight);
     setSize(textLayer, newTextRect.width, newTextRect.height);
 
-    [[labelLayer frame] addX: offset]
-    [[textLayer frame] addX: offset]
+    if (typeof length != 'object') {
+      [[labelLayer frame] addX: offset]
+      [[textLayer frame] addX: offset]
+    };
 
     removeLayer(newTextLayer);
 
@@ -72,7 +84,7 @@ var resetAllStyle = function(layers, styles){
     var layer = layers[i];
     if(
       isGroup(layer) &&
-      /\$SIZE|\$DISTANCE|\$PROPERTY|\$OVERLAYER/.exec([layer name])
+      /\$SIZE|\$DISTANCE|\$PROPERTY|\$OVERLAYER|\$COORDINATE/.exec([layer name])
     ){
       if( 
         styles.size &&
@@ -101,6 +113,14 @@ var resetAllStyle = function(layers, styles){
       ){
 
         resetStyle(layer, styles.property.basic, styles.property.text);
+      }
+
+      if( 
+        styles.coordinate &&
+        /\$COORDINATE/.exec([layer name])
+      ){
+
+        resetStyle(layer, styles.coordinate.basic, styles.coordinate.text);
       }
     }
     else if( isGroup(layer) ){

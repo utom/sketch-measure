@@ -11,6 +11,8 @@ var alert = createAlertBase();
 [alert addTextFieldWithValue: configs.distanceBasic + ', ' + configs.distanceText]
 [alert addTextLabelWithValue: 'Property Guide Style:']
 [alert addTextFieldWithValue: configs.propertyBasic + ', ' + configs.propertyText]
+[alert addTextLabelWithValue: 'Coordinate Guide Style:']
+[alert addTextFieldWithValue: configs.coordinateBasic + ', ' + configs.coordinateText]
 
 var responseCode = [alert runModal];
 
@@ -33,6 +35,7 @@ function handleAlertResponse(alert, responseCode) {
     var sizeStyle = getColor(valueAtIndex(alert, 1)),
         distanceStyle = getColor(valueAtIndex(alert, 3)),
         propertyStyle = getColor(valueAtIndex(alert, 5)),
+        coordinateStyle = getColor(valueAtIndex(alert, 7)),
         styles = {};
 
     if(
@@ -60,6 +63,15 @@ function handleAlertResponse(alert, responseCode) {
       setConfig('property-basic', propertyStyle.basic);
       setConfig('property-text', propertyStyle.text);
       styles.property = propertyStyle;
+    }
+
+    if(
+      coordinateStyle.basic && coordinateStyle.text &&
+      (coordinateStyle.basic + coordinateStyle.text) != (configs.coordinateBasic + configs.coordinateText)
+    ){
+      setConfig('coordinate-basic', coordinateStyle.basic);
+      setConfig('coordinate-text', coordinateStyle.text);
+      styles.coordinate = coordinateStyle;
     }
 
     Reset.Style(styles);

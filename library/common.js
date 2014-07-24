@@ -242,6 +242,8 @@ function initConfigs(){
     setConfig('label-text', '#FFFFFF');
     setConfig('property-basic', '#F5A623');
     setConfig('property-text', '#FFFFFF');
+    setConfig('coordinate-basic', '#7ED321');
+    setConfig('coordinate-text', '#FFFFFF');
     setConfig('remenber-size-width', 'top');
     setConfig('remenber-size-height', 'none');
     setConfig('remenber-size-overlayer', true);
@@ -270,6 +272,8 @@ function initConfigs(){
   configs.labelText = getConfig('label-text');
   configs.propertyBasic = getConfig('property-basic');
   configs.propertyText = getConfig('property-text');
+  configs.coordinateBasic = getConfig('coordinate-basic');
+  configs.coordinateText = getConfig('coordinate-text');
   configs.remenberSizeWidth = getConfig('remenber-size-width');
   configs.remenberSizeHeight = getConfig('remenber-size-height');
   configs.remenberSizeOverlayer = getConfig('remenber-size-overlayer');
