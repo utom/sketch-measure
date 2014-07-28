@@ -18,7 +18,7 @@ var resetAllUnit = function(layers, type){
 var resetUnit = function(group, type){
   var length, textLayer, labelLayer, textWidth, labelWidth, labelHeight,
       layers = [[group layers] array],
-      groupName = [group name], textColor;
+      groupName = [group name], textColor, isArrayLength;
   for (var i = 0; i < [layers count]; i++) {
     var layer = layers[i],
         rect = getRect(layer),
@@ -39,18 +39,21 @@ var resetUnit = function(group, type){
       labelLayer = layer;
       labelWidth = rect.width;
       labelHeight = rect.height;
+
+      isArrayLength = true;
     }
     else if(isText(layer)){
       textLayer = layer;
       textWidth = rect.width;
     }
   };
-
+log(groupName + layerName);
+log(isArrayLength);
   if(labelLayer){
-    var text = (typeof length == 'object')? updateLength(length[0], type) + ', ' + updateLength(length[1], type): textLayer.stringValue().replace( /(\d+[dxps]{2})/g, updateLength(length, type)),
+    var text = (isArrayLength)? updateLength(length[0], type) + ', ' + updateLength(length[1], type): textLayer.stringValue().replace( /(\d+[dxps]{2})/g, updateLength(length, type)),
         newTextLayer = addText('text', group),
         textRect = getRect(textLayer);
-
+log(text);
     [newTextLayer setStringValue: text];
     [newTextLayer setFontSize: configs.fontSize];
     [newTextLayer setFontPostscriptName: configs.fontType];
