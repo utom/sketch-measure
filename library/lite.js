@@ -8,6 +8,8 @@ var Measure = {
     }
   },
   height: function(){
+    var layers = selection;
+
     if([layers count] == 1){
       MeasureSizes(selection[0], 'height', 'center', 'DISTANCE');
       removeLayer(selection[0]);
