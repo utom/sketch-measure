@@ -1,4 +1,4 @@
-// (ctrl cmd shift 1)
+// (ctrl cmd w)
 #import 'library/common.js'
 #import 'library/sizes.js'
 #import 'library/lite.js'
