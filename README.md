@@ -2,7 +2,7 @@
 
 A measure tool for measurements & design specs, **Sketch 3.0.2+ support**. 
 
-![Banner](http://cl.ly/image/1p3r0C1y2k40/banner@2x.png)
+![Banner](http://utom.us/new/assets/imgs/sketch-measure-icon@2x.png)
 
 ## Installing Plugins
 ### The conventional way:
