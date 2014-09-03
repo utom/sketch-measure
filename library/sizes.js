@@ -11,13 +11,14 @@ var MeasureSizes = function(layer, mode, position, idname) {
         text = addText('text', group);
 
     if(mode == 'width') {
-      [label setName: rect.width]
+
+      [label setName: '' + rect.width]
 
       setSize(line, rect.width, 1);
       setSize(start, 1, 7);
       setSize(end, 1, 7);
       setSize(gap, 8, 8);
-
+  
       [text setStringValue: updateLength(rect.width)];
       [text setFontSize: configs.fontSize];
       [text setFontPostscriptName: configs.fontType];
@@ -62,7 +63,7 @@ var MeasureSizes = function(layer, mode, position, idname) {
       }
     }
     else if(mode == 'height'){
-      [label setName: rect.height]
+      [label setName: '' + rect.height]
 
       setSize(line, 1, rect.height);
       setSize(start, 7, 1);
