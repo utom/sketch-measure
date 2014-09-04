@@ -5,7 +5,7 @@ var CreateLabel = function(layer, content, position, data, idname){
         rect = getRect(layer),
         group = addGroup('$' + idname + timestamp),
         gap = addShape('gap', group),
-        label = addShape(data, group),
+        label = addShape('' + data, group),
         text = addText('text', group);
 
     [text setStringValue: content];

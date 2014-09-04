@@ -34,7 +34,8 @@ var GetProperties = function(layer, types, position) {
   };
 
   if(content == '') return false;
-  var data = (isText(layer))? [layer fontSize]: null;
+  var data = (isText(layer))? [layer fontSize]: '';
+
   CreateLabel(layer, [content trim], position, data, 'PROPERTY');
 },
 SelectionProperties = function(types, position){
