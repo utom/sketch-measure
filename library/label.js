@@ -4,6 +4,7 @@ var CreateLabel = function(layer, content, position, data, idname){
         data = (data)? data: 'text',
         rect = getRect(layer),
         group = addGroup('$' + idname + timestamp),
+        // gap = addShape('gap', group),
         label = addShape('' + data, group),
         text = addText('text', group);
 
@@ -17,7 +18,6 @@ var CreateLabel = function(layer, content, position, data, idname){
         labelHeight = textRect.height + 10;
 
     setSize(label, labelWidth, labelHeight);
-
     setPosition(text, 5, 4);
 
     var gX     = Math.round(rect.x + (rect.width - labelWidth) / 2),

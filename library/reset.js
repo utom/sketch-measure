@@ -131,9 +131,16 @@ var resetAllStyle = function(layers, styles){
 
       if(
         styles.fontsize &&
-        /\$SIZE|\$DISTANCE|\$PROPERTY|\$COORDINATE/.exec([layer name])
+        /\$SIZE|\$DISTANCE/.exec([layer name])
       ){
         resetFontsize(layer, styles.fontsize);
+      }
+
+      if(
+        styles.fontsize &&
+        /\$PROPERTY|\$COORDINATE/.exec([layer name])
+      ){
+        resetFontsize(layer, styles.fontsize, true);
       }
     }
     else if( isGroup(layer) ){
@@ -141,7 +148,7 @@ var resetAllStyle = function(layers, styles){
     }
   };
 }
-var resetFontsize = function(group, fontsize) {
+var resetFontsize = function(group, fontsize, dont) {
   var layers = [[group layers] array],
       textLayer, labelLayer, lineLayer, aLayer;
 
@@ -165,11 +172,13 @@ var resetFontsize = function(group, fontsize) {
 
   var textRect = getRect(textLayer),
       labelRect = getRect(labelLayer),
-      lineRect = getRect(lineLayer),
-      aRect = getRect(aLayer),
-      isWidth = (aRect.width > aRect.height)? false: true,
       text = textLayer.stringValue(),
       newTextLayer = addText('text', group);
+  if (!dont){
+  var lineRect = getRect(lineLayer),
+      aRect = getRect(aLayer),
+      isWidth = (aRect.width > aRect.height)? false: true;
+  }
   
   [newTextLayer setStringValue: text];
   [newTextLayer setFontSize: fontsize];
@@ -186,20 +195,22 @@ var resetFontsize = function(group, fontsize) {
   setSize(labelLayer, newTextRect.width + 10, newTextRect.height + 10);
   setSize(textLayer, newTextRect.width, newTextRect.height);
 
-  if (isWidth){
-    if (labelRect.y > lineRect.y){
-      offsetY = 0;
+  if (!dont){
+    if (isWidth){
+      if (labelRect.y > lineRect.y){
+        offsetY = 0;
+      }
+      else if (labelRect.y + labelRect.height < lineRect.y){
+        offsetY = textRect.height - newTextRect.height;
+      }
     }
-    else if (labelRect.y + labelRect.height < lineRect.y){
-      offsetY = textRect.height - newTextRect.height;
-    }
-  }
-  else {
-    if (labelRect.x > lineRect.x){
-      offsetX = 0;
-    }
-    else if (labelRect.x + labelRect.width < lineRect.x){
-      offsetX = textRect.width - newTextRect.width;
+    else {
+      if (labelRect.x > lineRect.x){
+        offsetX = 0;
+      }
+      else if (labelRect.x + labelRect.width < lineRect.x){
+        offsetX = textRect.width - newTextRect.width;
+      }
     }
   }
 
