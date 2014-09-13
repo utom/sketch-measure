@@ -1,8 +1,8 @@
 #import 'library/common.js'
 #import 'library/reset.js'
 
-var alert = createAlertBase();
-
+var alert = createAlertBase(),
+    checked = (configs.fontSize == 24)? true: false;
 [alert setMessageText: 'Setting Guide Style']
 [alert setInformativeText: 'Change style for any guides. (#Basic, #Text)']
 [alert addTextLabelWithValue: 'Size Guide Style:']
@@ -13,6 +13,7 @@ var alert = createAlertBase();
 [alert addTextFieldWithValue: configs.propertyBasic + ', ' + configs.propertyText]
 [alert addTextLabelWithValue: 'Coordinate Guide Style:']
 [alert addTextFieldWithValue: configs.coordinateBasic + ', ' + configs.coordinateText]
+[alert addAccessoryView: creatCheckbox({name: 'Retina Canvas', value: '24'}, checked)]
 
 var responseCode = [alert runModal];
 
@@ -36,6 +37,7 @@ function handleAlertResponse(alert, responseCode) {
         distanceStyle = getColor(valueAtIndex(alert, 3)),
         propertyStyle = getColor(valueAtIndex(alert, 5)),
         coordinateStyle = getColor(valueAtIndex(alert, 7)),
+        retina = checkedAtIndex(alert, 8),
         styles = {};
 
     if(
@@ -72,6 +74,14 @@ function handleAlertResponse(alert, responseCode) {
       setConfig('coordinate-basic', coordinateStyle.basic);
       setConfig('coordinate-text', coordinateStyle.text);
       styles.coordinate = coordinateStyle;
+    }
+
+    var fontSize = (retina)? 24: 12;
+    if(
+      fontSize && configs.fontSize != fontSize
+    ){
+      setConfig('font-size', fontSize);
+      styles.fontsize = fontSize;
     }
 
     Reset.Style(styles);

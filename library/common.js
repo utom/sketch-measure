@@ -1,5 +1,5 @@
 var page = [doc currentPage],
-  artboard = [[doc currentPage] currentArtboard],
+  artboard = [page currentArtboard],
   current = artboard ? artboard : page,
   prefix = 'utom',
   configs = {},
@@ -11,12 +11,17 @@ var page = [doc currentPage],
         'XXHDPI @3x (dp)': 3,
        'XXXHDPI @4x (dp)': 4,
       'Standard @1x (px)': 1,
-        'Retina @2x (pt)': 2
+        'Retina @2x (pt)': 2,
+     'Retina HD @3x (pt)': 3
   };
 
 function is(layer, theClass){
   var klass = [layer class];
   return klass === theClass;
+}
+
+function isPage(layer){
+  return is(layer, MSPage);
 }
 
 function isGroup(layer){
@@ -127,11 +132,12 @@ function getRect(layer) {
   };
 }
 
-function updateLength(length, scale){
+function updateLength(length, scale, sp){
   var scale = (scale)? scale: configs.resolution,
       length = Math.round(length / resolution[scale]),
         unit = (scale.match(/\(dp\)/))? 'dp' : 'px',
-        unit = (scale.match(/\(pt\)/))? 'pt' : unit;
+        unit = (scale.match(/\(pt\)/))? 'pt' : unit,
+        unit = (scale.match(/\(dp\)/) && sp)? 'sp' : unit;
 
   return length + unit;
 }

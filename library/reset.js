@@ -5,9 +5,15 @@ var resetAllUnit = function(layers, type){
     var layer = layers[i];
     if(
       isGroup(layer) &&
-      /\$SIZE|\$DISTANCE|\$PROPERTY|\$COORDINATE/.exec([layer name])
+      /\$SIZE|\$DISTANCE|\$COORDINATE/.exec([layer name])
     ){
       resetUnit(layer, type);
+    }
+    else if(
+      isGroup(layer) &&
+      /\$PROPERTY/.exec([layer name])
+    ){
+      resetUnit(layer, type, true);
     }
     else if( isGroup(layer) ){
       resetAllUnit([layer layers], type);
@@ -15,7 +21,7 @@ var resetAllUnit = function(layers, type){
   };
 }
 
-var resetUnit = function(group, type){
+var resetUnit = function(group, type, sp){
   var length, textLayer, labelLayer, textWidth, labelWidth, labelHeight,
       layers = [[group layers] array],
       groupName = [group name], textColor, isArrayLength;
@@ -47,13 +53,12 @@ var resetUnit = function(group, type){
       textWidth = rect.width;
     }
   };
-log(groupName + layerName);
-log(isArrayLength);
+
   if(labelLayer){
-    var text = (isArrayLength)? updateLength(length[0], type) + ', ' + updateLength(length[1], type): textLayer.stringValue().replace( /(\d+[dxps]{2})/g, updateLength(length, type)),
+    var text = (isArrayLength)? updateLength(length[0], type) + ', ' + updateLength(length[1], type): textLayer.stringValue().replace( /(\d+[dxpst]{2})/g, updateLength(length, type, sp)),
         newTextLayer = addText('text', group),
         textRect = getRect(textLayer);
-log(text);
+
     [newTextLayer setStringValue: text];
     [newTextLayer setFontSize: configs.fontSize];
     [newTextLayer setFontPostscriptName: configs.fontType];
@@ -114,7 +119,6 @@ var resetAllStyle = function(layers, styles){
         styles.property &&
         /\$PROPERTY/.exec([layer name])
       ){
-
         resetStyle(layer, styles.property.basic, styles.property.text);
       }
 
@@ -122,14 +126,92 @@ var resetAllStyle = function(layers, styles){
         styles.coordinate &&
         /\$COORDINATE/.exec([layer name])
       ){
-
         resetStyle(layer, styles.coordinate.basic, styles.coordinate.text);
+      }
+
+      if(
+        styles.fontsize &&
+        /\$SIZE|\$DISTANCE|\$PROPERTY|\$COORDINATE/.exec([layer name])
+      ){
+        resetFontsize(layer, styles.fontsize);
       }
     }
     else if( isGroup(layer) ){
       resetAllStyle([layer layers], styles);
     }
   };
+}
+var resetFontsize = function(group, fontsize) {
+  var layers = [[group layers] array],
+      textLayer, labelLayer, lineLayer, aLayer;
+
+  for (var i = 0; i < [layers count]; i++) {
+    var layer = layers[i],
+        layerName = [layer name];
+
+    if(isText(layer)){
+      textLayer = layer;
+    }
+    else if(/^\d+$/.exec(layerName)){
+      labelLayer = layer;
+    }
+    else if(/^line$/.exec(layerName)){
+      lineLayer = layer;
+    }
+    else if(/^start\-arrow$/.exec(layerName)){
+      aLayer = layer;
+    }
+  };
+
+  var textRect = getRect(textLayer),
+      labelRect = getRect(labelLayer),
+      lineRect = getRect(lineLayer),
+      aRect = getRect(aLayer),
+      isWidth = (aRect.width > aRect.height)? false: true,
+      text = textLayer.stringValue(),
+      newTextLayer = addText('text', group);
+  
+  [newTextLayer setStringValue: text];
+  [newTextLayer setFontSize: fontsize];
+  [newTextLayer setFontPostscriptName: configs.fontType];
+  [newTextLayer setLineSpacing: parseInt(fontsize * 1.2)];
+
+  var newTextRect   = getRect(newTextLayer),
+      offsetX = parseInt( ( textRect.width - newTextRect.width ) / 2 ),
+      offsetY = parseInt( ( textRect.height - newTextRect.height ) / 2 );
+
+  [textLayer setFontSize: fontsize];
+  [textLayer setLineSpacing: parseInt(fontsize * 1.2)];
+
+  setSize(labelLayer, newTextRect.width + 10, newTextRect.height + 10);
+  setSize(textLayer, newTextRect.width, newTextRect.height);
+
+  if (isWidth){
+    if (labelRect.y > lineRect.y){
+      offsetY = 0;
+    }
+    else if (labelRect.y + labelRect.height < lineRect.y){
+      offsetY = textRect.height - newTextRect.height;
+    }
+  }
+  else {
+    if (labelRect.x > lineRect.x){
+      offsetX = 0;
+    }
+    else if (labelRect.x + labelRect.width < lineRect.x){
+      offsetX = textRect.width - newTextRect.width;
+    }
+  }
+
+  [[labelLayer frame] addX: offsetX]
+  [[labelLayer frame] addY: offsetY]
+  [[textLayer frame] addX: offsetX]
+  [[textLayer frame] addY: offsetY]
+
+  removeLayer(newTextLayer);
+
+  [textLayer setIsSelected: 1];
+  [textLayer setIsSelected: 0];
 }
 
 var resetStyle = function(group, basicColor, textColor, alpha){
@@ -148,10 +230,20 @@ var resetStyle = function(group, basicColor, textColor, alpha){
 
 var Reset = {
   Unit: function( type ){
-    resetAllUnit([current layers], type);
+    var artboards = [page artboards];
+    for (var i = 0; i < [artboards count]; i++) {
+      var artboard = artboards[i];
+      resetAllUnit([artboard layers], type);
+    };
+    resetAllUnit([page layers], type);
   },
   Style: function( styles ){
-    resetAllStyle([current layers], styles);
+    var artboards = [page artboards];
+    for (var i = 0; i < [artboards count]; i++) {
+      var artboard = artboards[i];
+      resetAllStyle([artboard layers], styles);
+    };
+    resetAllStyle([page layers], styles);
   }
 }
 

@@ -26,7 +26,7 @@ var GetProperties = function(layer, types, position) {
 
   for (var i = 0; i < types.length; i++) {
     if(isText(layer) && types[i] == 'font') content += 'font: ' + [layer fontPostscriptName] + '\r\n';
-    if(isText(layer) && types[i] == 'size') content += 'size: ' + updateLength([layer fontSize]) + '\r\n';
+    if(isText(layer) && types[i] == 'size') content += 'size: ' + updateLength([layer fontSize], false, true) + '\r\n';
     if(types[i] == 'color' && getColor(layer)) content += 'color: ' + getColor(layer) + '\r\n';
     if(isText(layer) && types[i] == 'line') content += 'line: ' + Math.ceil([layer lineSpacing] / [layer fontSize] * 100) + '%\r\n';
     if(types[i] == 'border' && [[layer style] border]) content += 'border: ' + getColor(layer, [[layer style] border]) + '\r\n';
