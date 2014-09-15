@@ -3,5 +3,5 @@
 #import 'library/sizes.js'
 #import 'library/lite.js'
 
-Measure.width();
-Measure.height();
+Get.width();
+Get.height();

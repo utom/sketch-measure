@@ -3,4 +3,4 @@
 #import 'library/sizes.js'
 #import 'library/lite.js'
 
-Measure.height();
+Get.height();

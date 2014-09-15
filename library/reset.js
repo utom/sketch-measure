@@ -5,7 +5,7 @@ var resetAllUnit = function(layers, type){
     var layer = layers[i];
     if(
       isGroup(layer) &&
-      /\$SIZE|\$DISTANCE|\$COORDINATE/.exec([layer name])
+      /\$SIZE|\$WIDTH|\$HEIGHT|\$DISTANCE|\$COORDINATE/.exec([layer name])
     ){
       resetUnit(layer, type);
     }
@@ -72,7 +72,7 @@ var resetUnit = function(group, type, sp){
     setSize(labelLayer, newLabelWidth, labelHeight);
     setSize(textLayer, newTextRect.width, newTextRect.height);
 
-    if (typeof length != 'object') {
+    if (!isArrayLength) {
       [[labelLayer frame] addX: offset]
       [[textLayer frame] addX: offset]
     };
@@ -92,11 +92,11 @@ var resetAllStyle = function(layers, styles){
     var layer = layers[i];
     if(
       isGroup(layer) &&
-      /\$SIZE|\$DISTANCE|\$PROPERTY|\$OVERLAYER|\$COORDINATE/.exec([layer name])
+      /\$SIZE|\$WIDTH|\$HEIGHT|\$DISTANCE|\$PROPERTY|\$LABEL|\$OVERLAYER|\$COORDINATE/.exec([layer name])
     ){
       if( 
         styles.size &&
-        /\$SIZE/.exec([layer name])
+        /\$SIZE|\$WIDTH|\$HEIGHT/.exec([layer name])
       ){
         resetStyle(layer, styles.size.basic, styles.size.text);
       }
@@ -117,7 +117,7 @@ var resetAllStyle = function(layers, styles){
 
       if( 
         styles.property &&
-        /\$PROPERTY/.exec([layer name])
+        /\$PROPERTY|\$LABEL/.exec([layer name])
       ){
         resetStyle(layer, styles.property.basic, styles.property.text);
       }
@@ -131,14 +131,14 @@ var resetAllStyle = function(layers, styles){
 
       if(
         styles.fontsize &&
-        /\$SIZE|\$DISTANCE/.exec([layer name])
+        /\$SIZE|\$WIDTH|\$HEIGHT|\$DISTANCE/.exec([layer name])
       ){
         resetFontsize(layer, styles.fontsize);
       }
 
       if(
         styles.fontsize &&
-        /\$PROPERTY|\$COORDINATE/.exec([layer name])
+        /\$PROPERTY|\$LABEL|\$COORDINATE/.exec([layer name])
       ){
         resetFontsize(layer, styles.fontsize, true);
       }
@@ -159,7 +159,7 @@ var resetFontsize = function(group, fontsize, dont) {
     if(isText(layer)){
       textLayer = layer;
     }
-    else if(/^\d+$/.exec(layerName)){
+    else if(/^\d+$/.exec(layerName) || /^label$/.exec([layer name])){
       labelLayer = layer;
     }
     else if(/^line$/.exec(layerName)){

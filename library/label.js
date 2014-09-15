@@ -4,7 +4,6 @@ var CreateLabel = function(layer, content, position, data, idname){
         data = (data)? data: 'text',
         rect = getRect(layer),
         group = addGroup('$' + idname + timestamp),
-        // gap = addShape('gap', group),
         label = addShape('' + data, group),
         text = addText('text', group);
 
@@ -42,7 +41,7 @@ var CreateLabel = function(layer, content, position, data, idname){
     var basicColor = configs.labelBasic,
         textColor = configs.labelText;
 
-    if(idname == 'PROPERTY'){
+    if(idname == 'PROPERTY' || idname == 'LABEL'){
       basicColor = configs.propertyBasic;
       textColor = configs.propertyText;
     }
