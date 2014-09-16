@@ -51,4 +51,25 @@ var CreateLabel = function(layer, content, position, data, idname){
 
     [text setIsSelected: 1];
     [text setIsSelected: 0];
+},
+ResetLabel = function(layer){
+    var parent = (isText(layer))? [layer parentGroup]: layer,
+        layers = [[parent layers] array],
+        text, label;
+    if( /\$LABEL/.exec([parent name]) && isGroup(parent) ){
+        for (var i = 0; i < [layers count]; i++) {
+          if(isText(layers[i])){
+            text = layers[i]
+          }
+          else{
+            label = layers[i]
+          }
+
+        };
+
+        var tR = getRect(text);
+        setSize(label, tR.width + 10, tR.height + 10);
+        [textLayer setIsSelected: 1];
+        [textLayer setIsSelected: 0];
+    }
 }

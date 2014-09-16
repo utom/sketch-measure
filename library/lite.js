@@ -18,9 +18,17 @@ var Get = {
   label: function(){
     var layers = selection;
 
-    if( [layers count] == 1 && isText(layers[0]) ){
-      CreateLabel(layers[0], layers[0].stringValue(), 'none', 'label', 'LABEL');
-      removeLayer(layers[0]);
+    if( [layers count] == 1 ){
+      var layer = layers[0],
+          parent = (isText(layer))? [layer parentGroup]: layer;
+
+      if ( /\$LABEL/.exec([parent name]) && isGroup(parent) ){
+        ResetLabel(layer);
+      }
+      else if(isText(layer)){
+        CreateLabel(layer, layer.stringValue(), 'none', 'label', 'LABEL');
+        removeLayer(layer);
+      }
     }
   }
 }
