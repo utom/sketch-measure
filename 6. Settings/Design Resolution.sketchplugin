@@ -27,10 +27,7 @@ handleAlertResponse(alert, responseCode);
 function handleAlertResponse(alert, responseCode) {
   if (responseCode == "1000") {
     var resolution = valueAtIndex(alert, 1);
-    if(resolution != configs.resolution) {
-      Reset.Unit(resolution);
-      setConfig('resolution', resolution);
-    }
-
+    Reset.Unit(resolution);
+    setConfig('resolution', resolution);
   }
 }

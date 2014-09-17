@@ -4,6 +4,18 @@ var resetAllUnit = function(layers, type){
   for (var i = 0; i < [layers count]; i++) {
     var layer = layers[i];
     if(
+      /\$SIZE|\$WIDTH|\$HEIGHT|\$DISTANCE/.exec([layer name])
+    ){
+      resetFontsize(layer, configs.fontSize);
+    }
+
+    if(
+      /\$PROPERTY|\$LABEL|\$COORDINATE/.exec([layer name])
+    ){
+      resetFontsize(layer, configs.fontSize, true);
+    }
+
+    if(
       isGroup(layer) &&
       /\$SIZE|\$WIDTH|\$HEIGHT|\$DISTANCE|\$COORDINATE/.exec([layer name])
     ){
@@ -241,20 +253,10 @@ var resetStyle = function(group, basicColor, textColor, alpha){
 
 var Reset = {
   Unit: function( type ){
-    var artboards = [page artboards];
-    for (var i = 0; i < [artboards count]; i++) {
-      var artboard = artboards[i];
-      resetAllUnit([artboard layers], type);
-    };
-    resetAllUnit([page layers], type);
+    resetAllUnit([current layers], type);
   },
   Style: function( styles ){
-    var artboards = [page artboards];
-    for (var i = 0; i < [artboards count]; i++) {
-      var artboard = artboards[i];
-      resetAllStyle([artboard layers], styles);
-    };
-    resetAllStyle([page layers], styles);
+    resetAllStyle([current layers], styles);
   }
 }
 
