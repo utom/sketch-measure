@@ -1,8 +1,0 @@
-#import 'library/common.js'
-
-// var artboards = [page artboards];
-// for (var i = 0; i < [artboards count]; i++) {
-//   var artboard = artboards[i];
-//   // getGuides([artboard layers]);
-// };
-log(getGuides([page layers]))
