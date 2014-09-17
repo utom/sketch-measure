@@ -136,7 +136,6 @@ function getGuides(layers) {
   var guides = [],
       getFn = function( layers ){
         var layers = [layers array];
-        log([layers count]);
         for (var i = 0; i < [layers count]; i++) {
           var layer = layers[i];
           if (
