@@ -132,6 +132,30 @@ function getRect(layer) {
   };
 }
 
+function getGuides(layers) {
+  var guides = [],
+      getFn = function( layers ){
+        var layers = [layers array];
+        log([layers count]);
+        for (var i = 0; i < [layers count]; i++) {
+          var layer = layers[i];
+          if (
+            isGroup(layer) &&
+            /\$SIZE|\$WIDTH|\$HEIGHT|\$DISTANCE|\$PROPERTY|\$LABEL|\$OVERLAYER|\$COORDINATE/.exec([layer name])
+          ) {
+            guides.push(layer);
+          }
+          else if( isGroup(layer) ){
+            getFn([layer layers]);
+          }
+
+        }
+      }
+  getFn(layers);
+  return guides;
+  
+}
+
 function updateLength(length, scale, sp){
   var scale = (scale)? scale: configs.resolution,
       length = Math.round(length / resolution[scale]),

@@ -22,7 +22,7 @@ var Get = {
       var layer = layers[0],
           parent = (isText(layer))? [layer parentGroup]: layer;
 
-      if ( /\$LABEL/.exec([parent name]) && isGroup(parent) ){
+      if ( /\$PROPERTY|\$LABEL/.exec([parent name]) && isGroup(parent) ){
         ResetLabel(layer);
       }
       else if(isText(layer)){
