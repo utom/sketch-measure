@@ -141,18 +141,18 @@ var resetAllStyle = function(layers, styles){
         resetStyle(layer, styles.coordinate.basic, styles.coordinate.text);
       }
 
+      // resetRetina(layer);
+
       if(
-        styles.fontsize &&
         /\$SIZE|\$WIDTH|\$HEIGHT|\$DISTANCE/.exec([layer name])
       ){
-        resetFontsize(layer, styles.fontsize);
+        resetFontsize(layer, configs.fontSize);
       }
 
       if(
-        styles.fontsize &&
         /\$PROPERTY|\$LABEL|\$COORDINATE/.exec([layer name])
       ){
-        resetFontsize(layer, styles.fontsize, true);
+        resetFontsize(layer, configs.fontSize, true);
       }
     }
     else if( isGroup(layer) ){
@@ -160,6 +160,43 @@ var resetAllStyle = function(layers, styles){
     }
   };
 }
+
+// var resetRetina = function(group, retina) {
+//   log([group name]);
+//   if( /\$SIZE|\$WIDTH|\$HEIGHT|\$DISTANCE/.exec([group name]) ) {
+//     var layers = [[group layers] array];
+//     for (var i = 0; i < [layers count]; i++) {
+//       var layer = layers[i],
+//           layerName = [layer name];
+
+//       if(isText(layer)){
+//         textLayer = layer;
+//       }
+//       else if(/^\d+$/.exec(layerName)){
+//         labelLayer = layer;
+//       }
+//       else if(/^gap$/.exec(layerName)){
+//         gapLayer = layer;
+//       }
+//     };
+//     var tempGroup = addGroup('temp', group);
+//     removeLayer(gapLayer);
+//     removeLayer(labelLayer);
+//     removeLayer(textLayer);
+//     [tempGroup addLayer: gapLayer]
+//     [tempGroup addLayer: labelLayer]
+//     [tempGroup addLayer: textLayer]
+
+//     [textLayer setIsSelected: 1];
+//     [textLayer setIsSelected: 0];
+
+//     var tr = getRect(tempGroup);
+
+//     setSize(tempGroup, tr.width * 2, tr.height * 2)
+//     // setPosition(tempGroup, tr.x * 2,  tr.y * 2);
+//   }
+// }
+
 var resetFontsize = function(group, fontsize, dont) {
   var layers = [[group layers] array],
       textLayer, labelLayer, lineLayer, aLayer;
