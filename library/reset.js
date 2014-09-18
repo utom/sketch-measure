@@ -3,17 +3,6 @@ var resetAllUnit = function(layers, type){
 
   for (var i = 0; i < [layers count]; i++) {
     var layer = layers[i];
-    if(
-      /\$SIZE|\$WIDTH|\$HEIGHT|\$DISTANCE/.exec([layer name])
-    ){
-      resetFontsize(layer, configs.fontSize);
-    }
-
-    if(
-      /\$PROPERTY|\$LABEL|\$COORDINATE/.exec([layer name])
-    ){
-      resetFontsize(layer, configs.fontSize, true);
-    }
 
     if(
       isGroup(layer) &&
@@ -141,137 +130,11 @@ var resetAllStyle = function(layers, styles){
         resetStyle(layer, styles.coordinate.basic, styles.coordinate.text);
       }
 
-      // resetRetina(layer);
-
-      if(
-        /\$SIZE|\$WIDTH|\$HEIGHT|\$DISTANCE/.exec([layer name])
-      ){
-        resetFontsize(layer, configs.fontSize);
-      }
-
-      if(
-        /\$PROPERTY|\$LABEL|\$COORDINATE/.exec([layer name])
-      ){
-        resetFontsize(layer, configs.fontSize, true);
-      }
     }
     else if( isGroup(layer) ){
       resetAllStyle([layer layers], styles);
     }
   };
-}
-
-// var resetRetina = function(group, retina) {
-//   log([group name]);
-//   if( /\$SIZE|\$WIDTH|\$HEIGHT|\$DISTANCE/.exec([group name]) ) {
-//     var layers = [[group layers] array];
-//     for (var i = 0; i < [layers count]; i++) {
-//       var layer = layers[i],
-//           layerName = [layer name];
-
-//       if(isText(layer)){
-//         textLayer = layer;
-//       }
-//       else if(/^\d+$/.exec(layerName)){
-//         labelLayer = layer;
-//       }
-//       else if(/^gap$/.exec(layerName)){
-//         gapLayer = layer;
-//       }
-//     };
-//     var tempGroup = addGroup('temp', group);
-//     removeLayer(gapLayer);
-//     removeLayer(labelLayer);
-//     removeLayer(textLayer);
-//     [tempGroup addLayer: gapLayer]
-//     [tempGroup addLayer: labelLayer]
-//     [tempGroup addLayer: textLayer]
-
-//     [textLayer setIsSelected: 1];
-//     [textLayer setIsSelected: 0];
-
-//     var tr = getRect(tempGroup);
-
-//     setSize(tempGroup, tr.width * 2, tr.height * 2)
-//     // setPosition(tempGroup, tr.x * 2,  tr.y * 2);
-//   }
-// }
-
-var resetFontsize = function(group, fontsize, dont) {
-  var layers = [[group layers] array],
-      textLayer, labelLayer, lineLayer, aLayer;
-
-  for (var i = 0; i < [layers count]; i++) {
-    var layer = layers[i],
-        layerName = [layer name];
-
-    if(isText(layer)){
-      textLayer = layer;
-    }
-    else if(/^\d+$/.exec(layerName) || /^label$/.exec([layer name])){
-      labelLayer = layer;
-    }
-    else if(/^line$/.exec(layerName)){
-      lineLayer = layer;
-    }
-    else if(/^start\-arrow$/.exec(layerName)){
-      aLayer = layer;
-    }
-  };
-
-  var textRect = getRect(textLayer),
-      labelRect = getRect(labelLayer),
-      text = textLayer.stringValue(),
-      newTextLayer = addText('text', group);
-  if (!dont){
-  var lineRect = getRect(lineLayer),
-      aRect = getRect(aLayer),
-      isWidth = (aRect.width > aRect.height)? false: true;
-  }
-  
-  [newTextLayer setStringValue: text];
-  [newTextLayer setFontSize: fontsize];
-  [newTextLayer setFontPostscriptName: configs.fontType];
-  [newTextLayer setLineSpacing: parseInt(fontsize * 1.2)];
-
-  var newTextRect   = getRect(newTextLayer),
-      offsetX = parseInt( ( textRect.width - newTextRect.width ) / 2 ),
-      offsetY = parseInt( ( textRect.height - newTextRect.height ) / 2 );
-
-  [textLayer setFontSize: fontsize];
-  [textLayer setLineSpacing: parseInt(fontsize * 1.2)];
-
-  setSize(labelLayer, newTextRect.width + 10, newTextRect.height + 10);
-  setSize(textLayer, newTextRect.width, newTextRect.height);
-
-  if (!dont){
-    if (isWidth){
-      if (labelRect.y > lineRect.y){
-        offsetY = 0;
-      }
-      else if (labelRect.y + labelRect.height < lineRect.y){
-        offsetY = textRect.height - newTextRect.height;
-      }
-    }
-    else {
-      if (labelRect.x > lineRect.x){
-        offsetX = 0;
-      }
-      else if (labelRect.x + labelRect.width < lineRect.x){
-        offsetX = textRect.width - newTextRect.width;
-      }
-    }
-  }
-
-  [[labelLayer frame] addX: offsetX]
-  [[labelLayer frame] addY: offsetY]
-  [[textLayer frame] addX: offsetX]
-  [[textLayer frame] addY: offsetY]
-
-  removeLayer(newTextLayer);
-
-  [textLayer setIsSelected: 1];
-  [textLayer setIsSelected: 0];
 }
 
 var resetStyle = function(group, basicColor, textColor, alpha){
