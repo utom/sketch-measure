@@ -16,7 +16,7 @@ if([layers count] > 0){
       [alert addAccessoryView: creatCheckbox({name: 'Font Typeface', value: 'face'}, configs.remenberPropertyFont)]
       [alert addAccessoryView: creatCheckbox({name: 'Font Size', value: 'size'}, configs.remenberPropertySize)]
       [alert addAccessoryView: creatCheckbox({name: 'Text Line Height', value: 'line'}, configs.remenberPropertyLine)]
-      [alert addAccessoryView: creatCheckbox({name: 'Fill / Color', value: 'color'}, configs.remenberPropertyColor)]
+      [alert addAccessoryView: creatCheckbox({name: 'Fill / Color / Gradient', value: 'color'}, configs.remenberPropertyColor)]
       [alert addAccessoryView: creatCheckbox({name: 'Border Color', value: 'border'}, configs.remenberPropertyBorder)]
       [alert addAccessoryView: creatCheckbox({name: 'Layer Opacity', value: 'opacity'}, configs.remenberPropertyOpacity)]
       [alert addTextLabelWithValue: 'Show Position:']

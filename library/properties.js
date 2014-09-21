@@ -1,5 +1,14 @@
 var GetProperties = function(layer, types, position) {
   var content = '',
+      getContext = function(color, position) {
+        var alpha = [color alpha],
+            hex = ([color hexValue] == 0)? '000000': [color hexValue],
+            rgb = hexToRgb(hex),
+            position = (!isNaN(position))? Math.round(position * 100) + '% - ': '';
+
+        alpha = (alpha == 1)? '': ' (' + Math.round(alpha * 100) + '%)';
+        return position + '#' + hex + ' / ' + rgb.r + ',' + rgb.g + ',' + rgb.b + alpha;
+      },
       getColor = function(layer, fill) {
 
         var layer = layer,
@@ -8,23 +17,29 @@ var GetProperties = function(layer, types, position) {
             gradient = (fillType != 1)? null: [fill gradient],
             gradientType = (fillType != 1)? null: [gradient gradientType];
 
-        if(fill && [fill isEnabled]){
+        if(fill && [fill isEnabled] && fillType == 0){
           var color = [fill color];
-          if ([color hexValue] == 'D8D8D8') setColor(layer, 'D8D8D8'); 
+          if ([color hexValue] == 'D8D8D8') setColor(layer, 'D8D8D8');
+          return getContext(color)
+        }
+        else if(fill && [fill isEnabled] && fillType == 1) {
+          var stops = [[gradient stops] array],
+              stopsContext = (gradientType > 0)? 'radial\r\n': 'linear\r\n';
+
+          for (var i = 0; i < [stops count]; i++) {
+            var stop = stops[i];
+            stopsContext += ' * ' + getContext([stop color], [stop position]) + '\r\n'
+          }
+
+          return [stopsContext trim];
         }
         else if(( !fill || (fill && ![fill isEnabled])) && [layer class] == MSTextLayer){
           var color = [layer textColor];
+          return getContext(color);
         }
         else{
           return null;
         }
-
-        var alpha = [color alpha],
-            hex = ([color hexValue] == 0)? '000000': [color hexValue],
-            rgb = hexToRgb(hex);
-
-        alpha = (alpha == 1)? '': ' (' + Math.round(alpha * 100) + '%)';
-        return '#' + hex + ' / ' + rgb.r + ',' + rgb.g + ',' + rgb.b + alpha;
       };
 
   for (var i = 0; i < types.length; i++) {
