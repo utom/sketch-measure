@@ -13,7 +13,7 @@ var GetProperties = function(layer, types, position) {
 
         var layer = layer,
             fill = (fill)? fill: [[layer style] fill],
-            fillType = [fill fillType],
+            fillType = (fill)? [fill fillType]: null,
             gradient = (fillType != 1)? null: [fill gradient],
             gradientType = (fillType != 1)? null: [gradient gradientType];
 
@@ -24,7 +24,7 @@ var GetProperties = function(layer, types, position) {
         }
         else if(fill && [fill isEnabled] && fillType == 1) {
           var stops = [[gradient stops] array],
-              stopsContext = (gradientType > 0)? 'radial\r\n': 'linear\r\n';
+              stopsContext = (gradientType > 0)? 'radial gradient\r\n': 'linear gradient\r\n';
 
           for (var i = 0; i < [stops count]; i++) {
             var stop = stops[i];
