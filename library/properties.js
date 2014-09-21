@@ -3,7 +3,10 @@ var GetProperties = function(layer, types, position) {
       getColor = function(layer, fill) {
 
         var layer = layer,
-            fill = (fill)? fill: [[layer style] fill];
+            fill = (fill)? fill: [[layer style] fill],
+            fillType = [fill fillType],
+            gradient = (fillType != 1)? null: [fill gradient],
+            gradientType = (fillType != 1)? null: [gradient gradientType];
 
         if(fill && [fill isEnabled]){
           var color = [fill color];
