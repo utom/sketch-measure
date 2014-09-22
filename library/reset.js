@@ -22,32 +22,33 @@ var resetAllUnit = function(layers, type){
   };
 }
 
-var resetUnit = function(group, type, sp){
-  var length, textLayer, labelLayer, textWidth, labelWidth, labelHeight,
+var resetUnit = function(group, type){
+  var length, textLayer, labelLayer, textWidth, labelX, labelY, labelWidth, labelHeight,
+      gapLayer, gapX, gapY, gapWidth, gapHeight,
       layers = [[group layers] array],
-      groupName = [group name], textColor, isArrayLength;
+      groupName = [group name], textColor;
   for (var i = 0; i < [layers count]; i++) {
     var layer = layers[i],
         rect = getRect(layer),
         layerName = [layer name];
 
-    if(/^\d+$/.exec(layerName)){
-      length = layerName;
+    if(/^(\-?\d+\,?\s?)*$/.exec(layerName)){
+      var length = layerName.split(',');
+
       labelLayer = layer;
+      labelX = rect.x;
+      labelY = rect.y;
       labelWidth = rect.width;
       labelHeight = rect.height;
+
     }
-    else if(/^\-?\d+\,\s\-?\d+$/.exec(layerName)){
-      length = layerName.split(',');
-      var l0 = parseFloat(length[0]),
-          l1 = parseFloat(length[1]);
+    else if(/^gap$/.exec(layerName)){
+      gapLayer = layer;
 
-      length = [l0, l1];
-      labelLayer = layer;
-      labelWidth = rect.width;
-      labelHeight = rect.height;
-
-      isArrayLength = true;
+      gapX = rect.x;
+      gapY = rect.y;
+      gapWidth = rect.width;
+      gapHeight = rect.height;
     }
     else if(isText(layer)){
       textLayer = layer;
@@ -55,28 +56,56 @@ var resetUnit = function(group, type, sp){
     }
   };
 
-  if(labelLayer){
-    var text = (isArrayLength)? updateLength(length[0], type) + ', ' + updateLength(length[1], type): textLayer.stringValue().replace( /(\d+[dxpst]{2})/g, updateLength(length, type, sp)),
-        newTextLayer = addText('text', group),
+
+  if (length){
+    var newLength = [];
+
+    for (var i = 0; i < length.length; i++) {
+      newLength.push(parseFloat(length[i]));
+    };
+
+    length = newLength;
+
+    var context = [textLayer stringValue],
+        newContext = '',
+        m = 0;
+
+
+    context = context.replace(/\-?\d+[dxpst]{2}/g, function(match){
+      match = updateLength(length[m], type);
+      m++;
+      return match;
+    });
+
+    context = context.replace(/size\:\s\-?\d+(dp)/, function(match){
+      return match.replace('dp', 'sp');
+    });
+
+    var newTextLayer = addText('text', group),
         textRect = getRect(textLayer);
 
-    [newTextLayer setStringValue: text];
+    [newTextLayer setStringValue: context];
     [newTextLayer setFontSize: configs.fontSize];
     [newTextLayer setFontPostscriptName: configs.fontType];
     [newTextLayer setLineSpacing: parseInt(configs.fontSize * 1.2)];
 
     var newTextRect   = getRect(newTextLayer),
         newLabelWidth  = newTextRect.width + 10,
-        offset = (labelWidth - newLabelWidth) / 2;
+        offset = 0;
 
-    [textLayer setStringValue: text];
+    [textLayer setStringValue: context];
     setSize(labelLayer, newLabelWidth, labelHeight);
     setSize(textLayer, newTextRect.width, newTextRect.height);
 
-    if (!isArrayLength) {
-      [[labelLayer frame] addX: offset]
-      [[textLayer frame] addX: offset]
-    };
+    if( !gapLayer || ( ( gapLayer && gapX > labelX ) && ( gapX + gapWidth ) < ( labelX + labelWidth ) ) ){
+      offset = (labelWidth - newLabelWidth) / 2;
+    }
+    else if( gapLayer && ( gapX + gapWidth ) > ( labelX + labelWidth ) ){
+      offset = ( labelWidth - newLabelWidth);
+    }
+
+    [[labelLayer frame] addX: offset]
+    [[textLayer frame] addX: offset]
 
     removeLayer(newTextLayer);
 
