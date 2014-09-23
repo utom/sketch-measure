@@ -18,6 +18,8 @@ if([layers count] > 0){
       [alert addAccessoryView: creatCheckbox({name: 'Text Line Height', value: 'line'}, configs.remenberPropertyLine)]
       [alert addAccessoryView: creatCheckbox({name: 'Fill / Color / Gradient', value: 'color'}, configs.remenberPropertyColor)]
       [alert addAccessoryView: creatCheckbox({name: 'Border Color', value: 'border'}, configs.remenberPropertyBorder)]
+      [alert addAccessoryView: creatCheckbox({name: 'Shadow', value: 'shadow'}, configs.remenberPropertyShadow)]
+      [alert addAccessoryView: creatCheckbox({name: 'Inner Shadow', value: 'inner-shadow'}, configs.remenberPropertyInnerShadow)]
       [alert addAccessoryView: creatCheckbox({name: 'Layer Opacity', value: 'opacity'}, configs.remenberPropertyOpacity)]
       [alert addTextLabelWithValue: 'Show Position:']
       [alert addAccessoryView: createSelect(ats, atIndex)]
@@ -33,13 +35,15 @@ else {
 function handleAlertResponse(alert, responseCode) {
   if (responseCode == "1000") {
     var types = [],
-        position = valueAtIndex(alert, 8);
+        position = valueAtIndex(alert, 10);
 
     setConfig('remenber-property-font', false);
     setConfig('remenber-property-size', false);
     setConfig('remenber-property-color', false);
     setConfig('remenber-property-line', false);
     setConfig('remenber-property-border', false);
+    setConfig('remenber-property-shadow', false);
+    setConfig('remenber-property-inner-shadow', false);
     setConfig('remenber-property-opacity', false);
 
     if( checkedAtIndex(alert, 1) ) {
@@ -63,6 +67,14 @@ function handleAlertResponse(alert, responseCode) {
       setConfig('remenber-property-border', true);
     }
     if( checkedAtIndex(alert, 6) ) {
+      types.push('shadow');
+      setConfig('remenber-property-shadow', true);
+    }
+    if( checkedAtIndex(alert, 7) ) {
+      types.push('inner-shadow');
+      setConfig('remenber-property-inner-shadow', true);
+    }
+    if( checkedAtIndex(alert, 8) ) {
       types.push('opacity');
       setConfig('remenber-property-opacity', true);
     }

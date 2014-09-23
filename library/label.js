@@ -1,4 +1,5 @@
 var CreateLabel = function(layer, content, position, data, idname){
+    log(position)
     var timestamp = new Date().getTime(),
         idname = (idname)? idname: 'LABEL',
         data = (data)? data: 'text',

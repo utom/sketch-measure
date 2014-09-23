@@ -285,6 +285,8 @@ function initConfigs(){
     setConfig('remenber-property-color', true);
     setConfig('remenber-property-line', false);
     setConfig('remenber-property-border', false);
+    setConfig('remenber-property-shadow', false);
+    setConfig('remenber-property-inner-shadow', false);
     setConfig('remenber-property-opacity', false);
     setConfig('remenber-property-at', 'top');
   }
@@ -315,6 +317,8 @@ function initConfigs(){
   configs.remenberPropertyColor = getConfig('remenber-property-color');
   configs.remenberPropertyLine = getConfig('remenber-property-line');
   configs.remenberPropertyBorder = getConfig('remenber-property-border');
+  configs.remenberPropertyShadow = getConfig('remenber-property-shadow');
+  configs.remenberPropertyInnerShadow = getConfig('remenber-property-inner-shadow');
   configs.remenberPropertyOpacity = getConfig('remenber-property-opacity');
   configs.remenberPropertyAt = getConfig('remenber-property-at');
 }
