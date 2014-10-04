@@ -3,6 +3,18 @@
 A measure tool for measurements & design specs, **Sketch 3.0.2+ support**. 
 
 ![Banner](http://utom.us/new/assets/imgs/sketch-measure-icon@2x.png)
+## Updates
+##### Sep 23, 2014
+* Add properties get shadow and inner shadow
+* Fixes some bugs
+
+##### Sep 22, 2014
+* Add properties get gradient
+* Fixes some bugs
+
+##### Sep 04, 2014
+* **Sketch 3.1 beta supported**
+* Fixes some bugs
 
 ## Installing Plugins
 ### The conventional way:
