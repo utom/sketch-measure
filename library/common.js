@@ -263,7 +263,7 @@ function initConfigs(){
     setConfig('resolution', 'Standard @1x (px)');
     setConfig('font-size', 12);
     setConfig('font-type', 'Helvetica');
-    setConfig('size-basic', '#D0021B');
+    setConfig('size-basic', '#FF5500');
     setConfig('size-text', '#FFFFFF');
     setConfig('distance-basic', '#50E3C2');
     setConfig('distance-text', '#FFFFFF');
