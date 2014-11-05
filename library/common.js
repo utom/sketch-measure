@@ -33,7 +33,7 @@ function isText(layer){
 }
 
 function isShape(layer){
-  return is(layer, MSShapeGroup);
+  return is(layer, MSRectangleShape);
 }
 
 function addLayer(name, type, parent) {
@@ -77,6 +77,8 @@ function setColor(layer, hex, alpha) {
     [layer setTextColor: color];
   }
   else if( isShape(layer) ) {
+    layer = [layer embedInShapeGroup];
+
     var fills = [[layer style] fills];
     if([fills count] <= 0) [fills addNewStylePart];
     [[[layer style] fill] setColor: color];
