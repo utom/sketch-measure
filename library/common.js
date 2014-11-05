@@ -48,7 +48,11 @@ function addGroup(name, parent) {
 }
 
 function addShape(name, parent) {
-  return addLayer(name, 'rectangle', parent);
+  var layer = addLayer(name, 'rectangle', parent);
+  if (isShape(layer)){
+    return layer;
+  }
+  return [layer embedInShapeGroup];
 }
 
 function addText(name, parent) {
