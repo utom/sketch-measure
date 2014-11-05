@@ -77,7 +77,7 @@ function setColor(layer, hex, alpha) {
     [layer setTextColor: color];
   }
   else if( isShape(layer) ) {
-    if (is(layer, 'MSRectangleShape')) {
+    if (is(layer, MSRectangleShape)) {
       layer = [layer embedInShapeGroup];
     }
 
