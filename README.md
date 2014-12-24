@@ -50,6 +50,7 @@ _NOTE: If your Mac has not installed GitHub client, You need to install [GitHub 
 5. Coordinates: `⌃` + `⌘` + `5`
 6. Toggle All Measure Hidden `Ctrl+Shift+H`
 7. Clear All Measure
+
 ### NOTE
 
 * _**Margin**: must be selecting a layer inside an artboard or selecting two layers._
