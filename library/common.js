@@ -1,5 +1,6 @@
 var page = [doc currentPage],
   artboard = [page currentArtboard],
+  artboards = [doc artboards],
   current = artboard ? artboard : page,
   prefix = 'utom',
   configs = {},
@@ -101,6 +102,13 @@ function setSize(layer, width, height, absolute) {
   return layer;
 }
 
+
+function eachArtboard( fn ) {
+  for (var j = 0; j < [artboards count]; j++){
+    var artboard = artboards.objectAtIndex(j);
+    fn(artboard);
+  }
+}
 
 function setPosition(layer, x, y, absolute) {
   if(absolute){

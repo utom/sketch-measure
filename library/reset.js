@@ -16,9 +16,6 @@ var resetAllUnit = function(layers, type){
     ){
       resetUnit(layer, type, true);
     }
-    else if( isGroup(layer) ){
-      resetAllUnit([layer layers], type);
-    }
   };
 }
 
@@ -160,9 +157,6 @@ var resetAllStyle = function(layers, styles){
       }
 
     }
-    else if( isGroup(layer) ){
-      resetAllStyle([layer layers], styles);
-    }
   };
 }
 
@@ -182,10 +176,17 @@ var resetStyle = function(group, basicColor, textColor, alpha){
 
 var Reset = {
   Unit: function( type ){
-    resetAllUnit([current layers], type);
+    var type = type;
+    eachArtboard(function( artboard ){
+      resetAllUnit([artboard layers], type);
+    });
   },
   Style: function( styles ){
-    resetAllStyle([current layers], styles);
+    var styles = styles;
+    eachArtboard(function( artboard ){
+      resetAllStyle([artboard layers], styles);
+    });
+    
   }
 }
 
