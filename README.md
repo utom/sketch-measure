@@ -48,6 +48,8 @@ _NOTE: If your Mac has not installed GitHub client, You need to install [GitHub 
 3. Distances: `⌃` + `⌘` + `3`
 4. Properties: `⌃` + `⌘` + `4`
 5. Coordinates: `⌃` + `⌘` + `5`
+6. Toggle All Measure Hidden `Ctrl+Shift+H`
+7. Clear All Measure
 
 ### NOTE
 

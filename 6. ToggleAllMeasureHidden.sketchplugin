@@ -1,0 +1,20 @@
+//  (shift ctrl h)
+#import 'library/common.js'
+
+var cfg =  getConfig('isMeasureHidden')
+var isMeasureHidden = cfg == null ? false : !Boolean(parseInt(cfg))
+setConfig('isMeasureHidden',isMeasureHidden)
+
+var artboardArr = [doc artboards];
+for (var j = 0; j < [artboardArr count]; j++){
+	var ab = artboardArr.objectAtIndex(j)
+	var arr = [[ab layers] array];
+	for (var i = 0; i < [arr count]; i++) {
+		var layer = arr[i];
+		if(isGroup(layer) &&
+		/\$SIZE|\$WIDTH|\$HEIGHT|\$DISTANCE|\$PROPERTY|\$LABEL|\$OVERLAYER|\$COORDINATE/.exec([layer name]))
+		{
+			[layer setIsVisible:isMeasureHidden];
+		}
+	}
+}
