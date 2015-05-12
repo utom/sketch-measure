@@ -3,15 +3,16 @@
 
 var alert = createAlertBase(),
     types = [
-    	'LDPI @0.75x (dp)',
-    	'MDPI @1x (dp)',
-    	'HDPI @1.5x (dp)',
-    	'XHDPI @2x (dp)',
-    	'XXHDPI @3x (dp)',
-    	'XXXHDPI @4x (dp)',
-    	'Standard @1x (px)',
-    	'Retina @2x (pt)',
-    	'Retina HD @3x (pt)'
+      'LDPI @0.75x (dp)',
+      'MDPI @1x (dp)',
+      'HDPI @1.5x (dp)',
+      'XHDPI @2x (dp)',
+      'XXHDPI @3x (dp)',
+      'XXXHDPI @4x (dp)',
+      'Standard @1x (px)',
+        'Points @1x (pt)',
+      'Retina @2x (pt)',
+      'Retina HD @3x (pt)'
     ],
     index = getIndex(types, configs.resolution);
 

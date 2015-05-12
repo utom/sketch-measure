@@ -12,6 +12,7 @@ var page = [doc currentPage],
         'XXHDPI @3x (dp)': 3,
        'XXXHDPI @4x (dp)': 4,
       'Standard @1x (px)': 1,
+       'Points @1x (pt)' : 1,
         'Retina @2x (pt)': 2,
      'Retina HD @3x (pt)': 3
   };
