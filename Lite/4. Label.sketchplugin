@@ -1,6 +1,0 @@
-// (ctrl cmd l)
-#import 'library/common.js'
-#import 'library/label.js'
-#import 'library/lite.js'
-
-Get.label();

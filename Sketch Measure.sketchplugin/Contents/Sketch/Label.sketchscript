@@ -1,0 +1,6 @@
+@import 'library/common.js'
+
+function onRun(context) {
+    com.utom.init(context);
+    com.utom.drawLabel();
+}

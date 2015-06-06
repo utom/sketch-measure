@@ -1,0 +1,53 @@
+{
+  "name": "Sketch Measure",
+  "description": "A measure tool for measurements & design specs.",
+  "author": "utom",
+  "homepage": "https://github.com/utom/sketch-measure",
+  "version": "0.8.0",
+  "identifier": "com.utom.sketch-measure",
+  "compatibleVersion": "3.3.2",
+  "bundleVersion": 1,
+  "commands": [{
+    "name": "1. Create Overlay",
+    "identifier": "overlay",
+    "shortcut": "ctrl shift 1",
+    "script": "Overlay.sketchscript"
+  }, {
+    "name": "2. Measure Size",
+    "identifier": "size",
+    "shortcut": "ctrl shift 2",
+    "script": "Size.sketchscript"
+  }, {
+    "name": "3. Measure Spacing",
+    "identifier": "spacing",
+    "shortcut": "ctrl shift 3",
+    "script": "Spacing.sketchscript"
+  }, {
+    "name": "4. Draw Label",
+    "identifier": "label",
+    "shortcut": "ctrl shift 4",
+    "script": "Label.sketchscript"
+  }, {
+    "name": "5. Get Typography",
+    "identifier": "typography",
+    "shortcut": "ctrl shift 5",
+    "script": "Typography.sketchscript"
+  }, {
+    "name": "6. Get Property",
+    "identifier": "property",
+    "shortcut": "ctrl shift 6",
+    "script": "Property.sketchscript"
+  }],
+  "menu": {
+    "title": "Sketch Measure (alpha)",
+    "items":[
+      "size",
+      "spacing",
+      "overlay",
+      "label",
+      "typography",
+      "property"
+    ]
+
+  }
+}
