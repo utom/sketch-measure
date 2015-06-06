@@ -102,7 +102,7 @@ com.utom.extend({
 
         length = Math.round( length / scale );
 
-        if(sp){
+        if(this.configs.resolution > 2 && sp){
             unit = "sp";
         }
 
