@@ -17,6 +17,11 @@ com.utom = {
         this.artboard = this.page.currentArtboard();
 
         this.current = this.artboard || this.page;
+        if(!this.is(this.current, MSArtboardGroup)){
+            this.message("You need an artboard.");
+            return false;
+        }
+
 
         this.getConfigs();
     },
@@ -189,7 +194,7 @@ com.utom.extend({
 //Configs
 com.utom.extend({
     getConfigs: function(){
-        var configsGroup = this.find("@Sketch Measure Configs", this.page);
+        var configsGroup = this.find("@Sketch Measure Configs", this.artboard);
         var textLayer;
 
         if(configsGroup == false){
@@ -211,7 +216,7 @@ com.utom.extend({
         }
     },
     setConfigs: function(configs){
-        var configsGroup = this.find("@Sketch Measure Configs", this.page);
+        var configsGroup = this.find("@Sketch Measure Configs", this.artboard);
         var textLayer;
 
         this.configs = this.configs || {};
@@ -221,7 +226,7 @@ com.utom.extend({
         this.configs.timestamp = new Date().getTime();
 
         if(configsGroup == false){
-            configsGroup = this.addGroup(this.page);
+            configsGroup = this.addGroup(this.artboard);
             configsGroup.setName("@Sketch Measure Configs");
 
             textLayer = this.addText(configsGroup);
@@ -323,6 +328,8 @@ com.utom.extend({
 
 com.utom.extend({
     measureSize: function(){
+        if(!this.configs) return false;
+
         var styles = [
             this.sharedLayerStyle("@Size / Layer", "#FF5500"),
             this.sharedTextStyle("@Size / Text", "#FFFFFF")
@@ -337,6 +344,8 @@ com.utom.extend({
         this.measureHeight(this.selection[0], styles);
     },
     measureWidth: function(layer, styles, name, isSpacing){
+        if(!this.configs) return false;
+
         var layer = layer || this.selection[0];
         var frame = this.getFrame(layer);
         var name = name || "WIDTH#" + layer.objectID();
@@ -450,6 +459,8 @@ com.utom.extend({
         container.resizeRoot(true);
     },
     measureHeight: function(layer, styles, name, isSpacing){
+        if(!this.configs) return false;
+
         var layer = layer || this.selection[0];
         var frame = this.getFrame(layer);
         var name = name || "HEIGHT#" + layer.objectID();
@@ -568,6 +579,8 @@ com.utom.extend({
 
 com.utom.extend({
     measureSpacing: function(){
+        if(!this.configs) return false;
+
         var styles = styles || [
             this.sharedLayerStyle("@Spacing / Layer", "#50E3C2"),
             this.sharedTextStyle("@Spacing / Text", "#FFFFFF")
@@ -596,6 +609,8 @@ com.utom.extend({
         }
     },
     measureVertical: function(layer, target, styles){
+        if(!this.configs) return false;
+
         var layer = layer;
         var target = target;
         var lf = this.getFrame(layer);
@@ -643,6 +658,8 @@ com.utom.extend({
         this.removeLayer(temp);
     },
     measureHorizontal: function(layer, target, styles){
+        if(!this.configs) return false;
+
         var layer = layer;
         var target = target;
         var lf = this.getFrame(layer);
@@ -694,6 +711,8 @@ com.utom.extend({
 
 com.utom.extend({
     createOverlayer: function(){
+        if(!this.configs) return false;
+
         var layer = layer || this.selection[0];
 
         if (this.selection.count() < 1){
@@ -726,6 +745,8 @@ com.utom.extend({
 
 com.utom.extend({
     drawLabel: function(target, styles, name){
+        if(!this.configs) return false;
+
         var target = target || this.selection[0];
 
         if (!target || !this.is(target, MSTextLayer) ){
@@ -777,6 +798,8 @@ com.utom.extend({
         container.resizeRoot(true);
     },
     getTypography: function(){
+        if(!this.configs) return false;
+
         var layer = layer || this.selection[0];
 
         if( !this.is(layer, MSTextLayer) ){
@@ -890,6 +913,8 @@ com.utom.extend({
 
     },
     getProperty: function(){
+        if(!this.configs) return false;
+
         var layer = layer || this.selection[0];
 
         if( !layer || this.is(layer, MSTextLayer) ){
