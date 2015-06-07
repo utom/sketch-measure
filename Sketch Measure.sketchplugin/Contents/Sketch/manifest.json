@@ -23,20 +23,35 @@
     "shortcut": "ctrl shift 3",
     "script": "Spacing.sketchscript"
   }, {
-    "name": "4. Draw Label",
-    "identifier": "label",
-    "shortcut": "ctrl shift 4",
-    "script": "Label.sketchscript"
-  }, {
-    "name": "5. Get Typography",
+    "name": "4. Get Typography",
     "identifier": "typography",
-    "shortcut": "ctrl shift 5",
+    "shortcut": "ctrl shift 4",
     "script": "Typography.sketchscript"
   }, {
-    "name": "6. Get Property",
+    "name": "5. Get Property",
     "identifier": "property",
-    "shortcut": "ctrl shift 6",
+    "shortcut": "ctrl shift 5",
     "script": "Property.sketchscript"
+  }, {
+    "name": "6. Draw Label",
+    "identifier": "label",
+    "shortcut": "ctrl shift 6",
+    "script": "Label.sketchscript"
+  }, {
+    "name": "Toggle Measure Hidden",
+    "identifier": "hidden",
+    "shortcut": "ctrl shift h",
+    "script": "Toggle Measure Hidden.sketchscript"
+  }, {
+    "name": "Toggle Measure Locked",
+    "identifier": "locked",
+    "shortcut": "ctrl shift l",
+    "script": "Toggle Measure Locked.sketchscript"
+  }, {
+    "name": "Reset(Clear) Artboard Measure",
+    "identifier": "reset",
+    "shortcut": "",
+    "script": "Clear Artboard Measure.sketchscript"
   }],
   "menu": {
     "title": "Sketch Measure (alpha)",
@@ -44,9 +59,12 @@
       "size",
       "spacing",
       "overlay",
-      "label",
       "typography",
-      "property"
+      "property",
+      "label",
+      "hidden",
+      "locked",
+      "reset"
     ]
 
   }

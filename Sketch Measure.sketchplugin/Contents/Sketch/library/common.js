@@ -1036,6 +1036,61 @@ com.utom.extend({
 
         this.drawLabel(temp, styles, name);
     }
-})
+});
+
+com.utom.extend({
+    isMeasureHidden: false,
+    isMeasureHidden: false,
+    toggleMeasureHidden: function(){
+        if(!this.configs) return false;
+
+        var artboard = this.artboard;
+
+        var isMeasureHidden = (this.configs.isMeasureHidden)? false : !Boolean(this.configs.isMeasureHidden);
+        this.setConfigs({isMeasureHidden: isMeasureHidden});
+
+        var layers = artboard.children().objectEnumerator();
+
+        while(item = layers.nextObject()) {
+            if(this.is(item, MSLayerGroup) && /OVERLAYER\#|WIDTH\#|HEIGHT\#|VERTICAL\#|HORIZONTAL\#|LABEL\#|TYPOGRAPHY\#|PROPERTY\#/.exec(item.name())){
+                item.setIsVisible(!isMeasureHidden);
+            }
+        }
+    },
+    toggleMeasureLocked: function(){
+        if(!this.configs) return false;
+
+        var artboard = this.artboard;
+
+        var isMeasureLocked = (this.configs.isMeasureLocked)? false : !Boolean(this.configs.isMeasureLocked);
+        this.setConfigs({isMeasureLocked: isMeasureLocked});
+
+        var layers = artboard.children().objectEnumerator();
+
+        while(item = layers.nextObject()) {
+            if(this.is(item, MSLayerGroup) && /OVERLAYER\#|WIDTH\#|HEIGHT\#|VERTICAL\#|HORIZONTAL\#|LABEL\#|TYPOGRAPHY\#|PROPERTY\#/.exec(item.name())){
+                item.setIsLocked(isMeasureLocked);
+            }
+        }
+    },
+    clearMeasure: function(){
+        if(!this.configs) return false;
+
+        var artboard = this.artboard;
+        var configsGroup = this.find("@Sketch Measure Configs", this.artboard);
+
+        var layers = artboard.children().objectEnumerator();
+
+        this.removeLayer(configsGroup);
+
+        while(item = layers.nextObject()) {
+            if(this.is(item, MSLayerGroup) && /OVERLAYER\#|WIDTH\#|HEIGHT\#|VERTICAL\#|HORIZONTAL\#|LABEL\#|TYPOGRAPHY\#|PROPERTY\#/.exec(item.name())){
+                this.removeLayer(item);
+            }
+        }
+
+        this.getConfigs();
+    }
+});
 
 
