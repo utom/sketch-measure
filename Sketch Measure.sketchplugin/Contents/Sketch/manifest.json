@@ -54,7 +54,7 @@
     "script": "Clear Artboard Measure.sketchscript"
   }],
   "menu": {
-    "title": "Sketch Measure (alpha)",
+    "title": "Sketch Measure (New)",
     "items":[
       "size",
       "spacing",
