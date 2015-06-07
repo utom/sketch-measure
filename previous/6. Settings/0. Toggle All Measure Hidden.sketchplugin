@@ -1,4 +1,4 @@
-//  (shift ctrl h)
+
 #import 'library/common.js'
 
 var cfg =  getConfig('isMeasureHidden')
