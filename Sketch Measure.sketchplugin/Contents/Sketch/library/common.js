@@ -292,7 +292,7 @@ com.utom.extend({
     ],
     resolutionSetting: function(){
         var cellWidth = 300;
-        var cellHeight = 240;
+        var cellHeight = 260;
         var allResolution = this.allResolution;
 
         var accessory = NSView.alloc().initWithFrame(NSMakeRect(0, 0, cellWidth, cellHeight + 30));
