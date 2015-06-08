@@ -1077,6 +1077,34 @@ com.utom.extend({
             }
         }
     },
+    moveToGroup: function(){
+        if(!this.configs) return false;
+
+        var artboard = this.artboard;
+        var configsGroup = this.find("@Sketch Measure Configs", this.artboard);
+
+
+
+        var groupSpecs = this.find("@Specs");
+        if(!groupSpecs){
+            groupSpecs = this.addGroup(artboard);
+            groupSpecs.setName("@Specs");
+        }
+
+        var layers = artboard.children().objectEnumerator();
+        var specLayers = [];
+
+        while(item = layers.nextObject()) {
+            if(this.is(item, MSLayerGroup) && /OVERLAYER\#|WIDTH\#|HEIGHT\#|VERTICAL\#|HORIZONTAL\#|LABEL\#|TYPOGRAPHY\#|PROPERTY\#/.exec(item.name())){
+                this.removeLayer(item);
+                specLayers.push(item);
+            }
+        }
+
+        groupSpecs.addLayers(specLayers);
+        groupSpecs.resizeRoot(true);
+        groupSpecs.setIsLocked(true);
+    },
     clearMeasure: function(){
         if(!this.configs) return false;
 

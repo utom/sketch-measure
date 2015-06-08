@@ -52,6 +52,11 @@
     "identifier": "reset",
     "shortcut": "",
     "script": "Clear Artboard Measure.sketchscript"
+  }, {
+    "name": "Move to @Specs",
+    "identifier": "move",
+    "shortcut": "",
+    "script": "Move to @Specs.sketchscript"
   }],
   "menu": {
     "title": "Sketch Measure (New)",
@@ -64,7 +69,8 @@
       "label",
       "hidden",
       "locked",
-      "reset"
+      "reset",
+      "move"
     ]
 
   }
