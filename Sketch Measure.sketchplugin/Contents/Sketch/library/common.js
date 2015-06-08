@@ -102,7 +102,7 @@ com.utom.extend({
     },
     updateLength: function(length, sp){
         var unit = (this.configs.resolution > 0)? "pt": "px";
-        unit = (this.configs.resolution > 2)? "dp": unit;
+        unit = (this.configs.resolution > 3)? "dp": unit;
         var scale = this.allResolution[this.configs.resolution].scale;
 
         length = Math.round( length / scale );
@@ -251,6 +251,10 @@ com.utom.extend({
     allResolution: [
         {
             name: "Standard @1x (px)",
+            scale: 1
+        },
+        {
+            name: "Points @1x (pt)",
             scale: 1
         },
         {
