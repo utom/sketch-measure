@@ -568,7 +568,7 @@ com.utom.extend({
         labelFrame.setY(labelY);
         gapFrame.setX(gapX);
         gapFrame.setY(gapY);
-        textFrame.setX(labelX + 6);
+        textFrame.setX(labelX + 4);
         textFrame.setY(labelY + 3);
 
 
