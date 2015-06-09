@@ -57,6 +57,16 @@
     "identifier": "move",
     "shortcut": "",
     "script": "Move to @Specs.sketchscript"
+  }, {
+    "name": "Lite Width",
+    "identifier": "lite-width",
+    "shortcut": "ctrl shift [",
+    "script": "Lite Width.sketchscript"
+  }, {
+    "name": "Lite Height",
+    "identifier": "lite-height",
+    "shortcut": "ctrl shift ]",
+    "script": "Lite Height.sketchscript"
   }],
   "menu": {
     "title": "Sketch Measure (New)",
@@ -70,7 +80,9 @@
       "hidden",
       "locked",
       "reset",
-      "move"
+      "move",
+      "lite-width",
+      "lite-height"
     ]
 
   }

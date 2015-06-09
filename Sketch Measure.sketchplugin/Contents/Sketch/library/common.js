@@ -347,7 +347,7 @@ com.utom.extend({
         this.measureWidth(this.selection[0], styles);
         this.measureHeight(this.selection[0], styles);
     },
-    measureWidth: function(layer, styles, name, isSpacing){
+    measureWidth: function(layer, styles, name, isCenter){
         if(!this.configs) return false;
 
         var layer = layer || this.selection[0];
@@ -423,12 +423,12 @@ com.utom.extend({
         labelX = frame.x + this.mathHalf(frame.width) - this.mathHalf(labelWidth);
         gapX = labelX + this.mathHalf(labelWidth) - this.mathHalf(gapWidth);
 
-        if(distance[0] < distance[2] && distance[2] >= 50 && !isSpacing){
+        if(distance[0] < distance[2] && distance[2] >= 50 && !isCenter){
             lineFrame.setY( frame.y + frame.height + 3 );
             startFrame.setY( frame.y + frame.height + 1 );
             endFrame.setY( frame.y + frame.height + 1 );
         }
-        else if( distance[0] >= 50 && !isSpacing ){
+        else if( distance[0] >= 50 && !isCenter ){
             lineFrame.setY( frame.y - 4 );
             startFrame.setY( frame.y - 6 );
             endFrame.setY( frame.y - 6 );
@@ -461,8 +461,10 @@ com.utom.extend({
 
         this.removeLayer(shape);
         container.resizeRoot(true);
+
+        return container;
     },
-    measureHeight: function(layer, styles, name, isSpacing){
+    measureHeight: function(layer, styles, name, isCenter){
         if(!this.configs) return false;
 
         var layer = layer || this.selection[0];
@@ -539,12 +541,12 @@ com.utom.extend({
         labelY = frame.y + this.mathHalf(frame.height) - this.mathHalf(labelHeight);
         gapY = labelY + this.mathHalf(labelHeight) - this.mathHalf(gapHeight);
 
-        if (distance[1] < distance[3] && distance[3] >= 50 && !isSpacing) {
+        if (distance[1] < distance[3] && distance[3] >= 50 && !isCenter) {
             lineFrame.setX( frame.x - 4 );
             startFrame.setX( frame.x - 6 );
             endFrame.setX( frame.x - 6 );
         }
-        else if( distance[1] >= 50 && !isSpacing){
+        else if( distance[1] >= 50 && !isCenter){
             lineFrame.setX( frame.x + frame.width + 3 );
             startFrame.setX( frame.x + frame.width + 1 );
             endFrame.setX( frame.x + frame.width + 1 );
@@ -578,6 +580,8 @@ com.utom.extend({
 
         this.removeLayer(shape);
         container.resizeRoot(true);
+
+        return container;
     }
 });
 
@@ -1045,6 +1049,7 @@ com.utom.extend({
 com.utom.extend({
     isMeasureHidden: false,
     isMeasureHidden: false,
+    regexName: /OVERLAYER\#|WIDTH\#|HEIGHT\#|VERTICAL\#|HORIZONTAL\#|LABEL\#|TYPOGRAPHY\#|PROPERTY\#|LITE\#/,
     toggleMeasureHidden: function(){
         if(!this.configs) return false;
 
@@ -1056,7 +1061,7 @@ com.utom.extend({
         var layers = artboard.children().objectEnumerator();
 
         while(item = layers.nextObject()) {
-            if(this.is(item, MSLayerGroup) && /OVERLAYER\#|WIDTH\#|HEIGHT\#|VERTICAL\#|HORIZONTAL\#|LABEL\#|TYPOGRAPHY\#|PROPERTY\#/.exec(item.name())){
+            if(this.is(item, MSLayerGroup) && this.regexName.exec(item.name())){
                 item.setIsVisible(!isMeasureHidden);
             }
         }
@@ -1072,7 +1077,7 @@ com.utom.extend({
         var layers = artboard.children().objectEnumerator();
 
         while(item = layers.nextObject()) {
-            if(this.is(item, MSLayerGroup) && /OVERLAYER\#|WIDTH\#|HEIGHT\#|VERTICAL\#|HORIZONTAL\#|LABEL\#|TYPOGRAPHY\#|PROPERTY\#/.exec(item.name())){
+            if(this.is(item, MSLayerGroup) && this.regexName.exec(item.name())){
                 item.setIsLocked(isMeasureLocked);
             }
         }
@@ -1095,7 +1100,7 @@ com.utom.extend({
         var specLayers = [];
 
         while(item = layers.nextObject()) {
-            if(this.is(item, MSLayerGroup) && /OVERLAYER\#|WIDTH\#|HEIGHT\#|VERTICAL\#|HORIZONTAL\#|LABEL\#|TYPOGRAPHY\#|PROPERTY\#/.exec(item.name())){
+            if(this.is(item, MSLayerGroup) && this.regexName.exec(item.name())){
                 this.removeLayer(item);
                 specLayers.push(item);
             }
@@ -1116,7 +1121,7 @@ com.utom.extend({
         this.removeLayer(configsGroup);
 
         while(item = layers.nextObject()) {
-            if(this.is(item, MSLayerGroup) && /OVERLAYER\#|WIDTH\#|HEIGHT\#|VERTICAL\#|HORIZONTAL\#|LABEL\#|TYPOGRAPHY\#|PROPERTY\#/.exec(item.name())){
+            if(this.is(item, MSLayerGroup) && this.regexName.exec(item.name())){
                 this.removeLayer(item);
             }
         }
@@ -1125,4 +1130,69 @@ com.utom.extend({
     }
 });
 
+com.utom.extend({
+    liteWidth: function(){
+        if(!this.configs) return false;
+
+        var styles = styles || [
+            this.sharedLayerStyle("@Lite / Layer", "#9013FE"),
+            this.sharedTextStyle("@Lite / Text", "#FFFFFF")
+        ];
+
+        if (this.selection.count() != 1){
+            this.message("Please select 1 layers for be measure.");
+            return false;
+        }
+
+        var name = "LITE#" + this.selection[0].objectID();
+
+        var container = this.measureWidth(this.selection[0], styles, name, true);
+
+        this.removeLayer(this.selection[0]);
+
+        container.setIsSelected(true);
+    },
+    liteHeight: function(){
+        if(!this.configs) return false;
+
+        var styles = styles || [
+            this.sharedLayerStyle("@Lite / Layer", "#9013FE"),
+            this.sharedTextStyle("@Lite / Text", "#FFFFFF")
+        ];
+
+        if (this.selection.count() != 1){
+            this.message("Please select 1 layers for be measure.");
+            return false;
+        }
+
+        var name = "LITE#" + this.selection[0].objectID();
+
+        var container = this.measureHeight(this.selection[0], styles, name, true);
+
+        this.removeLayer(this.selection[0]);
+
+        container.setIsSelected(true);
+    },
+    liteHeight: function(){
+        if(!this.configs) return false;
+
+        var styles = styles || [
+            this.sharedLayerStyle("@Lite / Layer", "#9013FE"),
+            this.sharedTextStyle("@Lite / Text", "#FFFFFF")
+        ];
+
+        if (this.selection.count() != 1){
+            this.message("Please select 1 layers for be measure.");
+            return false;
+        }
+
+        var name = "LITE#" + this.selection[0].objectID();
+
+        var container = this.measureHeight(this.selection[0], styles, name, true);
+
+        this.removeLayer(this.selection[0]);
+
+        container.setIsSelected(true);
+    }
+})
 
