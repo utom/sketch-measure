@@ -607,7 +607,9 @@ com.utom.extend({
             layer = layers[0];
             target = this.current;
             this.measureVertical(layer, target, styles);
+            this.measureVertical(layer, target, styles, true);
             this.measureHorizontal(layer, target, styles);
+            this.measureHorizontal(layer, target, styles, true);
         }
         else if( layers.count() == 2 ){
             layer = layers[1];
@@ -616,7 +618,7 @@ com.utom.extend({
             this.measureHorizontal(layer, target, styles);
         }
     },
-    measureVertical: function(layer, target, styles){
+    measureVertical: function(layer, target, styles, position){
         if(!this.configs) return false;
 
         var layer = layer;
@@ -627,7 +629,8 @@ com.utom.extend({
         var idname = layer.objectID() + '#' + target.objectID();
         var intersect = this.isIntersect(lf, tf);
 
-        var name = "VERTICAL#" + idname;
+        var slug = (!position)? "TOP#": "BOTTOM#";
+        var name = slug + idname;
         var temp = this.addShape(this.current);
         var tempFrame = temp.absoluteRect();
         var tempX;
@@ -638,10 +641,11 @@ com.utom.extend({
         tempX = lf.x;
         tempWidth = lf.width;
         if( intersect ){
-            tempY = (distance[0] > distance[2])? lf.y + lf.height: lf.y - distance[0];
-            tempHeight = (distance[0] > distance[2])? distance[2]: distance[0];
+            tempY = (position)? lf.y + lf.height: lf.y - distance[0];
+            tempHeight = (position)? distance[2]: distance[0];
         }
         else{
+
             if(lf.maxY <  tf.y ){
                 tempY = lf.maxY;
                 tempHeight = tf.y - lf.maxY;
@@ -665,7 +669,7 @@ com.utom.extend({
 
         this.removeLayer(temp);
     },
-    measureHorizontal: function(layer, target, styles){
+    measureHorizontal: function(layer, target, styles, position){
         if(!this.configs) return false;
 
         var layer = layer;
@@ -676,7 +680,8 @@ com.utom.extend({
         var idname = layer.objectID() + '#' + target.objectID();
         var intersect = this.isIntersect(lf, tf);
 
-        var name = "HORIZONTAL#" + idname;
+        var slug = (!position)? "LEFT#": "RIGHT#";
+        var name = slug + idname;
         var temp = this.addShape(this.current);
         var tempFrame = temp.absoluteRect();
 
@@ -688,8 +693,8 @@ com.utom.extend({
         tempY = lf.y;
         tempHeight = lf.height;
         if( intersect ){
-            tempX = (distance[3] > distance[1])? lf.x + lf.width : lf.x - distance[3];
-            tempWidth = (distance[3] > distance[1])? distance[1]: distance[3];
+            tempX = (position)? lf.x + lf.width : lf.x - distance[3];
+            tempWidth = (position)? distance[1]: distance[3];
         }
         else{
            if(lf.maxX <  tf.x ){
@@ -1049,7 +1054,7 @@ com.utom.extend({
 com.utom.extend({
     isMeasureHidden: false,
     isMeasureHidden: false,
-    regexName: /OVERLAYER\#|WIDTH\#|HEIGHT\#|VERTICAL\#|HORIZONTAL\#|LABEL\#|TYPOGRAPHY\#|PROPERTY\#|LITE\#/,
+    regexName: /OVERLAYER\#|WIDTH\#|HEIGHT\#|TOP\#|RIGHT\#|BOTTOM\#|LEFT\#|VERTICAL\#|HORIZONTAL\#|LABEL\#|TYPOGRAPHY\#|PROPERTY\#|LITE\#/,
     toggleMeasureHidden: function(){
         if(!this.configs) return false;
 
