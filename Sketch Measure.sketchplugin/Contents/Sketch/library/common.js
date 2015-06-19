@@ -177,6 +177,7 @@ com.utom.extend({
             textLayer.setTextColor(MSColor.colorWithSVGString(color));
             textLayer.setFontSize(12);
             textLayer.setFontPostscriptName("HelveticaNeue");
+            textLayer.setTextAlignment(2);
 
             var style = textLayer.style();
             this.removeLayer(textLayer);
