@@ -177,7 +177,6 @@ com.utom.extend({
             textLayer.setTextColor(MSColor.colorWithSVGString(color));
             textLayer.setFontSize(12);
             textLayer.setFontPostscriptName("HelveticaNeue");
-            textLayer.setCharacterSpacing(2);
 
             var style = textLayer.style();
             this.removeLayer(textLayer);
@@ -630,6 +629,7 @@ com.utom.extend({
         var intersect = this.isIntersect(lf, tf);
 
         var slug = (!position)? "TOP#": "BOTTOM#";
+        slug = (!intersect)? "VERTICAL#": slug;
         var name = slug + idname;
         var temp = this.addShape(this.current);
         var tempFrame = temp.absoluteRect();
@@ -681,6 +681,7 @@ com.utom.extend({
         var intersect = this.isIntersect(lf, tf);
 
         var slug = (!position)? "LEFT#": "RIGHT#";
+        slug = (!intersect)? "HORIZONTAL#": slug;
         var name = slug + idname;
         var temp = this.addShape(this.current);
         var tempFrame = temp.absoluteRect();
