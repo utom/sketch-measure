@@ -1,0 +1,22 @@
+{
+  "name": "Spec Export",
+  "description": "A measure tool for measurements & design specs.",
+  "author": "utom",
+  "homepage": "https://github.com/utom/sketch-measure",
+  "version": "0.8.0",
+  "identifier": "com.utom.spec-export",
+  "compatibleVersion": "3.3.2",
+  "bundleVersion": 1,
+  "commands": [{
+    "name": "Spec Export",
+    "identifier": "exprot",
+    "shortcut": "ctrl shift e",
+    "script": "exprot.sketchscript"
+  }],
+  "menu": {
+    "items":[
+      "exprot"
+    ],
+    "isRoot": true
+  }
+}
