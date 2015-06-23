@@ -167,14 +167,13 @@ com.utom.extend({
 
         return (layerStyle.newInstance)? layerStyle.newInstance(): layerStyle;
     },
-    sharedTextStyle: function(name, color, alpha) {
+    sharedTextStyle: function(name, color, alpha, center) {
         var textStyles = this.document.documentData().layerTextStyles();
         var textStylesLibrary = textStyles.objectsSortedByName();
         var textStyle = this.find(name, textStylesLibrary, true);
         var alpha = alpha || 1;
 
         if( textStyle == false ){
-            // var style = MSTextStyle.alloc().init();
             var color = MSColor.colorWithSVGString(color);
 
             color.setAlpha(alpha);
@@ -183,7 +182,7 @@ com.utom.extend({
             textLayer.setTextColor(color);
             textLayer.setFontSize(12);
             textLayer.setFontPostscriptName("HelveticaNeue");
-            textLayer.setTextAlignment(2);
+            if(center) textLayer.setTextAlignment(2);
 
             var style = textLayer.style();
             this.removeLayer(textLayer);
@@ -342,7 +341,7 @@ com.utom.extend({
 
         var styles = [
             this.sharedLayerStyle("@Size / Layer", "#FF5500"),
-            this.sharedTextStyle("@Size / Text", "#FFFFFF")
+            this.sharedTextStyle("@Size / Text", "#FFFFFF", 1, true)
         ];
 
         if (this.selection.count() < 1){
@@ -600,7 +599,7 @@ com.utom.extend({
 
         var styles = styles || [
             this.sharedLayerStyle("@Spacing / Layer", "#50E3C2"),
-            this.sharedTextStyle("@Spacing / Text", "#FFFFFF")
+            this.sharedTextStyle("@Spacing / Text", "#FFFFFF", 1, true)
         ];
 
         if (this.selection.count() < 1){
