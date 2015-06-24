@@ -623,7 +623,9 @@ com.utom.extend({
             layer = layers[1];
             target = layers[0];
             this.measureVertical(layer, target, styles);
+            this.measureVertical(layer, target, styles, true);
             this.measureHorizontal(layer, target, styles);
+            this.measureHorizontal(layer, target, styles, true);
         }
     },
     measureVertical: function(layer, target, styles, position){
