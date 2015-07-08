@@ -267,7 +267,7 @@ com.utom.extend({
             scale: 2
         },
         {
-            name: "Retina HD @2x (pt)",
+            name: "Retina HD @3x (pt)",
             scale: 3
         },
         {
