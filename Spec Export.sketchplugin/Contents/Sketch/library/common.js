@@ -59,7 +59,7 @@ com.utom = {
     },
     colorStopToJSON: function(colorStop) {
         return {
-            color: colorToJSON(colorStop.color()),
+            color: this.colorToJSON(colorStop.color()),
             position: colorStop.position()
         };
     },
@@ -76,6 +76,103 @@ com.utom = {
             to: pointToJSON(gradient.to()),
             colorStops: stops
         };
+    },
+    shadowToJSON: function(shadow) {
+        return {
+            type: shadow instanceof MSStyleShadow ? "outer" : "inner",
+            offsetX: shadow.offsetX(),
+            offsetY: shadow.offsetY(),
+            blurRadius: shadow.blurRadius(),
+            spread: shadow.spread(),
+            color: this.colorToJSON(shadow.color())
+        };
+    },
+    getBorders: function(style) {
+        var borders = [],
+            msBorder, borderIter = style.borders().array().objectEnumerator();
+        while (msBorder = borderIter.nextObject()) {
+            if (msBorder.isEnabled()) {
+                var fillType = FillTypes[msBorder.fillType()],
+                    border = {
+                        fillType: fillType,
+                        position: BorderPositions[msBorder.position()],
+                        thickness: msBorder.thickness()
+                    };
+
+                switch (fillType) {
+                    case "color":
+                        border.color = this.colorToJSON(msBorder.color());
+                        break;
+
+                    case "gradient":
+                        border.gradient = this.gradientToJSON(msBorder.gradient());
+                        break;
+
+                    default:
+                        continue;
+                }
+
+                borders.push(border);
+            }
+        }
+
+        borderIter = null;
+        msBorder = null;
+
+        return borders;
+    },
+    getFills: function(style) {
+        var fills = [],
+            msFill, fillIter = style.fills().array().objectEnumerator();
+        while (msFill = fillIter.nextObject()) {
+            if (msFill.isEnabled()) {
+                var fillType = FillTypes[msFill.fillType()],
+                    fill = {
+                        fillType: fillType
+                    };
+
+                switch (fillType) {
+                    case "color":
+                        fill.color = this.colorToJSON(msFill.color());
+                        break;
+
+                    case "gradient":
+                        fill.gradient = this.gradientToJSON(msFill.gradient());
+                        break;
+
+                    default:
+                        continue;
+                }
+
+                fills.push(fill);
+            }
+        }
+
+        fillIter = null;
+        msFill = null;
+
+        return fills;
+    },
+    getShadows: function(style) {
+        var shadows = [],
+            msShadow, shadowIter = style.shadows().array().objectEnumerator();
+        while (msShadow = shadowIter.nextObject()) {
+            if (msShadow.isEnabled()) {
+                shadows.push(this.shadowToJSON(msShadow)));
+            }
+        }
+
+        shadowIter = style.innerShadows().array().objectEnumerator();
+        while (msShadow = shadowIter.nextObject()) {
+            if (msShadow.isEnabled()) {
+                shadows.push(this.shadowToJSON(msShadow));
+            }
+        }
+
+        shadowIter = null;
+        msShadow = null;
+
+        return shadows;
     }
 };
 
