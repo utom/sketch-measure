@@ -57,7 +57,7 @@ _NOTE: If your Mac has not installed GitHub client, You need to install [GitHub 
 8. Toggle All Measure Locked `⌃` + `⇧` + `L`
 9. Reset(Clear) Artboard Measure
 
-### BATE
+### SPEC EXPORT(BETA)
 http://ux.utom.us/preview/
 
 ##Contact
