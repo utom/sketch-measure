@@ -67,6 +67,11 @@
     "identifier": "lite-height",
     "shortcut": "ctrl shift ]",
     "script": "Lite Height.sketchscript"
+  }, {
+    "name": "Spec Export",
+    "identifier": "spec",
+    "shortcut": "ctrl shift e",
+    "script": "Spec.sketchscript"
   }],
   "menu": {
     "title": "Sketch Measure (New)",
@@ -82,7 +87,8 @@
       "reset",
       "move",
       "lite-width",
-      "lite-height"
+      "lite-height",
+      "spec"
     ]
 
   }
