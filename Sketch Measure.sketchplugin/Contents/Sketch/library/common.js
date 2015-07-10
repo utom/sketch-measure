@@ -1293,8 +1293,8 @@ com.utom.extend({
 
         return {
             type: this.GradientTypes[gradient.gradientType()],
-            from: pointToJSON(gradient.from()),
-            to: pointToJSON(gradient.to()),
+            from: this.pointToJSON(gradient.from()),
+            to: this.pointToJSON(gradient.to()),
             colorStops: stops
         };
     },
@@ -1313,7 +1313,7 @@ com.utom.extend({
             msBorder, borderIter = style.borders().array().objectEnumerator();
         while (msBorder = borderIter.nextObject()) {
             if (msBorder.isEnabled()) {
-                var fillType = FillTypes[msBorder.fillType()],
+                var fillType = this.FillTypes[msBorder.fillType()],
                     border = {
                         fillType: fillType,
                         position: this.BorderPositions[msBorder.position()],
@@ -1395,7 +1395,13 @@ com.utom.extend({
 
         return shadows;
     },
+    getOpacity: function(layerStyle){
+        return layerStyle.contextSettings().opacity()
+    },
     export: function(){
+        var savePath = NSTemporaryDirectory();
+        var document = this.document;
+        var current = this.current;
         var artboardFrame = this.current.frame();
         var layers = [];
         var layerIter = this.current.children().objectEnumerator();
@@ -1413,7 +1419,8 @@ com.utom.extend({
                     rotation: msLayer.rotation(),
                     borders: this.getBorders(layerStyle),
                     fills: this.getFills(layerStyle),
-                    shadows: this.getShadows(layerStyle)
+                    shadows: this.getShadows(layerStyle),
+                    opacity: this.getOpacity(layerStyle)
                 };
 
             if (msLayer instanceof MSTextLayer) {
@@ -1432,14 +1439,31 @@ com.utom.extend({
             layerStyle = null;
         }
 
-        log({
+
+        var imageFileName = NSUUID.UUID().UUIDString() + ".png";
+
+            [document saveArtboardOrSlice:current
+                              toFile:savePath.stringByAppendingPathComponent(imageFileName)];
+
+        var data = {
             name: this.toJSString(this.current.name()),
+            imageFileName: imageFileName,
             width: artboardFrame.width(),
             height: artboardFrame.height(),
             resolution: this.configs.resolution,
             zoom: 1,
-            layers: layers
-        });
+            layers: layers,
+            notes: []
+        };
+
+        var path = savePath.stringByAppendingPathComponent("spec.js"),
+            content = NSString.stringWithString("jQuery(function(){Spec(" + JSON.stringify(data) + ")});");
+
+        log(content);
+        [content writeToFile:path
+                  atomically:false
+                    encoding:NSUTF8StringEncoding
+                       error:null];
 
     }
 });
