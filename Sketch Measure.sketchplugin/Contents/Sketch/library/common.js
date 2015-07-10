@@ -847,6 +847,7 @@ com.utom.extend({
 
         content.push(this.updateLength(layer.fontSize(), true) + ", " + layer.fontPostscriptName());
         content.push("#" + color.hexValue() + " / " + this.math255(color.red()) + "," + this.math255(color.green()) + "," + this.math255(color.blue()) + alphaText);
+        content.push("line: " + this.updateLength(layer.lineSpacing(), true));
 
         var temp = this.addText();
         temp.setStyle(styles[1]);
