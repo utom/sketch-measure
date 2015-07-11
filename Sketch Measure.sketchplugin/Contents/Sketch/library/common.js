@@ -880,10 +880,10 @@ com.utom.extend({
             name: "Layer Opacity",
             slug: "opacity"
         },
-        // {
-        //     name: "Radius",
-        //     slug: "radius"
-        // },
+        {
+            name: "Radius",
+            slug: "radius"
+        },
         {
             name: "Shadow",
             slug: "shadow"
@@ -1018,6 +1018,13 @@ com.utom.extend({
                 border.isEnabled()
             ){ 
                 content.push("border: " + getColor(layer, border));
+            }
+
+            if(types[i] == 'radius' && this.is(layer, MSShapeGroup)){
+                var shape = this.is(layer.layers().firstObject(), MSRectangleShape)? layer.layers().firstObject(): undefined;
+                if(shape){
+                    content.push("radius: " + this.updateLength(shape.fixedRadius()));
+                }
             }
 
             if(
@@ -1458,6 +1465,7 @@ com.utom.extend({
                     name: this.toJSString(msLayer.name()),
                     rect: this.rectToJSON(msLayer.absoluteRect(), artboardFrame),
                     rotation: msLayer.rotation(),
+                    radius: ( msLayer.layers && this.is(msLayer.layers().firstObject(), MSRectangleShape) ) ? msLayer.layers().firstObject().fixedRadius(): null,
                     borders: this.getBorders(layerStyle),
                     fills: this.getFills(layerStyle),
                     shadows: this.getShadows(layerStyle),
