@@ -816,6 +816,7 @@ com.utom.extend({
         }
 
         textFrame = this.getFrame(text);
+        log(textFrame);
         labelFrame = label.absoluteRect();
         labelFrame.setX(textFrame.x - 4);
         labelFrame.setY(textFrame.y - 3);
