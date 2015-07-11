@@ -1434,6 +1434,7 @@ com.utom.extend({
         return savePanel.URL().path();
     },
     export: function(){
+        if(!this.configs) return false;
 
         var document = this.document;
         var current = this.current;
