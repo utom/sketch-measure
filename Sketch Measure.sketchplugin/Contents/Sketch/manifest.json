@@ -74,7 +74,7 @@
     "script": "Spec.sketchscript"
   }],
   "menu": {
-    "title": "Sketch Measure (New)",
+    "title": "Measure",
     "items":[
       "size",
       "spacing",
