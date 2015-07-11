@@ -3,6 +3,7 @@ var com = com || {};
 com.utom = {
     configsGroup: undefined,
     configs: undefined,
+    context: undefined,
     document: undefined,
     selection: undefined,
     page: undefined,
@@ -10,6 +11,7 @@ com.utom = {
     current: undefined,
     styles: undefined,
     init: function(context){
+        this.context = context;
         this.document = context.document;
         this.selection = context.selection;
 
@@ -1228,6 +1230,9 @@ com.utom.extend({
                layer instanceof MSShapeGroup ||
                layer instanceof MSBitmapLayer;
     },
+    isMeasure: function(layer){
+        return (this.regexName.exec(msLayer.parentGroup().name()));
+    },
     isHidden: function(layer){
         while (!(layer instanceof MSArtboardGroup)) {
             if (!layer.isVisible()) {
@@ -1399,16 +1404,51 @@ com.utom.extend({
     getOpacity: function(layerStyle){
         return layerStyle.contextSettings().opacity()
     },
+    savePath: function(){
+        var filePath = this.document.fileURL()? this.document.fileURL().path().stringByDeletingLastPathComponent(): "~";
+        // var fileName = this.document.displayName().stringByDeletingPathExtension();
+        var fileName = this.current.name();
+        var savePanel = NSSavePanel.savePanel();
+
+        savePanel.setTitle("Export Spec");
+        savePanel.setNameFieldLabel("Export To:");
+        savePanel.setPrompt("Export");
+        // savePanel.setAllowedFileTypes(NSArray.arrayWithObject("spec"));
+        // savePanel.setAllowsOtherFileTypes(false);
+        savePanel.setCanCreateDirectories(true);
+        savePanel.setDirectoryURL(NSURL.fileURLWithPath(filePath));
+        savePanel.setNameFieldStringValue(fileName);
+
+        if (savePanel.runModal() != NSOKButton) {
+            
+            exit
+        }
+        
+        return savePanel.URL().path();
+    },
     export: function(){
-        var savePath = NSTemporaryDirectory();
+
         var document = this.document;
         var current = this.current;
         var artboardFrame = this.current.frame();
         var layers = [];
+        var notes = [];
         var layerIter = this.current.children().objectEnumerator();
+        var name = current.objectID();
 
         while(msLayer = layerIter.nextObject()) {
-            if (this.isHidden(msLayer) || !this.isExportable(msLayer)) {
+            if(this.is(msLayer, MSLayerGroup) && /LABEL\#|NOTE\#/.exec(msLayer.name())){
+                var msText = msLayer.children()[2];
+
+                notes.push({
+                    rect: this.rectToJSON(msLayer.absoluteRect(), artboardFrame),
+                    note: this.toJSString(msText.stringValue())
+                });
+
+                msLayer.setIsVisible(false);
+            }
+
+            if (this.isHidden(msLayer) || !this.isExportable(msLayer) || this.isMeasure(msLayer) ) {
                 continue;
             }
 
@@ -1441,7 +1481,10 @@ com.utom.extend({
         }
 
 
-        var imageFileName = NSUUID.UUID().UUIDString() + ".png";
+        var savePath = this.savePath();
+
+
+        var imageFileName = name + ".png";
 
             [document saveArtboardOrSlice:current
                               toFile:savePath.stringByAppendingPathComponent(imageFileName)];
@@ -1454,13 +1497,22 @@ com.utom.extend({
             resolution: this.configs.resolution,
             zoom: 1,
             layers: layers,
-            notes: []
+            notes: notes
         };
 
-        var path = savePath.stringByAppendingPathComponent("spec.js"),
-            content = NSString.stringWithString("jQuery(function(){Spec(" + JSON.stringify(data) + ")});");
+        var path = savePath.stringByAppendingPathComponent("spec.js");
+        var content = NSString.stringWithString("jQuery(function(){Spec(" + JSON.stringify(data) + ")});");
 
-        log(content);
+
+        var pluginPath = NSString.stringWithFormat(this.context.scriptPath).stringByDeletingLastPathComponent();
+        var templatePath = pluginPath.stringByAppendingPathComponent("assets/template");
+        var template = [NSString stringWithContentsOfFile:templatePath encoding:NSUTF8StringEncoding error:nil];
+
+        [template writeToFile:savePath.stringByAppendingPathComponent("index.html")
+                  atomically:false
+                    encoding:NSUTF8StringEncoding
+                       error:null];
+
         [content writeToFile:path
                   atomically:false
                     encoding:NSUTF8StringEncoding
