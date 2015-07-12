@@ -816,7 +816,6 @@ com.utom.extend({
         }
 
         textFrame = this.getFrame(text);
-        log(textFrame);
         labelFrame = label.absoluteRect();
         labelFrame.setX(textFrame.x - 4);
         labelFrame.setY(textFrame.y - 3);
@@ -1439,8 +1438,10 @@ com.utom.extend({
         var document = this.document;
         var current = this.current;
         var artboardFrame = this.current.frame();
+        var layersObj = {};
         var layers = [];
         var notes = [];
+        var masks = [];
         var layerIter = this.current.children().objectEnumerator();
         var name = current.objectID();
 
@@ -1458,6 +1459,17 @@ com.utom.extend({
 
             if (this.isHidden(msLayer) || !this.isExportable(msLayer) || this.isMeasure(msLayer) ) {
                 continue;
+            }
+
+            if(msLayer.hasClippingMask()){
+                msLayer = msLayer.parentGroup();
+                var masksIter = msLayer.children().objectEnumerator();
+                while(maskLayer = masksIter.nextObject()) {
+                    if (this.isHidden(maskLayer) || !this.isExportable(maskLayer) || this.isMeasure(maskLayer) ) {
+                        continue;
+                    }
+                    masks.push(maskLayer.objectID());
+                }
             }
 
             var layerStyle = msLayer.style(),
@@ -1483,10 +1495,22 @@ com.utom.extend({
                 layer.lineHeight = msLayer.lineSpacing();
             }
 
-            layers.push(layer);
+            // layers.push(layer);
+            layersObj[msLayer.objectID()] = layer;
 
             layer = null;
             layerStyle = null;
+        }
+
+        // remove
+        if(masks.length){
+            masks.forEach(function(maskID){
+                if(layersObj[maskID]) delete layersObj[maskID];
+            });
+        }
+
+        for ( var ID in layersObj ){
+            layers.push(layersObj[ID]);
         }
 
 
@@ -1526,6 +1550,8 @@ com.utom.extend({
                   atomically:false
                     encoding:NSUTF8StringEncoding
                        error:null];
+
+        this.message("Export complete!");
 
     }
 });
