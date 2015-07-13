@@ -1,3 +1,19 @@
+function _(str){
+    var I18N = {},
+        lang = NSUserDefaults.standardUserDefaults().objectForKey("AppleLanguages").objectAtIndex(0);
+
+    // log(lang);
+    I18N["zh-cn"] = {
+        "You need an artboard." :   "You need an artboard.",
+        "Export complete!"      :   "导出成功",
+        "Save"      :   "保存",
+        "Cancel"      :   "取消",
+    };
+
+    return (I18N[lang] && I18N[lang][str])? I18N[lang][str]: str;
+}
+
+
 var com = com || {};
 
 com.utom = {
@@ -20,7 +36,7 @@ com.utom = {
 
         this.current = this.artboard || this.page;
         if(!this.is(this.current, MSArtboardGroup)){
-            this.message("You need an artboard.");
+            this.message(_("You need an artboard."));
             return false;
         }
 
@@ -321,10 +337,10 @@ com.utom.extend({
         [accessory addSubview:matrix]
 
         var alert = NSAlert.alloc().init();
-        alert.setMessageText("Resolution Setup");
-        alert.setInformativeText("* Choose your design resolution");
-        alert.addButtonWithTitle("Save");
-        alert.addButtonWithTitle("Cancel");
+        alert.setMessageText(_("Resolution Setup"));
+        alert.setInformativeText(_("* Choose your design resolution"));
+        alert.addButtonWithTitle(_("Save"));
+        alert.addButtonWithTitle(_("Cancel"));
         alert.setAccessoryView(accessory);
 
         var buttonReturnValue = [alert runModal],
@@ -347,7 +363,7 @@ com.utom.extend({
         ];
 
         if (this.selection.count() < 1){
-            this.message("Please select a layer for measuring.");
+            this.message(_("Please select a layer for measuring."));
             return false;
         }
 
@@ -605,7 +621,7 @@ com.utom.extend({
         ];
 
         if (this.selection.count() < 1){
-            this.message("Please select 1 or 2 layers for measuring.");
+            this.message(_("Please select 1 or 2 layers for measuring."));
             return false;
         }
 
@@ -743,7 +759,7 @@ com.utom.extend({
         var layer = layer || this.selection[0];
 
         if (this.selection.count() < 1){
-            this.message("Please select a layer for creating.");
+            this.message(_("Please select a layer for creating."));
             return false;
         }
 
@@ -777,7 +793,7 @@ com.utom.extend({
         var target = target || this.selection[0];
 
         if (!target || !this.is(target, MSTextLayer) ){
-            this.message("Please select a text layer for drawing.");
+            this.message(_("Please select a text layer for drawing."));
             return false;
         }
 
@@ -830,7 +846,7 @@ com.utom.extend({
         var layer = layer || this.selection[0];
 
         if( !this.is(layer, MSTextLayer) ){
-            this.message("Please select a text layer for getting typography.");
+            this.message(_("Please select a text layer for getting typography."));
             return false;
         }
 
@@ -915,10 +931,10 @@ com.utom.extend({
         })
 
         var alert = NSAlert.alloc().init();
-        alert.setMessageText("Get Properties");
-        alert.setInformativeText("* Customize the Property Guide that will be created.");
-        alert.addButtonWithTitle("Save");
-        alert.addButtonWithTitle("Cancel");
+        alert.setMessageText(_("Get Properties"));
+        alert.setInformativeText(_("* Customize the Property Guide that will be created."));
+        alert.addButtonWithTitle(_("Save"));
+        alert.addButtonWithTitle(_("Cancel"));
         alert.setAccessoryView(accessory);
 
         var responseCode = alert.runModal()
@@ -945,7 +961,7 @@ com.utom.extend({
         var layer = layer || this.selection[0];
 
         if( !layer || this.is(layer, MSTextLayer) ){
-            this.message("Please select a layer (not text layer) for getting typography.");
+            this.message(_("Please select a layer (not text layer) for getting typography."));
             return false;
         }
 
@@ -1166,7 +1182,7 @@ com.utom.extend({
         ];
 
         if (this.selection.count() != 1){
-            this.message("Please select 1 layers for be measure.");
+            this.message(_("Please select 1 layers for be measure."));
             return false;
         }
 
@@ -1187,7 +1203,7 @@ com.utom.extend({
         ];
 
         if (this.selection.count() != 1){
-            this.message("Please select 1 layers for be measure.");
+            this.message(_("Please select 1 layers for be measure."));
             return false;
         }
 
@@ -1208,7 +1224,7 @@ com.utom.extend({
         ];
 
         if (this.selection.count() != 1){
-            this.message("Please select 1 layers for be measure.");
+            this.message(_("Please select 1 layers for be measure."));
             return false;
         }
 
@@ -1416,9 +1432,9 @@ com.utom.extend({
         var fileName = this.current.name();
         var savePanel = NSSavePanel.savePanel();
 
-        savePanel.setTitle("Export Spec");
-        savePanel.setNameFieldLabel("Export To:");
-        savePanel.setPrompt("Export");
+        savePanel.setTitle(_("Export Spec"));
+        savePanel.setNameFieldLabel(_("Export To:"));
+        savePanel.setPrompt(_("Export"));
         // savePanel.setAllowedFileTypes(NSArray.arrayWithObject("spec"));
         // savePanel.setAllowsOtherFileTypes(false);
         savePanel.setCanCreateDirectories(true);
@@ -1551,8 +1567,7 @@ com.utom.extend({
                     encoding:NSUTF8StringEncoding
                        error:null];
 
-        this.message("Export complete!");
+        this.message(_("Export complete!"));
 
     }
 });
-
