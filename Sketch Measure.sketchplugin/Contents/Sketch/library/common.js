@@ -3,11 +3,13 @@ function _(str){
         lang = NSUserDefaults.standardUserDefaults().objectForKey("AppleLanguages").objectAtIndex(0);
 
     // log(lang);
-    I18N["zh-cn"] = {
-        "You need an artboard." :   "You need an artboard.",
-        "Export complete!"      :   "导出成功",
-        "Save"      :   "保存",
-        "Cancel"      :   "取消",
+    I18N["zh-Hans"] = {
+        "You need an artboard."             :   "You need an artboard.",
+        "Resolution Setup"                  :   "Resolution Setup",
+        "* Choose your design resolution"   :   "* Choose your design resolution", 
+        "Export complete!"                  :   "导出成功!",
+        "Save"                              :   "保存",
+        "Cancel"                            :   "取消",
     };
 
     return (I18N[lang] && I18N[lang][str])? I18N[lang][str]: str;
@@ -884,27 +886,27 @@ com.utom.extend({
     },
     allProperty: [
         {
-            name: "Fill / Color / Gradient",
+            name: _("Fill / Color / Gradient"),
             slug: "fill"
         },
         {
-            name: "Border Color",
+            name: _("Border Color"),
             slug: "border"
         },
         {
-            name: "Layer Opacity",
+            name: _("Layer Opacity"),
             slug: "opacity"
         },
         {
-            name: "Radius",
+            name: _("Radius"),
             slug: "radius"
         },
         {
-            name: "Shadow",
+            name: _("Shadow"),
             slug: "shadow"
         },
         {
-            name: "Inner Shadow",
+            name: _("Inner Shadow"),
             slug: "inner-shadow"
         }
     ],
