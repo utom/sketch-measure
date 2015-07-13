@@ -25,7 +25,7 @@ function _(str){
         "Export"                                            : "导出",
         "Export complete!"                                  : "导出成功!",
         "OK"                                                : "确定",
-        "CANCEL"                                            : "取消",
+        "Cancel"                                            : "取消",
     };
 
     return (I18N[lang] && I18N[lang][str])? I18N[lang][str]: str;
@@ -358,7 +358,7 @@ com.utom.extend({
         alert.setMessageText(_("Resolution Setup"));
         alert.setInformativeText(_("* Choose your design resolution"));
         alert.addButtonWithTitle(_("OK"));
-        alert.addButtonWithTitle(_("CANCEL"));
+        alert.addButtonWithTitle(_("Cancel"));
         alert.setAccessoryView(accessory);
 
         var buttonReturnValue = [alert runModal],
@@ -952,7 +952,7 @@ com.utom.extend({
         alert.setMessageText(_("Get Properties"));
         alert.setInformativeText(_("* Customize the Property Guide that will be created."));
         alert.addButtonWithTitle(_("OK"));
-        alert.addButtonWithTitle(_("CANCEL"));
+        alert.addButtonWithTitle(_("Cancel"));
         alert.setAccessoryView(accessory);
 
         var responseCode = alert.runModal()
@@ -1460,8 +1460,7 @@ com.utom.extend({
         savePanel.setNameFieldStringValue(fileName);
 
         if (savePanel.runModal() != NSOKButton) {
-            
-            exit
+            return false;
         }
         
         return savePanel.URL().path();
