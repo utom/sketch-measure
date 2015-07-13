@@ -4,12 +4,28 @@ function _(str){
 
     // log(lang);
     I18N["zh-Hans"] = {
-        "You need an artboard."             :   "You need an artboard.",
-        "Resolution Setup"                  :   "Resolution Setup",
-        "* Choose your design resolution"   :   "* Choose your design resolution", 
-        "Export complete!"                  :   "导出成功!",
-        "Save"                              :   "保存",
-        "Cancel"                            :   "取消",
+        "You need an artboard."                             : "You need an artboard.",
+        "Resolution Setup"                                  : "Resolution Setup",
+        "* Choose your design resolution"                   : "* Choose your design resolution", 
+        "Please select a layer for measuring."              : "Please select a layer for measuring.",
+        "Please select 1 or 2 layers for measuring."        : "Please select 1 or 2 layers for measuring.",
+        "Please select a layer for creating."               : "Please select a layer for creating.",
+        "Please select a text layer for drawing."           : "Please select a text layer for drawing.",
+        "Please select a text layer for getting typography.": "Please select a text layer for getting typography.",
+        "Fill / Color / Gradient"                           : "Fill / Color / Gradient",
+        "Border Color"                                      : "Border Color",
+        "Layer Opacity"                                     : "Layer Opacity",
+        "Radius"                                            : "Radius",
+        "Shadow"                                            : "Shadow",
+        "Inner Shadow"                                      : "Inner Shadow",
+        "Get Properties"                                    : "Get Properties",
+        "* Customize the Property Guide that will be created.": "* Customize the Property Guide that will be created.",
+        "Export Spec"                                       : "导出规范",
+        "Export To:"                                        : "导出到:",
+        "Export"                                            : "导出",
+        "Export complete!"                                  : "导出成功!",
+        "OK"                                                : "确定",
+        "CANCEL"                                            : "取消",
     };
 
     return (I18N[lang] && I18N[lang][str])? I18N[lang][str]: str;
@@ -341,8 +357,8 @@ com.utom.extend({
         var alert = NSAlert.alloc().init();
         alert.setMessageText(_("Resolution Setup"));
         alert.setInformativeText(_("* Choose your design resolution"));
-        alert.addButtonWithTitle(_("Save"));
-        alert.addButtonWithTitle(_("Cancel"));
+        alert.addButtonWithTitle(_("OK"));
+        alert.addButtonWithTitle(_("CANCEL"));
         alert.setAccessoryView(accessory);
 
         var buttonReturnValue = [alert runModal],
@@ -935,8 +951,8 @@ com.utom.extend({
         var alert = NSAlert.alloc().init();
         alert.setMessageText(_("Get Properties"));
         alert.setInformativeText(_("* Customize the Property Guide that will be created."));
-        alert.addButtonWithTitle(_("Save"));
-        alert.addButtonWithTitle(_("Cancel"));
+        alert.addButtonWithTitle(_("OK"));
+        alert.addButtonWithTitle(_("CANCEL"));
         alert.setAccessoryView(accessory);
 
         var responseCode = alert.runModal()
