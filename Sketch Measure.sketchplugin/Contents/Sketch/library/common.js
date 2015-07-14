@@ -774,12 +774,12 @@ com.utom.extend({
     createOverlayer: function(){
         if(!this.configs) return false;
 
-        var layer = layer || this.selection[0];
-
         if (this.selection.count() < 1){
             this.message(_("Please select a layer for creating."));
             return false;
         }
+
+        var layer = layer || this.selection[0];
 
         var frame = this.getFrame(layer);
         var name = "OVERLAYER#" + layer.objectID();
@@ -808,12 +808,16 @@ com.utom.extend({
     drawLabel: function(target, styles, name){
         if(!this.configs) return false;
 
-        var target = target || this.selection[0];
 
-        if (!target || !this.is(target, MSTextLayer) ){
+        if (
+            !target ||
+            ( target && !this.is(target, MSTextLayer) )
+        ){
             this.message(_("Please select a text layer for drawing."));
             return false;
         }
+
+        var target = target || this.selection[0];
 
         var text = target;
         var textFrame;
@@ -861,12 +865,12 @@ com.utom.extend({
     getTypography: function(){
         if(!this.configs) return false;
 
-        var layer = layer || this.selection[0];
-
-        if( !this.is(layer, MSTextLayer) ){
+        if( this.selection.count() < 1 || ( this.selection[0] && !this.is(this.selection[0], MSTextLayer) ) ){
             this.message(_("Please select a text layer for getting typography."));
             return false;
         }
+
+        var layer = layer || this.selection[0];
 
         var styles = [
             this.sharedLayerStyle("@Typography / Layer", "#F5A623"),
@@ -976,12 +980,12 @@ com.utom.extend({
     getProperty: function(){
         if(!this.configs) return false;
 
-        var layer = layer || this.selection[0];
-
-        if( !layer || this.is(layer, MSTextLayer) ){
+        if( this.selection.count() < 1 || ( this.selection[0] && this.is(this.selection[0], MSTextLayer) ) ){
             this.message(_("Please select a layer (not text layer) for getting typography."));
             return false;
         }
+
+        var layer = layer || this.selection[0];
 
         var styles = [
             this.sharedLayerStyle("@Property / Layer", "#4A90E2"),
@@ -1477,6 +1481,9 @@ com.utom.extend({
         var masks = [];
         var layerIter = this.current.children().objectEnumerator();
         var name = current.objectID();
+        var savePath = this.savePath();
+
+        if(!savePath) return false;
 
         while(msLayer = layerIter.nextObject()) {
             if(this.is(msLayer, MSLayerGroup) && /LABEL\#|NOTE\#/.exec(msLayer.name())){
@@ -1528,14 +1535,12 @@ com.utom.extend({
                 layer.lineHeight = msLayer.lineSpacing();
             }
 
-            // layers.push(layer);
             layersObj[msLayer.objectID()] = layer;
 
             layer = null;
             layerStyle = null;
         }
 
-        // remove
         if(masks.length){
             masks.forEach(function(maskID){
                 if(layersObj[maskID]) delete layersObj[maskID];
@@ -1545,9 +1550,6 @@ com.utom.extend({
         for ( var ID in layersObj ){
             layers.push(layersObj[ID]);
         }
-
-
-        var savePath = this.savePath();
 
 
         var imageFileName = name + ".png";
