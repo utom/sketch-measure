@@ -1571,7 +1571,7 @@ com.utom.extend({
         var imageURL = NSURL.fileURLWithPath(NSTemporaryDirectory().stringByAppendingPathComponent(imageFileName));
         var imageData = NSData.dataWithContentsOfURL(imageURL);
         var imageBase64 = imageData.base64EncodedStringWithOptions(0);
-// log(imageBase64.toJSString);
+
         var data = {
             name: this.toJSString(msArtboard.name()),
             imageBase64: this.toJSString(imageBase64),
