@@ -1565,12 +1565,16 @@ com.utom.extend({
 
         var imageFileName = name + ".png";
 
-            [document saveArtboardOrSlice: msArtboard
-                              toFile:savePath.stringByAppendingPathComponent(imageFileName)];
+        [document saveArtboardOrSlice: msArtboard
+            toFile: NSTemporaryDirectory().stringByAppendingPathComponent(imageFileName) ];
 
+        var imageURL = NSURL.fileURLWithPath(NSTemporaryDirectory().stringByAppendingPathComponent(imageFileName));
+        var imageData = NSData.dataWithContentsOfURL(imageURL);
+        var imageBase64 = imageData.base64EncodedStringWithOptions(0);
+// log(imageBase64.toJSString);
         var data = {
             name: this.toJSString(msArtboard.name()),
-            imageFileName: imageFileName,
+            imageBase64: this.toJSString(imageBase64),
             width: artboardFrame.width(),
             height: artboardFrame.height(),
             resolution: this.configs.resolution,
@@ -1578,8 +1582,6 @@ com.utom.extend({
             layers: layers,
             notes: notes
         };
-
-        var path = savePath.stringByAppendingPathComponent("spec.js");
 
         var pluginPath = NSString.stringWithString(this.context.scriptPath).stringByDeletingLastPathComponent();
 
