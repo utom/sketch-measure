@@ -33,7 +33,7 @@
     "shortcut": "ctrl shift 5",
     "script": "Property.sketchscript"
   }, {
-    "name": "6. Draw Label",
+    "name": "6. Create Note",
     "identifier": "label",
     "shortcut": "ctrl shift 6",
     "script": "Label.sketchscript"

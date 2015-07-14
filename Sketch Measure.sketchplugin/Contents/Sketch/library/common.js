@@ -203,6 +203,16 @@ com.utom.extend({
 
         return (layerStyle.newInstance)? layerStyle.newInstance(): layerStyle;
     },
+    sharedLayerStyleBorder: function(style, color, alpha) {
+        var alpha = alpha || 1;
+        var border = style.borders().addNewStylePart();
+        var color = MSColor.colorWithSVGString(color);
+        color.setAlpha(alpha);
+        border.color = color;
+        border.thickness = 1;
+
+        return style;
+    },
     sharedTextStyle: function(name, color, alpha, center) {
         var textStyles = this.document.documentData().layerTextStyles();
         var textStylesLibrary = textStyles.objectsSortedByName();
@@ -807,7 +817,8 @@ com.utom.extend({
 com.utom.extend({
     drawLabel: function(target, styles, name){
         if(!this.configs) return false;
-
+        var selection = (this.selection[0]) ? this.selection[0]: undefined;
+        var target = target || selection;
 
         if (
             !target ||
@@ -817,25 +828,24 @@ com.utom.extend({
             return false;
         }
 
-        var target = target || this.selection[0];
-
         var text = target;
         var textFrame;
         var container = text.parentGroup();
         var label;
         var labelFrame;
 
-        if(/LABEL\#|TYPOGRAPHY\#|PROPERTY\#/.exec(container.name())){
+        if(/NOTE\#|LABEL\#|TYPOGRAPHY\#|PROPERTY\#/.exec(container.name())){
             label = this.find('label', container);
         }
         else{
-            var name = name || "LABEL#" + text.objectID();
+            var name = name || "NOTE#" + text.objectID();
             container = this.find(name);
 
             var styles = styles || [
-                this.sharedLayerStyle("@Label / Layer", "#7ED321"),
-                this.sharedTextStyle("@Label / Text", "#FFFFFF")
+                this.sharedLayerStyleBorder(this.sharedLayerStyle("@NOTE / Layer", "#FFFCDC"), "#CCCCCC"),
+                this.sharedTextStyle("@NOTE / Text", "#555555")
             ];
+
             var layerStyle = styles[0];
             var textStyle = styles[1];
 
@@ -1113,7 +1123,7 @@ com.utom.extend({
 com.utom.extend({
     isMeasureHidden: false,
     isMeasureHidden: false,
-    regexName: /OVERLAYER\#|WIDTH\#|HEIGHT\#|TOP\#|RIGHT\#|BOTTOM\#|LEFT\#|VERTICAL\#|HORIZONTAL\#|LABEL\#|TYPOGRAPHY\#|PROPERTY\#|LITE\#/,
+    regexName: /OVERLAYER\#|WIDTH\#|HEIGHT\#|TOP\#|RIGHT\#|BOTTOM\#|LEFT\#|VERTICAL\#|HORIZONTAL\#|NOTE\#|LABEL\#|TYPOGRAPHY\#|PROPERTY\#|LITE\#/,
     toggleMeasureHidden: function(){
         if(!this.configs) return false;
 
