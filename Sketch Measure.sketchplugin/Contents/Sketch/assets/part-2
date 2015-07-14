@@ -1,0 +1,148 @@
+    </script>
+  </head>
+
+  <body class="off">
+  
+    <div class="main">
+      <div id="screen" class="screens">
+        <div id="guide_horizontal" class="guide horizontal"></div>
+        <div id="guide_vertical" class="guide vertical"></div>
+        <div id="layers">
+          <a class="layer selected">
+            <i class="lt"></i><i class="rt"></i><i class="lb"></i><i class="rb"></i>
+          </a>
+          <a class="layer hover">
+            <i class="lt"></i><i class="rt"></i><i class="lb"></i><i class="rb"></i>
+          </a>
+        </div>
+
+        <script id="layer-item-template" type="application/template">
+          <div class="layer" style="left: ${x}px; top: ${y}px; width: ${width}px; height: ${height}px;">
+            <i class="lt"></i><i class="rt"></i><i class="lb"></i><i class="rb"></i>
+          </div>
+        </script>
+        <script id="edge-item-template" type="application/template">
+          <div class="edge ${position}" style="left: ${x}px; top: ${y}px; width: ${width}px; height: ${height}px;"></div>
+        </script>
+        <script id="note-item-template" type="application/template">
+          <div class="pin" style="left: ${x}px; top: ${y}px;">${index}</div>
+        </script>
+
+        <div id="guide_size_width" class="size width"><div class="label"></div></div>
+        <div id="guide_size_height" class="size height"><div class="label"></div></div>
+
+        <div id="guide_top" class="distance height">
+          <i class="arrow start"></i>
+          <i class="arrow end"></i>
+          <i class="line"></i>
+          <div class="label"></div>
+        </div>
+        <div id="guide_right" class="distance width">
+          <i class="arrow start"></i>
+          <i class="arrow end"></i>
+          <i class="line"></i>
+          <div class="label"></div>
+        </div>
+        <div id="guide_bottom" class="distance height">
+          <i class="arrow start"></i>
+          <i class="arrow end"></i>
+          <i class="line"></i>
+          <div class="label"></div>
+        </div>
+        <div id="guide_left" class="distance width">
+          <i class="arrow start"></i>
+          <i class="arrow end"></i>
+          <i class="line"></i>
+          <div class="label"></div>
+        </div>
+        <div id="note_tip" class="note" ></div>
+      </div>
+
+      <div id="about" class="about"><span>ABOUT</span></div>
+      <div id="about_list" class="about_list">
+        <div class="twitter"><a href="https://twitter.com/utom" target="_blank">Twitter</a></div>
+        <div class="github"><a href="https://github.com/utom/sketch-measure" target="_blank">GitHub</a></div>
+        <div class="email"><a href="mailto:utombox@gmail.com" target="_blank">Email</a></div>
+      </div>
+
+      <div id="toggle" class="toggle" title="Toggle Notes Hidden"><span class="toggle_hide"></span></div>
+
+      <div id="zoom" class="zoom">
+        <span class="menu minus">-</span>
+        <span class="text"></span>
+        <span class="menu plus">+</span>
+      </div>
+
+      <div id="resolution" class="resolution"><span></span></div>
+      <div id="resolution_list" class="resolution_list">
+        <div class="current">${name}</div>
+        <div>${name}</div>
+      </div>
+
+      <script id="resolution-item-template" type="application/template">
+        <div>${name}</div>
+      </script>
+    </div>
+    <div class="sidebar">
+      <div id="properties">
+        <h3 id="side-title">PROPERTIES</h3>
+        <ul></ul>
+      </div>
+
+      <div id="typeface">
+        <h3 id="side-title">TYPEFACE</h3>
+        <ul></ul>
+      </div>
+
+      <div id="content">
+        <h3 id="side-title">CONTENT</h3>
+        <ul></ul>
+      </div>
+
+      <div id="fills">
+        <h3 id="side-title">FILLS</h3>
+        <ul></ul>
+      </div>
+
+      <div id="borders">
+        <h3 id="side-title">BORDERS</h3>
+        <ul></ul>
+      </div>
+
+      <div id="shadows">
+        <h3 id="side-title">SHADOWS</h3>
+        <ul></ul>
+      </div>
+
+      <script id="property-template" type="application/template">
+        <li><label>size:</label> ${width} <i>,</i> ${height}</li>
+        <li><label>opacity:</label> ${opacity}</li>
+        <li class="radius"><label>radius:</label> ${radius}</li>
+      </script>
+
+      <script id="type-template" type="application/template">
+        <li>${size} <i>/</i> ${line} <i>,</i> ${face}</li>
+      </script>
+
+      <script id="content-template" type="application/template">
+        <li class="fs14">${content}</li>
+      </script>
+
+      <script id="color-template" type="application/template">
+        <li><i class="connect"></i><em class="color" style="background: rgba(${r}, ${g}, ${b}, ${a})"></em> <span class="color-text normal">${hex}, ${alpha}</span><span class="color-text rgba">rgba(${r}, ${g}, ${b}, ${a})</span><span class="color-text argb">${argb}</span> </li>
+      </script>
+
+      <script id="border-template" type="application/template">
+        <li class="fs14">${position}</li>
+        <li><label>thickness:</label> ${thickness}</li>
+      </script>
+
+      <script id="shadow-template" type="application/template">
+        <li class="fs14">${type}</li>
+        <li><label>offset:</label> ${offsetX} <i>,</i> ${offsetY} </li>
+        <li><label>blur:</label> ${blurRadius} <i>,</i> <label>spread:</label> ${spread}</li>
+      </script>
+
+    </div>
+  </body>
+</html>

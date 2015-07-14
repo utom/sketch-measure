@@ -1460,8 +1460,8 @@ com.utom.extend({
     },
     savePath: function(){
         var filePath = this.document.fileURL()? this.document.fileURL().path().stringByDeletingLastPathComponent(): "~";
-        // var fileName = this.document.displayName().stringByDeletingPathExtension();
-        var fileName = this.current.name();
+        var fileName = this.document.displayName().stringByDeletingPathExtension();
+        // var fileName = this.current.name();
         var savePanel = NSSavePanel.savePanel();
 
         savePanel.setTitle(_("Export Spec"));
@@ -1484,13 +1484,14 @@ com.utom.extend({
 
         var document = this.document;
         var current = this.current;
-        var artboardFrame = this.current.frame();
+        var msArtboard = this.current;
+        var artboardFrame = msArtboard.frame();
         var layersObj = {};
         var layers = [];
         var notes = [];
         var masks = [];
-        var layerIter = this.current.children().objectEnumerator();
-        var name = current.objectID();
+        var layerIter = msArtboard.children().objectEnumerator();
+        var name = msArtboard.objectID();
         var savePath = this.savePath();
 
         if(!savePath) return false;
@@ -1564,11 +1565,11 @@ com.utom.extend({
 
         var imageFileName = name + ".png";
 
-            [document saveArtboardOrSlice:current
+            [document saveArtboardOrSlice: msArtboard
                               toFile:savePath.stringByAppendingPathComponent(imageFileName)];
 
         var data = {
-            name: this.toJSString(this.current.name()),
+            name: this.toJSString(msArtboard.name()),
             imageFileName: imageFileName,
             width: artboardFrame.width(),
             height: artboardFrame.height(),
@@ -1579,19 +1580,18 @@ com.utom.extend({
         };
 
         var path = savePath.stringByAppendingPathComponent("spec.js");
-        var content = NSString.stringWithString("jQuery(function(){Spec(" + JSON.stringify(data) + ")});");
 
+        var pluginPath = NSString.stringWithString(this.context.scriptPath).stringByDeletingLastPathComponent();
 
-        var pluginPath = NSString.stringWithFormat(this.context.scriptPath).stringByDeletingLastPathComponent();
-        var templatePath = pluginPath.stringByAppendingPathComponent("assets/template");
-        var template = [NSString stringWithContentsOfFile:templatePath encoding:NSUTF8StringEncoding error:nil];
+        var template1Path = pluginPath.stringByAppendingPathComponent("assets/part-1");
+        var template2Path = pluginPath.stringByAppendingPathComponent("assets/part-2");
+        var template1 = [NSString stringWithContentsOfFile:template1Path encoding:NSUTF8StringEncoding error:nil];
+        var template2 = [NSString stringWithContentsOfFile:template2Path encoding:NSUTF8StringEncoding error:nil];
 
-        [template writeToFile:savePath.stringByAppendingPathComponent("index.html")
-                  atomically:false
-                    encoding:NSUTF8StringEncoding
-                       error:null];
+        var content = template1 + NSString.stringWithString("jQuery(function(){Spec(" + JSON.stringify(data) + ")});") + template2;
+        content = NSString.stringWithString(content);
 
-        [content writeToFile:path
+        [content writeToFile:savePath.stringByAppendingPathComponent( msArtboard.name() + ".html")
                   atomically:false
                     encoding:NSUTF8StringEncoding
                        error:null];
