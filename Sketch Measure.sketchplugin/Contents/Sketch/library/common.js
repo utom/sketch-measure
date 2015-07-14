@@ -638,7 +638,7 @@ com.utom.extend({
             this.sharedTextStyle("@Spacing / Text", "#FFFFFF", 1, true)
         ];
 
-        if (this.selection.count() < 1){
+        if (this.selection.count() < 1 || this.selection.count() > 2){
             this.message(_("Please select 1 or 2 layers for measuring."));
             return false;
         }
