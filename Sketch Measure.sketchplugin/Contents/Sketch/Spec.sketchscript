@@ -1,6 +1,7 @@
 @import 'library/common.js'
 
 function onRun(context) {
-	com.utom.init(context);
+	com.utom.context = context;
+	com.utom.document = context.document;
     com.utom.export();
 }

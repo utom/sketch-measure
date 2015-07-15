@@ -26,6 +26,7 @@ function _(str){
         "Export complete!"                                  : "导出成功!",
         "OK"                                                : "确定",
         "Cancel"                                            : "取消",
+        "Select 1 or multiple artboards"                    : "Select 1 or multiple artboards"
     };
 
     return (I18N[lang] && I18N[lang][str])? I18N[lang][str]: str;
@@ -1479,130 +1480,151 @@ com.utom.extend({
         
         return savePanel.URL().path();
     },
-    export: function(){
-        if(!this.configs) return false;
+    export: function( context ){
+        // if(!this.configs) return false;
 
-        var document = this.document;
-        var current = this.current;
-        var msArtboard = current;
-        var artboardFrame = msArtboard.frame();
-        var layersObj = {};
-        var layers = [];
-        var notes = [];
-        var masks = [];
-        var layerIter = msArtboard.children().objectEnumerator();
-        var name = msArtboard.objectID();
+        var context = this.context;
+        var document = context.document;
+        var selection = context.selection.objectEnumerator();
+
+        var artboardError = true;
+        while(msArtboard = selection.nextObject()){
+            if(msArtboard instanceof MSArtboardGroup){
+                artboardError = false;
+            }
+        }
+
+        if(artboardError){
+            this.message(_("Select 1 or multiple artboards"));
+            return false;
+        }
+
+        var resolution = this.resolutionSetting();
+        if(resolution === false) return false;
+
         var savePath = this.savePath();
-
         if(!savePath) return false;
 
-        while(msLayer = layerIter.nextObject()) {
-            if(this.is(msLayer, MSLayerGroup) && /LABEL\#|NOTE\#/.exec(msLayer.name())){
-                var msText = msLayer.children()[2];
+        while(msArtboard = selection.nextObject()){
+            if(msArtboard instanceof MSArtboardGroup){
+                artboardError = false;
 
-                notes.push({
-                    rect: this.rectToJSON(msLayer.absoluteRect(), artboardFrame),
-                    note: this.toJSString(msText.stringValue())
-                });
+                var artboardFrame = msArtboard.frame();
+                var layersObj = {};
+                var layers = [];
+                var notes = [];
+                var masks = [];
+                var layerIter = msArtboard.children().objectEnumerator();
+                var name = msArtboard.objectID();
 
-                msLayer.setIsVisible(false);
-            }
+                while(msLayer = layerIter.nextObject()) {
+                    if(this.is(msLayer, MSLayerGroup) && /LABEL\#|NOTE\#/.exec(msLayer.name())){
+                        var msText = msLayer.children()[2];
 
-            if (this.isHidden(msLayer) || !this.isExportable(msLayer) || this.isMeasure(msLayer) ) {
-                continue;
-            }
+                        notes.push({
+                            rect: this.rectToJSON(msLayer.absoluteRect(), artboardFrame),
+                            note: this.toJSString(msText.stringValue())
+                        });
 
-            if(msLayer.hasClippingMask()){
-                msLayer = msLayer.parentGroup();
-                var masksIter = msLayer.children().objectEnumerator();
-                while(maskLayer = masksIter.nextObject()) {
-                    if (this.isHidden(maskLayer) || !this.isExportable(maskLayer) || this.isMeasure(maskLayer) ) {
+                        msLayer.setIsVisible(false);
+                    }
+
+                    if (this.isHidden(msLayer) || !this.isExportable(msLayer) || this.isMeasure(msLayer) ) {
                         continue;
                     }
-                    masks.push(maskLayer.objectID());
-                }
-            }
 
-            var layerStyle = msLayer.style(),
-                layer = {
-                    type: msLayer instanceof MSTextLayer ? "text" : "shape",
-                    name: this.toJSString(msLayer.name()),
-                    rect: this.rectToJSON(msLayer.absoluteRect(), artboardFrame),
-                    rotation: msLayer.rotation(),
-                    radius: ( msLayer.layers && this.is(msLayer.layers().firstObject(), MSRectangleShape) ) ? msLayer.layers().firstObject().fixedRadius(): null,
-                    borders: this.getBorders(layerStyle),
-                    fills: this.getFills(layerStyle),
-                    shadows: this.getShadows(layerStyle),
-                    opacity: this.getOpacity(layerStyle)
+                    if(msLayer.hasClippingMask()){
+                        msLayer = msLayer.parentGroup();
+                        var masksIter = msLayer.children().objectEnumerator();
+                        while(maskLayer = masksIter.nextObject()) {
+                            if (this.isHidden(maskLayer) || !this.isExportable(maskLayer) || this.isMeasure(maskLayer) ) {
+                                continue;
+                            }
+                            masks.push(maskLayer.objectID());
+                        }
+                    }
+
+                    var layerStyle = msLayer.style(),
+                        layer = {
+                            type: msLayer instanceof MSTextLayer ? "text" : "shape",
+                            name: this.toJSString(msLayer.name()),
+                            rect: this.rectToJSON(msLayer.absoluteRect(), artboardFrame),
+                            rotation: msLayer.rotation(),
+                            radius: ( msLayer.layers && this.is(msLayer.layers().firstObject(), MSRectangleShape) ) ? msLayer.layers().firstObject().fixedRadius(): null,
+                            borders: this.getBorders(layerStyle),
+                            fills: this.getFills(layerStyle),
+                            shadows: this.getShadows(layerStyle),
+                            opacity: this.getOpacity(layerStyle)
+                        };
+
+                    if (msLayer instanceof MSTextLayer) {
+                        layer.content = this.toJSString(msLayer.storage().string());
+                        layer.color = this.colorToJSON(msLayer.textColor());
+                        layer.fontSize = msLayer.fontSize();
+                        layer.fontFace = this.toJSString(msLayer.fontPostscriptName());
+                        layer.textAlign = this.TextAligns[msLayer.textAlignment()];
+                        layer.letterSpacing = msLayer.characterSpacing();
+                        layer.lineHeight = msLayer.lineSpacing();
+                    }
+
+                    layersObj[msLayer.objectID()] = layer;
+
+                    layer = null;
+                    layerStyle = null;
+                }
+
+                if(masks.length){
+                    masks.forEach(function(maskID){
+                        if(layersObj[maskID]) delete layersObj[maskID];
+                    });
+                }
+
+                for ( var ID in layersObj ){
+                    layers.push(layersObj[ID]);
+                }
+
+
+                var imageFileName = name + ".png";
+                var imagePath = this.toJSString( NSTemporaryDirectory().stringByAppendingPathComponent(imageFileName) );
+
+                [document saveArtboardOrSlice: msArtboard
+                    toFile: imagePath ];
+
+                var imageURL = NSURL.fileURLWithPath(imagePath);
+                var imageData = NSData.dataWithContentsOfURL(imageURL);
+                var imageBase64 = imageData.base64EncodedStringWithOptions(0);
+
+                var data = {
+                    name: this.toJSString(msArtboard.name()),
+                    imageBase64: this.toJSString(imageBase64),
+                    width: artboardFrame.width(),
+                    height: artboardFrame.height(),
+                    resolution: resolution,
+                    zoom: 1,
+                    layers: layers,
+                    notes: notes
                 };
 
-            if (msLayer instanceof MSTextLayer) {
-                layer.content = this.toJSString(msLayer.storage().string());
-                layer.color = this.colorToJSON(msLayer.textColor());
-                layer.fontSize = msLayer.fontSize();
-                layer.fontFace = this.toJSString(msLayer.fontPostscriptName());
-                layer.textAlign = this.TextAligns[msLayer.textAlignment()];
-                layer.letterSpacing = msLayer.characterSpacing();
-                layer.lineHeight = msLayer.lineSpacing();
+                var pluginPath = NSString.stringWithString(this.context.scriptPath).stringByDeletingLastPathComponent();
+
+                var template1Path = pluginPath.stringByAppendingPathComponent("assets/part-1");
+                var template2Path = pluginPath.stringByAppendingPathComponent("assets/part-2");
+                var template1 = [NSString stringWithContentsOfFile:template1Path encoding:NSUTF8StringEncoding error:nil];
+                var template2 = [NSString stringWithContentsOfFile:template2Path encoding:NSUTF8StringEncoding error:nil];
+
+                var content = template1 + NSString.stringWithString("jQuery(function(){Spec(" + JSON.stringify(data) + ")});") + template2;
+                content = NSString.stringWithString(content);
+
+                [[NSFileManager defaultManager] createDirectoryAtPath:savePath withIntermediateDirectories:true attributes:nil error:nil]
+                var exportURL = savePath.stringByAppendingPathComponent( msArtboard.name() + ".html");
+
+                [content writeToFile: exportURL
+                          atomically: false
+                            encoding: NSUTF8StringEncoding
+                               error: null];
             }
-
-            layersObj[msLayer.objectID()] = layer;
-
-            layer = null;
-            layerStyle = null;
+            
         }
-
-        if(masks.length){
-            masks.forEach(function(maskID){
-                if(layersObj[maskID]) delete layersObj[maskID];
-            });
-        }
-
-        for ( var ID in layersObj ){
-            layers.push(layersObj[ID]);
-        }
-
-
-        var imageFileName = name + ".png";
-        var imagePath = this.toJSString( NSTemporaryDirectory().stringByAppendingPathComponent(imageFileName) );
-
-        [document saveArtboardOrSlice: msArtboard
-            toFile: imagePath ];
-
-        var imageURL = NSURL.fileURLWithPath(imagePath);
-        var imageData = NSData.dataWithContentsOfURL(imageURL);
-        var imageBase64 = imageData.base64EncodedStringWithOptions(0);
-
-        var data = {
-            name: this.toJSString(msArtboard.name()),
-            imageBase64: this.toJSString(imageBase64),
-            width: artboardFrame.width(),
-            height: artboardFrame.height(),
-            resolution: this.configs.resolution,
-            zoom: 1,
-            layers: layers,
-            notes: notes
-        };
-
-        var pluginPath = NSString.stringWithString(this.context.scriptPath).stringByDeletingLastPathComponent();
-
-        var template1Path = pluginPath.stringByAppendingPathComponent("assets/part-1");
-        var template2Path = pluginPath.stringByAppendingPathComponent("assets/part-2");
-        var template1 = [NSString stringWithContentsOfFile:template1Path encoding:NSUTF8StringEncoding error:nil];
-        var template2 = [NSString stringWithContentsOfFile:template2Path encoding:NSUTF8StringEncoding error:nil];
-
-        var content = template1 + NSString.stringWithString("jQuery(function(){Spec(" + JSON.stringify(data) + ")});") + template2;
-        content = NSString.stringWithString(content);
-        // content = NSString.stringWithString(content);
-
-        [[NSFileManager defaultManager] createDirectoryAtPath:savePath withIntermediateDirectories:true attributes:nil error:nil]
-        var exportURL = savePath.stringByAppendingPathComponent( msArtboard.name() + ".html");
-
-        log(savePath);
-        [content writeToFile: exportURL
-                  atomically: false
-                    encoding: NSUTF8StringEncoding
-                       error: null];
 
         this.message(_("Export complete!"));
 
