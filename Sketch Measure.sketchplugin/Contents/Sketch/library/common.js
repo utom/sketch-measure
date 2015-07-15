@@ -19,6 +19,7 @@ function _(str){
         "Shadow"                                            : "Shadow",
         "Inner Shadow"                                      : "Inner Shadow",
         "Get Properties"                                    : "Get Properties",
+        "Please select a layer (not text layer) for getting typography.": "Please select a layer (not text layer) for getting typography.",
         "* Customize the Property Guide that will be created.": "* Customize the Property Guide that will be created.",
         "Export Spec"                                       : "导出规范",
         "Export To:"                                        : "导出到:",
