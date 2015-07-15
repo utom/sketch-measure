@@ -1484,7 +1484,7 @@ com.utom.extend({
 
         var document = this.document;
         var current = this.current;
-        var msArtboard = this.current;
+        var msArtboard = current;
         var artboardFrame = msArtboard.frame();
         var layersObj = {};
         var layers = [];
