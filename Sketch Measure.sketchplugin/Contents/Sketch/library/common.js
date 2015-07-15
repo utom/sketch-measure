@@ -1564,11 +1564,12 @@ com.utom.extend({
 
 
         var imageFileName = name + ".png";
+        var imagePath = this.toJSString( NSTemporaryDirectory().stringByAppendingPathComponent(imageFileName) );
 
         [document saveArtboardOrSlice: msArtboard
-            toFile: NSTemporaryDirectory().stringByAppendingPathComponent(imageFileName) ];
+            toFile: imagePath ];
 
-        var imageURL = NSURL.fileURLWithPath(NSTemporaryDirectory().stringByAppendingPathComponent(imageFileName));
+        var imageURL = NSURL.fileURLWithPath(imagePath);
         var imageData = NSData.dataWithContentsOfURL(imageURL);
         var imageBase64 = imageData.base64EncodedStringWithOptions(0);
 
@@ -1592,11 +1593,16 @@ com.utom.extend({
 
         var content = template1 + NSString.stringWithString("jQuery(function(){Spec(" + JSON.stringify(data) + ")});") + template2;
         content = NSString.stringWithString(content);
+        // content = NSString.stringWithString(content);
 
-        [content writeToFile:savePath.stringByAppendingPathComponent( msArtboard.name() + ".html")
-                  atomically:false
-                    encoding:NSUTF8StringEncoding
-                       error:null];
+        [[NSFileManager defaultManager] createDirectoryAtPath:savePath withIntermediateDirectories:true attributes:nil error:nil]
+        var exportURL = savePath.stringByAppendingPathComponent( msArtboard.name() + ".html");
+
+        log(savePath);
+        [content writeToFile: exportURL
+                  atomically: false
+                    encoding: NSUTF8StringEncoding
+                       error: null];
 
         this.message(_("Export complete!"));
 
