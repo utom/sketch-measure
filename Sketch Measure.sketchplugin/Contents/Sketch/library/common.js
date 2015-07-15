@@ -26,7 +26,7 @@ function _(str){
         "Export complete!"                                  : "导出成功!",
         "OK"                                                : "确定",
         "Cancel"                                            : "取消",
-        "Select 1 or more artboards"                        : "Select 1 or more artboards"
+        "Select 1 or multiple artboards"                        : "Select 1 or multiple artboards"
     };
 
     return (I18N[lang] && I18N[lang][str])? I18N[lang][str]: str;
@@ -1497,7 +1497,7 @@ com.utom.extend({
         }
 
         if(artboardError){
-            this.message(_("Select 1 or more artboards"));
+            this.message(_("Select 1 or multiple artboards"));
             return false;
         }
 
