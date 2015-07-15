@@ -26,7 +26,7 @@ function _(str){
         "Export complete!"                                  : "导出成功!",
         "OK"                                                : "确定",
         "Cancel"                                            : "取消",
-        "Select 1 or multiple artboards"                    : "Select 1 or multiple artboards"
+        "Select 1 or more artboards"                        : "Select 1 or more artboards"
     };
 
     return (I18N[lang] && I18N[lang][str])? I18N[lang][str]: str;
@@ -1477,7 +1477,7 @@ com.utom.extend({
         if (savePanel.runModal() != NSOKButton) {
             return false;
         }
-        
+
         return savePanel.URL().path();
     },
     export: function( context ){
@@ -1486,16 +1486,18 @@ com.utom.extend({
         var context = this.context;
         var document = context.document;
         var selection = context.selection.objectEnumerator();
+        var sltArtboard = NSMutableArray.alloc().init();
 
         var artboardError = true;
         while(msArtboard = selection.nextObject()){
             if(msArtboard instanceof MSArtboardGroup){
                 artboardError = false;
+                sltArtboard.addObject(msArtboard);
             }
         }
 
         if(artboardError){
-            this.message(_("Select 1 or multiple artboards"));
+            this.message(_("Select 1 or more artboards"));
             return false;
         }
 
@@ -1504,8 +1506,16 @@ com.utom.extend({
 
         var savePath = this.savePath();
         if(!savePath) return false;
+        [[NSFileManager defaultManager] createDirectoryAtPath:savePath withIntermediateDirectories:true attributes:nil error:nil];
 
-        while(msArtboard = selection.nextObject()){
+        var pluginPath = NSString.stringWithString(this.context.scriptPath).stringByDeletingLastPathComponent();
+        var template1Path = pluginPath.stringByAppendingPathComponent("assets/part-1");
+        var template2Path = pluginPath.stringByAppendingPathComponent("assets/part-2");
+        var template1 = [NSString stringWithContentsOfFile:template1Path encoding:NSUTF8StringEncoding error:nil];
+        var template2 = [NSString stringWithContentsOfFile:template2Path encoding:NSUTF8StringEncoding error:nil];
+
+        sltArtboard = sltArtboard.objectEnumerator();
+        while(msArtboard = sltArtboard.nextObject()){
             if(msArtboard instanceof MSArtboardGroup){
                 artboardError = false;
 
@@ -1529,11 +1539,11 @@ com.utom.extend({
                         msLayer.setIsVisible(false);
                     }
 
-                    if (this.isHidden(msLayer) || !this.isExportable(msLayer) || this.isMeasure(msLayer) ) {
+                    if (this.isHidden(msLayer) || !this.isExportable(msLayer) || this.isMeasure(msLayer) /* || (msLayer.hasClippingMask() && msLayer.clippingMaskMode()) */ ) {
                         continue;
                     }
 
-                    if(msLayer.hasClippingMask()){
+                    if(msLayer.hasClippingMask() && !msLayer.clippingMaskMode()){
                         msLayer = msLayer.parentGroup();
                         var masksIter = msLayer.children().objectEnumerator();
                         while(maskLayer = masksIter.nextObject()) {
@@ -1605,17 +1615,9 @@ com.utom.extend({
                     notes: notes
                 };
 
-                var pluginPath = NSString.stringWithString(this.context.scriptPath).stringByDeletingLastPathComponent();
-
-                var template1Path = pluginPath.stringByAppendingPathComponent("assets/part-1");
-                var template2Path = pluginPath.stringByAppendingPathComponent("assets/part-2");
-                var template1 = [NSString stringWithContentsOfFile:template1Path encoding:NSUTF8StringEncoding error:nil];
-                var template2 = [NSString stringWithContentsOfFile:template2Path encoding:NSUTF8StringEncoding error:nil];
-
                 var content = template1 + NSString.stringWithString("jQuery(function(){Spec(" + JSON.stringify(data) + ")});") + template2;
                 content = NSString.stringWithString(content);
 
-                [[NSFileManager defaultManager] createDirectoryAtPath:savePath withIntermediateDirectories:true attributes:nil error:nil]
                 var exportURL = savePath.stringByAppendingPathComponent( msArtboard.name() + ".html");
 
                 [content writeToFile: exportURL
