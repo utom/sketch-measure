@@ -115,32 +115,34 @@
       </div>
 
       <script id="property-template" type="application/template">
-        <li><label>size:</label> ${width} <i>,</i> ${height}</li>
-        <li><label>opacity:</label> ${opacity}</li>
-        <li class="radius"><label>radius:</label> ${radius}</li>
+        <li><label>size:</label> <strong>${width}</strong> <i>,</i> <strong>${height}</strong></li>
+        <li><label>opacity:</label> <strong>${opacity}</strong></li>
+        <li class="radius"><label>radius:</label> <strong>${radius}</strong></li>
       </script>
 
       <script id="type-template" type="application/template">
-        <li>${size} <i>/</i> ${line} <i>,</i> ${face}</li>
+        <li><strong>${face}</strong></li>
+        <li><label>size:</label> <strong>${size}</strong></li>
+        <li><label>line:</label> <strong>${line}</strong></li>
       </script>
 
       <script id="content-template" type="application/template">
-        <li class="fs14">${content}</li>
+        <li><strong>${content}</strong></li>
       </script>
 
       <script id="color-template" type="application/template">
-        <li><i class="connect"></i><em class="color" style="background: rgba(${r}, ${g}, ${b}, ${a})"></em> <span class="color-text normal">${hex}, ${alpha}</span><span class="color-text rgba">rgba(${r}, ${g}, ${b}, ${a})</span><span class="color-text argb">${argb}</span> </li>
+        <li><i class="connect"></i><em class="color" style="background-color: rgba(${r}, ${g}, ${b}, ${a})"></em> <strong class="color-text normal">${hex}, ${alpha}</strong><strong class="color-text rgba">rgba(${r}, ${g}, ${b}, ${a})</strong><strong class="color-text argb">${argb}</strong> </li>
       </script>
 
       <script id="border-template" type="application/template">
-        <li class="fs14">${position}</li>
-        <li><label>thickness:</label> ${thickness}</li>
+        <li><strong>${position}</strong></li>
+        <li><label>thickness:</label> <strong>${thickness}</strong></li>
       </script>
 
       <script id="shadow-template" type="application/template">
-        <li class="fs14">${type}</li>
-        <li><label>offset:</label> ${offsetX} <i>,</i> ${offsetY} </li>
-        <li><label>blur:</label> ${blurRadius} <i>,</i> <label>spread:</label> ${spread}</li>
+        <li><strong>${type}</strong></li>
+        <li><label>offset:</label> <strong>${offsetX}</strong> <i>,</i> <strong>${offsetY}</strong> </li>
+        <li><label>blur:</label> <strong>${blurRadius}</strong> <i>,</i> <label>spread:</label> <strong>${spread}</strong></li>
       </script>
 
     </div>
