@@ -459,7 +459,7 @@ body {
     width: 250px;
     top: 0;
     bottom: 0;
-    transition: .5s right;
+    transition: .3s right;
     overflow-y: auto;
     right: 0;
     padding: 20px;
@@ -633,7 +633,7 @@ body {
     box-shadow: 0 0 3px rgba(0, 0, 0, .6);
     border-radius: 50%;
     cursor: pointer;
-    transition: .5s box-shadow;
+    transition: .3s box-shadow;
 }
 
 
@@ -888,6 +888,7 @@ body {
 .sidebar .color-text{
     cursor: pointer;
 }
+
 
 
     </style>
@@ -11201,6 +11202,7 @@ if ( typeof noGlobal === strundefined ) {
 return jQuery;
 
 }));
+
 (function(window) {
     var version = "0.0.1", Spec = function(options) {
         return new Spec.fn.init(options);
@@ -11382,6 +11384,16 @@ return jQuery;
                 background:'#FFF url("data:image/png;base64,' + self.data.imageBase64 + '") no-repeat',
                 "background-size":self.zoomSize(self.data.width) + "px " + self.zoomSize(self.data.height) + "px "
             });
+
+            if(!self.firstScreen){
+                setTimeout(function(){
+                    jQScreen.css({
+                        transition: "width .3s, height .3s, background-size .3s"
+                    });
+                }, .2)
+                
+                self.firstScreen = true;
+            }
         },
         layer:function(model) {
             var self = this, model = $.extend(model, {
@@ -11404,7 +11416,7 @@ return jQuery;
             }), jQTemplate = $("#note-item-template"), jQLayer = self.template(jQTemplate, model);
             return jQLayer;
         },
-        layers:function(selection_index) {
+        layers:function(selection_index, delay) {
             var self = this, edges = [ {
                 position:"top",
                 x:0,
@@ -11429,22 +11441,26 @@ return jQuery;
                 y:0,
                 width:100,
                 height:self.zoomSize(self.data.height)
-            } ];
+            } ],
+            delay = delay || 0;
             jQLayers.empty();
-            $.each(self.data.layers, function(index, data) {
-                var jQLayer = self.layer(data);
-                if (selection_index === index) self.select(jQLayer);
-                jQLayers.append(jQLayer);
-            });
-            $.each(edges, function(index, data) {
-                var jQEdge = self.edge(data);
-                jQLayers.append(jQEdge);
-            });
-            $.each(self.notes, function(index, data) {
-                var jQNote = self.note(data, index);
-                if (!self.visible) jQNote.hide();
-                jQLayers.append(jQNote);
-            });
+            self.hideSize();
+            setTimeout(function(){
+                $.each(self.data.layers, function(index, data) {
+                    var jQLayer = self.layer(data);
+                    if (selection_index === index) self.select(jQLayer);
+                    jQLayers.append(jQLayer);
+                });
+                $.each(edges, function(index, data) {
+                    var jQEdge = self.edge(data);
+                    jQLayers.append(jQEdge);
+                });
+                $.each(self.notes, function(index, data) {
+                    var jQNote = self.note(data, index);
+                    if (!self.visible) jQNote.hide();
+                    jQLayers.append(jQNote);
+                });
+            }, delay);
         },
         resolutionList:function() {
             var self = this, jQTemplate = $("#resolution-item-template");
@@ -11699,14 +11715,15 @@ return jQuery;
             self.hideGuideline();
             self.hideDistance();
         },
-        render:function(index) {
-            var self = this;
+        render:function(index, delay) {
+            var self = this,
+                delay = delay || 0;
             jQZoom.find(".text").text(self.zoom * 100 + "%");
             jQZoom.find(".disable").removeClass("disable");
             if (self.zoom <= .5) jQZoom.find(".minus").addClass("disable");
             if (self.zoom >= 1) jQZoom.find(".plus").addClass("disable");
             self.screen();
-            self.layers(index);
+            self.layers(index, delay);
             self.resolutionList();
         },
         events:function() {
@@ -11733,7 +11750,7 @@ return jQuery;
                 if (self.zoom <= .25) {
                     self.zoom = .5;
                 }
-                self.render(self.index());
+                self.render(self.index(), 300);
                 self.hideList();
             });
             jQZoom.on("click", ".plus", function(event) {
@@ -11743,7 +11760,7 @@ return jQuery;
                 if (self.zoom >= 1) {
                     self.zoom = 1;
                 }
-                self.render(self.index());
+                self.render(self.index(), 300);
                 self.hideList();
             });
             jQToggle.on("click", function(event) {
@@ -11757,8 +11774,8 @@ return jQuery;
                 event.stopPropagation();
                 event.preventDefault();
                 self.resolution = model.index;
-                self.render(self.index());
                 if (jQSelection) self.inspector();
+                self.render(self.index());
                 self.hideList();
             });
             jQResolution.click(function(event) {
