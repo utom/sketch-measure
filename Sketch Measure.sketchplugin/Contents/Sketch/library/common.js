@@ -12,11 +12,14 @@ function _(str){
         "Please select a text layer for drawing."           : "Please select a text layer for drawing.",
         "Please select a text layer for getting typography.": "Please select a text layer for getting typography.",
         "Fill / Color / Gradient"                           : "Fill / Color / Gradient",
-        "Border Color"                                      : "Border Color",
-        "Layer Opacity"                                     : "Layer Opacity",
+        "Border Color"                                      : "Border color",
+        "Layer Opacity"                                     : "Layer opacity",
         "Radius"                                            : "Radius",
         "Shadow"                                            : "Shadow",
-        "Inner Shadow"                                      : "Inner Shadow",
+        "Inner Shadow"                                      : "Inner shadow",
+        "Font size"                                         : "Font size",
+        "Line height"                                       : "Line height",
+        "Font face"                                         : "Font face",
         "Get Properties"                                    : "Get Properties",
         "Please select a layer (not text layer) for getting properties.": "Please select a layer (not text layer) for getting properties.",
         "* Customize the Property Guide that will be created.": "* Customize the Property Guide that will be created.",
@@ -937,7 +940,7 @@ com.utom.extend({
             slug: "border"
         },
         {
-            name: _("Layer Opacity"),
+            name: _("Layer opacity"),
             slug: "opacity"
         },
         {
@@ -949,20 +952,20 @@ com.utom.extend({
             slug: "shadow"
         },
         {
-            name: _("Inner Shadow"),
+            name: _("Inner shadow"),
             slug: "inner-shadow"
         },
         {
-            name: _("Font Size"),
+            name: _("Font size"),
             slug: "font-size"
         },
         {
-            name: _("Line Height"),
+            name: _("Line height"),
             slug: "font-type"
         },
         {
-            name: _("Font Typeface"),
-            slug: "font-typeface"
+            name: _("Font face"),
+            slug: "font-face"
         }
 
     ],
@@ -1120,9 +1123,9 @@ com.utom.extend({
                     if(!self.is(layer, MSTextLayer)) return false;
                     content.push("line: " + self.updateLength(layer.lineSpacing(), true) );
                     break;
-                case "font-type":
+                case "font-face":
                     if(!self.is(layer, MSTextLayer)) return false;
-                    content.push("font-type: " + layer.fontPostscriptName());
+                    content.push("font-face: " + layer.fontPostscriptName());
                     break;
             }
         });
