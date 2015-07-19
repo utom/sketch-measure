@@ -1042,7 +1042,7 @@ com.utom.extend({
 
         var colorContent = function(color){
             var alpha = color.a;
-            return "#(" + self.toHex(alpha * 255) + ")" + self.rgbToHex(color.r, color.g, color.b) + " / " + color.r + "," + color.g + "," + color.b + "(" + Math.round(color.a * 100) + "%)";
+            return "#(" + self.toHex(alpha * 255) + ")" + self.rgbToHex(color.r, color.g, color.b) + " / " + color.r + "," + color.g + "," + color.b + " (" + Math.round(color.a * 100) + "%)";
         }
 
         var colorTypeContent = function(fillJSON){
