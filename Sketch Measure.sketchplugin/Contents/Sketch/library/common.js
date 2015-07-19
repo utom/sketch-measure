@@ -1121,7 +1121,7 @@ com.utom.extend({
                     break;
                 case "line-height":
                     if(!self.is(layer, MSTextLayer)) return false;
-                    content.push("line: " + self.updateLength(layer.lineSpacing(), true) );
+                    content.push("line: " + self.updateLength(layer.lineSpacing(), true) + " (" + Math.round(layer.lineSpacing() / layer.fontSize() * 10) / 10  + ")" );
                     break;
                 case "font-face":
                     if(!self.is(layer, MSTextLayer)) return false;
