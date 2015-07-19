@@ -961,7 +961,7 @@ com.utom.extend({
         },
         {
             name: _("Line height"),
-            slug: "font-type"
+            slug: "line-height"
         },
         {
             name: _("Font face"),
