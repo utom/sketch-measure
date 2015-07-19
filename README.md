@@ -4,8 +4,8 @@ A measure tool for measurements & design specs, **Sketch 3.3+ support**.
 
 ![Banner](http://utom.us/new/assets/imgs/sketch-measure-icon@2x.png)
 ## Change Log
-* Recode
 * Only Sketch 3.3 support
+* Spec Export
 * New Interactive
 * Style Shared Support
 
@@ -37,27 +37,24 @@ _NOTE: If your Mac has not installed GitHub client, You need to install [GitHub 
 ### 3. Measure Spacing
 ![3](http://ux.utom.us/tutorial/3.gif)
 
-### 4. Get Typography
-![4](http://ux.utom.us/tutorial/4.gif)
-
-### 5. Get Property
+### 4. Get Property
 ![5](http://ux.utom.us/tutorial/5.gif)
 
-### 6. Draw Label
+### 5. Create Note
 ![6](http://ux.utom.us/tutorial/6.gif)
 
 ### Keyboard Shortcuts
 1. Create Overlay: `⌃` + `⇧` + `1`
 2. Measure Size: `⌃` + `⇧` + `2`
 3. Measure Spacing: `⌃` + `⇧` + `3`
-4. Get Typography: `⌃` + `⇧` + `4`
-5. Get Property: `⌃` + `⇧` + `5`
-6. Draw Label: `⌃` + `⇧` + `6`
+4. Get Property: `⌃` + `⇧` + `4`
+5. Create Note: `⌃` + `⇧` + `5`
+6. Spec Export: `⌃` + `⇧` + `E`
 7. Toggle All Measure Hidden `⌃` + `⇧` + `H`
 8. Toggle All Measure Locked `⌃` + `⇧` + `L`
 9. Reset(Clear) Artboard Measure
 
-### SPEC EXPORT (unfinished)
+### SPEC EXPORT (beta)
 http://ux.utom.us/preview/
 
 ##Contact

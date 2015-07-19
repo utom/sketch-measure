@@ -921,7 +921,6 @@ com.utom.extend({
         else if(old && old.ly < old.gy){
             gapFrame = gap.absoluteRect();
             gapFrame.setY(old.gy - (old.lh - labelFrame.height()));
-            // log();
         }
 
         this.removeLayer(shape);
