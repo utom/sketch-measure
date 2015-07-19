@@ -1482,7 +1482,6 @@ com.utom.extend({
     savePath: function(){
         var filePath = this.document.fileURL()? this.document.fileURL().path().stringByDeletingLastPathComponent(): "~";
         var fileName = this.document.displayName().stringByDeletingPathExtension();
-        // var fileName = this.current.name();
         var savePanel = NSSavePanel.savePanel();
 
         savePanel.setTitle(_("Export Spec"));
@@ -1564,10 +1563,12 @@ com.utom.extend({
                     }
 
                     if(msLayer.hasClippingMask() && !msLayer.clippingMaskMode()){
-                        msLayer = msLayer.parentGroup();
-                        var masksIter = msLayer.children().objectEnumerator();
+                        msGroup = msLayer.parentGroup();
+                        var masksIter = msGroup.children().objectEnumerator();
+
                         while(maskLayer = masksIter.nextObject()) {
-                            if (this.isHidden(maskLayer) || !this.isExportable(maskLayer) || this.isMeasure(maskLayer) ) {
+                            log(maskLayer.objectID());
+                            if (this.isHidden(maskLayer) || !this.isExportable(maskLayer) || this.isMeasure(maskLayer) || maskLayer.objectID() == msLayer.objectID() ) {
                                 continue;
                             }
                             masks.push(maskLayer.objectID());
