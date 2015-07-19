@@ -242,6 +242,7 @@ com.utom.extend({
             var textLayer = this.addText(this.page);
             textLayer.setTextColor(color);
             textLayer.setFontSize(12);
+            textLayer.setLineSpacing(14);
             textLayer.setFontPostscriptName("HelveticaNeue");
             if(center) textLayer.setTextAlignment(2);
 
