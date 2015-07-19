@@ -2,7 +2,6 @@ function _(str){
     var I18N = {},
         lang = NSUserDefaults.standardUserDefaults().objectForKey("AppleLanguages").objectAtIndex(0);
 
-    // log(lang);
     I18N["zh-Hans"] = {
         "You need an artboard."                             : "You need an artboard.",
         "Resolution Setup"                                  : "Resolution Setup",
