@@ -23,19 +23,14 @@
     "shortcut": "ctrl shift 3",
     "script": "Spacing.sketchscript"
   }, {
-    "name": "4. Get Typography",
-    "identifier": "typography",
-    "shortcut": "ctrl shift 4",
-    "script": "Typography.sketchscript"
-  }, {
-    "name": "5. Get Property",
+    "name": "4. Get Property",
     "identifier": "property",
-    "shortcut": "ctrl shift 5",
+    "shortcut": "ctrl shift 4",
     "script": "Property.sketchscript"
   }, {
-    "name": "6. Create Note",
+    "name": "5. Create Note",
     "identifier": "label",
-    "shortcut": "ctrl shift 6",
+    "shortcut": "ctrl shift 5",
     "script": "Label.sketchscript"
   }, {
     "name": "Toggle Measure Hidden",

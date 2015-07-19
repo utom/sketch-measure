@@ -19,7 +19,7 @@ function _(str){
         "Shadow"                                            : "Shadow",
         "Inner Shadow"                                      : "Inner Shadow",
         "Get Properties"                                    : "Get Properties",
-        "Please select a layer (not text layer) for getting typography.": "Please select a layer (not text layer) for getting typography.",
+        "Please select a layer (not text layer) for getting properties.": "Please select a layer (not text layer) for getting properties.",
         "* Customize the Property Guide that will be created.": "* Customize the Property Guide that will be created.",
         "Export Spec"                                       : "导出规范",
         "Export To:"                                        : "导出到:",
@@ -150,6 +150,17 @@ com.utom.extend({
         }
 
         return length + unit;
+    },
+    toHex:function(c) {
+        var hex = Math.round(c).toString(16).toUpperCase();
+        return hex.length == 1 ? "0" + hex :hex;
+    },
+    rgbToHex:function(r, g, b, a) {
+        if (a === undefined) {
+            return this.toHex(r) + this.toHex(g) + this.toHex(b);
+        } else {
+            return this.toHex(a * 255) + this.toHex(r) + this.toHex(g) + this.toHex(b);
+        }
     }
 });
 
@@ -259,8 +270,8 @@ com.utom.extend({
             }
 
             defaultConfigs.resolution = resolution;
-            defaultConfigs.typography = ["font", "size", "color", "line"];
-            defaultConfigs.property = ["fill", "border"];
+            // defaultConfigs.typography = ["font", "size", "color", "line"];
+            defaultConfigs.property = ["color", "border"];
             this.setConfigs(defaultConfigs);
         }
         else{
@@ -362,7 +373,7 @@ com.utom.extend({
             [cell setButtonType:NSRadioButton]
             [cell setTitle:data.name]
             [cell setTag:i]
-        })
+        });
 
         [accessory addSubview:matrix]
 
@@ -817,7 +828,7 @@ com.utom.extend({
 })
 
 com.utom.extend({
-    drawLabel: function(target, styles, name){
+    drawLabel: function(target, reference, styles, name, arrow){
         if(!this.configs) return false;
         var selection = (this.selection[0]) ? this.selection[0]: undefined;
         var target = target || selection;
@@ -833,7 +844,9 @@ com.utom.extend({
         var text = target;
         var textFrame;
         var container = text.parentGroup();
+        var shape;
         var label;
+        var gap;
         var labelFrame;
 
         if(/NOTE\#|LABEL\#|TYPOGRAPHY\#|PROPERTY\#/.exec(container.name())){
@@ -856,12 +869,15 @@ com.utom.extend({
             container = this.addGroup();
             container.setName(name);
 
-            label = this.addShape(container);
+            shape = this.addShape(container);
+            shape.setStyle(layerStyle);
+
+            label = shape.duplicate();
             label.setName("label");
+
             this.removeLayer(text);
             container.addLayers([text]);
 
-            label.setStyle(layerStyle);
             text.setStyle(textStyle);
         }
 
@@ -872,57 +888,40 @@ com.utom.extend({
         labelFrame.setWidth(textFrame.width + 8);
         labelFrame.setHeight(textFrame.height + 6);
 
-        container.resizeRoot(true);
-    },
-    getTypography: function(){
-        if(!this.configs) return false;
+        if(arrow){
+            gap = shape.duplicate();
 
-        if( this.selection.count() < 1 || ( this.selection[0] && !this.is(this.selection[0], MSTextLayer) ) ){
-            this.message(_("Please select a text layer for getting typography."));
-            return false;
+            var gapFrame = gap.absoluteRect();
+            gap.setName("gap");
+            gap.setRotation(45);
+            gap.flatten();
+            gapFrame.setWidth(8);
+            gapFrame.setHeight(8);
+            gapFrame = gap.absoluteRect();
+            gapWidth = Math.round( gapFrame.width() );
+            gapHeight = Math.round( gapFrame.height() );
+
+            var gapX;
+            var gapY;
+
+            gapX = (reference.width < (textFrame.width + 8) )? reference.x + this.mathHalf(reference.width) - this.mathHalf(gapFrame.width()): textFrame.x - 4 - this.mathHalf(gapFrame.width()) + this.mathHalf(textFrame.width + 8);
+            gapY = (arrow == 1)? textFrame.y - this.mathHalf(gapFrame.height()) - 3: textFrame.maxY + 3 - this.mathHalf(gapFrame.height());
+
+            gapFrame.setX(gapX);
+            gapFrame.setY(gapY);
         }
 
-        var layer = layer || this.selection[0];
+        this.removeLayer(shape);
 
-        var styles = [
-            this.sharedLayerStyle("@Typography / Layer", "#F5A623"),
-            this.sharedTextStyle("@Typography / Text", "#FFFFFF")
-        ];
-
-        var name = "TYPOGRAPHY#" + layer.objectID();
-        var frame = this.getFrame(layer);
-        var distance = this.getDistance(frame);
-
-        var content = [];
-        var color = layer.textColor();
-        var alphaText = (color.alpha() != 1)? " (" + Math.round(color.alpha() * 100) + "%)": "";
-
-        content.push(this.updateLength(layer.fontSize(), true) + " / " + this.updateLength(layer.lineSpacing(), true) + ", " + layer.fontPostscriptName());
-        content.push("#" + color.hexValue() + " / " + this.math255(color.red()) + "," + this.math255(color.green()) + "," + this.math255(color.blue()) + alphaText);
-
-        var temp = this.addText();
-        temp.setStyle(styles[1]);
-        temp.setStringValue(content.join("\r\n"));
-        temp.setTextBehaviour(1);
-        temp.setTextBehaviour(0);
-
-        var tempFrame = temp.absoluteRect();
-
-        var tempX = (distance[1] > distance[3])? frame.x + 4: frame.maxX - tempFrame.width() - 4;
-        var tempY = (distance[0] < distance[2])? frame.maxY + 3: frame.y - tempFrame.height() - 3;
-
-        tempFrame.setX(tempX);
-        tempFrame.setY(tempY);
-
-        this.drawLabel(temp, styles, name);
+        container.resizeRoot(true);
     },
     allProperty: [
         {
-            name: _("Fill / Color / Gradient"),
-            slug: "fill"
+            name: _("Fill / Text Color / Gradient"),
+            slug: "color"
         },
         {
-            name: _("Border Color"),
+            name: _("Border"),
             slug: "border"
         },
         {
@@ -940,11 +939,24 @@ com.utom.extend({
         {
             name: _("Inner Shadow"),
             slug: "inner-shadow"
+        },
+        {
+            name: _("Font Size"),
+            slug: "font-size"
+        },
+        {
+            name: _("Line Height"),
+            slug: "font-type"
+        },
+        {
+            name: _("Font Typeface"),
+            slug: "font-typeface"
         }
+
     ],
     propertyDialog: function(){
-        var cellWidth = 300;
-        var cellHeight = 120;
+        var cellWidth = 250;
+        var cellHeight = 190;
         var allProperty = this.allProperty;
         var propertyConfigs = this.configs.property;
 
@@ -952,7 +964,7 @@ com.utom.extend({
 
         var btns = [];
         allProperty.forEach(function(data, i) {
-            btns[i] = NSButton.alloc().initWithFrame(NSMakeRect(0.0, 130.0 - i * 24, 200.0, 20.0));
+            btns[i] = NSButton.alloc().initWithFrame(NSMakeRect(0, 200 - i * 24, 200, 20));
             btns[i].setButtonType(NSSwitchButton);
             btns[i].setTitle(data.name);
             btns[i].setState(false);
@@ -962,7 +974,7 @@ com.utom.extend({
                 }
             });
             accessory.addSubview(btns[i]);
-        })
+        });
 
         var alert = NSAlert.alloc().init();
         alert.setMessageText(_("Get Properties"));
@@ -990,10 +1002,12 @@ com.utom.extend({
 
     },
     getProperty: function(){
+        var self = this;
+
         if(!this.configs) return false;
 
-        if( this.selection.count() < 1 || ( this.selection[0] && this.is(this.selection[0], MSTextLayer) ) ){
-            this.message(_("Please select a layer (not text layer) for getting typography."));
+        if( this.selection.count() < 1 ){
+            this.message(_("Please select a layer (not text layer) for getting properties."));
             return false;
         }
 
@@ -1008,117 +1022,123 @@ com.utom.extend({
 
         if(!types) return false;
 
+        var content = [];
+        var layerStyle = layer.style();
+
+        var colorContent = function(color){
+            var alpha = color.a;
+            return "#(" + self.toHex(alpha * 255) + ")" + self.rgbToHex(color.r, color.g, color.b) + " / " + color.r + "," + color.g + "," + color.b + "(" + Math.round(color.a * 100) + "%)";
+        }
+
+        var colorTypeContent = function(fillJSON){
+            var fillJSON = fillJSON;
+
+            if(fillJSON.fillType == "color"){
+                return colorContent(fillJSON.color);
+            }
+
+            if(fillJSON.fillType == "gradient"){
+                var fc = [];
+                fc.push(fillJSON.gradient.type)
+                fillJSON.gradient.colorStops.forEach(function(gradient){
+                    fc.push(" * " + colorContent(gradient.color));
+                });
+                return fc.join("\r\n");
+            }
+        }
+
+        var shadowContent = function(shadow){
+            var shadowJSON = self.shadowToJSON(shadow);
+            var sc = [];
+            if(shadowJSON <= 0) return false;
+
+            sc.push(" * x, y - " + self.updateLength(shadowJSON.offsetX) + ", " + self.updateLength(shadowJSON.offsetY) );
+            if(shadowJSON.blurRadius) sc.push(" * blur - " + self.updateLength(shadowJSON.blurRadius) );
+            if(shadowJSON.spread) sc.push(" * spread - " + self.updateLength(shadowJSON.spread) );
+            return sc.join("\r\n")
+        }
+
+        if(types.length <= 0) return false;
+
+        types.forEach(function(type){
+            switch(type){
+                case "color":
+                    if(self.is(layer, MSShapeGroup)){
+                        var fillsJSON = self.getFills(layerStyle);
+
+                        if(fillsJSON.length <= 0) return false;
+
+                        var fillJSON = fillsJSON.pop();
+
+                        content.push("fill: " + colorTypeContent(fillJSON));
+                    }
+                    if(self.is(layer, MSTextLayer)){
+                        content.push("text-color: " + colorContent(self.colorToJSON(layer.textColor())));
+
+                    }
+                    break;
+                case "border":
+                    var bordersJSON = self.getBorders(layerStyle);
+                    if(bordersJSON.length <= 0) return false;
+                    var borderJSON = bordersJSON.pop();
+
+                    content.push("border: " + self.updateLength(borderJSON.thickness) + " " + borderJSON.position + "\r\n * " + colorTypeContent(borderJSON) );
+                    break;
+                case "opacity":
+                    content.push("opacity: " + Math.round( layerStyle.contextSettings().opacity() * 100) + "%");
+                    break;
+                case "radius":
+                    if(!self.is(layer, MSShapeGroup)) return false;
+                    var shape = self.is(layer.layers().firstObject(), MSRectangleShape)? layer.layers().firstObject(): undefined;
+                    content.push("radius: " + self.updateLength(shape.fixedRadius()));
+                    break;
+                case "shadow":
+                    if(!layerStyle.shadow() || (layerStyle.shadow() && !layerStyle.shadow().isEnabled()) ) return false;
+                    content.push("shadow: \r\n" + shadowContent(layerStyle.shadow()));
+                    break;
+                case "inner-shadow":
+                    if(!layerStyle.innerShadow() || (layerStyle.innerShadow() && !layerStyle.innerShadow().isEnabled()) ) return false;
+                    content.push("inner-shadow: \r\n" + shadowContent(layerStyle.shadow()));
+                    break;
+                case "font-size":
+                    if(!self.is(layer, MSTextLayer)) return false;
+                    content.push("font-size: " + self.updateLength(layer.fontSize(), true) );
+                    break;
+                case "line-height":
+                    if(!self.is(layer, MSTextLayer)) return false;
+                    content.push("line: " + self.updateLength(layer.lineSpacing(), true) );
+                    break;
+                case "font-type":
+                    if(!self.is(layer, MSTextLayer)) return false;
+                    content.push("font-type: " + layer.fontPostscriptName());
+                    break;
+            }
+        });
+
+        if(content.length <= 0) return false;
+
         var name = "PROPERTY#" + layer.objectID();
         var frame = this.getFrame(layer);
         var distance = this.getDistance(frame);
 
-        var content = [];
-        var layerStyle = layer.style();
-        var border = layer.style().border();
-        var shadow = layer.style().shadow();
-        var innerShadow = layer.style().shadow();
-
-
-        var self = this;
-        function getColorContext(color, position) {
-            var alpha = color.alpha(),
-                hex = color.hexValue(),
-                position = (!isNaN(position))? Math.round(position * 100) + '% - ': '';
-
-            alpha = (alpha == 1)? '': ' (' + Math.round(alpha * 100) + '%)';
-            return position + '#' + hex + ' / ' + self.math255(color.red()) + ',' + self.math255(color.green()) + ',' + self.math255(color.blue()) + alpha;
-        }
-
-        function getColor(layer, fill){
-            var layer = layer,
-                fill = fill || layer.style().fill(),
-                fillType = (fill)? fill.fillType(): null,
-                gradient = (fillType != 1)? null: fill.gradient(),
-                gradientType = (fillType != 1)? null: gradient.gradientType();
-
-            if(fill && fill.isEnabled() && fillType == 0){
-                var color = fill.color();
-                return getColorContext(color);
-            }
-            else if(fill && fill.isEnabled() && fillType == 1) {
-                var stops = gradient.stops().array(),
-                    stopsContext = [];
-
-                stopsContext = (gradientType > 0)? 'radial gradient\r\n': 'linear gradient\r\n';
-
-                for (var i = 0; i < stops.count(); i++) {
-                    var stop = stops[i];
-                    stopsContext += ' * ' + getColorContext(stop.color(), stop.position()) + '\r\n'
-                }
-
-                return stopsContext.trim();
-            }
-            else{
-                return null;
-            }
-        }
-
-        for (var i = 0; i < types.length; i++) {
-            if(types[i] == 'opacity' && layerStyle.contextSettings().opacity() ) content.push("opacity: " + Math.round( layerStyle.contextSettings().opacity() * 100) + "%");
-            if(types[i] == 'fill' && getColor(layer)) content.push("fill: " + getColor(layer));
-            if(
-                types[i] == 'border' &&
-                border &&
-                border.isEnabled()
-            ){ 
-                content.push("border: " + getColor(layer, border));
-            }
-
-            if(types[i] == 'radius' && this.is(layer, MSShapeGroup)){
-                var shape = this.is(layer.layers().firstObject(), MSRectangleShape)? layer.layers().firstObject(): undefined;
-                if(shape){
-                    content.push("radius: " + this.updateLength(shape.fixedRadius()));
-                }
-            }
-
-            if(
-                types[i] == "shadow" &&
-                shadow &&
-                shadow.isEnabled()
-            ){
-                var blur = shadow.blurRadius(),
-                    spread = shadow.spread();
-
-                blur = (blur)? "\r\n * blur - " + this.updateLength(blur): "";
-                spread = (spread)? "\r\n * spread - " + this.updateLength(spread): "";
-
-                content.push("shadow: \r\n * x & y - " + this.updateLength(shadow.offsetX()) + ", " + this.updateLength(shadow.offsetY()) + blur + spread +"\r\n * " + getColorContext(shadow.color()));
-            }
-
-            if(
-                types[i] == "inner-shadow" &&
-                innerShadow &&
-                innerShadow.isEnabled()
-            ){
-                var blur = innerShadow.blurRadius(),
-                    spread = innerShadow.spread();
-
-                blur = (blur)? "\r\n * blur - " + this.updateLength(blur): "";
-                spread = (spread)? "\r\n * spread - " + this.updateLength(spread): "";
-
-                content.push("inner shadow: \r\n * x & y - " + this.updateLength(innerShadow.offsetX()) + ", " + this.updateLength(innerShadow.offsetY()) + blur + spread +"\r\n * " + getColorContext(innerShadow.color()));
-            }
-        }
         var temp = this.addText();
         temp.setStyle(styles[1]);
         temp.setStringValue(content.join("\r\n"));
         temp.setTextBehaviour(1);
         temp.setTextBehaviour(0);
 
+        var aFrame = this.getFrame(this.current);
         var tempFrame = temp.absoluteRect();
 
-        var tempX = (distance[1] > distance[3])? frame.x + 4: frame.maxX - tempFrame.width() - 4;
+        var tempX = frame.x + 4;
+        tempX = (tempX + tempFrame.width() + 8 > aFrame.maxX)? frame.maxX - tempFrame.width() - 4 : tempX;
         var tempY = (distance[0] < distance[2])? frame.maxY + 3: frame.y - tempFrame.height() - 3;
+        var arrow = (distance[0] < distance[2])? 1: 2;
 
         tempFrame.setX(tempX);
         tempFrame.setY(tempY);
 
-        this.drawLabel(temp, styles, name);
+        this.drawLabel(temp, frame, styles, name, arrow);
     }
 });
 
