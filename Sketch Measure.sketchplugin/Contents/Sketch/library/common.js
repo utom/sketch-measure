@@ -846,10 +846,18 @@ com.utom.extend({
         var shape;
         var label;
         var gap;
+        var gapFrame;
         var labelFrame;
 
         if(/NOTE\#|LABEL\#|TYPOGRAPHY\#|PROPERTY\#/.exec(container.name())){
             label = this.find('label', container);
+            gap = this.find('gap', container);
+            gapFrame = this.getFrame(gap);
+            labelFrame = this.getFrame(label);
+            var old = {
+                lh: labelFrame.height,
+                gy: gapFrame.y
+            }
         }
         else{
             var name = name || "NOTE#" + text.objectID();
@@ -908,6 +916,11 @@ com.utom.extend({
 
             gapFrame.setX(gapX);
             gapFrame.setY(gapY);
+        }
+        else if(old){
+            gapFrame = gap.absoluteRect();
+            gapFrame.setY(old.gy - (old.lh - labelFrame.height()));
+            // log();
         }
 
         this.removeLayer(shape);
