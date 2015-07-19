@@ -855,6 +855,7 @@ com.utom.extend({
             gapFrame = this.getFrame(gap);
             labelFrame = this.getFrame(label);
             var old = {
+                ly: labelFrame.y,
                 lh: labelFrame.height,
                 gy: gapFrame.y
             }
@@ -917,7 +918,7 @@ com.utom.extend({
             gapFrame.setX(gapX);
             gapFrame.setY(gapY);
         }
-        else if(old){
+        else if(old && old.ly < old.gy){
             gapFrame = gap.absoluteRect();
             gapFrame.setY(old.gy - (old.lh - labelFrame.height()));
             // log();
