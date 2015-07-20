@@ -1336,6 +1336,17 @@ com.utom.extend({
 
         return false;
     },
+    isLocked: function(layer){
+        while (!(layer instanceof MSArtboardGroup)) {
+            if (layer.isLocked()) {
+                return true;
+            }
+
+            layer = layer.parentGroup();
+        }
+
+        return false;
+    },
     toJSString: function(str){
         return new String(str).toString();
     },
@@ -1575,7 +1586,7 @@ com.utom.extend({
                         msLayer.setIsVisible(false);
                     }
 
-                    if (this.isHidden(msLayer) || !this.isExportable(msLayer) || this.isMeasure(msLayer) /* || (msLayer.hasClippingMask() && msLayer.clippingMaskMode()) */ ) {
+                    if (this.isHidden(msLayer) || this.isLocked(msLayer) || !this.isExportable(msLayer) || this.isMeasure(msLayer) /* || (msLayer.hasClippingMask() && msLayer.clippingMaskMode()) */ ) {
                         continue;
                     }
 
