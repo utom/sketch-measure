@@ -1030,7 +1030,7 @@ com.utom.extend({
         var layer = layer || this.selection[0];
 
         var styles = [
-            this.sharedLayerStyle("@Property / Layer", "#4DB574"),
+            this.sharedLayerStyle("@Property / Layer", "#F5A623"),
             this.sharedTextStyle("@Property / Text", "#FFFFFF")
         ];
 
