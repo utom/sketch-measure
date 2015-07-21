@@ -11,12 +11,12 @@ function _(str){
         "Please select a layer for creating."               : "Please select a layer for creating.",
         "Please select a text layer for drawing."           : "Please select a text layer for drawing.",
         "Please select a text layer for getting typography.": "Please select a text layer for getting typography.",
-        "Fill / Color / Gradient"                           : "Fill / Color / Gradient",
-        "Border Color"                                      : "Border color",
-        "Layer Opacity"                                     : "Layer opacity",
+        "Fill / Text color / Gradient"                           : "Fill / Text color / Gradient",
+        "Border color"                                      : "Border color",
+        "Layer opacity"                                     : "Layer opacity",
         "Radius"                                            : "Radius",
         "Shadow"                                            : "Shadow",
-        "Inner Shadow"                                      : "Inner shadow",
+        "Inner shadow"                                      : "Inner shadow",
         "Font size"                                         : "Font size",
         "Line height"                                       : "Line height",
         "Font face"                                         : "Font face",
@@ -933,7 +933,7 @@ com.utom.extend({
     },
     allProperty: [
         {
-            name: _("Fill / Text Color / Gradient"),
+            name: _("Fill / Text color / Gradient"),
             slug: "color"
         },
         {
