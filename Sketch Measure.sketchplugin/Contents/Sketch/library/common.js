@@ -1528,8 +1528,6 @@ com.utom.extend({
         return savePanel.URL().path();
     },
     export: function( context ){
-        // if(!this.configs) return false;
-
         var context = this.context;
         var document = context.document;
         var selection = context.selection.objectEnumerator();
