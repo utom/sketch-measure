@@ -29,7 +29,7 @@ function _(str){
         "Export complete!"                                  : "导出成功!",
         "OK"                                                : "确定",
         "Cancel"                                            : "取消",
-        "Select 1 or multiple artboards"                        : "Select 1 or multiple artboards"
+        "Select 1 or multiple artboards"                    : "Select 1 or multiple artboards"
     };
 
     return (I18N[lang] && I18N[lang][str])? I18N[lang][str]: str;
