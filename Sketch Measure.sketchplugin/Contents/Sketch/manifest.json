@@ -3,7 +3,7 @@
   "description": "A measure tool for measurements & design specs.",
   "author": "utom",
   "homepage": "https://github.com/utom/sketch-measure",
-  "version": "0.9.8",
+  "version": "0.9.9",
   "identifier": "com.utom.sketch-measure",
   "compatibleVersion": "3.3.2",
   "bundleVersion": 1,

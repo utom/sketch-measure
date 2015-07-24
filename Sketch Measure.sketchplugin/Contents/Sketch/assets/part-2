@@ -1,8 +1,34 @@
     </script>
   </head>
 
-  <body class="off">
-  
+<body class="off">
+    <div class="header">
+      <h1 class="artboard-name">artboard</h1>
+      <div id="resolution" class="resolution"><span></span></div>
+      <div id="resolution_list" class="resolution_list">
+        <div class="current">${name}</div>
+        <div>${name}</div>
+      </div>
+      <div id="zoom" class="zoom-box">
+        <div class="zoom-out"><div class="minus"></div></div>
+        <div class="zoom-text"></div>
+        <div class="zoom-in"><div class="plus"></div></div>
+      </div>
+
+      <div id="about" class="about"><span></span></div>
+      <div id="about_list" class="about_list">
+        <div class="twitter"><a href="https://twitter.com/utom" target="_blank">Twitter</a></div>
+        <div class="github"><a href="https://github.com/utom/sketch-measure" target="_blank">GitHub</a></div>
+        <div class="email"><a href="mailto:utombox@gmail.com" target="_blank">Email</a></div>
+      </div>
+
+      <script id="resolution-item-template" type="application/template">
+        <div>${name}</div>
+      </script>
+
+      <div id="toggle" class="toggle" title="Toggle Notes Hidden"><span class="toggle_hide"></span></div>
+
+    </div>
     <div class="main">
       <div id="screen" class="screens">
         <div id="guide_horizontal" class="guide horizontal"></div>
@@ -58,30 +84,6 @@
         <div id="note_tip" class="note" ></div>
       </div>
 
-      <div id="about" class="about"><span>ABOUT</span></div>
-      <div id="about_list" class="about_list">
-        <div class="twitter"><a href="https://twitter.com/utom" target="_blank">Twitter</a></div>
-        <div class="github"><a href="https://github.com/utom/sketch-measure" target="_blank">GitHub</a></div>
-        <div class="email"><a href="mailto:utombox@gmail.com" target="_blank">Email</a></div>
-      </div>
-
-      <div id="toggle" class="toggle" title="Toggle Notes Hidden"><span class="toggle_hide"></span></div>
-
-      <div id="zoom" class="zoom">
-        <span class="menu minus">-</span>
-        <span class="text"></span>
-        <span class="menu plus">+</span>
-      </div>
-
-      <div id="resolution" class="resolution"><span></span></div>
-      <div id="resolution_list" class="resolution_list">
-        <div class="current">${name}</div>
-        <div>${name}</div>
-      </div>
-
-      <script id="resolution-item-template" type="application/template">
-        <div>${name}</div>
-      </script>
     </div>
     <div class="sidebar">
       <div id="properties">

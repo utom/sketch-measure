@@ -1593,7 +1593,6 @@ com.utom.extend({
                         var masksIter = msGroup.children().objectEnumerator();
 
                         while(maskLayer = masksIter.nextObject()) {
-                            log(maskLayer.objectID());
                             if (this.isHidden(maskLayer) || !this.isExportable(maskLayer) || this.isMeasure(maskLayer) || maskLayer.objectID() == msLayer.objectID() ) {
                                 continue;
                             }
