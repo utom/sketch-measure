@@ -11,7 +11,7 @@ function _(str){
         "Please select a layer for creating."               : "Please select a layer for creating.",
         "Please select a text layer for drawing."           : "Please select a text layer for drawing.",
         "Please select a text layer for getting typography.": "Please select a text layer for getting typography.",
-        "Fill / Text color / Gradient"                           : "Fill / Text color / Gradient",
+        "Fill / Text color / Gradient"                      : "Fill / Text color / Gradient",
         "Border color"                                      : "Border color",
         "Layer opacity"                                     : "Layer opacity",
         "Radius"                                            : "Radius",
