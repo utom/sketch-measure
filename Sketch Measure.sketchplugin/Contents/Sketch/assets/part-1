@@ -508,6 +508,8 @@ h1.artboard-name{ line-height: 60px; margin: 0; font-size: 20px; text-align: cen
 .about{
     left: 0;
     right: auto;
+    height: 60px;
+    background-image: linear-gradient(0deg, #53A9FF 0%, #468CE0 100%);
 }
 .about span,
 .resolution span{
@@ -522,8 +524,14 @@ h1.artboard-name{ line-height: 60px; margin: 0; font-size: 20px; text-align: cen
 }
 
 .about span{
-    background-image: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADAAAAAwCAMAAABg3Am1AAABTVBMVEUAAABToPVSoPVZpvlIj+JHjuJTqf9HjuJSp/1OnfNLlutJk+hNl+xNmu9Sp/1Ij+NNm/FUqP9KlepQofZTqP9On/RJlOhOm/BTp/1Nmu9TqP5JkuVOm/BSpPlKlOlTqP5OoPRTqPxOnPJQnfVbpPZTp/1QofdKlOlGjuBQo/hKkudHjOFHjuFNme5HjuFUqP9Tp/1GjOFRovhRpvtHkORMlupTqf9HjeFIkONSoflTqf////9Nm/FOnvNLmO1PoPZKlepQofdHj+NMmu9Qo/hJk+dIkeVMme1RpftSpvxIkORRpPpIkuZOn/VJlOlTp/5QovhGjeFOnPJKlutNnPL3+/6+2vjf7Py/3fz1+f3m8Pzv9v7P5Puy1vtws/rT5fmCu/ieyfePwvdWo/SOvfKBtfBWn+9io+xmpOrw9v3G3fdgpvNfpvJtqOtenuizIlt+AAAAO3RSTlMAFxMGqff0w794XlFB89zc2dLJyMTAwKunopuakoF7X1xQNiMO+fT07+vr1c7Au62pmZeNjINlZVxURAdYEswAAAIOSURBVEjH7ZVnd6JAGIWxm7ibnmzKZlO3914GUBHFiIWAYEnv2bT//zEvjDAzgCYnn/N4DzPcufecwTJyjzyMyO94ajTx5v2nr5nYPeJ/UtKmRyK+ekf8yQcnKG1KLvG1AfHYghQkMdw3H01VpApIAlUAZw786JcfdUKlSgnEjPHw/cxUq6VqKZQXYYWFKuHG6v6/OCf3xUzI+1MknHcQYF4T5916oDBRrDtLMNRbyKFlz0G299Ofz+TquXqPM9TjzPZgAfQ64ivM5DxO9tzC3glxfc8dNbyVY0RxbBg5vDTBFoZF0RANkCh26ULXALDP7mlO9OjQhQ7x2W/IR7Jg0QULe4qoKENMYUzxOLVMN25ap8R/zhSeFgIoBQVExmdsgecLvBttoR4tHgNr/sIYT3HgFg5ol93SNDZ1XgdduYVLMDyffeg5QWgKzabe1HVBF7Zxftvx4CKAqS8zhWWB5hAXDhmT/eCiNQFe9sUej0wEmEe0N8mxTGddatlarY2ANrkHhnyFv1mafQTs086rCOdjMk+zhdAWYywGf6JaXgPlQTDuILSDk/j+7ToX4JumabImY3YR2sUzsMBfCTtm0rKsyipIBtptmWIx/CAbUf2U1TJIne139KXLoXzvfxjPlzcCvFziBvBvvGGz0cBhmHxZ4wazNNUgJD+v3ucv69fs1EgyOZ6eX4lxjzyIW6VLCKE0CVCOAAAAAElFTkSuQmCC');
+    padding: 0;
+    width: 60px;
+    height: 60px;
+    background-image: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAHgAAAB4CAMAAAAOusbgAAAATlBMVEUAAAD///////////////////////////////////////////////////////////////////////////////////////////////////+QlxstAAAAGXRSTlMA9Eoaoze1WcMk1bquhmcsEgrs4pV23H/McwZDmwAAAZdJREFUaN7t2FmK7DAMheGjzHNlqKTq7H+j9/HSTcpOGktNg74NGIwxvwTnnHPOOefcr5nrojlEumrKYajs+V9hdnTb8AvZYaIWflcs0DfyRA91L54qoKzmBztU5cIPpIWmgR/1UPRgQAk9BQMKqFmEIQu0ZAzKoGVk0AgddS8Mkr5Geu2bF7xbJJYJL5EMes/K8Im1whMGf2fFGyokU/KWEqk8ecsTqXS8pUMqwlvk7x988JZDpzviBqQy8ZYJqczCG2SGRkzHvZDQm5e9kVJ+8KIjR1J5xUuqHKllw8aIbcjg3I80wgBpoGVn0A4tOYNyqGkY0EDPxIAJemYGzFBUhTpeU82PapwwWEbIAlWF8eolPq9mULby1Aptz7uDmvLIWkLdxhMb9I2GK674IvUBA93ZKG5hN0uAeA7kMNEYJUA8BybYmG0SIJ4DFazUFgkQzwFZYKYwSIB4DmQwtKonQDwHnrBUaidAPAc22BqVEyCeAw8Y61QTIL7efMHaQ/Om49vzAfbalVxbwF7Z9yWcc8455/6Qf8WsuFxouTIlAAAAAElFTkSuQmCC');
+    background-size: 60px 60px;
+    background-position: 0;
 }
+
 .about_list,
 .resolution_list {
     position: fixed;
@@ -931,9 +939,6 @@ h1.artboard-name{ line-height: 60px; margin: 0; font-size: 20px; text-align: cen
 .sidebar .color-text{
     cursor: pointer;
 }
-
-
-
 
     </style>
 
