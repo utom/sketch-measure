@@ -1,13 +1,23 @@
     </script>
   </head>
 
-<body class="off">
+
+  <body class="off">
     <div class="header">
-      <h1 class="artboard-name">artboard</h1>
+      <div class="art-name">
+        <h1 id="artboard" class="artboard-name"><span></span></h1>
+      </div>
+      <div id="artboard_list" class="artboard_list" style="display:none">
+      </div>
+      <script id="artboard-item-template" type="application/template">
+        <div class="a-item">
+          <div class="a-image" style="background-image:url(data:image/png;base64,${base64});background-size:${width}px ${height}px;"></div>
+          <div class="a-name">${name}</div>
+        </div>
+      </script>
+
       <div id="resolution" class="resolution"><span></span></div>
-      <div id="resolution_list" class="resolution_list">
-        <div class="current">${name}</div>
-        <div>${name}</div>
+      <div id="resolution_list" class="resolution_list" style="display:none">
       </div>
       <div id="zoom" class="zoom-box">
         <div class="zoom-out"><div class="minus"></div></div>
@@ -16,7 +26,7 @@
       </div>
 
       <div id="about" class="about"><span></span></div>
-      <div id="about_list" class="about_list">
+      <div id="about_list" class="about_list" style="display:none">
         <div class="twitter"><a href="https://twitter.com/utom" target="_blank">Twitter</a></div>
         <div class="github"><a href="https://github.com/utom/sketch-measure" target="_blank">GitHub</a></div>
         <div class="email"><a href="mailto:utombox@gmail.com" target="_blank">Email</a></div>

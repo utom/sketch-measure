@@ -71,7 +71,7 @@ com.utom = {
         for ( var key in options ){
             target[key] = options[key];
         }
-
+        return target;
     },
     is: function(layer, theClass){
         var klass = [layer class];
@@ -1518,7 +1518,7 @@ com.utom.extend({
         // savePanel.setAllowedFileTypes(NSArray.arrayWithObject("spec"));
         // savePanel.setAllowsOtherFileTypes(false);
         savePanel.setCanCreateDirectories(true);
-        savePanel.setDirectoryURL(NSURL.fileURLWithPath(filePath));
+        // savePanel.setDirectoryURL(NSURL.fileURLWithPath(filePath));
         savePanel.setNameFieldStringValue(fileName);
 
         if (savePanel.runModal() != NSOKButton) {
@@ -1558,6 +1558,8 @@ com.utom.extend({
         var template2Path = pluginPath.stringByAppendingPathComponent("assets/part-2");
         var template1 = [NSString stringWithContentsOfFile:template1Path encoding:NSUTF8StringEncoding error:nil];
         var template2 = [NSString stringWithContentsOfFile:template2Path encoding:NSUTF8StringEncoding error:nil];
+
+        var artboardsData = [];
 
         sltArtboard = sltArtboard.objectEnumerator();
         while(msArtboard = sltArtboard.nextObject()){
@@ -1650,18 +1652,23 @@ com.utom.extend({
                 var imageData = NSData.dataWithContentsOfURL(imageURL);
                 var imageBase64 = imageData.base64EncodedStringWithOptions(0);
 
-                var data = {
+                var artboardData = {
                     name: this.toJSString(msArtboard.name()),
                     imageBase64: this.toJSString(imageBase64),
                     width: artboardFrame.width(),
-                    height: artboardFrame.height(),
+                    height: artboardFrame.height()
+                };
+
+                artboardsData.push(artboardData);
+
+                var data = this.extend(artboardData, {
                     resolution: resolution,
                     zoom: 1,
                     layers: layers,
                     notes: notes
-                };
+                });
 
-                var content = template1 + NSString.stringWithString("jQuery(function(){Spec(" + JSON.stringify(data) + ")});") + template2;
+                var content = template1 + "jQuery(function(){Spec(" + JSON.stringify(data) + ").artboardList(artboards)});" + template2;
                 content = NSString.stringWithString(content);
 
                 var exportURL = savePath.stringByAppendingPathComponent( msArtboard.name() + ".html");
@@ -1674,6 +1681,15 @@ com.utom.extend({
             
         }
 
+        if(artboardsData.length > 1){
+            var aContent = NSString.stringWithString("var artboards = " + JSON.stringify(artboardsData) + ";");
+            var aExportURL = savePath.stringByAppendingPathComponent( "artboards.js");
+
+            [aContent writeToFile: aExportURL
+                              atomically: false
+                                encoding: NSUTF8StringEncoding
+                                   error: null];
+        }
         this.message(_("Export complete!"));
 
     }

@@ -485,7 +485,16 @@ body {
     box-shadow: 0 0 3px 0 rgba(0,0,0,.3);
     z-index: 2;
 }
-h1.artboard-name{ line-height: 60px; margin: 0; font-size: 20px; text-align: center; }
+.art-name{text-align: center;}
+h1.artboard-name{ padding: 0 32px;line-height: 60px; margin: 0 auto; display: inline-block; font-size: 18px; text-align: center; }
+h1.m span{
+    display: inline-block;
+    cursor: pointer;
+    padding: 0 30px 0 0;
+    background: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADAAAAAwBAMAAAClLOS0AAAAKlBMVEUAAABWRlFWRlBWRlFWR1BPRk9GRkZXRlFTRk9WRk5WRU9URlFURlBXR1G11jP0AAAADXRSTlMA5dCuhR0L9zdbV0xJcW7v9QAAAHNJREFUOMtjGAVDCRyUQrAXyiBJyN51gDFZ7l5EkbicAGGx2aJIbL97VxXCCrp7txpJgkP27sUGBAMM4AorQfR0uFYGuNF3HUA2gy1DAKgQVBoBYIaADUQAhP0Im9Hsh9uMZj/CZgz7HbAH5SIthlEw5AAAhqY0u4F+5iwAAAAASUVORK5CYII=') no-repeat;
+    background-size: 24px 24px;
+    background-position: 100% 50%;
+}
 .main {
     padding: 0 0 100px 0;
     transition: .5s padding-right;
@@ -531,7 +540,7 @@ h1.artboard-name{ line-height: 60px; margin: 0; font-size: 20px; text-align: cen
     background-size: 60px 60px;
     background-position: 0;
 }
-
+.artboard_list,
 .about_list,
 .resolution_list {
     position: fixed;
@@ -541,10 +550,58 @@ h1.artboard-name{ line-height: 60px; margin: 0; font-size: 20px; text-align: cen
     width: 180px;
     font-size: 14px;
     background: #F0F0F0;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, .3);
+    box-shadow: 0 1px 4px rgba(0, 0, 0, .2);
+    border: 1px solid rgba(0, 0, 0, 0.05);
     padding: 8px;
     border-radius: 4px;
     z-index: 3;
+}
+.artboard_list{
+    left: 50%;
+    top: 48px;
+    margin: 0 0 0 -320px;
+    width: 640px;
+    box-sizing: border-box;
+}
+
+.artboard_list::after{
+    content: "";
+    position: fixed;
+    width: 24px;
+    height: 8px;
+    left: 50%;
+    top: 41px;
+    margin: 0 0 0 -12px;
+    background-image: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAGQAAAAgCAMAAADT9S0cAAAARVBMVEUAAADZ2dnZ2dnY2NjX19eEhITe3t6+vr7i4uLh4eHg4ODb29vZ2dnOzs65ubnj4+Pi4uLg4ODV1dXw8PDk5OTp6enm5ubJnlEIAAAAE3RSTlMAVlBITAd9F9SfjWpeJw7s5sAw1cNr3wAAANxJREFUSMe10QkOgyAUhGHrgiu48PT+R60x0iFpI0sz/wH4Mrwiuaoq6FUiPAUGT4HBU2DQlVo+1QUiGNbyFBg8BQZTKZ0BpWQaUJgGFIbBVF7O+FZeBIOkwOApMHgKDJ4Cg6lMMJ6U6R9DOSOkqHyjhxFS+kyi7eRstzZK6drscxw2piPzMO2KGeH2S1nTxjQDZsQlV0MTT4zizUgaI2McY5R4M5LHiDJBQvdyZTM6bqbXj9ceZ8FPZSR389j+PsSmFrmz2e3iWtTW+M8bXQ6duDAjK/HqhlKbk3oD4mdTngFZv2kAAAAASUVORK5CYII=');
+    background-size: 24px 8px;
+    background-position: 0;
+}
+
+.a-item{
+    float: left;
+    padding: 16px; 
+    width: 25%;
+    box-sizing: border-box;
+    height: 156px;
+    border-radius: 4px;
+    cursor: pointer;
+}
+.a-item:hover,
+.artboard_list .current{
+    background: #FFF;
+}
+
+
+.a-image{
+    margin: 0 auto 8px;
+    width: 96px;
+    height: 96px;
+    background-repeat: no-repeat;
+    background-position: 50%;
+}
+.a-name{
+    font-size: 14px;
+    text-align: center;
 }
 .about_list{
     left: 4px;
@@ -11251,7 +11308,6 @@ if ( typeof noGlobal === strundefined ) {
 return jQuery;
 
 }));
-
 (function(window) {
     var version = "0.0.3", Spec = function(options) {
         return new Spec.fn.init(options);
@@ -11274,6 +11330,8 @@ return jQuery;
     jQResolutionList,
     jQAbout,
     jQAboutList,
+    jQArtboard,
+    jQArtboardList,
     jQProperties,
     jQTypeface,
     jQContent,
@@ -11370,10 +11428,19 @@ return jQuery;
                 jQAboutList.hide();
             }
         },
+        toggleArtboardList:function() {
+            var self = this;
+            if (jQArtboardList.css("display") == "none") {
+                jQArtboardList.show();
+            } else {
+                jQArtboardList.hide();
+            }
+        },
         hideList:function() {
             var self = this;
             if (jQResolutionList.css("display") != "none") self.toggleResolutionList();
             if (jQAboutList.css("display") != "none") self.toggleAboutList();
+            if (jQArtboardList.css("display") != "none") self.toggleArtboardList();
         },
         showGuideline:function() {
             jQGuideHorizontal.show();
@@ -11524,6 +11591,31 @@ return jQuery;
                     jQResolution.find("span").html(name);
                 }
                 jQResolutionList.append(jQResolutionItem);
+            });
+        },
+        artboardList:function(artboards) {
+            if(!artboards) return false;
+            console.log(artboards.length)
+            var self = this, jQTemplate = $("#artboard-item-template");
+            jQArtboard.addClass("m");
+            jQArtboardList.empty();
+
+            $.each(artboards, function(index, artboard) {
+                var p = artboard.width / artboard.height,
+                    width = (p < 1)? Math.round(96 * p): 96,
+                    height = (p < 1)? 96: Math.round(96 / p); 
+
+                var jQArtboardItem = self.template(jQTemplate, {
+                    index:index,
+                    name: artboard.name,
+                    width: width,
+                    height: height,
+                    base64: artboard.imageBase64
+                });
+                if (self.data.name == artboard.name) {
+                    jQArtboardItem.addClass("current");
+                }
+                jQArtboardList.append(jQArtboardItem);
             });
         },
         color:function(fill, jQTarget, index, max) {
@@ -11827,17 +11919,37 @@ return jQuery;
                 self.render(self.index());
                 self.hideList();
             });
+            jQArtboardList.on("click", ".a-item", function(event){
+                var jQThis = $(this), model = jQThis.data("model");
+                event.stopPropagation();
+                event.preventDefault();
+                if(jQThis.hasClass("current")) return false;
+
+                window.location.href = model.name + ".html";
+            });
             jQResolution.click(function(event) {
                 event.stopPropagation();
                 event.preventDefault();
                 self.toggleResolutionList();
                 if (jQAboutList.css("display") != "none") self.toggleAboutList();
+                if (jQArtboardList.css("display") != "none") self.toggleArtboardList();
+                
             });
             jQAbout.click(function(event) {
                 event.stopPropagation();
                 event.preventDefault();
                 self.toggleAboutList();
                 if (jQResolutionList.css("display") != "none") self.toggleResolutionList();
+                if (jQArtboardList.css("display") != "none") self.toggleArtboardList();
+            });
+            jQArtboard.on("click", function(event) {
+                var $this = $(this);
+                if(!jQArtboard.hasClass("m")) return false;
+                event.stopPropagation();
+                event.preventDefault();
+                self.toggleArtboardList();
+                if (jQResolutionList.css("display") != "none") self.toggleResolutionList();
+                if (jQAboutList.css("display") != "none") self.toggleAboutList();
             });
             $(document).click(function() {
                 $(".selected").removeClass("selected");
@@ -11995,6 +12107,8 @@ return jQuery;
         jQNoteTip = $("#note_tip").hide();
         jQResolution = $("#resolution");
         jQResolutionList = $("#resolution_list").hide();
+        jQArtboard = $("#artboard");
+        jQArtboardList = $("#artboard_list").hide();
         jQAbout = $("#about");
         jQAboutList = $("#about_list").hide();
         jQProperties = $("#properties").hide();
@@ -12016,12 +12130,15 @@ return jQuery;
         } else {
             this.zoom = .5;
         }
-        $(".artboard-name").text(this.data.name);
+        $(".artboard-name span:first-child ").text(this.data.name);
         this.render();
         this.events();
+
+        return self;
     };
     init.prototype = Spec.fn;
     window.Spec = Spec;
 })(window);
     </script>
+    <script type="text/javascript" src="artboards.js"></script>
     <script type="text/javascript">
