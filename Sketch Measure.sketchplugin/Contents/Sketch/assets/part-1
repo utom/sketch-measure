@@ -579,15 +579,20 @@ h1.m span{
 
 .a-item{
     float: left;
-    padding: 16px; 
     width: 25%;
     box-sizing: border-box;
-    height: 156px;
-    border-radius: 4px;
     cursor: pointer;
 }
-.a-item:hover,
-.artboard_list .current{
+.a-item .a-item-inner{
+  margin: 4px;
+  padding: 16px;
+  height: 160px;
+  box-sizing: border-box;
+  border-radius: 4px;
+}
+
+.a-item:hover .a-item-inner,
+.artboard_list .current .a-item-inner{
     background: #FFF;
 }
 
@@ -726,6 +731,8 @@ h1.m span{
     box-sizing: border-box;
     cursor: pointer;
 }
+
+.edge { cursor: default;}
 
 .pin {
     position: absolute;

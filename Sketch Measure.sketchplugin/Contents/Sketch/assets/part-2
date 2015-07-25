@@ -11,8 +11,10 @@
       </div>
       <script id="artboard-item-template" type="application/template">
         <div class="a-item">
-          <div class="a-image" style="background-image:url(data:image/png;base64,${base64});background-size:${width}px ${height}px;"></div>
-          <div class="a-name">${name}</div>
+          <div class="a-item-inner">
+            <div class="a-image" style="background-image:url(data:image/png;base64,${base64});background-size:${width}px ${height}px;"></div>
+            <div class="a-name">${name}</div>
+          </div>
         </div>
       </script>
 

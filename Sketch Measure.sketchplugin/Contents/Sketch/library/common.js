@@ -1668,7 +1668,7 @@ com.utom.extend({
                     notes: notes
                 });
 
-                var content = template1 + "jQuery(function(){Spec(" + JSON.stringify(data) + ").artboardList(artboards)});" + template2;
+                var content = template1 + "jQuery(function(){Spec(" + JSON.stringify(data) + ").artboardList(artboards || undefined)});" + template2;
                 content = NSString.stringWithString(content);
 
                 var exportURL = savePath.stringByAppendingPathComponent( msArtboard.name() + ".html");
