@@ -683,9 +683,10 @@ h1.m span{
     overflow: hidden;
     border: 0 solid rgba(0, 0, 0, .05);
 }
-
+.zoom-in,
 .zoom-out{
     border-width: 0 1px 0 0;
+    cursor: pointer;
 }
 
 .zoom-in{
@@ -705,6 +706,7 @@ h1.m span{
 .disable div,
 .disable div::after{
     background: #e0e0e0 !important;
+    cursor: default;
 }
 .plus::after{
     content: "";
