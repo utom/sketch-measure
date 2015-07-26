@@ -12131,7 +12131,17 @@ return jQuery;
         this.data = options;
         this.notes = options.notes;
         this.visible = true;
-        this.colorFormat = 0;
+        if(!this.colorFormat){
+            if(this.resolution > 3){
+                this.colorFormat = 2;
+            }
+            else if(this.resolution > 0){
+                this.colorFormat = 1;
+            }
+            else{
+                this.colorFormat = 0;
+            }
+        }
         var proportion = $(document).height() / options.height;
         if (proportion >= .8) {
             this.zoom = 1;
