@@ -200,6 +200,7 @@ com.utom.extend({
         var layerStyles = this.document.documentData().layerStyles();
         var layerStylesLibrary = layerStyles.objectsSortedByName();
         var layerStyle = this.find(name, layerStylesLibrary, true);
+        layerStyle = (this.is(layerStyle, MSSharedLayerStyle))? layerStyle: layerStyle[0];
         var alpha = alpha || 1;
 
         if( layerStyle == false ){
@@ -232,6 +233,7 @@ com.utom.extend({
         var textStyles = this.document.documentData().layerTextStyles();
         var textStylesLibrary = textStyles.objectsSortedByName();
         var textStyle = this.find(name, textStylesLibrary, true);
+        textStyle = (this.is(textStyle, MSSharedLayerStyle))? textStyle: textStyle[0];
         var alpha = alpha || 1;
 
         if( textStyle == false ){
