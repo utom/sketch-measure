@@ -40,6 +40,7 @@ var com = com || {};
 
 com.utom = {
     configsGroup: undefined,
+    configsURL: undefined,
     configs: undefined,
     context: undefined,
     document: undefined,
@@ -57,6 +58,8 @@ com.utom = {
         this.artboard = this.page.currentArtboard();
 
         this.current = this.artboard || this.page;
+
+        this.configsURL = this.page;
 
         if(!this.is(this.current, MSArtboardGroup)){
             this.message(_("You need an artboard."));
@@ -264,7 +267,7 @@ com.utom.extend({
 //Configs
 com.utom.extend({
     getConfigs: function(){
-        var configsGroup = this.find("@Sketch Measure Configs", this.artboard);
+        var configsGroup = this.find("@Sketch Measure Configs", this.configsURL);
         var textLayer;
 
         if(configsGroup == false){
@@ -286,7 +289,7 @@ com.utom.extend({
         }
     },
     setConfigs: function(configs){
-        var configsGroup = this.find("@Sketch Measure Configs", this.artboard);
+        var configsGroup = this.find("@Sketch Measure Configs", this.configsURL);
         var textLayer;
 
         this.configs = this.configs || {};
@@ -296,7 +299,7 @@ com.utom.extend({
         this.configs.timestamp = new Date().getTime();
 
         if(configsGroup == false){
-            configsGroup = this.addGroup(this.artboard);
+            configsGroup = this.addGroup(this.configsURL);
             configsGroup.setName("@Sketch Measure Configs");
 
             textLayer = this.addText(configsGroup);
@@ -1229,7 +1232,7 @@ com.utom.extend({
         if(!this.configs) return false;
 
         var artboard = this.artboard;
-        var configsGroup = this.find("@Sketch Measure Configs", this.artboard);
+        var configsGroup = this.find("@Sketch Measure Configs", this.configsURL);
 
         var layers = artboard.children().objectEnumerator();
 
