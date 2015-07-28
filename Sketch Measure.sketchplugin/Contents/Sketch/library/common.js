@@ -287,6 +287,7 @@ com.utom.extend({
     },
     setConfigs: function(configs){
         var configsGroup = this.find("@Sketch Measure Configs", this.configsURL);
+        configsGroup = (!configsGroup || this.is(configsGroup, MSLayerGroup))? configsGroup: configsGroup[0];
         var textLayer;
 
         this.configs = this.configs || {};
@@ -1201,9 +1202,6 @@ com.utom.extend({
         if(!this.configs) return false;
 
         var artboard = this.artboard;
-        var configsGroup = this.find("@Sketch Measure Configs", this.artboard);
-
-
 
         var groupSpecs = this.find("@Specs");
         if(!groupSpecs){
