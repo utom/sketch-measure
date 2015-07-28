@@ -3,7 +3,7 @@
   "description": "A measure tool for measurements & design specs.",
   "author": "utom",
   "homepage": "https://github.com/utom/sketch-measure",
-  "version": "0.9.10",
+  "version": "0.9.11",
   "identifier": "com.utom.sketch-measure",
   "compatibleVersion": "3.3.2",
   "bundleVersion": 1,
@@ -43,8 +43,8 @@
     "shortcut": "ctrl shift l",
     "script": "Toggle Measure Locked.sketchscript"
   }, {
-    "name": "Reset(Clear) Artboard Measure",
-    "identifier": "reset",
+    "name": "Clear Artboard Measure",
+    "identifier": "clear",
     "shortcut": "",
     "script": "Clear Artboard Measure.sketchscript"
   }, {
@@ -79,7 +79,7 @@
       "label",
       "hidden",
       "locked",
-      "reset",
+      "clear",
       "move",
       "lite-width",
       "lite-height",

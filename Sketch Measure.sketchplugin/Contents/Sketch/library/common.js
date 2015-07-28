@@ -1,40 +1,38 @@
+var I18N = {};
+var lang = NSUserDefaults.standardUserDefaults().objectForKey("AppleLanguages").objectAtIndex(0);
+I18N["zh-Hans"] = {
+    "You need an artboard."                             : "You need an artboard.",
+    "Resolution Setup"                                  : "Resolution Setup",
+    "* Choose your design resolution"                   : "* Choose your design resolution", 
+    "Please select a layer for measuring."              : "Please select a layer for measuring.",
+    "Please select 1 or 2 layers for measuring."        : "Please select 1 or 2 layers for measuring.",
+    "Please select a layer for creating."               : "Please select a layer for creating.",
+    "Please select a text layer for drawing."           : "Please select a text layer for drawing.",
+    "Please select a text layer for getting typography.": "Please select a text layer for getting typography.",
+    "Fill / Text color / Gradient"                      : "Fill / Text color / Gradient",
+    "Border color"                                      : "Border color",
+    "Layer opacity"                                     : "Layer opacity",
+    "Radius"                                            : "Radius",
+    "Shadow"                                            : "Shadow",
+    "Inner shadow"                                      : "Inner shadow",
+    "Font size"                                         : "Font size",
+    "Line height"                                       : "Line height",
+    "Font face"                                         : "Font face",
+    "Get Properties"                                    : "Get Properties",
+    "Please select a layer (not text layer) for getting properties.": "Please select a layer (not text layer) for getting properties.",
+    "* Customize the Property Guide that will be created.": "* Customize the Property Guide that will be created.",
+    "Export Spec"                                       : "导出规范",
+    "Export To:"                                        : "导出到:",
+    "Export"                                            : "导出",
+    "Export complete!"                                  : "导出成功!",
+    "OK"                                                : "确定",
+    "Cancel"                                            : "取消",
+    "Select 1 or multiple artboards"                    : "Select 1 or multiple artboards"
+};
+
 function _(str){
-    var I18N = {},
-        lang = NSUserDefaults.standardUserDefaults().objectForKey("AppleLanguages").objectAtIndex(0);
-
-    I18N["zh-Hans"] = {
-        "You need an artboard."                             : "You need an artboard.",
-        "Resolution Setup"                                  : "Resolution Setup",
-        "* Choose your design resolution"                   : "* Choose your design resolution", 
-        "Please select a layer for measuring."              : "Please select a layer for measuring.",
-        "Please select 1 or 2 layers for measuring."        : "Please select 1 or 2 layers for measuring.",
-        "Please select a layer for creating."               : "Please select a layer for creating.",
-        "Please select a text layer for drawing."           : "Please select a text layer for drawing.",
-        "Please select a text layer for getting typography.": "Please select a text layer for getting typography.",
-        "Fill / Text color / Gradient"                      : "Fill / Text color / Gradient",
-        "Border color"                                      : "Border color",
-        "Layer opacity"                                     : "Layer opacity",
-        "Radius"                                            : "Radius",
-        "Shadow"                                            : "Shadow",
-        "Inner shadow"                                      : "Inner shadow",
-        "Font size"                                         : "Font size",
-        "Line height"                                       : "Line height",
-        "Font face"                                         : "Font face",
-        "Get Properties"                                    : "Get Properties",
-        "Please select a layer (not text layer) for getting properties.": "Please select a layer (not text layer) for getting properties.",
-        "* Customize the Property Guide that will be created.": "* Customize the Property Guide that will be created.",
-        "Export Spec"                                       : "导出规范",
-        "Export To:"                                        : "导出到:",
-        "Export"                                            : "导出",
-        "Export complete!"                                  : "导出成功!",
-        "OK"                                                : "确定",
-        "Cancel"                                            : "取消",
-        "Select 1 or multiple artboards"                    : "Select 1 or multiple artboards"
-    };
-
     return (I18N[lang] && I18N[lang][str])? I18N[lang][str]: str;
 }
-
 
 var com = com || {};
 
@@ -1226,11 +1224,11 @@ com.utom.extend({
         if(!this.configs) return false;
 
         var artboard = this.artboard;
-        var configsGroup = this.find("@Sketch Measure Configs", this.configsURL);
+        // var configsGroup = this.find("@Sketch Measure Configs", this.configsURL);
 
         var layers = artboard.children().objectEnumerator();
 
-        this.removeLayer(configsGroup);
+        // this.removeLayer(configsGroup);
 
         while(item = layers.nextObject()) {
             if(this.is(item, MSLayerGroup) && this.regexName.exec(item.name())){
@@ -1557,6 +1555,7 @@ com.utom.extend({
 
         selectionArtboards = (this.is(selectionArtboards, MSArtboardGroup))? NSArray.arrayWithObjects(selectionArtboards): selectionArtboards;
         selectionArtboards = selectionArtboards.objectEnumerator();
+
         while(msArtboard = selectionArtboards.nextObject()){
             if(msArtboard instanceof MSArtboardGroup){
                 artboardError = false;
