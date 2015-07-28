@@ -264,6 +264,7 @@ com.utom.extend({
 com.utom.extend({
     getConfigs: function(){
         var configsGroup = this.find("@Sketch Measure Configs", this.configsURL);
+        configsGroup = (!configsGroup || this.is(configsGroup, MSLayerGroup))? configsGroup: configsGroup[0];
         var textLayer;
 
         if(configsGroup == false){
