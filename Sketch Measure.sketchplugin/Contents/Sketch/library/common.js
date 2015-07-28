@@ -1444,9 +1444,6 @@ com.utom.extend({
             }
         }
 
-        borderIter = null;
-        msBorder = null;
-
         return borders;
     },
     getFills: function(style) {
@@ -1476,9 +1473,6 @@ com.utom.extend({
             }
         }
 
-        fillIter = null;
-        msFill = null;
-
         return fills;
     },
     getShadows: function(style) {
@@ -1496,9 +1490,6 @@ com.utom.extend({
                 shadows.push(this.shadowToJSON(msShadow));
             }
         }
-
-        shadowIter = null;
-        msShadow = null;
 
         return shadows;
     },
@@ -1621,8 +1612,6 @@ com.utom.extend({
 
                     layersObj[msLayer.objectID()] = layer;
 
-                    layer = null;
-                    layerStyle = null;
                 }
 
                 if(masks.length){
