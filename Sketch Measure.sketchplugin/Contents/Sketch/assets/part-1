@@ -562,6 +562,8 @@ h1.m span{
     margin: 0 0 0 -320px;
     width: 640px;
     box-sizing: border-box;
+    max-height: 680px;
+    overflow-y: auto;
 }
 
 .artboard_list::after{

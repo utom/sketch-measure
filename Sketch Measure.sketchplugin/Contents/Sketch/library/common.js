@@ -168,16 +168,15 @@ com.utom.extend({
 
 //Find
 com.utom.extend({
-    find: function(name, container, isArray){
-        var predicate = NSPredicate.predicateWithFormat("(name != NULL) && (name == %@)", name);
+    find: function(name, container, isArray, field){
+        var field = field || "name";
+        var predicate = NSPredicate.predicateWithFormat("(" + field + " != NULL) && (" + field + " == %@)", name);
         var container = container || this.current;
         var items;
         if(isArray){
             items = container;
         }
-        else if(container.pages){
-            items = container.pages();
-        }else{
+        else{
             items = container.children();
         }
 
@@ -1528,31 +1527,25 @@ com.utom.extend({
 
         return savePanel.URL().path();
     },
-    export: function( context ){
+    export: function(){
+        if(!this.configs) return false;
+
         var context = this.context;
-        var document = context.document;
-        var selection = context.selection.objectEnumerator();
-        var sltArtboard = NSMutableArray.alloc().init();
+        var document = this.document;
+        var selection = this.selection;
 
-        var artboardError = true;
-        while(msArtboard = selection.nextObject()){
-            if(msArtboard instanceof MSArtboardGroup){
-                artboardError = false;
-                sltArtboard.addObject(msArtboard);
-            }
-        }
+        var selectionArtboards = this.find(MSArtboardGroup, selection, true, "class");
 
-        if(artboardError){
+        if(!selectionArtboards){
             this.message(_("Select 1 or multiple artboards"));
             return false;
         }
 
-        var resolution = this.resolutionSetting();
-        if(resolution === false) return false;
-
         var savePath = this.savePath();
         if(!savePath) return false;
         [[NSFileManager defaultManager] createDirectoryAtPath:savePath withIntermediateDirectories:true attributes:nil error:nil];
+
+        var resolution = this.configs.resolution;
 
         var pluginPath = NSString.stringWithString(this.context.scriptPath).stringByDeletingLastPathComponent();
         var template1Path = pluginPath.stringByAppendingPathComponent("assets/part-1");
@@ -1562,8 +1555,9 @@ com.utom.extend({
 
         var artboardsData = [];
 
-        sltArtboard = sltArtboard.objectEnumerator();
-        while(msArtboard = sltArtboard.nextObject()){
+        selectionArtboards = (this.is(selectionArtboards, MSArtboardGroup))? NSArray.arrayWithObjects(selectionArtboards): selectionArtboards;
+        selectionArtboards = selectionArtboards.objectEnumerator();
+        while(msArtboard = selectionArtboards.nextObject()){
             if(msArtboard instanceof MSArtboardGroup){
                 artboardError = false;
 
