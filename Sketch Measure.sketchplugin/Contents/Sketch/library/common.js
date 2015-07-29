@@ -47,6 +47,7 @@ com.utom = {
     artboard: undefined,
     current: undefined,
     styles: undefined,
+    percentageFlag: undefined,
     init: function(context){
         this.context = context;
         this.document = context.document;
@@ -55,7 +56,23 @@ com.utom = {
         this.artboard = this.page.currentArtboard();
         this.current = this.artboard || this.page;
         this.configsURL = this.page;
+        this.percentageFlag = false;
+        if(!this.is(this.current, MSArtboardGroup)){
+            this.message(_("You need an artboard."));
+            return false;
+        }
 
+        this.getConfigs();
+    },
+    init: function(context, percentage){
+        this.context = context;
+        this.document = context.document;
+        this.selection = context.selection;
+        this.page = this.document.currentPage();
+        this.artboard = this.page.currentArtboard();
+        this.current = this.artboard || this.page;
+        this.configsURL = this.page;
+        this.percentageFlag = percentage;
         if(!this.is(this.current, MSArtboardGroup)){
             this.message(_("You need an artboard."));
             return false;
@@ -150,6 +167,18 @@ com.utom.extend({
         }
 
         return length + unit;
+    },
+    updatePercentLength: function(length, width){
+        var unit = (this.configs.resolution > 0)? "pt": "px";
+        unit = (this.configs.resolution > 3)? "dp": unit;
+        var scale = this.allResolution[this.configs.resolution].scale;
+
+        length = Math.round( length / scale );
+        if (width) {
+             return ((length / this.artboard.frame().width())*100).toFixed(1) + "%";
+
+        } 
+        return ((length / this.artboard.frame().height())*100).toFixed(1) + "%";
     },
     toHex:function(c) {
         var hex = Math.round(c).toString(16).toUpperCase();
@@ -458,7 +487,14 @@ com.utom.extend({
         endFrame.setX( frame.x + frame.width - 1 );
 
         var text = textL.duplicate();
-        text.setStringValue(this.updateLength(frame.width));
+
+        if (this.percentageFlag) {
+            text.setStringValue(this.updatePercentLength(frame.width, true));
+
+        } else {
+            text.setStringValue(this.updateLength(frame.width));
+
+        }
         text.setTextBehaviour(1);
         text.setTextBehaviour(0);
 
@@ -577,7 +613,13 @@ com.utom.extend({
         endFrame.setY( frame.y + frame.height - 1 );
 
         var text = textL.duplicate();
-        text.setStringValue(this.updateLength(frame.height));
+
+        if (this.percentageFlag) {
+          text.setStringValue(this.updatePercentLength(frame.height, false));
+
+        } else {
+          text.setStringValue(this.updateLength(frame.height));
+        }
         text.setTextBehaviour(1);
         text.setTextBehaviour(0);
 
