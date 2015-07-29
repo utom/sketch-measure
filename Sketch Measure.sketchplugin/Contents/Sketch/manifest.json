@@ -33,6 +33,11 @@
     "shortcut": "ctrl shift 5",
     "script": "Label.sketchscript"
   }, {
+    "name": "6. Percentage Spacing",
+    "identifier": "PSpacing",
+    "shortcut": "ctrl shift q",
+    "script": "PSpacing.sketchscript"
+    }, {
     "name": "Toggle Measure Hidden",
     "identifier": "hidden",
     "shortcut": "ctrl shift h",
@@ -76,6 +81,7 @@
       "overlay",
       "typography",
       "property",
+      "PSpacing",
       "label",
       "hidden",
       "locked",
