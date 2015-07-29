@@ -1,33 +1,37 @@
 var I18N = {};
 var lang = NSUserDefaults.standardUserDefaults().objectForKey("AppleLanguages").objectAtIndex(0);
 I18N["zh-Hans"] = {
-    "You need an artboard."                             : "You need an artboard.",
-    "Resolution Setup"                                  : "Resolution Setup",
-    "* Choose your design resolution"                   : "* Choose your design resolution", 
-    "Please select a layer for measuring."              : "Please select a layer for measuring.",
-    "Please select 1 or 2 layers for measuring."        : "Please select 1 or 2 layers for measuring.",
-    "Please select a layer for creating."               : "Please select a layer for creating.",
-    "Please select a text layer for drawing."           : "Please select a text layer for drawing.",
-    "Please select a text layer for getting typography.": "Please select a text layer for getting typography.",
-    "Fill / Text color / Gradient"                      : "Fill / Text color / Gradient",
-    "Border color"                                      : "Border color",
-    "Layer opacity"                                     : "Layer opacity",
-    "Radius"                                            : "Radius",
-    "Shadow"                                            : "Shadow",
-    "Inner shadow"                                      : "Inner shadow",
-    "Font size"                                         : "Font size",
-    "Line height"                                       : "Line height",
-    "Font face"                                         : "Font face",
-    "Get Properties"                                    : "Get Properties",
-    "Please select a layer (not text layer) for getting properties.": "Please select a layer (not text layer) for getting properties.",
-    "* Customize the Property Guide that will be created.": "* Customize the Property Guide that will be created.",
+    "You need an artboard."                             : "请在画板中使用该功能.",
+    "Resolution Setup"                                  : "设计分辨率设定",
+    "* Choose your design resolution"                   : "* 请选择你的设计分辨率", 
+    "Please select a layer for measuring."              : "请选择 1 个图层.",
+    "Please select 1 or 2 layers for measuring."        : "请选择 1 个或 2 个图层",
+    "Please select a layer for creating."               : "请选择 1 个图层.",
+    "Please select a text layer for drawing."           : "请选择 1 个文字图层.",
+    "Fill / Text color / Gradient"                      : "填充 / 字体颜色 / 渐变",
+    "Border color"                                      : "边框",
+    "Layer opacity"                                     : "图层不透明度",
+    "Radius"                                            : "圆角",
+    "Shadow"                                            : "外阴影",
+    "Inner shadow"                                      : "内阴影",
+    "Font size"                                         : "字号",
+    "Line height"                                       : "行高",
+    "Font face"                                         : "字体",
+    "Get Properties"                                    : "获取属性",
+    "Please select a layer for getting properties."     : "请选择图层标注它的属性",
+    "* Customize the Property Guide that will be created.": "* 选择标注的属性和显示位置.",
     "Export Spec"                                       : "导出规范",
     "Export To:"                                        : "导出到:",
     "Export"                                            : "导出",
     "Export complete!"                                  : "导出成功!",
     "OK"                                                : "确定",
     "Cancel"                                            : "取消",
-    "Select 1 or multiple artboards"                    : "Select 1 or multiple artboards"
+    "Select 1 or multiple artboards"                    : "选中一个或多个画板",
+    "Position Top"                                      : "上侧",
+    "Position Right"                                    : "右侧",
+    "Position Bottom"                                   : "下侧",
+    "Position Left"                                     : "左侧",
+    "Show Position"                                     : "显示位置:"
 };
 
 function _(str){
@@ -1038,7 +1042,7 @@ com.utom.extend({
         if(!this.configs) return false;
 
         if( this.selection.count() < 1 ){
-            this.message(_("Please select a layer (not text layer) for getting properties."));
+            this.message(_("Please select a layer for getting properties."));
             return false;
         }
 
