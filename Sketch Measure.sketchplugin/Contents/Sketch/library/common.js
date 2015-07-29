@@ -832,7 +832,7 @@ com.utom.extend({
 })
 
 com.utom.extend({
-    drawLabel: function(target, reference, styles, name, arrow){
+    drawLabel: function(target, reference, styles, name, position){
         if(!this.configs) return false;
         var selection = (this.selection[0]) ? this.selection[0]: undefined;
         var target = target || selection;
@@ -901,7 +901,7 @@ com.utom.extend({
         labelFrame.setWidth(textFrame.width + 8);
         labelFrame.setHeight(textFrame.height + 6);
 
-        if(arrow){
+        if(position != undefined){
             gap = shape.duplicate();
 
             var gapFrame = gap.absoluteRect();
@@ -914,11 +914,14 @@ com.utom.extend({
             gapWidth = Math.round( gapFrame.width() );
             gapHeight = Math.round( gapFrame.height() );
 
-            var gapX;
-            var gapY;
+            var gapX = labelFrame.x() + this.mathHalf(labelFrame.width() - gapFrame.width());
+            var gapY = labelFrame.y() + this.mathHalf(labelFrame.height() - gapFrame.height());
 
-            gapX = (reference.width < (textFrame.width + 8) )? reference.x + this.mathHalf(reference.width) - this.mathHalf(gapFrame.width()): textFrame.x - 4 - this.mathHalf(gapFrame.width()) + this.mathHalf(textFrame.width + 8);
-            gapY = (arrow == 1)? textFrame.y - this.mathHalf(gapFrame.height()) - 3: textFrame.maxY + 3 - this.mathHalf(gapFrame.height());
+            gapX = (position === 1)? labelFrame.x() - 4: gapX;
+            gapX = (position === 3)? labelFrame.x() + labelFrame.width() - 4: gapX;
+
+            gapY = (position === 0)? labelFrame.y() + labelFrame.height() - 4: gapY;
+            gapY = (position === 2)? labelFrame.y() - 4: gapY;
 
             gapFrame.setX(gapX);
             gapFrame.setY(gapY);
@@ -971,17 +974,23 @@ com.utom.extend({
         }
 
     ],
+    propertyPosition: [_("Position Top"), _("Position Right"), _("Position Bottom"), _("Position Left")],
     propertyDialog: function(){
         var cellWidth = 250;
         var cellHeight = 190;
         var allProperty = this.allProperty;
         var propertyConfigs = this.configs.property;
+        var propertyPosition = this.configs.propertyPosition || 0;
 
-        var accessory = NSView.alloc().initWithFrame(NSMakeRect(0, 0, cellWidth, cellHeight + 30));
+        var alert = COSAlertWindow.new();
+        alert.setMessageText(_("Get Properties"));
+        alert.setInformativeText(_("* Customize the Property Guide that will be created."));
+        alert.addButtonWithTitle(_("OK"));
+        alert.addButtonWithTitle(_("Cancel"));
 
         var btns = [];
         allProperty.forEach(function(data, i) {
-            btns[i] = NSButton.alloc().initWithFrame(NSMakeRect(0, 200 - i * 24, 200, 20));
+            btns[i] = NSButton.alloc().initWithFrame(NSMakeRect(0, 0, 200, 14));
             btns[i].setButtonType(NSSwitchButton);
             btns[i].setTitle(data.name);
             btns[i].setState(false);
@@ -990,28 +999,33 @@ com.utom.extend({
                     btns[i].setState(true);
                 }
             });
-            accessory.addSubview(btns[i]);
+            alert.addAccessoryView(btns[i]);
         });
 
-        var alert = NSAlert.alloc().init();
-        alert.setMessageText(_("Get Properties"));
-        alert.setInformativeText(_("* Customize the Property Guide that will be created."));
-        alert.addButtonWithTitle(_("OK"));
-        alert.addButtonWithTitle(_("Cancel"));
-        alert.setAccessoryView(accessory);
+        var comboBox = NSComboBox.alloc().initWithFrame(NSMakeRect(0,0,200,25));
+        comboBox.addItemsWithObjectValues(this.propertyPosition);
+        comboBox.selectItemAtIndex(propertyPosition);
+
+        alert.addTextLabelWithValue(_("Show Position:"));
+        alert.addAccessoryView(comboBox);
+
 
         var responseCode = alert.runModal()
 
         if(responseCode == 1000){
-            var tmps = [];
+            var types = [];
+            var position = comboBox.indexOfSelectedItem();
             btns.forEach(function(btn, i) {
                 if(btn.state()){
-                    tmps.push(allProperty[i].slug);
+                    types.push(allProperty[i].slug);
                 }
             });
 
-            this.setConfigs({property: tmps});
-            return tmps;
+            this.setConfigs({property: types, propertyPosition: position});
+            return {
+                types: types,
+                position: position
+            };
         }
         else{
             return false;
@@ -1035,7 +1049,9 @@ com.utom.extend({
             this.sharedTextStyle("@Property / Text", "#FFFFFF")
         ];
 
-        var types = this.propertyDialog();
+        var propertyConfigs = this.propertyDialog();
+        var types = propertyConfigs.types;
+        var position = propertyConfigs.position;
 
         if(!types) return false;
 
@@ -1147,15 +1163,23 @@ com.utom.extend({
         var aFrame = this.getFrame(this.current);
         var tempFrame = temp.absoluteRect();
 
-        var tempX = frame.x + 4;
-        tempX = (tempX + tempFrame.width() + 8 > aFrame.maxX)? frame.maxX - tempFrame.width() - 4 : tempX;
-        var tempY = (distance[0] < distance[2])? frame.maxY + 3: frame.y - tempFrame.height() - 3;
-        var arrow = (distance[0] < distance[2])? 1: 2;
+
+        var tw = tempFrame.width() + 8;
+        var th = tempFrame.height() + 6;
+
+        var tempX = frame.x - this.mathHalf(tempFrame.width() - frame.width);
+        var tempY = frame.y - this.mathHalf(tempFrame.height() - frame.height);
+
+        tempX = (position === 1)? frame.x + frame.width + 7: tempX;
+        tempX = (position === 3)? frame.x - tempFrame.width() -7: tempX;
+
+        tempY = (position === 0)? frame.y - tempFrame.height() - 6: tempY;
+        tempY = (position === 2)? frame.y + frame.height + 6: tempY;
 
         tempFrame.setX(tempX);
         tempFrame.setY(tempY);
 
-        this.drawLabel(temp, frame, styles, name, arrow);
+        this.drawLabel(temp, frame, styles, name, position);
     }
 });
 
