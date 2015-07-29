@@ -38,6 +38,11 @@
     "shortcut": "ctrl shift q",
     "script": "PSpacing.sketchscript"
     }, {
+    "name": "7. Percentage Sizing",
+    "identifier": "PSize",
+    "shortcut": "ctrl shift w",
+    "script": "Psize.sketchscript"
+    }, {
     "name": "Toggle Measure Hidden",
     "identifier": "hidden",
     "shortcut": "ctrl shift h",
@@ -82,6 +87,7 @@
       "typography",
       "property",
       "PSpacing",
+      "PSize",
       "label",
       "hidden",
       "locked",
