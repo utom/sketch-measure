@@ -31,7 +31,7 @@ I18N["zh-Hans"] = {
     "Position Right"                                    : "右侧",
     "Position Bottom"                                   : "下侧",
     "Position Left"                                     : "左侧",
-    "Show Position"                                     : "显示位置:"
+    "Show Position:"                                    : "显示位置:"
 };
 
 function _(str){
@@ -838,7 +838,7 @@ com.utom.extend({
 com.utom.extend({
     drawLabel: function(target, reference, styles, name, position){
         if(!this.configs) return false;
-        var selection = (this.selection[0]) ? this.selection[0]: undefined;
+        var selection = (this.selection.count() && this.selection[0]) ? this.selection[0]: undefined;
         var target = target || selection;
 
         if (
