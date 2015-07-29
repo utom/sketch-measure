@@ -19,7 +19,7 @@ I18N["zh-Hans"] = {
     "Font face"                                         : "字体",
     "Get Properties"                                    : "获取属性",
     "Please select a layer for getting properties."     : "请选择图层标注它的属性",
-    "* Customize the Property Guide that will be created.": "* 选择标注的属性和显示位置.",
+  "* Customize the Property Guide that will be created.": "* 选择标注的属性和显示位置.",
     "Export Spec"                                       : "导出规范",
     "Export To:"                                        : "导出到:",
     "Export"                                            : "导出",
@@ -244,8 +244,8 @@ com.utom.extend({
 
             var textLayer = this.addText(this.page);
             textLayer.setTextColor(color);
-            textLayer.setFontSize(12);
-            textLayer.setLineSpacing(14);
+            textLayer.setFontSize(14);
+            textLayer.setLineSpacing(16);
             textLayer.setFontPostscriptName("HelveticaNeue");
             if(center) textLayer.setTextAlignment(2);
 
