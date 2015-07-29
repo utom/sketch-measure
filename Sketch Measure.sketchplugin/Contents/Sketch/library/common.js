@@ -1105,7 +1105,7 @@ com.utom.extend({
                     content.push("opacity: " + Math.round( layerStyle.contextSettings().opacity() * 100) + "%");
                     break;
                 case "radius":
-                    if(!self.is(layer, MSShapeGroup)) return false;
+                    if(!self.is(layer, MSShapeGroup) || !self.is(layer.layers().firstObject(), MSRectangleShape)) return false;
                     var shape = self.is(layer.layers().firstObject(), MSRectangleShape)? layer.layers().firstObject(): undefined;
                     content.push("radius: " + self.updateLength(shape.fixedRadius()));
                     break;
