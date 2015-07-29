@@ -60,7 +60,6 @@ com.utom = {
         this.artboard = this.page.currentArtboard();
         this.current = this.artboard || this.page;
         this.configsURL = this.page;
-        this.percentageFlag = false;
         if(!this.is(this.current, MSArtboardGroup)){
             this.message(_("You need an artboard."));
             return false;
@@ -173,16 +172,12 @@ com.utom.extend({
         return length + unit;
     },
     updatePercentLength: function(length, width){
-        var unit = (this.configs.resolution > 0)? "pt": "px";
-        unit = (this.configs.resolution > 3)? "dp": unit;
-        var scale = this.allResolution[this.configs.resolution].scale;
-
-        length = Math.round( length / scale );
+        var aFrame = this.artboard.frame();
         if (width) {
-             return ((length / this.artboard.frame().width())*100).toFixed(1) + "%";
+             return Math.round((length / aFrame.width()) * 1000) / 10 + "%";
 
         } 
-        return ((length / this.artboard.frame().height())*100).toFixed(1) + "%";
+        return Math.round((length / aFrame.height()) * 1000) / 10 + "%";
     },
     toHex:function(c) {
         var hex = Math.round(c).toString(16).toUpperCase();
