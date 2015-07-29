@@ -33,16 +33,6 @@
     "shortcut": "ctrl shift 5",
     "script": "Label.sketchscript"
   }, {
-    "name": "6. Percentage Spacing",
-    "identifier": "PSpacing",
-    "shortcut": "ctrl shift q",
-    "script": "PSpacing.sketchscript"
-    }, {
-    "name": "7. Percentage Sizing",
-    "identifier": "PSize",
-    "shortcut": "ctrl shift w",
-    "script": "Psize.sketchscript"
-    }, {
     "name": "Toggle Measure Hidden",
     "identifier": "hidden",
     "shortcut": "ctrl shift h",
