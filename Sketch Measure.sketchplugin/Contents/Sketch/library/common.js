@@ -175,10 +175,10 @@ com.utom.extend({
 
         length = Math.round( length / scale );
         if (width) {
-             return ((length / this.artboard.frame().width())*100).toFixed(1) + "%";
+             return ((length / (this.artboard.frame().width()/scale))*100).toFixed(1) + "%";
 
         } 
-        return ((length / this.artboard.frame().height())*100).toFixed(1) + "%";
+        return ((length / (this.artboard.frame().height()/scale))*100).toFixed(1) + "%";
     },
     toHex:function(c) {
         var hex = Math.round(c).toString(16).toUpperCase();
