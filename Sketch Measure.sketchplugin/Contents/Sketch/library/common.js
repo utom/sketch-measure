@@ -29,7 +29,7 @@ I18N["zh-Hans"] = {
     "Cancel"                                            : "取消",
     "Select 1 or multiple artboards"                    : "Select 1 or multiple artboards"
 };
-
+ 
 function _(str){
     return (I18N[lang] && I18N[lang][str])? I18N[lang][str]: str;
 }
