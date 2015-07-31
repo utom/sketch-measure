@@ -8,40 +8,40 @@
   "compatibleVersion": "3.3.2",
   "bundleVersion": 1,
   "commands": [{
-    "name": "1. Create Overlay",
+    "name": "1. Create overlay",
     "identifier": "overlay",
     "shortcut": "ctrl shift 1",
     "script": "Overlay.sketchscript"
   }, {
-    "name": "2. Measure Size",
+    "name": "2. Measure size",
     "identifier": "size",
     "shortcut": "ctrl shift 2",
     "script": "Size.sketchscript"
   }, {
-    "name": "3. Measure Spacing",
+    "name": "3. Measure spacing",
     "identifier": "spacing",
     "shortcut": "ctrl shift 3",
     "script": "Spacing.sketchscript"
   }, {
-    "name": "4. Get Property",
+    "name": "4. Get property",
     "identifier": "property",
     "shortcut": "ctrl shift 4",
     "script": "Property.sketchscript"
   }, {
-    "name": "5. Create Note",
+    "name": "5. Create note",
     "identifier": "label",
     "shortcut": "ctrl shift 5",
     "script": "Label.sketchscript"
   }, {
-    "name": "6. Percentage Spacing",
-    "identifier": "PSpacing",
-    "shortcut": "ctrl shift q",
-    "script": "PSpacing.sketchscript"
-    }, {
-    "name": "7. Percentage Sizing",
-    "identifier": "PSize",
-    "shortcut": "ctrl shift w",
-    "script": "Psize.sketchscript"
+    "name": "6. Percentage for size",
+    "identifier": "percentage-size",
+    "shortcut": "ctrl shift 6",
+    "script": "Percentage for Size.sketchscript"
+    },{
+    "name": "7. Percentage for spacing",
+    "identifier": "percentage-spacing",
+    "shortcut": "ctrl shift 7",
+    "script": "Percentage for Spacing.sketchscript"
     }, {
     "name": "Toggle Measure Hidden",
     "identifier": "hidden",
@@ -86,8 +86,8 @@
       "overlay",
       "typography",
       "property",
-      "PSpacing",
-      "PSize",
+      "percentage-size",
+      "percentage-spacing",
       "label",
       "hidden",
       "locked",

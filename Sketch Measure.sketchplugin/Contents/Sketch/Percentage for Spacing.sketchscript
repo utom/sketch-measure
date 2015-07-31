@@ -2,6 +2,5 @@
 
 function onRun(context) {
     com.utom.init(context);
-    com.utom.percentageFlag = true;
-    com.utom.measureSpacing();
+    com.utom.measurePercentageSpacing();
 }

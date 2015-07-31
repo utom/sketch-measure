@@ -2,7 +2,7 @@ var I18N = {};
 var lang = NSUserDefaults.standardUserDefaults().objectForKey("AppleLanguages").objectAtIndex(0);
 I18N["zh-Hans"] = {
     "You need an artboard."                             : "请在画板中使用该功能.",
-    "Resolution Setup"                                  : "设计分辨率设定",
+    "Resolution setup"                                  : "设计分辨率设定",
     "* Choose your design resolution"                   : "* 请选择你的设计分辨率", 
     "Please select a layer for measuring."              : "请选择 1 个图层.",
     "Please select 1 or 2 layers for measuring."        : "请选择 1 个或 2 个图层",
@@ -17,11 +17,12 @@ I18N["zh-Hans"] = {
     "Font size"                                         : "字号",
     "Line height"                                       : "行高",
     "Font face"                                         : "字体",
-    "Get Properties"                                    : "获取属性",
+    "Get properties"                                    : "获取属性",
+    "Properties:"                                        : "属性:",
     "Please select a layer for getting properties."     : "请选择图层标注它的属性",
-  "* Customize the Property Guide that will be created.": "* 选择标注的属性和显示位置.",
-    "Export Spec"                                       : "导出规范",
-    "Export To:"                                        : "导出到:",
+  "* Customize the property guide that will be created.": "* 选择标注的属性和显示位置.",
+    "Export spec"                                       : "导出规范",
+    "Export to:"                                        : "导出到:",
     "Export"                                            : "导出",
     "Export complete!"                                  : "导出成功!",
     "OK"                                                : "确定",
@@ -31,11 +32,11 @@ I18N["zh-Hans"] = {
     "Position Right"                                    : "右侧",
     "Position Bottom"                                   : "下侧",
     "Position Left"                                     : "左侧",
-    "Show Position:"                                    : "显示位置:",
-    "Color Hex, e.g. #FFFFFF 100%"                      : "Color Hex, e.g. #FFFFFF 100%",
-    "ARGB Hex, e.g. #FFFFFFFF"                          : "ARGB Hex, e.g. #FFFFFFFF",
+    "Show position:"                                    : "显示位置:",
+    "Color hex, e.g. #FFFFFF 100%"                      : "Color hex, e.g. #FFFFFF 100%",
+    "ARGB hex, e.g. #FFFFFFFF"                          : "ARGB hex, e.g. #FFFFFFFF",
     "RGBA CSS, e.g. rgba(255, 255, 255, 1)"             : "RGBA CSS, e.g. rgba(255, 255, 255, 1)",
-    "Color Format"                                      : "Color Format"
+    "Color format"                                      : "Color format"
 };
 
 function _(str){
@@ -55,7 +56,7 @@ com.utom = {
     artboard: undefined,
     current: undefined,
     styles: undefined,
-    percentageFlag: false,
+    isPercentage: false,
     init: function(context){
         this.context = context;
         this.document = context.document;
@@ -399,7 +400,7 @@ com.utom.extend({
         [accessory addSubview:matrix]
 
         var alert = NSAlert.alloc().init();
-        alert.setMessageText(_("Resolution Setup"));
+        alert.setMessageText(_("Resolution setup"));
         alert.setInformativeText(_("* Choose your design resolution"));
         alert.addButtonWithTitle(_("OK"));
         alert.addButtonWithTitle(_("Cancel"));
@@ -476,7 +477,7 @@ com.utom.extend({
 
         var text = textL.duplicate();
 
-        if (this.percentageFlag) {
+        if (this.isPercentage) {
             text.setStringValue(this.updatePercentLength(frame.width, true));
 
         } else {
@@ -602,7 +603,7 @@ com.utom.extend({
 
         var text = textL.duplicate();
 
-        if (this.percentageFlag) {
+        if (this.isPercentage) {
           text.setStringValue(this.updatePercentLength(frame.height, false));
 
         } else {
@@ -859,6 +860,17 @@ com.utom.extend({
 
         container.resizeRoot(true);
     }
+});
+
+com.utom.extend({
+    measurePercentageSize: function(){
+        this.isPercentage = true;
+        this.measureSize();
+    },
+    measurePercentageSpacing: function(){
+        this.isPercentage = true;
+        this.measureSpacing();
+    }
 })
 
 com.utom.extend({
@@ -1012,8 +1024,8 @@ com.utom.extend({
         }
 
     ],
-    propertyPosition: [_("Position Top"), _("Position Right"), _("Position Bottom"), _("Position Left")],
-    colorFormats: [_("Color Hex, e.g. #FFFFFF 100%"), _("ARGB Hex, e.g. #FFFFFFFF"), _("RGBA CSS, e.g. rgba(255, 255, 255, 1)")],
+    propertyPosition: [_("Position top"), _("Position right"), _("Position bottom"), _("Position left")],
+    colorFormats: [_("Color hex, e.g. #FFFFFF 100%"), _("ARGB hex, e.g. #FFFFFFFF"), _("RGBA CSS, e.g. rgba(255, 255, 255, 1)")],
     propertyDialog: function(){
         var cellWidth = 250;
         var cellHeight = 190;
@@ -1023,11 +1035,12 @@ com.utom.extend({
         var propertyPosition = this.configs.propertyPosition || 0;
 
         var alert = COSAlertWindow.new();
-        alert.setMessageText(_("Get Properties"));
-        alert.setInformativeText(_("* Customize the Property Guide that will be created."));
+        alert.setMessageText(_("Get properties"));
+        alert.setInformativeText(_("* Customize the property puide that will be created."));
         alert.addButtonWithTitle(_("OK"));
         alert.addButtonWithTitle(_("Cancel"));
 
+        alert.addTextLabelWithValue(_("Properties:"));
         var btns = [];
         allProperty.forEach(function(data, i) {
             btns[i] = NSButton.alloc().initWithFrame(NSMakeRect(0, 0, 200, 14));
@@ -1046,18 +1059,18 @@ com.utom.extend({
         comboBox.addItemsWithObjectValues(this.propertyPosition);
         comboBox.selectItemAtIndex(propertyPosition);
 
-        alert.addTextLabelWithValue(_("Show Position:"));
+        alert.addTextLabelWithValue(_("Show position:"));
         alert.addAccessoryView(comboBox);
 
         var comboColorFormatBox = NSComboBox.alloc().initWithFrame(NSMakeRect(0,0,300,25));
         comboColorFormatBox.addItemsWithObjectValues(this.colorFormats);
         comboColorFormatBox.selectItemAtIndex(colorFormatConfigs);
 
-        alert.addTextLabelWithValue(_("Color Format:"));
+        alert.addTextLabelWithValue(_("Color format:"));
         alert.addAccessoryView(comboColorFormatBox);
 
 
-        var responseCode = alert.runModal()
+        var responseCode = alert.runModal();
 
         if(responseCode == 1000){
             var types = [];
@@ -1581,8 +1594,8 @@ com.utom.extend({
         var fileName = this.document.displayName().stringByDeletingPathExtension();
         var savePanel = NSSavePanel.savePanel();
 
-        savePanel.setTitle(_("Export Spec"));
-        savePanel.setNameFieldLabel(_("Export To:"));
+        savePanel.setTitle(_("Export spec"));
+        savePanel.setNameFieldLabel(_("Export to:"));
         savePanel.setPrompt(_("Export"));
         // savePanel.setAllowedFileTypes(NSArray.arrayWithObject("spec"));
         // savePanel.setAllowsOtherFileTypes(false);
