@@ -1648,7 +1648,7 @@ com.utom.extend({
                 var layersObj = {};
                 var layers = [];
                 var notes = [];
-                var masks = [];
+                var deletes = [];
                 var layerIter = msArtboard.children().objectEnumerator();
                 var name = msArtboard.objectID();
 
@@ -1664,6 +1664,8 @@ com.utom.extend({
                         msLayer.setIsVisible(false);
                     }
 
+                    // MSSliceLayer
+
                     if (this.isHidden(msLayer) || this.isLocked(msLayer) || !this.isExportable(msLayer) || this.isMeasure(msLayer) /* || (msLayer.hasClippingMask() && msLayer.clippingMaskMode()) */ ) {
                         continue;
                     }
@@ -1676,7 +1678,7 @@ com.utom.extend({
                             if (this.isHidden(maskLayer) || !this.isExportable(maskLayer) || this.isMeasure(maskLayer) || maskLayer.objectID() == msLayer.objectID() ) {
                                 continue;
                             }
-                            masks.push(maskLayer.objectID());
+                            deletes.push(maskLayer.objectID());
                         }
                     }
 
@@ -1707,9 +1709,9 @@ com.utom.extend({
 
                 }
 
-                if(masks.length){
-                    masks.forEach(function(maskID){
-                        if(layersObj[maskID]) delete layersObj[maskID];
+                if(deletes.length){
+                    deletes.forEach(function(deleteID){
+                        if(layersObj[deleteID]) delete layersObj[deleteID];
                     });
                 }
 
