@@ -51,7 +51,7 @@ com.utom = {
     artboard: undefined,
     current: undefined,
     styles: undefined,
-    percentageFlag: undefined,
+    percentageFlag: false,
     init: function(context){
         this.context = context;
         this.document = context.document;
@@ -75,7 +75,6 @@ com.utom = {
         this.artboard = this.page.currentArtboard();
         this.current = this.artboard || this.page;
         this.configsURL = this.page;
-        this.percentageFlag = percentage;
         if(!this.is(this.current, MSArtboardGroup)){
             this.message(_("You need an artboard."));
             return false;
@@ -163,7 +162,7 @@ com.utom.extend({
         unit = (this.configs.resolution > 3)? "dp": unit;
         var scale = this.allResolution[this.configs.resolution].scale;
 
-        length = Math.round( length / scale );
+        length = Math.round( length / scale * 10 ) / 10;
 
         if(this.configs.resolution > 2 && sp){
             unit = "sp";
@@ -303,6 +302,7 @@ com.utom.extend({
             defaultConfigs.resolution = resolution;
             // defaultConfigs.typography = ["font", "size", "color", "line"];
             defaultConfigs.property = ["color", "border"];
+            defaultConfigs.colorFormat = 0;
             this.setConfigs(defaultConfigs);
         }
         else{
@@ -1024,11 +1024,13 @@ com.utom.extend({
 
     ],
     propertyPosition: [_("Position Top"), _("Position Right"), _("Position Bottom"), _("Position Left")],
+    colorFormats: [_("Color Hex, e.g. #FFFFFF 100%"), _("ARGB Hex, e.g. #FFFFFFFF"), _("RGBA CSS, e.g. rgba(255, 255, 255, 1)")],
     propertyDialog: function(){
         var cellWidth = 250;
         var cellHeight = 190;
         var allProperty = this.allProperty;
         var propertyConfigs = this.configs.property;
+        var colorFormatConfigs = this.configs.colorFormat || 0;
         var propertyPosition = this.configs.propertyPosition || 0;
 
         var alert = COSAlertWindow.new();
@@ -1058,22 +1060,31 @@ com.utom.extend({
         alert.addTextLabelWithValue(_("Show Position:"));
         alert.addAccessoryView(comboBox);
 
+        var comboColorFormatBox = NSComboBox.alloc().initWithFrame(NSMakeRect(0,0,300,25));
+        comboColorFormatBox.addItemsWithObjectValues(this.colorFormats);
+        comboColorFormatBox.selectItemAtIndex(colorFormatConfigs);
+
+        alert.addTextLabelWithValue(_("Color Format:"));
+        alert.addAccessoryView(comboColorFormatBox);
+
 
         var responseCode = alert.runModal()
 
         if(responseCode == 1000){
             var types = [];
             var position = comboBox.indexOfSelectedItem();
+            var colorFormat = comboColorFormatBox.indexOfSelectedItem();
             btns.forEach(function(btn, i) {
                 if(btn.state()){
                     types.push(allProperty[i].slug);
                 }
             });
 
-            this.setConfigs({property: types, propertyPosition: position});
+            this.setConfigs({property: types, propertyPosition: position, colorFormat: colorFormat});
             return {
                 types: types,
-                position: position
+                position: position,
+                colorFormat: colorFormat
             };
         }
         else{
@@ -1101,6 +1112,7 @@ com.utom.extend({
         var propertyConfigs = this.propertyDialog();
         var types = propertyConfigs.types;
         var position = propertyConfigs.position;
+        this.colorFormat = propertyConfigs.colorFormat;
 
         if(!types) return false;
 
@@ -1109,7 +1121,13 @@ com.utom.extend({
 
         var colorContent = function(color){
             var alpha = color.a;
-            return "#(" + self.toHex(alpha * 255) + ")" + self.rgbToHex(color.r, color.g, color.b) + " / " + color.r + "," + color.g + "," + color.b + " (" + Math.round(color.a * 100) + "%)";
+            if(self.colorFormat === 0){
+                return "#" + self.rgbToHex(color.r, color.g, color.b) + " " + Math.round(color.a * 100) + "%";
+            }
+            else if(self.colorFormat === 1){
+                return "#" + self.rgbToHex(color.r, color.g, color.b, color.a);
+            }
+            return "rgba(" + color.r + "," + color.g + "," + color.b + "," + color.a + ")";
         }
 
         var colorTypeContent = function(fillJSON){
