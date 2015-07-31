@@ -71,21 +71,6 @@ com.utom = {
 
         this.getConfigs();
     },
-    init: function(context, percentage){
-        this.context = context;
-        this.document = context.document;
-        this.selection = context.selection;
-        this.page = this.document.currentPage();
-        this.artboard = this.page.currentArtboard();
-        this.current = this.artboard || this.page;
-        this.configsURL = this.page;
-        if(!this.is(this.current, MSArtboardGroup)){
-            this.message(_("You need an artboard."));
-            return false;
-        }
-
-        this.getConfigs();
-    },
     extend: function( options, target ){
         var target = target || this;
 

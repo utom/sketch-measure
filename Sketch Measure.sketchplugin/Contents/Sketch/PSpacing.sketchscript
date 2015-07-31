@@ -1,6 +1,7 @@
 @import 'library/common.js'
 
 function onRun(context) {
-    com.utom.init(context, true);
+    com.utom.init(context);
+    com.utom.percentageFlag = true;
     com.utom.measureSpacing();
 }
