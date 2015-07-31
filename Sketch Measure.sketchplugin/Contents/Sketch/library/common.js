@@ -897,14 +897,17 @@ com.utom.extend({
 
         if(/NOTE\#|LABEL\#|TYPOGRAPHY\#|PROPERTY\#/.exec(container.name())){
             label = this.find('label', container);
-            gap = this.find('gap', container);
-            gapFrame = this.getFrame(gap);
             labelFrame = this.getFrame(label);
-            var old = {
-                ly: labelFrame.y,
-                lh: labelFrame.height,
-                gy: gapFrame.y
+            gap = this.find('gap', container);
+            if(gap){
+                gapFrame = this.getFrame(gap);
+                var old = {
+                    ly: labelFrame.y,
+                    lh: labelFrame.height,
+                    gy: gapFrame.y
+                }
             }
+
         }
         else{
             var name = name || "NOTE#" + text.objectID();
@@ -928,6 +931,7 @@ com.utom.extend({
 
             label = shape.duplicate();
             label.setName("label");
+            textFrame = this.getFrame(text);
 
             this.removeLayer(text);
             container.addLayers([text]);
@@ -935,12 +939,16 @@ com.utom.extend({
             text.setStyle(textStyle);
         }
 
-        textFrame = this.getFrame(text);
+        textFrameAbsoluteRect = text.absoluteRect();
+        if(textFrame){
+            textFrameAbsoluteRect.setX(textFrame.x);
+            textFrameAbsoluteRect.setY(textFrame.y);
+        }
         labelFrame = label.absoluteRect();
-        labelFrame.setX(textFrame.x - 4);
-        labelFrame.setY(textFrame.y - 3);
-        labelFrame.setWidth(textFrame.width + 8);
-        labelFrame.setHeight(textFrame.height + 6);
+        labelFrame.setX(textFrameAbsoluteRect.x() - 4);
+        labelFrame.setY(textFrameAbsoluteRect.y() - 3);
+        labelFrame.setWidth(textFrameAbsoluteRect.width() + 8);
+        labelFrame.setHeight(textFrameAbsoluteRect.height() + 6);
 
         if(position != undefined){
             gap = shape.duplicate();
