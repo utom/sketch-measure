@@ -31,7 +31,11 @@ I18N["zh-Hans"] = {
     "Position Right"                                    : "右侧",
     "Position Bottom"                                   : "下侧",
     "Position Left"                                     : "左侧",
-    "Show Position:"                                    : "显示位置:"
+    "Show Position:"                                    : "显示位置:",
+    "Color Hex, e.g. #FFFFFF 100%"                      : "Color Hex, e.g. #FFFFFF 100%",
+    "ARGB Hex, e.g. #FFFFFFFF"                          : "ARGB Hex, e.g. #FFFFFFFF",
+    "RGBA CSS, e.g. rgba(255, 255, 255, 1)"             : "RGBA CSS, e.g. rgba(255, 255, 255, 1)",
+    "Color Format"                                      : "Color Format"
 };
 
 function _(str){
