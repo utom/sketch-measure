@@ -1418,8 +1418,6 @@ com.utom.extend({
     },
     isHidden: function(layer){
         while (!(layer instanceof MSArtboardGroup)) {
-            log(layer);
-            log(!layer.isVisible());
             if (!layer.isVisible()) {
                 return true;
             }
