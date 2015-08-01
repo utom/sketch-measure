@@ -1,33 +1,42 @@
 var I18N = {};
 var lang = NSUserDefaults.standardUserDefaults().objectForKey("AppleLanguages").objectAtIndex(0);
 I18N["zh-Hans"] = {
-    "You need an artboard."                             : "You need an artboard.",
-    "Resolution Setup"                                  : "Resolution Setup",
-    "* Choose your design resolution"                   : "* Choose your design resolution", 
-    "Please select a layer for measuring."              : "Please select a layer for measuring.",
-    "Please select 1 or 2 layers for measuring."        : "Please select 1 or 2 layers for measuring.",
-    "Please select a layer for creating."               : "Please select a layer for creating.",
-    "Please select a text layer for drawing."           : "Please select a text layer for drawing.",
-    "Please select a text layer for getting typography.": "Please select a text layer for getting typography.",
-    "Fill / Text color / Gradient"                      : "Fill / Text color / Gradient",
-    "Border color"                                      : "Border color",
-    "Layer opacity"                                     : "Layer opacity",
-    "Radius"                                            : "Radius",
-    "Shadow"                                            : "Shadow",
-    "Inner shadow"                                      : "Inner shadow",
-    "Font size"                                         : "Font size",
-    "Line height"                                       : "Line height",
-    "Font face"                                         : "Font face",
-    "Get Properties"                                    : "Get Properties",
-    "Please select a layer (not text layer) for getting properties.": "Please select a layer (not text layer) for getting properties.",
-    "* Customize the Property Guide that will be created.": "* Customize the Property Guide that will be created.",
-    "Export Spec"                                       : "导出规范",
-    "Export To:"                                        : "导出到:",
+    "You need an artboard."                             : "请在画板中使用该功能.",
+    "Resolution setup"                                  : "设计分辨率设定",
+    "* Choose your design resolution"                   : "* 请选择你的设计分辨率", 
+    "Please select a layer for measuring."              : "请选择 1 个图层.",
+    "Please select 1 or 2 layers for measuring."        : "请选择 1 个或 2 个图层",
+    "Please select a layer for creating."               : "请选择 1 个图层.",
+    "Please select a text layer for drawing."           : "请选择 1 个文字图层.",
+    "Fill / Text color / Gradient"                      : "填充 / 字体颜色 / 渐变",
+    "Border color"                                      : "边框",
+    "Layer opacity"                                     : "图层不透明度",
+    "Radius"                                            : "圆角",
+    "Shadow"                                            : "外阴影",
+    "Inner shadow"                                      : "内阴影",
+    "Font size"                                         : "字号",
+    "Line height"                                       : "行高",
+    "Font face"                                         : "字体",
+    "Get properties"                                    : "获取属性",
+    "Properties:"                                        : "属性:",
+    "Please select a layer for getting properties."     : "请选择图层标注它的属性",
+  "* Customize the property guide that will be created.": "* 选择标注的属性和显示位置.",
+    "Export spec"                                       : "导出规范",
+    "Export to:"                                        : "导出到:",
     "Export"                                            : "导出",
     "Export complete!"                                  : "导出成功!",
     "OK"                                                : "确定",
     "Cancel"                                            : "取消",
-    "Select 1 or multiple artboards"                    : "Select 1 or multiple artboards"
+    "Select 1 or multiple artboards"                    : "选中一个或多个画板",
+    "Position Top"                                      : "上侧",
+    "Position Right"                                    : "右侧",
+    "Position Bottom"                                   : "下侧",
+    "Position Left"                                     : "左侧",
+    "Show position:"                                    : "显示位置:",
+    "Color hex, e.g. #FFFFFF 100%"                      : "Color hex, e.g. #FFFFFF 100%",
+    "ARGB hex, e.g. #FFFFFFFF"                          : "ARGB hex, e.g. #FFFFFFFF",
+    "RGBA CSS, e.g. rgba(255, 255, 255, 1)"             : "RGBA CSS, e.g. rgba(255, 255, 255, 1)",
+    "Color format"                                      : "Color format"
 };
  
 function _(str){
@@ -47,6 +56,10 @@ com.utom = {
     artboard: undefined,
     current: undefined,
     styles: undefined,
+<<<<<<< HEAD
+=======
+    isPercentage: false,
+>>>>>>> beta
     init: function(context){
         this.context = context;
         this.document = context.document;
@@ -142,7 +155,7 @@ com.utom.extend({
         unit = (this.configs.resolution > 3)? "dp": unit;
         var scale = this.allResolution[this.configs.resolution].scale;
 
-        length = Math.round( length / scale );
+        length = Math.round( length / scale * 10 ) / 10;
 
         if(this.configs.resolution > 2 && sp){
             unit = "sp";
@@ -150,6 +163,17 @@ com.utom.extend({
 
         return length + unit;
     },
+<<<<<<< HEAD
+=======
+    updatePercentLength: function(length, width){
+        var aFrame = this.artboard.frame();
+        if (width) {
+             return Math.round((length / aFrame.width()) * 1000) / 10 + "%";
+
+        } 
+        return Math.round((length / aFrame.height()) * 1000) / 10 + "%";
+    },
+>>>>>>> beta
     toHex:function(c) {
         var hex = Math.round(c).toString(16).toUpperCase();
         return hex.length == 1 ? "0" + hex :hex;
@@ -239,8 +263,8 @@ com.utom.extend({
 
             var textLayer = this.addText(this.page);
             textLayer.setTextColor(color);
-            textLayer.setFontSize(12);
-            textLayer.setLineSpacing(14);
+            textLayer.setFontSize(14);
+            textLayer.setLineSpacing(16);
             textLayer.setFontPostscriptName("HelveticaNeue");
             if(center) textLayer.setTextAlignment(2);
 
@@ -274,6 +298,7 @@ com.utom.extend({
             defaultConfigs.resolution = resolution;
             // defaultConfigs.typography = ["font", "size", "color", "line"];
             defaultConfigs.property = ["color", "border"];
+            defaultConfigs.colorFormat = 0;
             this.setConfigs(defaultConfigs);
         }
         else{
@@ -381,7 +406,7 @@ com.utom.extend({
         [accessory addSubview:matrix]
 
         var alert = NSAlert.alloc().init();
-        alert.setMessageText(_("Resolution Setup"));
+        alert.setMessageText(_("Resolution setup"));
         alert.setInformativeText(_("* Choose your design resolution"));
         alert.addButtonWithTitle(_("OK"));
         alert.addButtonWithTitle(_("Cancel"));
@@ -459,6 +484,16 @@ com.utom.extend({
         var text = textL.duplicate();
         text.setStringValue(this.updateLength(frame.width));
 
+<<<<<<< HEAD
+=======
+        if (this.isPercentage) {
+            text.setStringValue(this.updatePercentLength(frame.width, true));
+
+        } else {
+            text.setStringValue(this.updateLength(frame.width));
+
+        }
+>>>>>>> beta
         text.setTextBehaviour(1);
         text.setTextBehaviour(0);
 
@@ -579,6 +614,15 @@ com.utom.extend({
         var text = textL.duplicate();
         text.setStringValue(this.updateLength(frame.height));
 
+<<<<<<< HEAD
+=======
+        if (this.isPercentage) {
+          text.setStringValue(this.updatePercentLength(frame.height, false));
+
+        } else {
+          text.setStringValue(this.updateLength(frame.height));
+        }
+>>>>>>> beta
         text.setTextBehaviour(1);
         text.setTextBehaviour(0);
 
@@ -830,12 +874,23 @@ com.utom.extend({
 
         container.resizeRoot(true);
     }
+});
+
+com.utom.extend({
+    measurePercentageSize: function(){
+        this.isPercentage = true;
+        this.measureSize();
+    },
+    measurePercentageSpacing: function(){
+        this.isPercentage = true;
+        this.measureSpacing();
+    }
 })
 
 com.utom.extend({
     drawLabel: function(target, reference, styles, name, position){
         if(!this.configs) return false;
-        var selection = (this.selection[0]) ? this.selection[0]: undefined;
+        var selection = (this.selection.count() && this.selection[0]) ? this.selection[0]: undefined;
         var target = target || selection;
 
         if (
@@ -857,14 +912,17 @@ com.utom.extend({
 
         if(/NOTE\#|LABEL\#|TYPOGRAPHY\#|PROPERTY\#/.exec(container.name())){
             label = this.find('label', container);
-            gap = this.find('gap', container);
-            gapFrame = this.getFrame(gap);
             labelFrame = this.getFrame(label);
-            var old = {
-                ly: labelFrame.y,
-                lh: labelFrame.height,
-                gy: gapFrame.y
+            gap = this.find('gap', container);
+            if(gap){
+                gapFrame = this.getFrame(gap);
+                var old = {
+                    ly: labelFrame.y,
+                    lh: labelFrame.height,
+                    gy: gapFrame.y
+                }
             }
+
         }
         else{
             var name = name || "NOTE#" + text.objectID();
@@ -888,6 +946,7 @@ com.utom.extend({
 
             label = shape.duplicate();
             label.setName("label");
+            textFrame = this.getFrame(text);
 
             this.removeLayer(text);
             container.addLayers([text]);
@@ -895,12 +954,16 @@ com.utom.extend({
             text.setStyle(textStyle);
         }
 
-        textFrame = this.getFrame(text);
+        textFrameAbsoluteRect = text.absoluteRect();
+        if(textFrame){
+            textFrameAbsoluteRect.setX(textFrame.x);
+            textFrameAbsoluteRect.setY(textFrame.y);
+        }
         labelFrame = label.absoluteRect();
-        labelFrame.setX(textFrame.x - 4);
-        labelFrame.setY(textFrame.y - 3);
-        labelFrame.setWidth(textFrame.width + 8);
-        labelFrame.setHeight(textFrame.height + 6);
+        labelFrame.setX(textFrameAbsoluteRect.x() - 4);
+        labelFrame.setY(textFrameAbsoluteRect.y() - 3);
+        labelFrame.setWidth(textFrameAbsoluteRect.width() + 8);
+        labelFrame.setHeight(textFrameAbsoluteRect.height() + 6);
 
         if(position != undefined){
             gap = shape.duplicate();
@@ -975,20 +1038,23 @@ com.utom.extend({
         }
 
     ],
-    propertyPosition: [_("Position Top"), _("Position Right"), _("Position Bottom"), _("Position Left")],
+    propertyPosition: [_("Position top"), _("Position right"), _("Position bottom"), _("Position left")],
+    colorFormats: [_("Color hex, e.g. #FFFFFF 100%"), _("ARGB hex, e.g. #FFFFFFFF"), _("RGBA CSS, e.g. rgba(255, 255, 255, 1)")],
     propertyDialog: function(){
         var cellWidth = 250;
         var cellHeight = 190;
         var allProperty = this.allProperty;
         var propertyConfigs = this.configs.property;
+        var colorFormatConfigs = this.configs.colorFormat || 0;
         var propertyPosition = this.configs.propertyPosition || 0;
 
         var alert = COSAlertWindow.new();
-        alert.setMessageText(_("Get Properties"));
-        alert.setInformativeText(_("* Customize the Property Guide that will be created."));
+        alert.setMessageText(_("Get properties"));
+        alert.setInformativeText(_("* Customize the property puide that will be created."));
         alert.addButtonWithTitle(_("OK"));
         alert.addButtonWithTitle(_("Cancel"));
 
+        alert.addTextLabelWithValue(_("Properties:"));
         var btns = [];
         allProperty.forEach(function(data, i) {
             btns[i] = NSButton.alloc().initWithFrame(NSMakeRect(0, 0, 200, 14));
@@ -1007,25 +1073,34 @@ com.utom.extend({
         comboBox.addItemsWithObjectValues(this.propertyPosition);
         comboBox.selectItemAtIndex(propertyPosition);
 
-        alert.addTextLabelWithValue(_("Show Position:"));
+        alert.addTextLabelWithValue(_("Show position:"));
         alert.addAccessoryView(comboBox);
 
+        var comboColorFormatBox = NSComboBox.alloc().initWithFrame(NSMakeRect(0,0,300,25));
+        comboColorFormatBox.addItemsWithObjectValues(this.colorFormats);
+        comboColorFormatBox.selectItemAtIndex(colorFormatConfigs);
 
-        var responseCode = alert.runModal()
+        alert.addTextLabelWithValue(_("Color format:"));
+        alert.addAccessoryView(comboColorFormatBox);
+
+
+        var responseCode = alert.runModal();
 
         if(responseCode == 1000){
             var types = [];
             var position = comboBox.indexOfSelectedItem();
+            var colorFormat = comboColorFormatBox.indexOfSelectedItem();
             btns.forEach(function(btn, i) {
                 if(btn.state()){
                     types.push(allProperty[i].slug);
                 }
             });
 
-            this.setConfigs({property: types, propertyPosition: position});
+            this.setConfigs({property: types, propertyPosition: position, colorFormat: colorFormat});
             return {
                 types: types,
-                position: position
+                position: position,
+                colorFormat: colorFormat
             };
         }
         else{
@@ -1039,7 +1114,7 @@ com.utom.extend({
         if(!this.configs) return false;
 
         if( this.selection.count() < 1 ){
-            this.message(_("Please select a layer (not text layer) for getting properties."));
+            this.message(_("Please select a layer for getting properties."));
             return false;
         }
 
@@ -1053,6 +1128,7 @@ com.utom.extend({
         var propertyConfigs = this.propertyDialog();
         var types = propertyConfigs.types;
         var position = propertyConfigs.position;
+        this.colorFormat = propertyConfigs.colorFormat;
 
         if(!types) return false;
 
@@ -1061,7 +1137,13 @@ com.utom.extend({
 
         var colorContent = function(color){
             var alpha = color.a;
-            return "#(" + self.toHex(alpha * 255) + ")" + self.rgbToHex(color.r, color.g, color.b) + " / " + color.r + "," + color.g + "," + color.b + " (" + Math.round(color.a * 100) + "%)";
+            if(self.colorFormat === 0){
+                return "#" + self.rgbToHex(color.r, color.g, color.b) + " " + Math.round(color.a * 100) + "%";
+            }
+            else if(self.colorFormat === 1){
+                return "#" + self.rgbToHex(color.r, color.g, color.b, color.a);
+            }
+            return "rgba(" + color.r + "," + color.g + "," + color.b + "," + color.a + ")";
         }
 
         var colorTypeContent = function(fillJSON){
@@ -1526,8 +1608,8 @@ com.utom.extend({
         var fileName = this.document.displayName().stringByDeletingPathExtension();
         var savePanel = NSSavePanel.savePanel();
 
-        savePanel.setTitle(_("Export Spec"));
-        savePanel.setNameFieldLabel(_("Export To:"));
+        savePanel.setTitle(_("Export spec"));
+        savePanel.setNameFieldLabel(_("Export to:"));
         savePanel.setPrompt(_("Export"));
         // savePanel.setAllowedFileTypes(NSArray.arrayWithObject("spec"));
         // savePanel.setAllowsOtherFileTypes(false);
@@ -1580,7 +1662,7 @@ com.utom.extend({
                 var layersObj = {};
                 var layers = [];
                 var notes = [];
-                var masks = [];
+                var deletes = [];
                 var layerIter = msArtboard.children().objectEnumerator();
                 var name = msArtboard.objectID();
 
@@ -1596,6 +1678,8 @@ com.utom.extend({
                         msLayer.setIsVisible(false);
                     }
 
+                    // MSSliceLayer
+
                     if (this.isHidden(msLayer) || this.isLocked(msLayer) || !this.isExportable(msLayer) || this.isMeasure(msLayer) /* || (msLayer.hasClippingMask() && msLayer.clippingMaskMode()) */ ) {
                         continue;
                     }
@@ -1608,7 +1692,7 @@ com.utom.extend({
                             if (this.isHidden(maskLayer) || !this.isExportable(maskLayer) || this.isMeasure(maskLayer) || maskLayer.objectID() == msLayer.objectID() ) {
                                 continue;
                             }
-                            masks.push(maskLayer.objectID());
+                            deletes.push(maskLayer.objectID());
                         }
                     }
 
@@ -1639,9 +1723,9 @@ com.utom.extend({
 
                 }
 
-                if(masks.length){
-                    masks.forEach(function(maskID){
-                        if(layersObj[maskID]) delete layersObj[maskID];
+                if(deletes.length){
+                    deletes.forEach(function(deleteID){
+                        if(layersObj[deleteID]) delete layersObj[deleteID];
                     });
                 }
 
