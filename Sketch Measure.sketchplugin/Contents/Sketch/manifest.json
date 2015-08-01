@@ -33,8 +33,6 @@
     "shortcut": "ctrl shift 5",
     "script": "Label.sketchscript"
   }, {
-<<<<<<< HEAD
-=======
     "name": "6. Percentage for size",
     "identifier": "percentage-size",
     "shortcut": "ctrl shift 6",
@@ -45,7 +43,6 @@
     "shortcut": "ctrl shift 7",
     "script": "Percentage for Spacing.sketchscript"
     }, {
->>>>>>> beta
     "name": "Toggle Measure Hidden",
     "identifier": "hidden",
     "shortcut": "ctrl shift h",

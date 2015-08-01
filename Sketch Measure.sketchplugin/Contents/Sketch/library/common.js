@@ -56,10 +56,7 @@ com.utom = {
     artboard: undefined,
     current: undefined,
     styles: undefined,
-<<<<<<< HEAD
-=======
     isPercentage: false,
->>>>>>> beta
     init: function(context){
         this.context = context;
         this.document = context.document;
@@ -163,8 +160,6 @@ com.utom.extend({
 
         return length + unit;
     },
-<<<<<<< HEAD
-=======
     updatePercentLength: function(length, width){
         var aFrame = this.artboard.frame();
         if (width) {
@@ -173,7 +168,6 @@ com.utom.extend({
         } 
         return Math.round((length / aFrame.height()) * 1000) / 10 + "%";
     },
->>>>>>> beta
     toHex:function(c) {
         var hex = Math.round(c).toString(16).toUpperCase();
         return hex.length == 1 ? "0" + hex :hex;
@@ -484,8 +478,6 @@ com.utom.extend({
         var text = textL.duplicate();
         text.setStringValue(this.updateLength(frame.width));
 
-<<<<<<< HEAD
-=======
         if (this.isPercentage) {
             text.setStringValue(this.updatePercentLength(frame.width, true));
 
@@ -493,7 +485,6 @@ com.utom.extend({
             text.setStringValue(this.updateLength(frame.width));
 
         }
->>>>>>> beta
         text.setTextBehaviour(1);
         text.setTextBehaviour(0);
 
@@ -614,15 +605,13 @@ com.utom.extend({
         var text = textL.duplicate();
         text.setStringValue(this.updateLength(frame.height));
 
-<<<<<<< HEAD
-=======
         if (this.isPercentage) {
           text.setStringValue(this.updatePercentLength(frame.height, false));
 
         } else {
           text.setStringValue(this.updateLength(frame.height));
         }
->>>>>>> beta
+
         text.setTextBehaviour(1);
         text.setTextBehaviour(0);
 
