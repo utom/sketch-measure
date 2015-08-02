@@ -1408,6 +1408,7 @@ com.utom.extend({
 });  
 
 com.utom.extend({
+    maskObjectID: undefined,
     isExportable: function(layer) {
         return layer instanceof MSTextLayer ||
                layer instanceof MSShapeGroup ||
@@ -1434,6 +1435,22 @@ com.utom.extend({
             }
 
             layer = layer.parentGroup();
+        }
+
+        return false;
+    },
+    isMask: function(layer){
+        while (!(layer instanceof MSArtboardGroup)) {
+            var msGroup = layer.parentGroup();
+            if (
+                this.maskObjectID &&
+                msGroup.objectID() == this.maskObjectID &&
+                !layer.shouldBreakMaskChain()
+            ) {
+                return true;
+            }
+
+            layer = msGroup;
         }
 
         return false;
@@ -1665,21 +1682,21 @@ com.utom.extend({
                     }
 
                     if (
+                        this.isMask(msLayer) ||
                         this.isHidden(msLayer) ||
                         this.isLocked(msLayer) ||
                         !this.isExportable(msLayer) ||
-                        this.isMeasure(msLayer) ||
-                        ( maskObjectID && msGroup.objectID() == maskObjectID && !msLayer.shouldBreakMaskChain())
+                        this.isMeasure(msLayer)
                         )
                     {
                         continue;
                     }
 
                     if(msLayer.hasClippingMask()){
-                        maskObjectID = msGroup.objectID();
+                        this.maskObjectID = msGroup.objectID();
                     }
-                    else if (maskObjectID != msGroup || msLayer.shouldBreakMaskChain()) {
-                        maskObjectID = undefined;
+                    else if (maskObjectID != msGroup.objectID() || msLayer.shouldBreakMaskChain()) {
+                        this.maskObjectID = undefined;
                     };
 
                     var layerStyle = msLayer.style(),
