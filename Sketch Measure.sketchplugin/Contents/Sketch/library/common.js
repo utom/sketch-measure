@@ -1645,7 +1645,6 @@ com.utom.extend({
                 artboardError = false;
 
                 var artboardFrame = msArtboard.frame();
-                var layersObj = {};
                 var layers = [];
                 var notes = [];
                 var layerIter = msArtboard.children().objectEnumerator();
@@ -1729,6 +1728,7 @@ com.utom.extend({
 
                 artboardsData.push(artboardData);
 
+
                 var data = this.extend(artboardData, {
                     resolution: resolution,
                     zoom: 1,
@@ -1749,6 +1749,21 @@ com.utom.extend({
             
         }
 
+        // var exportables = [];
+        // var exportableLayers = this.page.exportableLayers();
+        // exportableLayers = exportableLayers.objectEnumerator();
+
+        // while(exportableLayer = exportableLayers.nextObject()){
+
+        //     var slice = MSSliceMaker.slicesFromExportableLayer(exportableLayer).firstObject();
+
+        //     slice.page = this.page.copyLightweight();
+        //     slice.scale = 2;
+        //     slice.format = "png";
+        //     [[MSSliceExporter dataForRequest:slice] writeToFile: savePath.stringByAppendingPathComponent( exportableLayer.name() + ".png") atomically:true]
+        // }
+
+
         if(artboardsData.length > 1){
             var aContent = NSString.stringWithString("var artboards = " + JSON.stringify(artboardsData) + ";");
             var aExportURL = savePath.stringByAppendingPathComponent( "artboards.js");
@@ -1762,3 +1777,4 @@ com.utom.extend({
 
     }
 });
+
