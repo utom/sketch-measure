@@ -1411,6 +1411,7 @@ com.utom.extend({
 });  
 
 com.utom.extend({
+    maskObjectID: undefined,
     isExportable: function(layer) {
         return layer instanceof MSTextLayer ||
                layer instanceof MSShapeGroup ||
@@ -1437,6 +1438,22 @@ com.utom.extend({
             }
 
             layer = layer.parentGroup();
+        }
+
+        return false;
+    },
+    isMask: function(layer){
+        while (!(layer instanceof MSArtboardGroup)) {
+            var msGroup = layer.parentGroup();
+            if (
+                this.maskObjectID &&
+                msGroup.objectID() == this.maskObjectID &&
+                !layer.shouldBreakMaskChain()
+            ) {
+                return true;
+            }
+
+            layer = msGroup;
         }
 
         return false;
@@ -1648,14 +1665,14 @@ com.utom.extend({
                 artboardError = false;
 
                 var artboardFrame = msArtboard.frame();
-                var layersObj = {};
                 var layers = [];
                 var notes = [];
-                var deletes = [];
                 var layerIter = msArtboard.children().objectEnumerator();
                 var name = msArtboard.objectID();
+                var maskObjectID = undefined;
 
                 while(msLayer = layerIter.nextObject()) {
+                    var msGroup = msLayer.parentGroup();
                     if(this.is(msLayer, MSLayerGroup) && /LABEL\#|NOTE\#/.exec(msLayer.name())){
                         var msText = msLayer.children()[2];
 
@@ -1667,23 +1684,23 @@ com.utom.extend({
                         msLayer.setIsVisible(false);
                     }
 
-                    // MSSliceLayer
-
-                    if (this.isHidden(msLayer) || this.isLocked(msLayer) || !this.isExportable(msLayer) || this.isMeasure(msLayer) /* || (msLayer.hasClippingMask() && msLayer.clippingMaskMode()) */ ) {
+                    if (
+                        this.isMask(msLayer) ||
+                        this.isHidden(msLayer) ||
+                        this.isLocked(msLayer) ||
+                        !this.isExportable(msLayer) ||
+                        this.isMeasure(msLayer)
+                        )
+                    {
                         continue;
                     }
 
-                    if(msLayer.hasClippingMask() && !msLayer.clippingMaskMode()){
-                        msGroup = msLayer.parentGroup();
-                        var masksIter = msGroup.children().objectEnumerator();
-
-                        while(maskLayer = masksIter.nextObject()) {
-                            if (this.isHidden(maskLayer) || !this.isExportable(maskLayer) || this.isMeasure(maskLayer) || maskLayer.objectID() == msLayer.objectID() ) {
-                                continue;
-                            }
-                            deletes.push(maskLayer.objectID());
-                        }
+                    if(msLayer.hasClippingMask()){
+                        this.maskObjectID = msGroup.objectID();
                     }
+                    else if (maskObjectID != msGroup.objectID() || msLayer.shouldBreakMaskChain()) {
+                        this.maskObjectID = undefined;
+                    };
 
                     var layerStyle = msLayer.style(),
                         layer = {
@@ -1708,20 +1725,9 @@ com.utom.extend({
                         layer.lineHeight = msLayer.lineSpacing();
                     }
 
-                    layersObj[msLayer.objectID()] = layer;
+                    layers.push(layer);
 
                 }
-
-                if(deletes.length){
-                    deletes.forEach(function(deleteID){
-                        if(layersObj[deleteID]) delete layersObj[deleteID];
-                    });
-                }
-
-                for ( var ID in layersObj ){
-                    layers.push(layersObj[ID]);
-                }
-
 
                 var imageFileName = name + ".png";
                 var imagePath = this.toJSString( NSTemporaryDirectory().stringByAppendingPathComponent(imageFileName) );
@@ -1741,6 +1747,7 @@ com.utom.extend({
                 };
 
                 artboardsData.push(artboardData);
+
 
                 var data = this.extend(artboardData, {
                     resolution: resolution,
@@ -1762,6 +1769,21 @@ com.utom.extend({
             
         }
 
+        // var exportables = [];
+        // var exportableLayers = this.page.exportableLayers();
+        // exportableLayers = exportableLayers.objectEnumerator();
+
+        // while(exportableLayer = exportableLayers.nextObject()){
+
+        //     var slice = MSSliceMaker.slicesFromExportableLayer(exportableLayer).firstObject();
+
+        //     slice.page = this.page.copyLightweight();
+        //     slice.scale = 2;
+        //     slice.format = "png";
+        //     [[MSSliceExporter dataForRequest:slice] writeToFile: savePath.stringByAppendingPathComponent( exportableLayer.name() + ".png") atomically:true]
+        // }
+
+
         if(artboardsData.length > 1){
             var aContent = NSString.stringWithString("var artboards = " + JSON.stringify(artboardsData) + ";");
             var aExportURL = savePath.stringByAppendingPathComponent( "artboards.js");
@@ -1775,3 +1797,4 @@ com.utom.extend({
 
     }
 });
+
