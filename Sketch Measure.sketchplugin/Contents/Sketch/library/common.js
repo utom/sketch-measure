@@ -38,7 +38,7 @@ I18N["zh-Hans"] = {
     "RGBA CSS, e.g. rgba(255, 255, 255, 1)"             : "RGBA CSS, e.g. rgba(255, 255, 255, 1)",
     "Color format"                                      : "Color format"
 };
-
+ 
 function _(str){
     return (I18N[lang] && I18N[lang][str])? I18N[lang][str]: str;
 }
@@ -476,6 +476,7 @@ com.utom.extend({
         endFrame.setX( frame.x + frame.width - 1 );
 
         var text = textL.duplicate();
+        text.setStringValue(this.updateLength(frame.width));
 
         if (this.isPercentage) {
             text.setStringValue(this.updatePercentLength(frame.width, true));
@@ -602,6 +603,7 @@ com.utom.extend({
         endFrame.setY( frame.y + frame.height - 1 );
 
         var text = textL.duplicate();
+        text.setStringValue(this.updateLength(frame.height));
 
         if (this.isPercentage) {
           text.setStringValue(this.updatePercentLength(frame.height, false));
@@ -609,6 +611,7 @@ com.utom.extend({
         } else {
           text.setStringValue(this.updateLength(frame.height));
         }
+
         text.setTextBehaviour(1);
         text.setTextBehaviour(0);
 
@@ -1765,21 +1768,6 @@ com.utom.extend({
             }
             
         }
-
-        // var exportables = [];
-        // var exportableLayers = this.page.exportableLayers();
-        // exportableLayers = exportableLayers.objectEnumerator();
-
-        // while(exportableLayer = exportableLayers.nextObject()){
-
-        //     var slice = MSSliceMaker.slicesFromExportableLayer(exportableLayer).firstObject();
-
-        //     slice.page = this.page.copyLightweight();
-        //     slice.scale = 2;
-        //     slice.format = "png";
-        //     [[MSSliceExporter dataForRequest:slice] writeToFile: savePath.stringByAppendingPathComponent( exportableLayer.name() + ".png") atomically:true]
-        // }
-
 
         if(artboardsData.length > 1){
             var aContent = NSString.stringWithString("var artboards = " + JSON.stringify(artboardsData) + ";");
