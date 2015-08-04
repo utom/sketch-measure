@@ -7,7 +7,7 @@ I18N["zh-Hans"] = {
     "Please select a layer for measuring."              : "请选择 1 个图层.",
     "Please select 1 or 2 layers for measuring."        : "请选择 1 个或 2 个图层",
     "Please select a layer for creating."               : "请选择 1 个图层.",
-    "Please select a text layer for drawing."           : "请选择 1 个文字图层.",
+    "Please select a text layer for creating."          : "请选择 1 个文字图层.",
     "Fill / Text color / Gradient"                      : "填充 / 字体颜色 / 渐变",
     "Border color"                                      : "边框",
     "Layer opacity"                                     : "图层不透明度",
@@ -18,7 +18,7 @@ I18N["zh-Hans"] = {
     "Line height"                                       : "行高",
     "Font face"                                         : "字体",
     "Get properties"                                    : "获取属性",
-    "Properties:"                                        : "属性:",
+    "Properties:"                                       : "属性:",
     "Please select a layer for getting properties."     : "请选择图层标注它的属性",
   "* Customize the property guide that will be created.": "* 选择标注的属性和显示位置.",
     "Export spec"                                       : "导出规范",
@@ -832,7 +832,7 @@ com.utom.extend({
 });
 
 com.utom.extend({
-    createOverlayer: function(){
+    createOverlay: function(){
         if(!this.configs) return false;
 
         if (this.selection.count() < 1){
@@ -877,7 +877,7 @@ com.utom.extend({
 })
 
 com.utom.extend({
-    drawLabel: function(target, reference, styles, name, position){
+    createNote: function(target, reference, styles, name, position){
         if(!this.configs) return false;
         var selection = (this.selection.count() && this.selection[0]) ? this.selection[0]: undefined;
         var target = target || selection;
@@ -886,7 +886,7 @@ com.utom.extend({
             !target ||
             ( target && !this.is(target, MSTextLayer) )
         ){
-            this.message(_("Please select a text layer for drawing."));
+            this.message(_("Please select a text layer for creating."));
             return false;
         }
 
@@ -1251,43 +1251,43 @@ com.utom.extend({
         tempFrame.setX(tempX);
         tempFrame.setY(tempY);
 
-        this.drawLabel(temp, frame, styles, name, position);
+        this.createNote(temp, frame, styles, name, position);
     }
 });
 
 com.utom.extend({
-    isMeasureHidden: false,
-    isMeasureHidden: false,
+    isHidden: false,
+    isLocked: false,
     regexName: /OVERLAYER\#|WIDTH\#|HEIGHT\#|TOP\#|RIGHT\#|BOTTOM\#|LEFT\#|VERTICAL\#|HORIZONTAL\#|NOTE\#|LABEL\#|TYPOGRAPHY\#|PROPERTY\#|LITE\#/,
-    toggleMeasureHidden: function(){
+    toggleHidden: function(){
         if(!this.configs) return false;
 
         var artboard = this.artboard;
 
-        var isMeasureHidden = (this.configs.isMeasureHidden)? false : !Boolean(this.configs.isMeasureHidden);
-        this.setConfigs({isMeasureHidden: isMeasureHidden});
+        var isHidden = (this.configs.isHidden)? false : !Boolean(this.configs.isHidden);
+        this.setConfigs({isHidden: isHidden});
 
         var layers = artboard.children().objectEnumerator();
 
         while(item = layers.nextObject()) {
             if(this.is(item, MSLayerGroup) && this.regexName.exec(item.name())){
-                item.setIsVisible(!isMeasureHidden);
+                item.setIsVisible(!isHidden);
             }
         }
     },
-    toggleMeasureLocked: function(){
+    toggleLocked: function(){
         if(!this.configs) return false;
 
         var artboard = this.artboard;
 
-        var isMeasureLocked = (this.configs.isMeasureLocked)? false : !Boolean(this.configs.isMeasureLocked);
-        this.setConfigs({isMeasureLocked: isMeasureLocked});
+        var isLocked = (this.configs.isLocked)? false : !Boolean(this.configs.isLocked);
+        this.setConfigs({isLocked: isLocked});
 
         var layers = artboard.children().objectEnumerator();
 
         while(item = layers.nextObject()) {
             if(this.is(item, MSLayerGroup) && this.regexName.exec(item.name())){
-                item.setIsLocked(isMeasureLocked);
+                item.setIsLocked(isLocked);
             }
         }
     },
@@ -1629,7 +1629,7 @@ com.utom.extend({
 
         return savePanel.URL().path();
     },
-    export: function(){
+    specExport: function(){
         if(!this.configs) return false;
 
         var context = this.context;
@@ -1705,7 +1705,7 @@ com.utom.extend({
                     var layerStyle = msLayer.style(),
                         layer = {
                             type: msLayer instanceof MSTextLayer ? "text" : "shape",
-                            name: this.toJSString(msLayer.name()),
+                            // name: this.toJSString(msLayer.name()),
                             rect: this.rectToJSON(msLayer.absoluteRect(), artboardFrame),
                             rotation: msLayer.rotation(),
                             radius: ( msLayer.layers && this.is(msLayer.layers().firstObject(), MSRectangleShape) ) ? msLayer.layers().firstObject().fixedRadius(): null,
@@ -1716,7 +1716,7 @@ com.utom.extend({
                         };
 
                     if (msLayer instanceof MSTextLayer) {
-                        layer.content = this.toJSString(msLayer.storage().string());
+                        layer.content = this.toJSString(msLayer.storage().string()).replace(/\n/g, ' '),
                         layer.color = this.colorToJSON(msLayer.textColor());
                         layer.fontSize = msLayer.fontSize();
                         layer.fontFace = this.toJSString(msLayer.fontPostscriptName());
@@ -1756,7 +1756,7 @@ com.utom.extend({
                     notes: notes
                 });
 
-                var content = template1 + "jQuery(function(){Spec(" + JSON.stringify(data) + ").artboardList(artboards || undefined)});" + template2;
+                var content = template1 + "jQuery(function(){Spec(" + JSON.stringify(data).replace(/\u2028/g,'\\u2028').replace(/\u2029/g,'\\u2029') + ").artboardList(artboards || undefined)});" + template2;
                 content = NSString.stringWithString(content);
 
                 var exportURL = savePath.stringByAppendingPathComponent( msArtboard.name() + ".html");

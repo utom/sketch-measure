@@ -1,4 +1,5 @@
 {
+<<<<<<< HEAD
   "name": "Sketch Measure",
   "description": "A measure tool for measurements & design specs.",
   "author": "utom",
@@ -99,4 +100,133 @@
     ]
 
   }
+=======
+    "author": "utom",
+    "commands" : [
+        {
+            "name": "1. Create overlay",
+            "identifier": "create-overlay",
+            "shortcut": "ctrl shift 1",
+            "handler" : "createOverlay",
+            "script": "measure.sketchscript"
+        },
+        {
+            "name": "2. Measure size",
+            "identifier": "measure-size",
+            "shortcut": "ctrl shift 2",
+            "handler" : "measureSize",
+            "script": "measure.sketchscript"
+        },
+        {
+            "name": "3. Measure spacing",
+            "identifier": "measure-spacing",
+            "shortcut": "ctrl shift 3",
+            "handler" : "measureSpacing",
+            "script": "measure.sketchscript"
+        },
+        {
+            "name": "4. Get property",
+            "identifier": "get-property",
+            "shortcut": "ctrl shift 4",
+            "handler" : "getProperty",
+            "script": "measure.sketchscript"
+        },
+        {
+            "name": "5. Create note",
+            "identifier": "create-note",
+            "shortcut": "ctrl shift 5",
+            "handler" : "createNote",
+            "script": "measure.sketchscript"
+        },
+        {
+            "name": "6. Percentage for size",
+            "identifier": "percentage-size",
+            "shortcut": "ctrl shift 6",
+            "handler": "measurePercentageSize",
+            "script": "measure.sketchscript"
+        },
+        {
+            "name": "7. Percentage for spacing",
+            "identifier": "percentage-spacing",
+            "shortcut": "ctrl shift 7",
+            "handler": "measurePercentageSpacing",
+            "script": "measure.sketchscript"
+        },
+        {
+            "name": "Toggle measure hidden",
+            "identifier": "toggle-hidden",
+            "shortcut": "ctrl shift h",
+            "handler": "toggleHidden",
+            "script": "measure.sketchscript"
+        },
+        {
+            "name": "Toggle measure locked",
+            "identifier": "toggle-locked",
+            "shortcut": "ctrl shift l",
+            "handler": "toggleLocked",
+            "script": "measure.sketchscript"
+        },
+        {
+            "name": "Move to @Specs",
+            "identifier": "move-to-group",
+            "shortcut": "",
+            "handler": "moveToGroup",
+            "script": "measure.sketchscript"
+        },
+        {
+            "name": "Clear artboard measure",
+            "identifier": "clear-measure",
+            "shortcut": "",
+            "handler": "clearMeasure",
+            "script": "measure.sketchscript"
+        },
+        {
+            "name": "Lite width",
+            "identifier": "lite-width",
+            "shortcut": "ctrl shift [",
+            "handler": "liteWidth",
+            "script": "measure.sketchscript"
+        },
+        {
+            "name": "Lite height",
+            "identifier": "lite-height",
+            "shortcut": "ctrl shift ]",
+            "handler": "liteHeight",
+            "script": "measure.sketchscript"
+        },
+        {
+            "name": "Spec export",
+            "identifier": "spec-export",
+            "shortcut": "ctrl shift e",
+            "handler": "specExport",
+            "script": "measure.sketchscript"
+        }
+    ],
+    "menu" : {
+        "isRoot" : false,
+        "shortcut" : "",
+        "items" : [
+            "create-overlay",
+            "measure-size",
+            "measure-spacing",
+            "get-property",
+            "create-note",
+            "percentage-size",
+            "percentage-spacing",
+            "toggle-hidden",
+            "toggle-locked",
+            "move-to-group",
+            "clear-measure",
+            "lite-width",
+            "lite-height",
+            "spec-export"
+        ],
+        "title" : "Measure"
+    },
+    "identifier": "com.utom.sketch-measure",
+    "version": "0.9.13",
+    "description" : "A measure tool for measurements & design specs.",
+    "authorEmail" : "utombox@gmail.com",
+    "name" : "Sketch Measure"
+>>>>>>> beta
 }
