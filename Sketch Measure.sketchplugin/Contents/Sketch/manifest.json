@@ -3,108 +3,121 @@
     "commands" : [
         {
             "name": "1. Create overlay",
-            "identifier": "overlay",
+            "identifier": "create-overlay",
             "shortcut": "ctrl shift 1",
-            "script": "Overlay.sketchscript"
+            "handler" : "createOverlay",
+            "script": "measure.sketchscript"
         },
         {
             "name": "2. Measure size",
-            "identifier": "size",
+            "identifier": "measure-size",
             "shortcut": "ctrl shift 2",
-            "script": "Size.sketchscript"
+            "handler" : "measureSize",
+            "script": "measure.sketchscript"
         },
         {
             "name": "3. Measure spacing",
-            "identifier": "spacing",
+            "identifier": "measure-spacing",
             "shortcut": "ctrl shift 3",
-            "script": "Spacing.sketchscript"
+            "handler" : "measureSpacing",
+            "script": "measure.sketchscript"
         },
         {
             "name": "4. Get property",
-            "identifier": "property",
+            "identifier": "get-property",
             "shortcut": "ctrl shift 4",
-            "script": "Property.sketchscript"
+            "handler" : "getProperty",
+            "script": "measure.sketchscript"
         },
         {
             "name": "5. Create note",
-            "identifier": "label",
+            "identifier": "create-note",
             "shortcut": "ctrl shift 5",
-            "script": "Label.sketchscript"
+            "handler" : "createNote",
+            "script": "measure.sketchscript"
         },
         {
             "name": "6. Percentage for size",
             "identifier": "percentage-size",
             "shortcut": "ctrl shift 6",
-            "script": "Percentage for Size.sketchscript"
+            "handler": "measurePercentageSize",
+            "script": "measure.sketchscript"
         },
         {
             "name": "7. Percentage for spacing",
             "identifier": "percentage-spacing",
             "shortcut": "ctrl shift 7",
-            "script": "Percentage for Spacing.sketchscript"
+            "handler": "measurePercentageSpacing",
+            "script": "measure.sketchscript"
         },
         {
-            "name": "Toggle Measure Hidden",
-            "identifier": "hidden",
+            "name": "Toggle measure hidden",
+            "identifier": "toggle-hidden",
             "shortcut": "ctrl shift h",
-            "script": "Toggle Measure Hidden.sketchscript"
+            "handler": "toggleHidden",
+            "script": "measure.sketchscript"
         },
         {
-            "name": "Toggle Measure Locked",
-            "identifier": "locked",
+            "name": "Toggle measure locked",
+            "identifier": "toggle-locked",
             "shortcut": "ctrl shift l",
-            "script": "Toggle Measure Locked.sketchscript"
-        },
-        {
-            "name": "Clear Artboard Measure",
-            "identifier": "clear",
-            "shortcut": "",
-            "script": "Clear Artboard Measure.sketchscript"
+            "handler": "toggleLocked",
+            "script": "measure.sketchscript"
         },
         {
             "name": "Move to @Specs",
-            "identifier": "move",
+            "identifier": "move-to-group",
             "shortcut": "",
-            "script": "Move to @Specs.sketchscript"
+            "handler": "moveToGroup",
+            "script": "measure.sketchscript"
         },
         {
-            "name": "Lite Width",
+            "name": "Clear artboard measure",
+            "identifier": "clear-measure",
+            "shortcut": "",
+            "handler": "clearMeasure",
+            "script": "measure.sketchscript"
+        },
+        {
+            "name": "Lite width",
             "identifier": "lite-width",
             "shortcut": "ctrl shift [",
-            "script": "Lite Width.sketchscript"
+            "handler": "liteWidth",
+            "script": "measure.sketchscript"
         },
         {
-            "name": "Lite Height",
+            "name": "Lite height",
             "identifier": "lite-height",
             "shortcut": "ctrl shift ]",
-            "script": "Lite Height.sketchscript"
+            "handler": "liteHeight",
+            "script": "measure.sketchscript"
         },
         {
-            "name": "Spec Export",
-            "identifier": "spec",
+            "name": "Spec export",
+            "identifier": "spec-export",
             "shortcut": "ctrl shift e",
-            "script": "Spec.sketchscript"
+            "handler": "specExport",
+            "script": "measure.sketchscript"
         }
     ],
     "menu" : {
         "isRoot" : false,
         "shortcut" : "",
         "items" : [
-            "size",
-            "spacing",
-            "overlay",
-            "typography",
-            "property",
+            "create-overlay",
+            "measure-size",
+            "measure-spacing",
+            "get-property",
+            "create-note",
             "percentage-size",
             "percentage-spacing",
-            "label",
-            "hidden",
-            "locked",
-            "clear",
-            "move",
+            "toggle-hidden",
+            "toggle-locked",
+            "move-to-group",
+            "clear-measure",
             "lite-width",
             "lite-height",
-            "spec"
+            "spec-export"
         ],
         "title" : "Measure"
     },
