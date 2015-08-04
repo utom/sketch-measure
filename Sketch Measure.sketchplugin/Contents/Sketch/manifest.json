@@ -1,106 +1,4 @@
 {
-<<<<<<< HEAD
-  "name": "Sketch Measure",
-  "description": "A measure tool for measurements & design specs.",
-  "author": "utom",
-  "homepage": "https://github.com/utom/sketch-measure",
-  "version": "0.9.13",
-  "identifier": "com.utom.sketch-measure",
-  "compatibleVersion": "3.3.2",
-  "bundleVersion": 1,
-  "commands": [{
-    "name": "1. Create overlay",
-    "identifier": "overlay",
-    "shortcut": "ctrl shift 1",
-    "script": "Overlay.sketchscript"
-  }, {
-    "name": "2. Measure size",
-    "identifier": "size",
-    "shortcut": "ctrl shift 2",
-    "script": "Size.sketchscript"
-  }, {
-    "name": "3. Measure spacing",
-    "identifier": "spacing",
-    "shortcut": "ctrl shift 3",
-    "script": "Spacing.sketchscript"
-  }, {
-    "name": "4. Get property",
-    "identifier": "property",
-    "shortcut": "ctrl shift 4",
-    "script": "Property.sketchscript"
-  }, {
-    "name": "5. Create note",
-    "identifier": "label",
-    "shortcut": "ctrl shift 5",
-    "script": "Label.sketchscript"
-  }, {
-    "name": "6. Percentage for size",
-    "identifier": "percentage-size",
-    "shortcut": "ctrl shift 6",
-    "script": "Percentage for Size.sketchscript"
-    },{
-    "name": "7. Percentage for spacing",
-    "identifier": "percentage-spacing",
-    "shortcut": "ctrl shift 7",
-    "script": "Percentage for Spacing.sketchscript"
-    }, {
-    "name": "Toggle Measure Hidden",
-    "identifier": "hidden",
-    "shortcut": "ctrl shift h",
-    "script": "Toggle Measure Hidden.sketchscript"
-  }, {
-    "name": "Toggle Measure Locked",
-    "identifier": "locked",
-    "shortcut": "ctrl shift l",
-    "script": "Toggle Measure Locked.sketchscript"
-  }, {
-    "name": "Clear Artboard Measure",
-    "identifier": "clear",
-    "shortcut": "",
-    "script": "Clear Artboard Measure.sketchscript"
-  }, {
-    "name": "Move to @Specs",
-    "identifier": "move",
-    "shortcut": "",
-    "script": "Move to @Specs.sketchscript"
-  }, {
-    "name": "Lite Width",
-    "identifier": "lite-width",
-    "shortcut": "ctrl shift [",
-    "script": "Lite Width.sketchscript"
-  }, {
-    "name": "Lite Height",
-    "identifier": "lite-height",
-    "shortcut": "ctrl shift ]",
-    "script": "Lite Height.sketchscript"
-  }, {
-    "name": "Spec Export",
-    "identifier": "spec",
-    "shortcut": "ctrl shift e",
-    "script": "Spec.sketchscript"
-  }],
-  "menu": {
-    "title": "Measure",
-    "items":[
-      "size",
-      "spacing",
-      "overlay",
-      "typography",
-      "property",
-      "percentage-size",
-      "percentage-spacing",
-      "label",
-      "hidden",
-      "locked",
-      "clear",
-      "move",
-      "lite-width",
-      "lite-height",
-      "spec"
-    ]
-
-  }
-=======
     "author": "utom",
     "commands" : [
         {
@@ -224,9 +122,8 @@
         "title" : "Measure"
     },
     "identifier": "com.utom.sketch-measure",
-    "version": "0.9.13",
+    "version": "0.9.14",
     "description" : "A measure tool for measurements & design specs.",
     "authorEmail" : "utombox@gmail.com",
     "name" : "Sketch Measure"
->>>>>>> beta
 }
