@@ -1320,11 +1320,8 @@ com.utom.extend({
         if(!this.configs) return false;
 
         var artboard = this.artboard;
-        // var configsGroup = this.find("@Sketch Measure Configs", this.configsURL);
 
         var layers = artboard.children().objectEnumerator();
-
-        // this.removeLayer(configsGroup);
 
         while(item = layers.nextObject()) {
             if(this.is(item, MSLayerGroup) && this.regexName.exec(item.name())){
@@ -1705,7 +1702,7 @@ com.utom.extend({
                     var layerStyle = msLayer.style(),
                         layer = {
                             type: msLayer instanceof MSTextLayer ? "text" : "shape",
-                            // name: this.toJSString(msLayer.name()),
+                            name: this.toJSString(msLayer.name()),
                             rect: this.rectToJSON(msLayer.absoluteRect(), artboardFrame),
                             rotation: msLayer.rotation(),
                             radius: ( msLayer.layers && this.is(msLayer.layers().firstObject(), MSRectangleShape) ) ? msLayer.layers().firstObject().fixedRadius(): null,
@@ -1716,7 +1713,7 @@ com.utom.extend({
                         };
 
                     if (msLayer instanceof MSTextLayer) {
-                        layer.content = this.toJSString(msLayer.storage().string()).replace(/\n/g, ' '),
+                        layer.content = this.toJSString(msLayer.storage().string()),
                         layer.color = this.colorToJSON(msLayer.textColor());
                         layer.fontSize = msLayer.fontSize();
                         layer.fontFace = this.toJSString(msLayer.fontPostscriptName());
