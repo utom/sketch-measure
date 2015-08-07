@@ -1611,7 +1611,7 @@ com.utom.extend({
         var fileName = this.document.displayName().stringByDeletingPathExtension();
         var savePanel = NSSavePanel.savePanel();
         // var savePanel = NSOpenPanel.openPanel();
-
+        // will fix
         savePanel.setTitle(_("Export spec"));
         savePanel.setNameFieldLabel(_("Export to:"));
         savePanel.setPrompt(_("Export"));
