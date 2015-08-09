@@ -1,30 +1,10 @@
     </script>
   </head>
 
-
-  <body class="off">
+ <body class="off">
     <div class="header">
       <div class="art-name">
         <h1 id="artboard" class="artboard-name"><span></span></h1>
-      </div>
-      <div id="artboard_list" class="artboard_list" style="display:none">
-      </div>
-      <script id="artboard-item-template" type="application/template">
-        <div class="a-item">
-          <div class="a-item-inner">
-            <div class="a-image" style="background-image:url(data:image/png;base64,${base64});background-size:${width}px ${height}px;"></div>
-            <div class="a-name">${name}</div>
-          </div>
-        </div>
-      </script>
-
-      <div id="resolution" class="resolution"><span></span></div>
-      <div id="resolution_list" class="resolution_list" style="display:none">
-      </div>
-      <div id="zoom" class="zoom-box">
-        <div class="zoom-out"><div class="minus"></div></div>
-        <div class="zoom-text"></div>
-        <div class="zoom-in"><div class="plus"></div></div>
       </div>
 
       <div id="about" class="about"><span></span></div>
@@ -34,11 +14,21 @@
         <div class="email"><a href="mailto:utombox@gmail.com" target="_blank">Email</a></div>
       </div>
 
+      <div id="resolution" class="resolution"><span></span></div>
+      <div id="resolution_list" class="resolution_list" style="display:none"></div>
+
+      <div id="color_format" class="color_format"><span></span></div>
+      <div id="color_format_list" class="color_format_list" style="display:none"></div>
+
+      <div id="toggle" class="toggle"><span class="toggle_hide">Toggle Notes</span></div>
+
       <script id="resolution-item-template" type="application/template">
         <div>${name}</div>
       </script>
 
-      <div id="toggle" class="toggle" title="Toggle Notes Hidden"><span class="toggle_hide"></span></div>
+      <script id="color-format-template" type="application/template">
+        <div>${name}</div>
+      </script>
 
     </div>
     <div class="main">
@@ -96,7 +86,21 @@
         <div id="note_tip" class="note" ></div>
       </div>
 
+      <div id="zoom" class="zoom-box">
+        <div class="zoom-out"><div class="minus"></div></div>
+        <div class="zoom-text"></div>
+        <div class="zoom-in"><div class="plus"></div></div>
+      </div>
     </div>
+
+    <div id="artboard_list" class="artboard_list artoff"></div>
+    <script id="artboard-item-template" type="application/template">
+      <div class="a-item">
+        <div class="a-image" style="background-image:url(data:image/png;base64,${base64});background-size:${width}px ${height}px;"></div>
+        <div class="a-name">${name}</div>
+      </div>
+    </script>
+
     <div class="sidebar">
       <div id="properties">
         <h3 id="side-title">PROPERTIES</h3>
