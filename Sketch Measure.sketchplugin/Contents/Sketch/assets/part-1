@@ -640,8 +640,8 @@ return new Za.prototype.init(a,b,c,d,e)}m.Tween=Za,Za.prototype={constructor:Za,
     "XXXHDPI @4x (dp)" ],
     ColorFormat = [
         "Color Hex",
-        "ARGB Hex",
-        "RGBA CSS"
+        "RGBA CSS",
+        "ARGB Hex"
     ];
     Spec.fn = Spec.prototype = {
         spec:version,
