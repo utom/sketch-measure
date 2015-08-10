@@ -1525,6 +1525,24 @@ com.utom.extend({
             color: this.colorToJSON(shadow.color())
         };
     },
+    sizeToJSON: function(size, layer, slicesPath) {
+        var slice = MSSliceMaker.slicesFromExportableLayer(layer).firstObject();
+        slice.scale = size.scale();
+        slice.format = size.format();
+
+        var suffix = this.toJSString(size.name());
+        suffix = ( suffix && suffix != "null" )? suffix + "x": "";
+
+        var sliceURL = slicesPath.stringByAppendingPathComponent( layer.name() + suffix + "." + size.format() );
+
+        [[MSSliceExporter dataForRequest: slice] writeToFile:sliceURL atomically:true];
+
+        return {
+            scale: size.scale(),
+            suffix: suffix,
+            format: size.format()
+        };
+    },
     getBorders: function(style) {
         var borders = [],
             msBorder, borderIter = style.borders().array().objectEnumerator();
@@ -1605,6 +1623,16 @@ com.utom.extend({
     },
     getOpacity: function(layerStyle){
         return layerStyle.contextSettings().opacity()
+    },
+    getExportables: function(layer, slicesPath){
+        var sizes = [],
+            size, exportableInter = layer.exportOptions().sizes().array().objectEnumerator();
+
+        while (size = exportableInter.nextObject()) {
+            sizes.push(this.sizeToJSON(size, layer, slicesPath));
+        }
+
+        return sizes;
     },
     savePath: function(){
         var filePath = this.document.fileURL()? this.document.fileURL().path().stringByDeletingLastPathComponent(): "~";
@@ -1766,6 +1794,35 @@ com.utom.extend({
                                error: null];
             }
             
+        }
+
+
+        var exportables = [];
+        var exportableLayers = this.page.exportableLayers();
+
+        if(exportableLayers.count() > 0){
+            var slicesPath = savePath.stringByAppendingPathComponent("slices");
+            [[NSFileManager defaultManager] createDirectoryAtPath:slicesPath withIntermediateDirectories:true attributes:nil error:nil];
+
+            exportableLayers = exportableLayers.objectEnumerator();
+
+            while(exportable = exportableLayers.nextObject()){
+                if(!this.is(exportable, MSArtboardGroup)){
+                    exportables.push({
+                        objectID: exportable.objectID(),
+                        name: exportable.name(),
+                        sizes: this.getExportables(exportable, slicesPath)
+                    });
+                }
+            }
+
+            var sContent = NSString.stringWithString("var slices = " + JSON.stringify(exportables) + ";");
+            var sExportURL = savePath.stringByAppendingPathComponent( "slices.js");
+
+            [sContent writeToFile: sExportURL
+                              atomically: false
+                                encoding: NSUTF8StringEncoding
+                                   error: null];
         }
 
         if(artboardsData.length > 1){
