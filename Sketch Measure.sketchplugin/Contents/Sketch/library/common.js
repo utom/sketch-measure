@@ -1530,13 +1530,15 @@ com.utom.extend({
         slice.scale = size.scale();
         slice.format = size.format();
 
-        var sliceURL = slicesPath.stringByAppendingPathComponent( layer.name() + size.name() + "." + size.format() );
+        var suffix = (size.name())? size.name() : "";
+
+        var sliceURL = slicesPath.stringByAppendingPathComponent( layer.name() + suffix + "." + size.format() );
 
         [[MSSliceExporter dataForRequest: slice] writeToFile:sliceURL atomically:true];
 
         return {
             scale: size.scale(),
-            suffix: size.name(),
+            suffix: suffix,
             format: size.format()
         };
     },
