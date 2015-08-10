@@ -1410,15 +1410,17 @@ com.utom.extend({
 com.utom.extend({
     maskObjectID: undefined,
     isExportable: function(layer) {
-        return layer instanceof MSTextLayer ||
-               layer instanceof MSShapeGroup ||
-               layer instanceof MSBitmapLayer;
+        log(layer.exportOptions().sizes().count());
+        return this.is(layer, MSTextLayer) ||
+               this.is(layer, MSShapeGroup) ||
+               this.is(layer, MSBitmapLayer)
+
     },
     isMeasure: function(layer){
         return (this.regexName.exec(msLayer.parentGroup().name()));
     },
     isHidden: function(layer){
-        while (!(layer instanceof MSArtboardGroup)) {
+        while (!this.is(layer, MSArtboardGroup)) {
             if (!layer.isVisible()) {
                 return true;
             }
@@ -1429,7 +1431,7 @@ com.utom.extend({
         return false;
     },
     isLocked: function(layer){
-        while (!(layer instanceof MSArtboardGroup)) {
+        while (!this.is(layer, MSArtboardGroup)) {
             if (layer.isLocked()) {
                 return true;
             }
@@ -1440,7 +1442,7 @@ com.utom.extend({
         return false;
     },
     isMask: function(layer){
-        while (!(layer instanceof MSArtboardGroup)) {
+        while (!this.is(layer, MSArtboardGroup)) {
             var msGroup = layer.parentGroup();
             if (
                 this.maskObjectID &&
@@ -1532,11 +1534,12 @@ com.utom.extend({
 
         var suffix = (size.name())? size.name() : "";
 
-        var sliceURL = slicesPath.stringByAppendingPathComponent( layer.name() + suffix + "." + size.format() );
+        var sliceFileName = slicesPath.stringByAppendingPathComponent( layer.name() + suffix + "." + size.format() );
 
-        [[MSSliceExporter dataForRequest: slice] writeToFile:sliceURL atomically:true];
+        [[MSSliceExporter dataForRequest: slice] writeToFile: sliceFileName atomically:true];
 
         return {
+            sliceFileName: this.toJSString(sliceFileName),
             scale: size.scale(),
             suffix: suffix,
             format: size.format()
@@ -1623,7 +1626,7 @@ com.utom.extend({
     getOpacity: function(layerStyle){
         return layerStyle.contextSettings().opacity()
     },
-    getExportables: function(layer, slicesPath){
+    getSizes: function(layer, slicesPath){
         var sizes = [],
             size, exportableInter = layer.exportOptions().sizes().array().objectEnumerator();
 
@@ -1695,7 +1698,6 @@ com.utom.extend({
                 var notes = [];
                 var layerIter = msArtboard.children().objectEnumerator();
                 var name = msArtboard.objectID();
-                var maskObjectID = undefined;
 
                 while(msLayer = layerIter.nextObject()) {
                     var msGroup = msLayer.parentGroup();
@@ -1724,12 +1726,13 @@ com.utom.extend({
                     if(msLayer.hasClippingMask()){
                         this.maskObjectID = msGroup.objectID();
                     }
-                    else if (maskObjectID != msGroup.objectID() || msLayer.shouldBreakMaskChain()) {
+                    else if (this.maskObjectID != msGroup.objectID() || msLayer.shouldBreakMaskChain()) {
                         this.maskObjectID = undefined;
                     };
 
                     var layerStyle = msLayer.style(),
                         layer = {
+                            objectID: msLayer.objectID(),
                             type: msLayer instanceof MSTextLayer ? "text" : "shape",
                             name: this.toJSString(msLayer.name()),
                             rect: this.rectToJSON(msLayer.absoluteRect(), artboardFrame),
@@ -1810,7 +1813,7 @@ com.utom.extend({
                     exportables.push({
                         objectID: exportable.objectID(),
                         name: exportable.name(),
-                        sizes: this.getExportables(exportable, slicesPath)
+                        sizes: this.getSizes(exportable, slicesPath)
                     });
                 }
             }
