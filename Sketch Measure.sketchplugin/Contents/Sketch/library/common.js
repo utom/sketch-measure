@@ -1732,7 +1732,6 @@ com.utom.extend({
 
                     var layerStyle = msLayer.style(),
                         layer = {
-                            objectID: msLayer.objectID(),
                             type: msLayer instanceof MSTextLayer ? "text" : "shape",
                             name: this.toJSString(msLayer.name()),
                             rect: this.rectToJSON(msLayer.absoluteRect(), artboardFrame),
@@ -1811,7 +1810,6 @@ com.utom.extend({
             while(exportable = exportableLayers.nextObject()){
                 if(!this.is(exportable, MSArtboardGroup)){
                     exportables.push({
-                        objectID: exportable.objectID(),
                         name: exportable.name(),
                         sizes: this.getSizes(exportable, slicesPath)
                     });
