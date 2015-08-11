@@ -1410,7 +1410,6 @@ com.utom.extend({
 com.utom.extend({
     maskObjectID: undefined,
     isExportable: function(layer) {
-        log(layer.exportOptions().sizes().count());
         return this.is(layer, MSTextLayer) ||
                this.is(layer, MSShapeGroup) ||
                this.is(layer, MSBitmapLayer)
