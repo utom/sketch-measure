@@ -1409,6 +1409,7 @@ com.utom.extend({
 
 com.utom.extend({
     maskObjectID: undefined,
+    sliceObjectID: undefined,
     isExportable: function(layer) {
         return this.is(layer, MSTextLayer) ||
                this.is(layer, MSShapeGroup) ||
@@ -1447,6 +1448,22 @@ com.utom.extend({
                 this.maskObjectID &&
                 msGroup.objectID() == this.maskObjectID &&
                 !layer.shouldBreakMaskChain()
+            ) {
+                return true;
+            }
+
+            layer = msGroup;
+        }
+
+        return false;
+    },
+    isSlice: function(layer){
+        while (!this.is(layer, MSArtboardGroup)) {
+            var msGroup = layer.parentGroup();
+
+            if (
+                this.sliceObjectID &&
+                msGroup.objectID() == this.sliceObjectID
             ) {
                 return true;
             }
