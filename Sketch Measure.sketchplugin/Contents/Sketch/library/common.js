@@ -1706,8 +1706,6 @@ com.utom.extend({
 
         while(msArtboard = selectionArtboards.nextObject()){
             if(msArtboard instanceof MSArtboardGroup){
-                artboardError = false;
-
                 var artboardFrame = msArtboard.frame();
                 var layers = [];
                 var notes = [];
