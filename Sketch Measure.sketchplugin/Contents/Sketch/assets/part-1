@@ -197,8 +197,10 @@ h1.m span{
     box-sizing: border-box;
 }
 .a-name{
+    height: 44px;
     font-size: 14px;
-    line-height: 44px;
+    display: table-cell;
+    vertical-align: middle;
 }
 .about_list{
     right: 4px;
