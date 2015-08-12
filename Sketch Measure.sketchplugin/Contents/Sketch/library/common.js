@@ -1413,8 +1413,8 @@ com.utom.extend({
     isExportable: function(layer) {
         return this.is(layer, MSTextLayer) ||
                this.is(layer, MSShapeGroup) ||
-               this.is(layer, MSBitmapLayer)
-
+               this.is(layer, MSBitmapLayer) ||
+               this.is(layer, MSLayerGroup) && this.hasExportSizes(layer)
     },
     isMeasure: function(layer){
         return (this.regexName.exec(msLayer.parentGroup().name()));
@@ -1457,21 +1457,20 @@ com.utom.extend({
 
         return false;
     },
-    isSlice: function(layer){
+    isSliceGroup: function(layer){
         while (!this.is(layer, MSArtboardGroup)) {
             var msGroup = layer.parentGroup();
-
-            if (
-                this.sliceObjectID &&
-                msGroup.objectID() == this.sliceObjectID
-            ) {
+            if ( this.hasExportSizes(msGroup) ) {
                 return true;
             }
 
-            layer = msGroup;
+            layer = layer.parentGroup();
         }
 
         return false;
+    },
+    hasExportSizes: function(layer){
+        return layer.exportOptions().sizes().count() > 0;
     },
     toJSString: function(str){
         return new String(str).toString();
@@ -1733,8 +1732,9 @@ com.utom.extend({
                         this.isHidden(msLayer) ||
                         this.isLocked(msLayer) ||
                         !this.isExportable(msLayer) ||
-                        this.isMeasure(msLayer)
-                        )
+                        this.isMeasure(msLayer) ||
+                        this.isSliceGroup(msLayer)
+                    )
                     {
                         continue;
                     }
@@ -1744,7 +1744,8 @@ com.utom.extend({
                     }
                     else if (this.maskObjectID != msGroup.objectID() || msLayer.shouldBreakMaskChain()) {
                         this.maskObjectID = undefined;
-                    };
+                    }
+
 
                     var layerStyle = msLayer.style(),
                         layer = {
@@ -1825,14 +1826,14 @@ com.utom.extend({
 
             while(msSlice = sliceLayers.nextObject()){
                 if(!this.is(msSlice, MSArtboardGroup)){
-                    exportables.push({
+                    slices.push({
                         name: msSlice.name(),
                         sizes: this.getSizes(msSlice, slicesPath)
                     });
                 }
             }
 
-            var sContent = NSString.stringWithString("var slices = " + JSON.stringify(exportables) + ";");
+            var sContent = NSString.stringWithString("var slices = " + JSON.stringify(slices) + ";");
             var sExportURL = savePath.stringByAppendingPathComponent( "slices.js");
 
             [sContent writeToFile: sExportURL
