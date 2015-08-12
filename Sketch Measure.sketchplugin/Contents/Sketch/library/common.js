@@ -1203,7 +1203,7 @@ com.utom.extend({
                     break;
                 case "inner-shadow":
                     if(!layerStyle.innerShadow() || (layerStyle.innerShadow() && !layerStyle.innerShadow().isEnabled()) ) return false;
-                    content.push("inner-shadow: \r\n" + shadowContent(layerStyle.shadow()));
+                    content.push("inner-shadow: \r\n" + shadowContent(layerStyle.innerShadow()));
                     break;
                 case "font-size":
                     if(!self.is(layer, MSTextLayer)) return false;
@@ -1814,20 +1814,20 @@ com.utom.extend({
         }
 
 
-        var exportables = [];
-        var exportableLayers = this.page.exportableLayers();
+        var slices = [];
+        var sliceLayers = this.page.exportableLayers();
 
-        if(exportableLayers.count() > 0){
+        if(sliceLayers.count() > 0){
             var slicesPath = savePath.stringByAppendingPathComponent("slices");
             [[NSFileManager defaultManager] createDirectoryAtPath:slicesPath withIntermediateDirectories:true attributes:nil error:nil];
 
-            exportableLayers = exportableLayers.objectEnumerator();
+            sliceLayers = sliceLayers.objectEnumerator();
 
-            while(exportable = exportableLayers.nextObject()){
-                if(!this.is(exportable, MSArtboardGroup)){
+            while(msSlice = sliceLayers.nextObject()){
+                if(!this.is(msSlice, MSArtboardGroup)){
                     exportables.push({
-                        name: exportable.name(),
-                        sizes: this.getSizes(exportable, slicesPath)
+                        name: msSlice.name(),
+                        sizes: this.getSizes(msSlice, slicesPath)
                     });
                 }
             }
