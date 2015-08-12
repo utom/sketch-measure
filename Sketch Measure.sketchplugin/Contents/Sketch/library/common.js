@@ -1460,7 +1460,7 @@ com.utom.extend({
     isSliceGroup: function(layer){
         while (!this.is(layer, MSArtboardGroup)) {
             var msGroup = layer.parentGroup();
-            if ( this.hasExportSizes(msGroup) ) {
+            if ( this.is(msGroup, MSLayerGroup) && this.hasExportSizes(msGroup) ) {
                 return true;
             }
 
