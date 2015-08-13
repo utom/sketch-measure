@@ -9,7 +9,7 @@ I18N["zh-Hans"] = {
     "Please select a layer for creating."               : "请选择 1 个图层.",
     "Please select a text layer for creating."          : "请选择 1 个文字图层.",
     "Fill / Text color / Gradient"                      : "填充 / 字体颜色 / 渐变",
-    "Border color"                                      : "边框",
+    "Border"                                            : "边框",
     "Layer opacity"                                     : "图层不透明度",
     "Radius"                                            : "圆角",
     "Shadow"                                            : "外阴影",
