@@ -1812,7 +1812,6 @@ com.utom.extend({
             
         }
 
-
         var slices = [];
         var sliceLayers = this.page.exportableLayers();
 
