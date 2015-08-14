@@ -1660,11 +1660,7 @@ com.utom.extend({
         savePanel.setTitle(_("Export spec"));
         savePanel.setNameFieldLabel(_("Export to:"));
         savePanel.setPrompt(_("Export"));
-        // savePanel.setCanChooseDirectories(true);
         savePanel.setCanCreateDirectories(true);
-        // savePanel.setAllowedFileTypes(NSArray.arrayWithObject("spec"));
-        // savePanel.setAllowsOtherFileTypes(false);
-        // savePanel.setDirectoryURL(NSURL.fileURLWithPath(filePath));
         savePanel.setNameFieldStringValue(fileName);
 
         if (savePanel.runModal() != NSOKButton) {
