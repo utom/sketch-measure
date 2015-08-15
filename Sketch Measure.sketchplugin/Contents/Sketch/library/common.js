@@ -33,9 +33,9 @@ I18N["zh-Hans"] = {
     "Position Bottom"                                   : "下侧",
     "Position Left"                                     : "左侧",
     "Show position:"                                    : "显示位置:",
-    "Color hex, e.g. #FFFFFF 100%"                      : "Color hex, e.g. #FFFFFF 100%",
-    "ARGB hex, e.g. #FFFFFFFF"                          : "ARGB hex, e.g. #FFFFFFFF",
-    "RGBA CSS, e.g. rgba(255, 255, 255, 1)"             : "RGBA CSS, e.g. rgba(255, 255, 255, 1)",
+    "Color hex, E.g. #FFFFFF 100%"                      : "Color hex, E.g. #FFFFFF 100%",
+    "ARGB hex, E.g. #FFFFFFFF"                          : "ARGB hex, E.g. #FFFFFFFF",
+    "RGBA CSS, E.g. rgba(255, 255, 255, 1)"             : "RGBA CSS, E.g. rgba(255, 255, 255, 1)",
     "Color format"                                      : "Color format"
 };
  
@@ -1028,7 +1028,7 @@ com.utom.extend({
 
     ],
     propertyPosition: [_("Position top"), _("Position right"), _("Position bottom"), _("Position left")],
-    colorFormats: [_("Color hex, e.g. #FFFFFF 100%"), _("ARGB hex, e.g. #FFFFFFFF"), _("RGBA CSS, e.g. rgba(255, 255, 255, 1)")],
+    colorFormats: [_("Color hex, E.g. #FFFFFF 100%"), _("ARGB hex, E.g. #FFFFFFFF"), _("RGBA CSS, E.g. rgba(255, 255, 255, 1)")],
     propertyDialog: function(){
         var cellWidth = 250;
         var cellHeight = 190;
@@ -1414,6 +1414,7 @@ com.utom.extend({
         return this.is(layer, MSTextLayer) ||
                this.is(layer, MSShapeGroup) ||
                this.is(layer, MSBitmapLayer) ||
+               this.is(layer, MSSliceLayer) ||
                this.is(layer, MSLayerGroup) && this.hasExportSizes(layer)
     },
     isMeasure: function(layer){
@@ -1542,22 +1543,24 @@ com.utom.extend({
             color: this.colorToJSON(shadow.color())
         };
     },
-    sizeToJSON: function(size, layer, slicesPath) {
+    exportSizesToJSON: function(size, layer, slicesPath) {
         var slice = MSSliceMaker.slicesFromExportableLayer(layer).firstObject();
         slice.scale = size.scale();
         slice.format = size.format();
 
-        var suffix = (size.name())? size.name() : "";
-        var sliceName = layer.name() + suffix + "." + size.format();
+        var suffix = this.toJSString(size.name());
+        suffix = (suffix)? suffix : "";
+
+        var sliceName = this.toJSString(layer.name() + suffix + "." + size.format());
         var sliceFileName = slicesPath.stringByAppendingPathComponent( sliceName );
 
         [[MSSliceExporter dataForRequest: slice] writeToFile: sliceFileName atomically:true];
 
         return {
             sliceName: "slices/" + sliceName,
-            scale: size.scale(),
+            scale: this.toJSString(size.scale()),
             suffix: suffix,
-            format: size.format()
+            format: this.toJSString(size.format())
         };
     },
     getBorders: function(style) {
@@ -1641,15 +1644,15 @@ com.utom.extend({
     getOpacity: function(layerStyle){
         return layerStyle.contextSettings().opacity()
     },
-    getSizes: function(layer, slicesPath){
-        var sizes = [],
-            size, exportableInter = layer.exportOptions().sizes().array().objectEnumerator();
+    exportSizes: function(layer, slicesPath){
+        var exportSizes = [],
+            size, sizesInter = layer.exportOptions().sizes().array().objectEnumerator();
 
-        while (size = exportableInter.nextObject()) {
-            sizes.push(this.sizeToJSON(size, layer, slicesPath));
+        while (size = sizesInter.nextObject()) {
+            exportSizes.push(this.exportSizesToJSON(size, layer, slicesPath));
         }
 
-        return sizes;
+        return exportSizes;
     },
     savePath: function(){
         var filePath = this.document.fileURL()? this.document.fileURL().path().stringByDeletingLastPathComponent(): "~";
@@ -1687,6 +1690,9 @@ com.utom.extend({
         if(!savePath) return false;
         [[NSFileManager defaultManager] createDirectoryAtPath:savePath withIntermediateDirectories:true attributes:nil error:nil];
 
+        var slicesPath = savePath.stringByAppendingPathComponent("slices");
+        [[NSFileManager defaultManager] createDirectoryAtPath:slicesPath withIntermediateDirectories:true attributes:nil error:nil];
+
         var resolution = this.configs.resolution;
 
         var pluginPath = NSString.stringWithString(this.context.scriptPath).stringByDeletingLastPathComponent();
@@ -1696,6 +1702,7 @@ com.utom.extend({
         var template2 = [NSString stringWithContentsOfFile:template2Path encoding:NSUTF8StringEncoding error:nil];
 
         var artboardsData = [];
+        var slicesData = [];
 
         selectionArtboards = (this.is(selectionArtboards, MSArtboardGroup))? NSArray.arrayWithObjects(selectionArtboards): selectionArtboards;
         selectionArtboards = selectionArtboards.objectEnumerator();
@@ -1740,21 +1747,29 @@ com.utom.extend({
                         this.maskObjectID = undefined;
                     }
 
+                    var layer = {};
 
-                    var layerStyle = msLayer.style(),
-                        layer = {
-                            type: msLayer instanceof MSTextLayer ? "text" : "shape",
-                            name: this.toJSString(msLayer.name()),
-                            rect: this.rectToJSON(msLayer.absoluteRect(), artboardFrame),
-                            rotation: msLayer.rotation(),
-                            radius: ( msLayer.layers && this.is(msLayer.layers().firstObject(), MSRectangleShape) ) ? msLayer.layers().firstObject().fixedRadius(): null,
-                            borders: this.getBorders(layerStyle),
-                            fills: this.getFills(layerStyle),
-                            shadows: this.getShadows(layerStyle),
-                            opacity: this.getOpacity(layerStyle)
-                        };
+                    var type = this.is(msLayer, MSTextLayer) ? "text" : "shape";
+                    type = this.hasExportSizes(msLayer) || this.is(msLayer, MSSliceLayer) ? "slice" : type;
 
-                    if (msLayer instanceof MSTextLayer) {
+                    layer.objectID = this.toJSString(msLayer.objectID());
+                    layer.type = type;
+                    layer.name = this.toJSString(msLayer.name());
+                    layer.rect = this.rectToJSON(msLayer.absoluteRect(), artboardFrame);
+                    layer.exportSizes = this.exportSizes(msLayer, slicesPath);
+
+                    if ( !this.is(msLayer, MSSliceLayer) ) {
+                        var layerStyle = msLayer.style();
+
+                        layer.rotation = msLayer.rotation();
+                        layer.radius = ( msLayer.layers && this.is(msLayer.layers().firstObject(), MSRectangleShape) ) ? msLayer.layers().firstObject().fixedRadius(): null;
+                        layer.borders = this.getBorders(layerStyle);
+                        layer.fills = this.getFills(layerStyle);
+                        layer.shadows = this.getShadows(layerStyle);
+                        layer.opacity = this.getOpacity(layerStyle);
+                    }
+
+                    if ( this.is(msLayer, MSTextLayer) ) {
                         layer.content = this.toJSString(msLayer.storage().string()),
                         layer.color = this.colorToJSON(msLayer.textColor());
                         layer.fontSize = msLayer.fontSize();
@@ -1762,6 +1777,10 @@ com.utom.extend({
                         layer.textAlign = this.TextAligns[msLayer.textAlignment()];
                         layer.letterSpacing = msLayer.characterSpacing();
                         layer.lineHeight = msLayer.lineSpacing();
+                    }
+
+                    if ( type ===  "slice" ) {
+                        slicesData.push(layer);
                     }
 
                     layers.push(layer);
@@ -1779,6 +1798,7 @@ com.utom.extend({
                 var imageBase64 = imageData.base64EncodedStringWithOptions(0);
 
                 var artboardData = {
+                    objectID: this.toJSString(msArtboard.objectID()),
                     name: this.toJSString(msArtboard.name()),
                     imageBase64: this.toJSString(imageBase64),
                     width: artboardFrame.width(),
@@ -1795,7 +1815,7 @@ com.utom.extend({
                     notes: notes
                 });
 
-                var content = template1 + "jQuery(function(){Spec(" + JSON.stringify(data).replace(/\u2028/g,'\\u2028').replace(/\u2029/g,'\\u2029') + ").artboardList(artboards || undefined)});" + template2;
+                var content = template1 + "jQuery(function(){Spec(" + JSON.stringify(data).replace(/\u2028/g,'\\u2028').replace(/\u2029/g,'\\u2029') + ").artboardList(artboards || undefined).sliceList(slices || undefined)});" + template2;
                 content = NSString.stringWithString(content);
 
                 var exportURL = savePath.stringByAppendingPathComponent( msArtboard.name() + ".html");
@@ -1808,25 +1828,11 @@ com.utom.extend({
             
         }
 
-        var slices = [];
         var sliceLayers = this.page.exportableLayers();
 
-        if(sliceLayers.count() > 0){
-            var slicesPath = savePath.stringByAppendingPathComponent("slices");
-            [[NSFileManager defaultManager] createDirectoryAtPath:slicesPath withIntermediateDirectories:true attributes:nil error:nil];
+        if(slicesData.length > 1){
 
-            sliceLayers = sliceLayers.objectEnumerator();
-
-            while(msSlice = sliceLayers.nextObject()){
-                if(!this.is(msSlice, MSArtboardGroup)){
-                    slices.push({
-                        name: msSlice.name(),
-                        sizes: this.getSizes(msSlice, slicesPath)
-                    });
-                }
-            }
-
-            var sContent = NSString.stringWithString("var slices = " + JSON.stringify(slices) + ";");
+            var sContent = NSString.stringWithString("var slices = " + JSON.stringify(slicesData) + ";");
             var sExportURL = savePath.stringByAppendingPathComponent( "slices.js");
 
             [sContent writeToFile: sExportURL
@@ -1848,4 +1854,3 @@ com.utom.extend({
 
     }
 });
-
