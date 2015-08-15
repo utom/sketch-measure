@@ -33,9 +33,9 @@ I18N["zh-Hans"] = {
     "Position Bottom"                                   : "下侧",
     "Position Left"                                     : "左侧",
     "Show position:"                                    : "显示位置:",
-    "Color hex, e.g. #FFFFFF 100%"                      : "Color hex, e.g. #FFFFFF 100%",
-    "ARGB hex, e.g. #FFFFFFFF"                          : "ARGB hex, e.g. #FFFFFFFF",
-    "RGBA CSS, e.g. rgba(255, 255, 255, 1)"             : "RGBA CSS, e.g. rgba(255, 255, 255, 1)",
+    "Color hex, E.g. #FFFFFF 100%"                      : "Color hex, E.g. #FFFFFF 100%",
+    "ARGB hex, E.g. #FFFFFFFF"                          : "ARGB hex, E.g. #FFFFFFFF",
+    "RGBA CSS, E.g. rgba(255, 255, 255, 1)"             : "RGBA CSS, E.g. rgba(255, 255, 255, 1)",
     "Color format"                                      : "Color format"
 };
  
@@ -1028,7 +1028,7 @@ com.utom.extend({
 
     ],
     propertyPosition: [_("Position top"), _("Position right"), _("Position bottom"), _("Position left")],
-    colorFormats: [_("Color hex, e.g. #FFFFFF 100%"), _("ARGB hex, e.g. #FFFFFFFF"), _("RGBA CSS, e.g. rgba(255, 255, 255, 1)")],
+    colorFormats: [_("Color hex, E.g. #FFFFFF 100%"), _("ARGB hex, E.g. #FFFFFFFF"), _("RGBA CSS, E.g. rgba(255, 255, 255, 1)")],
     propertyDialog: function(){
         var cellWidth = 250;
         var cellHeight = 190;
@@ -1543,7 +1543,7 @@ com.utom.extend({
             color: this.colorToJSON(shadow.color())
         };
     },
-    sizeToJSON: function(size, layer, slicesPath) {
+    exportSizesToJSON: function(size, layer, slicesPath) {
         var slice = MSSliceMaker.slicesFromExportableLayer(layer).firstObject();
         slice.scale = size.scale();
         slice.format = size.format();
@@ -1644,15 +1644,15 @@ com.utom.extend({
     getOpacity: function(layerStyle){
         return layerStyle.contextSettings().opacity()
     },
-    getSizes: function(layer, slicesPath){
-        var sizes = [],
-            size, exportableInter = layer.exportOptions().sizes().array().objectEnumerator();
+    exportSizes: function(layer, slicesPath){
+        var exportSizes = [],
+            size, sizesInter = layer.exportOptions().sizes().array().objectEnumerator();
 
-        while (size = exportableInter.nextObject()) {
-            sizes.push(this.sizeToJSON(size, layer, slicesPath));
+        while (size = sizesInter.nextObject()) {
+            exportSizes.push(this.exportSizesToJSON(size, layer, slicesPath));
         }
 
-        return sizes;
+        return exportSizes;
     },
     savePath: function(){
         var filePath = this.document.fileURL()? this.document.fileURL().path().stringByDeletingLastPathComponent(): "~";
@@ -1756,7 +1756,7 @@ com.utom.extend({
                     layer.type = type;
                     layer.name = this.toJSString(msLayer.name());
                     layer.rect = this.rectToJSON(msLayer.absoluteRect(), artboardFrame);
-
+                    layer.exportSizes = this.exportSizes(msLayer, slicesPath);
 
                     if ( !this.is(msLayer, MSSliceLayer) ) {
                         var layerStyle = msLayer.style();
