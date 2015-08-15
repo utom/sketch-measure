@@ -1815,7 +1815,7 @@ com.utom.extend({
                     notes: notes
                 });
 
-                var content = template1 + "jQuery(function(){Spec(" + JSON.stringify(data).replace(/\u2028/g,'\\u2028').replace(/\u2029/g,'\\u2029') + ").artboardList(artboards || undefined).sliceList(slices || undefined)});" + template2;
+                var content = template1 + "jQuery(function(){Spec(" + JSON.stringify(data).replace(/\u2028/g,'\\u2028').replace(/\u2029/g,'\\u2029') + ").artboardList(window.artboards || undefined).sliceList(window.slices || undefined)});" + template2;
                 content = NSString.stringWithString(content);
 
                 var exportURL = savePath.stringByAppendingPathComponent( msArtboard.name() + ".html");

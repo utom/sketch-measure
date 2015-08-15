@@ -1,7 +1,7 @@
     </script>
   </head>
 
- <body class="off">
+  <body class="off">
     <div class="header">
       <div class="art-name">
         <h1 id="artboard" class="artboard-name"><span></span></h1>
@@ -45,7 +45,7 @@
         </div>
 
         <script id="layer-item-template" type="application/template">
-          <div class="layer" style="left: ${x}px; top: ${y}px; width: ${width}px; height: ${height}px;">
+          <div id="ID-${objectID}" class="layer" style="left: ${x}px; top: ${y}px; width: ${width}px; height: ${height}px;">
             <i class="lt"></i><i class="rt"></i><i class="lb"></i><i class="rb"></i>
           </div>
         </script>
@@ -93,12 +93,26 @@
       </div>
     </div>
 
-    <div id="artboard_list" class="artboard_list artoff"></div>
+    <div id="navbar" class="navbar navoff">
+      <div id="tabs" class="tabs">
+        <div class="a-tab current">Artboards</div>
+        <div class="s-tab">Slices</div>
+      </div>
+      <div id="artboard_list" class="artboard_list"></div>
+      <div id="slice_list" class="slice_list"></div>
+    </div>
     <script id="artboard-item-template" type="application/template">
       <div class="a-item">
-        <div class="a-image" style="background-image:url(data:image/png;base64,${base64});background-size:${width}px ${height}px;"></div>
+        <div class="a-image" style="background-image:url(data:image/png;base64,${base64});background-size:${width} ${height};"></div>
         <div class="a-name">${name}</div>
       </div>
+    </script>
+
+    <script id="slice-item-template" type="application/template">
+      <div class="s-item">
+          <div class="s-image"><div style="background-image:url(${sliceName});background-size:${width} ${height};"></div></div>
+          <div class="s-name"></div>
+        </div>
     </script>
 
     <div class="sidebar">
@@ -132,9 +146,21 @@
         <ul></ul>
       </div>
 
+      <div id="exportable">
+        <h3 id="side-title">EXPORTABLE</h3>
+        <ul>
+          <li></li>
+        </ul>
+      </div>
+
+      <script id="slice-template" type="application/template">
+        <a href="${sliceName}" class="download">${scale}</a> 
+      </script>
+
       <script id="property-template" type="application/template">
+        <li><label>position:</label> <strong>${x}</strong> <i>,</i> <strong>${y}</strong></li>
         <li><label>size:</label> <strong>${width}</strong> <i>,</i> <strong>${height}</strong></li>
-        <li><label>opacity:</label> <strong>${opacity}</strong></li>
+        <li class="opacity"><label>opacity:</label> <strong>${opacity}</strong></li>
         <li class="radius"><label>radius:</label> <strong>${radius}</strong></li>
       </script>
 
