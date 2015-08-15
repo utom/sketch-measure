@@ -1334,6 +1334,7 @@ return new Za.prototype.init(a,b,c,d,e)}m.Tween=Za,Za.prototype={constructor:Za,
             jQAllSliceList.on("click", ".s-item", function(event){
                 var jQThis = $(this), model = jQThis.data("model");
                 jQThis = $("#ID-" + model.objectID);
+                if(jQThis.length <= 0) return false;
                 event.stopPropagation();
                 event.preventDefault();
                 if (!jQSelection) self.toggleSidebar();
