@@ -1779,9 +1779,7 @@ com.utom.extend({
                         layer.lineHeight = msLayer.lineSpacing();
                     }
 
-                    if ( type ===  "slice" ) {
-                        slicesData.push(layer);
-                    }
+                    if ( type ===  "slice" ) slicesData.push(layer);
 
                     layers.push(layer);
 

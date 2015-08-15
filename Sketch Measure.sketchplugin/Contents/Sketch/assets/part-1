@@ -1335,17 +1335,16 @@ return new Za.prototype.init(a,b,c,d,e)}m.Tween=Za,Za.prototype={constructor:Za,
                 var jQThis = $(this), model = jQThis.data("model");
                 jQThis = $("#ID-" + model.objectID);
                 if(jQThis.length <= 0) return false;
-                event.stopPropagation();
-                event.preventDefault();
                 if (!jQSelection) self.toggleSidebar();
                 self.select(jQThis);
                 self.inspector();
                 self.hideList();
             });
-
-            jQZoom.on("click", ".zoom-out", function(event) {
+            jQZoom.click(function( event ){
                 event.stopPropagation();
                 event.preventDefault();
+            });
+            jQZoom.on("click", ".zoom-out", function(event) {
                 self.zoom -= .25;
                 if (self.zoom <= .25) {
                     self.zoom = .5;
@@ -1354,8 +1353,6 @@ return new Za.prototype.init(a,b,c,d,e)}m.Tween=Za,Za.prototype={constructor:Za,
                 self.hideList();
             });
             jQZoom.on("click", ".zoom-in", function(event) {
-                event.stopPropagation();
-                event.preventDefault();
                 self.zoom += .25;
                 if (self.zoom >= 1) {
                     self.zoom = 1;
@@ -1380,8 +1377,6 @@ return new Za.prototype.init(a,b,c,d,e)}m.Tween=Za,Za.prototype={constructor:Za,
             });
             jQArtboardList.on("click", ".a-item", function(event){
                 var jQThis = $(this), model = jQThis.data("model");
-                event.stopPropagation();
-                event.preventDefault();
                 if(jQThis.hasClass("current")) return false;
 
                 window.location.href = model.name + ".html";
@@ -1407,6 +1402,10 @@ return new Za.prototype.init(a,b,c,d,e)}m.Tween=Za,Za.prototype={constructor:Za,
                 self.toggleNavbar();
                 if (jQResolutionList.css("display") != "none") self.toggleResolutionList();
                 if (jQAboutList.css("display") != "none") self.toggleAboutList();
+            });
+            jQNavbar.click(function(event){
+                event.stopPropagation();
+                event.preventDefault();
             });
             jQNavbar.on("click", ".a-tab", function(event){
                 var jQThis = $(this);
@@ -1435,7 +1434,13 @@ return new Za.prototype.init(a,b,c,d,e)}m.Tween=Za,Za.prototype={constructor:Za,
                 event.stopPropagation();
                 event.preventDefault();
             });
-            // $(document).
+            // $(document).on("click", ".download", function(event) {
+            //     var jQThis = $(this);
+            //     alert(jQThis.attr("href"))
+            //     event.stopPropagation();
+            //     event.preventDefault();
+            //     window.location.href = jQThis.attr("href");
+            // });
             jQColorFormat.on("click", function(event) {
                 var colorFormat = self.colorFormat;
                 colorFormat += 1;
