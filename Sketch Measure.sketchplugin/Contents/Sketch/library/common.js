@@ -1829,10 +1829,8 @@ com.utom.extend({
         var sliceLayers = this.page.exportableLayers();
 
         if(slicesData.length > 1){
-
             var sContent = NSString.stringWithString("var slices = " + JSON.stringify(slicesData) + ";");
             var sExportURL = savePath.stringByAppendingPathComponent( "slices.js");
-
             [sContent writeToFile: sExportURL
                               atomically: false
                                 encoding: NSUTF8StringEncoding
