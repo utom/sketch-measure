@@ -149,7 +149,7 @@
       </div>
 
       <script id="slice-template" type="application/template">
-        <a href="${sliceName}" class="download">${fileName}</a> 
+        <a href="${sliceName}" class="download"><img src="${sliceName}" alt="" />${fileName}</a> 
       </script>
 
       <script id="property-template" type="application/template">
