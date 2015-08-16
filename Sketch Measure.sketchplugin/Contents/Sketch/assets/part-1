@@ -1590,10 +1590,6 @@ return new Za.prototype.init(a,b,c,d,e)}m.Tween=Za,Za.prototype={constructor:Za,
                     jQThis.css({width: "100%", height: "100%"});
                 });
 
-            $(document).on("mousemove", function(event){
-                console.log(event.originalEvent.pageX, event.originalEvent.pageY)
-            })
-            
         },
     };
     var init = Spec.fn.init = function(options) {
