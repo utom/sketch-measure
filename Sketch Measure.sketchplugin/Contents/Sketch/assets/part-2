@@ -8,25 +8,20 @@
       </div>
 
       <div id="about" class="about"><span></span></div>
-      <div id="about_list" class="about_list" style="display:none">
+      <div id="about_list" class="about_list dropdown hide">
         <div class="twitter"><a href="https://twitter.com/utom" target="_blank">Twitter</a></div>
         <div class="github"><a href="https://github.com/utom/sketch-measure" target="_blank">GitHub</a></div>
         <div class="email"><a href="mailto:utombox@gmail.com" target="_blank">Email</a></div>
       </div>
 
       <div id="resolution" class="resolution"><span></span></div>
-      <div id="resolution_list" class="resolution_list" style="display:none"></div>
+      <div id="resolution_list" class="resolution_list dropdown hide"></div>
 
       <div id="color_format" class="color_format"><span></span></div>
-      <div id="color_format_list" class="color_format_list" style="display:none"></div>
 
       <div id="toggle" class="toggle"><span class="toggle_hide">Toggle Notes</span></div>
 
-      <script id="resolution-item-template" type="application/template">
-        <div>${name}</div>
-      </script>
-
-      <script id="color-format-template" type="application/template">
+      <script id="list-item-template" type="application/template">
         <div>${name}</div>
       </script>
 
@@ -115,7 +110,7 @@
         </div>
     </script>
 
-    <div class="sidebar">
+    <div id="sidebar" class="sidebar sideoff">
       <div id="properties">
         <h3 id="side-title">PROPERTIES</h3>
         <ul></ul>
@@ -154,7 +149,7 @@
       </div>
 
       <script id="slice-template" type="application/template">
-        <a href="${sliceName}" class="download">${scale}</a> 
+        <a href="${sliceName}" class="download">${fileName}</a> 
       </script>
 
       <script id="property-template" type="application/template">

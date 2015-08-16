@@ -4,12 +4,7 @@
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <meta name="description" content="">
-    <meta name="author" content="">
-    <link rel="icon" href="favicon.ico">
-
     <title>Viewer</title>
-
     <style type="text/css">
 /*! normalize.css v3.0.2 | MIT License | git.io/normalize */html{font-family:sans-serif;-ms-text-size-adjust:100%;-webkit-text-size-adjust:100%}body{margin:0}article,aside,details,figcaption,figure,footer,header,hgroup,main,menu,nav,section,summary{display:block}audio,canvas,progress,video{display:inline-block;vertical-align:baseline}audio:not([controls]){display:none;height:0}[hidden],template{display:none}a{background-color:transparent}a:active,a:hover{outline:0}abbr[title]{border-bottom:1px dotted}b,strong{font-weight:bold}dfn{font-style:italic}h1{font-size:2em;margin:.67em 0}mark{background:#ff0;color:#000}small{font-size:80%}sub,sup{font-size:75%;line-height:0;position:relative;vertical-align:baseline}sup{top:-0.5em}sub{bottom:-0.25em}img{border:0}svg:not(:root){overflow:hidden}figure{margin:1em 40px}hr{-moz-box-sizing:content-box;box-sizing:content-box;height:0}pre{overflow:auto}code,kbd,pre,samp{font-family:monospace,monospace;font-size:1em}button,input,optgroup,select,textarea{color:inherit;font:inherit;margin:0}button{overflow:visible}button,select{text-transform:none}button,html input[type="button"],input[type="reset"],input[type="submit"]{-webkit-appearance:button;cursor:pointer}button[disabled],html input[disabled]{cursor:default}button::-moz-focus-inner,input::-moz-focus-inner{border:0;padding:0}input{line-height:normal}input[type="checkbox"],input[type="radio"]{box-sizing:border-box;padding:0}input[type="number"]::-webkit-inner-spin-button,input[type="number"]::-webkit-outer-spin-button{height:auto}input[type="search"]{-webkit-appearance:textfield;-moz-box-sizing:content-box;-webkit-box-sizing:content-box;box-sizing:content-box}input[type="search"]::-webkit-search-cancel-button,input[type="search"]::-webkit-search-decoration{-webkit-appearance:none}fieldset{border:1px solid silver;margin:0 2px;padding:.35em .625em .75em}legend{border:0;padding:0}textarea{overflow:auto}optgroup{font-weight:bold}table{border-collapse:collapse;border-spacing:0}td,th{padding:0}
 body,
@@ -29,6 +24,9 @@ body,
 .fs18{
     font-size: 18px !important;
 }
+.hide{
+    display: none;
+}
 .navbar,
 .sidebar {
     position: fixed;
@@ -46,8 +44,10 @@ body,
     box-shadow: 0 -2px 3px 0 rgba(0,0,0,.3);
     z-index: 1;
 }
-
-.off .sidebar{
+.navbar {
+    overflow: auto;
+}
+.sideoff{
     right: -250px;
 }
 .header {
@@ -174,12 +174,17 @@ h1.m span{
     height: 64px;
     padding: 10px 16px;
 }
+.s-item{
+    height: auto;
+}
+
 .artboard_list,
 .slice_list{
     position: absolute;
     width: 100%;
     top: 0;
     bottom: 0;
+    overflow-y: auto;
 }
 .artboard_list .current,
 .artboard_list .current:hover{
@@ -430,14 +435,11 @@ h1.m span{
 .label {
     position: absolute;
     padding: 0 3px;
-   /* width: 48px;
-    height: 20px;*/
     text-align: center;
     border-radius: 3px;
     font-size: 14px;
     line-height: 20px;
     color: #FF5500;
-    /*text-shadow: 1px 1px 1px rgba(0, 0, 0, .2);*/
     background: rgba(255, 255, 255, .9);
 }
 
@@ -588,7 +590,6 @@ h1.m span{
     height: 16px;
     border: 1px solid #DDD;
     border-radius: 50%;
-    /*background-image: linear-gradient(#FFFFFF, #dddadc);*/
     overflow: hidden;
 }
 .sidebar .color::before{
@@ -611,12 +612,11 @@ h1.m span{
 }
 
 .download{
-    margin: 0 8px 0 0;
+    margin: 2px;
     display: inline-block;
-    border-radius: 12px;
-    line-height: 24px;
-    height: 24px;
-    padding: 0 10px;
+    border-radius: 13px;
+    padding: 4px 8px;
+    font-size: 12px;
     background-color: #468CE0;
     color: #FFF;
     text-decoration: none;
@@ -693,6 +693,7 @@ return new Za.prototype.init(a,b,c,d,e)}m.Tween=Za,Za.prototype={constructor:Za,
     jQFills,
     jQBorders,
     jQShadows,
+    jQSidebar,
     ResolutionType = [ 1, // 0: Standard
     1, // 1: Points @1x (pt)
     2, // 2: Retina @2x (pt)
@@ -763,7 +764,7 @@ return new Za.prototype.init(a,b,c,d,e)}m.Tween=Za,Za.prototype={constructor:Za,
             return !(maxAx <= minBx || minAx >= maxBx || minAy >= maxBy || maxAy <= minBy);
         },
         toggleSidebar:function() {
-            $("body").toggleClass("off");
+            jQSidebar.toggleClass("sideoff");
         },
         togglePins:function() {
             var self = this, className = "toggle_show";
@@ -778,18 +779,18 @@ return new Za.prototype.init(a,b,c,d,e)}m.Tween=Za,Za.prototype={constructor:Za,
         },
         toggleResolutionList:function() {
             var self = this;
-            if (jQResolutionList.css("display") == "none") {
-                jQResolutionList.show();
+            if (jQResolutionList.hasClass("hide")) {
+                jQResolutionList.removeClass("hide");
             } else {
-                jQResolutionList.hide();
+                jQResolutionList.addClass("hide");
             }
         },
         toggleAboutList:function() {
             var self = this;
-            if (jQAboutList.css("display") == "none") {
-                jQAboutList.show();
+            if (jQAboutList.hasClass("hide")) {
+                jQAboutList.removeClass("hide");
             } else {
-                jQAboutList.hide();
+                jQAboutList.addClass("hide");
             }
         },
         toggleNavbar:function() {
@@ -817,11 +818,6 @@ return new Za.prototype.init(a,b,c,d,e)}m.Tween=Za,Za.prototype={constructor:Za,
                 jQAllSliceList.show();
                 jQTabs.find(".s-tab").addClass("current");
             }
-        },
-        hideList:function() {
-            var self = this;
-            if (jQResolutionList.css("display") != "none") self.toggleResolutionList();
-            if (jQAboutList.css("display") != "none") self.toggleAboutList();
         },
         showGuideline:function() {
             jQGuideHorizontal.show();
@@ -960,7 +956,7 @@ return new Za.prototype.init(a,b,c,d,e)}m.Tween=Za,Za.prototype={constructor:Za,
             }, delay);
         },
         resolutionList:function() {
-            var self = this, jQTemplate = $("#resolution-item-template");
+            var self = this, jQTemplate = $("#list-item-template");
             jQResolutionList.empty();
             $.each(ResolutionName, function(index, name) {
                 var jQResolutionItem = self.template(jQTemplate, {
@@ -1030,7 +1026,7 @@ return new Za.prototype.init(a,b,c,d,e)}m.Tween=Za,Za.prototype={constructor:Za,
                         preview.scale = exportSize.scale;
                         preview.sliceName = exportSize.sliceName;
                     }
-                    jQDownloads.push(self.template($("#slice-template"), { scale: exportSize.scale + "x", sliceName: exportSize.sliceName }) );
+                    jQDownloads.push(self.template($("#slice-template"), { scale: exportSize.scale + "x", sliceName: exportSize.sliceName, fileName: exportSize.sliceName.replace("slices/", "") }) );
                 });
 
                 var width = Math.round(slice.rect.width / preview.scale);
@@ -1144,7 +1140,7 @@ return new Za.prototype.init(a,b,c,d,e)}m.Tween=Za,Za.prototype={constructor:Za,
             if (model.exportSizes.length > 0){
                 var jQSliceList = jQSlices.show().find("li");
                 $.each(model.exportSizes, function(index, exportSize) {
-                    jQSliceList.append(self.template($("#slice-template"), { scale: exportSize.scale + "x", sliceName: exportSize.sliceName }));
+                    jQSliceList.append(self.template($("#slice-template"), { scale: exportSize.scale + "x", sliceName: exportSize.sliceName, fileName: exportSize.sliceName.replace("slices/", "") }));
                 });
             }
 
@@ -1280,7 +1276,7 @@ return new Za.prototype.init(a,b,c,d,e)}m.Tween=Za,Za.prototype={constructor:Za,
                 self.alignLabelCenter(jQGuideLeft);
             }
         },
-        select:function(jQThis) {
+        select: function(jQThis) {
             var self = this, model = jQThis.data("model");
             $(".selected").removeClass("selected");
 
@@ -1316,266 +1312,257 @@ return new Za.prototype.init(a,b,c,d,e)}m.Tween=Za,Za.prototype={constructor:Za,
         },
         events:function() {
             var self = this;
-            self.click();
-            self.mouseover();
-            self.mouseout();
-        },
-        click:function() {
-            var self = this;
-            jQLayers.on("click", ".layer", function(event) {
-                var jQThis = $(this);
-                event.stopPropagation();
-                event.preventDefault();
-                if (!jQSelection) self.toggleSidebar();
-                self.select(jQThis);
-                self.inspector();
-                self.hideList();
-            });
-            jQAllSliceList.on("click", ".s-item", function(event){
-                var jQThis = $(this), model = jQThis.data("model");
-                jQThis = $("#ID-" + model.objectID);
-                if(jQThis.length <= 0) return false;
-                if (!jQSelection) self.toggleSidebar();
-                self.select(jQThis);
-                self.inspector();
-                self.hideList();
-            });
-            jQZoom.click(function( event ){
-                event.stopPropagation();
-                event.preventDefault();
-            });
-            jQZoom.on("click", ".zoom-out", function(event) {
-                self.zoom -= .25;
-                if (self.zoom <= .25) {
-                    self.zoom = .5;
-                }
-                self.render(self.index(), 300);
-                self.hideList();
-            });
-            jQZoom.on("click", ".zoom-in", function(event) {
-                self.zoom += .25;
-                if (self.zoom >= 1) {
-                    self.zoom = 1;
-                }
-                self.render(self.index(), 300);
-                self.hideList();
-            });
-            jQToggle.on("click", function(event) {
-                event.stopPropagation();
-                event.preventDefault();
-                self.togglePins();
-                self.hideList();
-            });
-            jQResolutionList.on("click", "div", function(event) {
-                var jQThis = $(this), model = jQThis.data("model");
-                event.stopPropagation();
-                event.preventDefault();
-                self.resolution = model.index;
-                if (jQSelection) self.inspector();
-                self.render(self.index());
-                self.hideList();
-            });
-            jQArtboardList.on("click", ".a-item", function(event){
-                var jQThis = $(this), model = jQThis.data("model");
-                if(jQThis.hasClass("current")) return false;
-
-                window.location.href = model.name + ".html";
-            });
-            jQResolution.click(function(event) {
-                event.stopPropagation();
-                event.preventDefault();
-                self.toggleResolutionList();
-                if (jQAboutList.css("display") != "none") self.toggleAboutList();
-                
-            });
-            jQAbout.click(function(event) {
-                event.stopPropagation();
-                event.preventDefault();
-                self.toggleAboutList();
-                if (jQResolutionList.css("display") != "none") self.toggleResolutionList();
-            });
-            jQArtboard.on("click", function(event) {
-                var jQThis = $(this);
-                if(!jQArtboard.hasClass("m")) return false;
-                event.stopPropagation();
-                event.preventDefault();
-                self.toggleNavbar();
-                if (jQResolutionList.css("display") != "none") self.toggleResolutionList();
-                if (jQAboutList.css("display") != "none") self.toggleAboutList();
-            });
-            jQNavbar.click(function(event){
-                event.stopPropagation();
-                event.preventDefault();
-            });
-            jQNavbar.on("click", ".a-tab", function(event){
-                var jQThis = $(this);
-
-                if( jQThis.hasClass("current") ) return false;
-
-                self.toggleTabs();
-            });
-            jQNavbar.on("click", ".s-tab", function(event){
-                var jQThis = $(this);
-
-                if( jQThis.hasClass("current") ) return false;
-
-                self.toggleTabs();
-            });
-            $(document).click(function() {
-                $(".selected").removeClass("selected");
-                self.hideSize();
-                self.hideGuideline();
-                self.hideDistance();
-                if (jQSelection) self.toggleSidebar();
-                self.hideList();
-                jQSelection = null;
-            });
-            $(document).on("click", ".sidebar", function(event) {
-                event.stopPropagation();
-                event.preventDefault();
-            });
-            // $(document).on("click", ".download", function(event) {
-            //     var jQThis = $(this);
-            //     alert(jQThis.attr("href"))
-            //     event.stopPropagation();
-            //     event.preventDefault();
-            //     window.location.href = jQThis.attr("href");
-            // });
-            jQColorFormat.on("click", function(event) {
-                var colorFormat = self.colorFormat;
-                colorFormat += 1;
-                self.colorFormat = colorFormat > 2 ? 0 :colorFormat;
-
-                self.colorFormatShow();
-                event.stopPropagation();
-                event.preventDefault();
-            });
-        },
-        mouseover:function() {
-            var self = this;
-            jQLayers.on("mouseover", ".layer", function(event) {
-                var jQOver = $(this);
-                if (jQOver.hasClass("selected")) return false;
-                if (jQSelection) {
-                    var sModel = jQSelection.data("model"), oModel = jQOver.data("model");
-                    var sMinX = sModel.rect.x, sMaxX = sModel.rect.x + sModel.rect.width, sMinY = sModel.rect.y, sMaxY = sModel.rect.y + sModel.rect.height, oMinX = oModel.rect.x, oMaxX = oModel.rect.x + oModel.rect.width, oMinY = oModel.rect.y, oMaxY = oModel.rect.y + oModel.rect.height;
-                    jQGuideHorizontal.css({
-                        top:oModel.y,
-                        height:oModel.height
-                    }).show();
-                    jQGuideVertical.css({
-                        left:oModel.x,
-                        width:oModel.width
-                    }).show();
-                    self.distance(sMinX, sMaxX, sMinY, sMaxY, oMinX, oMaxX, oMinY, oMaxY);
+            jQLayers
+                .on("click", ".layer", function(event) {
+                    event.stopPropagation();
+                    var jQThis = $(this);                
+                    if (!jQSelection) self.toggleSidebar();
+                    self.select(jQThis);
+                    self.inspector();
+                    $(".dropdown").addClass("hide");
+                })
+                .on("mouseover", ".layer", function(event) {
+                    var jQOver = $(this);
+                    if (jQOver.hasClass("selected")) return false;
+                    if (jQSelection) {
+                        var sModel = jQSelection.data("model"), oModel = jQOver.data("model");
+                        var sMinX = sModel.rect.x, sMaxX = sModel.rect.x + sModel.rect.width, sMinY = sModel.rect.y, sMaxY = sModel.rect.y + sModel.rect.height, oMinX = oModel.rect.x, oMaxX = oModel.rect.x + oModel.rect.width, oMinY = oModel.rect.y, oMaxY = oModel.rect.y + oModel.rect.height;
+                        jQGuideHorizontal.css({
+                            top:oModel.y,
+                            height:oModel.height
+                        }).show();
+                        jQGuideVertical.css({
+                            left:oModel.x,
+                            width:oModel.width
+                        }).show();
+                        self.distance(sMinX, sMaxX, sMinY, sMaxY, oMinX, oMaxX, oMinY, oMaxY);
+                        self.hideSize();
+                    }
+                    jQOver.addClass("hover");
+                })
+                .on("mouseover", ".edge", function(event) {
+                    var jQOver = $(this), distance;
+                    if (jQOver.hasClass("selected")) return false;
+                    if (jQSelection) {
+                        var sModel = jQSelection.data("model"), topDistance = sModel.rect.y - 0, rightDistance = self.data.width - (sModel.rect.x + sModel.rect.width), bottomDistance = self.data.height - (sModel.rect.y + sModel.rect.height), leftDistance = sModel.rect.x - 0, distance;
+                        if (jQOver.hasClass("top") && topDistance > 0) {
+                            distance = topDistance;
+                            jQGuideTop.find(".label").text(self.resolutionSize(distance));
+                            jQGuideTop.css({
+                                top:0,
+                                left:parseInt(sModel.x + sModel.width / 2),
+                                height:self.zoomSize(self.positive(distance))
+                            }).show();
+                            self.alignLabelMiddle(jQGuideTop);
+                        }
+                        if (jQOver.hasClass("right") && rightDistance > 0) {
+                            distance = rightDistance;
+                            jQGuideRight.find(".label").text(self.resolutionSize(distance));
+                            jQGuideRight.css({
+                                top:parseInt(sModel.y + sModel.height / 2),
+                                left:sModel.x + sModel.width,
+                                width:self.zoomSize(self.positive(distance))
+                            }).show();
+                            self.alignLabelCenter(jQGuideRight);
+                        }
+                        if (jQOver.hasClass("bottom") && bottomDistance > 0) {
+                            distance = bottomDistance;
+                            jQGuideBottom.find(".label").text(self.resolutionSize(distance));
+                            jQGuideBottom.css({
+                                top:parseInt(sModel.y + sModel.height),
+                                left:parseInt(sModel.x + sModel.width / 2),
+                                height:self.zoomSize(self.positive(distance))
+                            }).show();
+                            self.alignLabelMiddle(jQGuideBottom);
+                        }
+                        if (jQOver.hasClass("left") && leftDistance > 0) {
+                            distance = leftDistance;
+                            jQGuideLeft.find(".label").text(self.resolutionSize(distance));
+                            jQGuideLeft.css({
+                                top:parseInt(sModel.y + sModel.height / 2),
+                                left:0,
+                                width:self.zoomSize(self.positive(distance))
+                            }).show();
+                            self.alignLabelCenter(jQGuideLeft);
+                        }
+                    }
+                    self.hideGuideline();
                     self.hideSize();
-                }
-                jQOver.addClass("hover");
-            });
-            jQLayers.on("mouseover", ".edge", function(event) {
-                var jQOver = $(this), distance;
-                if (jQOver.hasClass("selected")) return false;
-                if (jQSelection) {
-                    var sModel = jQSelection.data("model"), topDistance = sModel.rect.y - 0, rightDistance = self.data.width - (sModel.rect.x + sModel.rect.width), bottomDistance = self.data.height - (sModel.rect.y + sModel.rect.height), leftDistance = sModel.rect.x - 0, distance;
-                    if (jQOver.hasClass("top") && topDistance > 0) {
-                        distance = topDistance;
-                        jQGuideTop.find(".label").text(self.resolutionSize(distance));
-                        jQGuideTop.css({
-                            top:0,
-                            left:parseInt(sModel.x + sModel.width / 2),
-                            height:self.zoomSize(self.positive(distance))
-                        }).show();
-                        self.alignLabelMiddle(jQGuideTop);
+                })
+                .on("mouseover", ".pin", function(event) {
+                    var jQNote = $(this), model = jQNote.data("model");
+                    jQNote.addClass("pin-hover");
+                    jQNoteTip.empty().show();
+                    jQNoteTip.append("<p>" + model.note + "</p>");
+                    jQNoteTip.css({
+                        left:0,
+                        top:0,
+                        width:"auto"
+                    });
+                    jQNoteTip.css({
+                        width:jQNoteTip.width(),
+                        left:model.x + jQNote.outerWidth() + 4,
+                        top:parseInt(model.y - jQNoteTip.outerHeight() / 2)
+                    });
+                })
+                .on("mouseout", ".layer", function(event) {
+                    $(this).removeClass("hover");
+                    if (jQSelection) {
+                        self.showSize();
+                        self.hideDistance();
                     }
-                    if (jQOver.hasClass("right") && rightDistance > 0) {
-                        distance = rightDistance;
-                        jQGuideRight.find(".label").text(self.resolutionSize(distance));
-                        jQGuideRight.css({
-                            top:parseInt(sModel.y + sModel.height / 2),
-                            left:sModel.x + sModel.width,
-                            width:self.zoomSize(self.positive(distance))
-                        }).show();
-                        self.alignLabelCenter(jQGuideRight);
+                })
+                .on("mouseout", ".edge", function(event) {
+                    $(this).removeClass("hover");
+                    if (jQSelection) {
+                        self.showSize();
+                        self.hideDistance();
                     }
-                    if (jQOver.hasClass("bottom") && bottomDistance > 0) {
-                        distance = bottomDistance;
-                        jQGuideBottom.find(".label").text(self.resolutionSize(distance));
-                        jQGuideBottom.css({
-                            top:parseInt(sModel.y + sModel.height),
-                            left:parseInt(sModel.x + sModel.width / 2),
-                            height:self.zoomSize(self.positive(distance))
-                        }).show();
-                        self.alignLabelMiddle(jQGuideBottom);
-                    }
-                    if (jQOver.hasClass("left") && leftDistance > 0) {
-                        distance = leftDistance;
-                        jQGuideLeft.find(".label").text(self.resolutionSize(distance));
-                        jQGuideLeft.css({
-                            top:parseInt(sModel.y + sModel.height / 2),
-                            left:0,
-                            width:self.zoomSize(self.positive(distance))
-                        }).show();
-                        self.alignLabelCenter(jQGuideLeft);
-                    }
-                }
-                self.hideGuideline();
-                self.hideSize();
-            });
-            jQResolutionList.on("mouseover", "div", function() {
-                var jQResolutionItem = $(this), model = jQResolutionItem.data("model");
-                jQResolutionItem.addClass("resolution-hover");
-            });
-            jQLayers.on("mouseover", ".pin", function(event) {
-                var jQNote = $(this), model = jQNote.data("model");
-                jQNote.addClass("pin-hover");
-                jQNoteTip.empty().show();
-                jQNoteTip.append("<p>" + model.note + "</p>");
-                jQNoteTip.css({
-                    left:0,
-                    top:0,
-                    width:"auto"
+                })
+                .on("mouseout", ".pin", function(event) {
+                    var jQNote = $(this);
+                    jQNote.removeClass("pin-hover");
+                    jQNoteTip.hide();
                 });
-                jQNoteTip.css({
-                    width:jQNoteTip.width(),
-                    left:model.x + jQNote.outerWidth() + 4,
-                    top:parseInt(model.y - jQNoteTip.outerHeight() / 2)
+
+            jQZoom
+                .click(function( event ){
+                    event.stopPropagation();
+                    $(".dropdown").addClass("hide");
+                })
+                .on("click", ".zoom-out", function(event) {
+                    self.zoom -= .25;
+                    if (self.zoom <= .25) {
+                        self.zoom = .5;
+                    }
+                    self.render(self.index(), 300);
+                })
+                .on("click", ".zoom-in", function(event) {
+                    self.zoom += .25;
+                    if (self.zoom >= 1) {
+                        self.zoom = 1;
+                    }
+                    self.render(self.index(), 300);
                 });
-            });
-            jQAllSliceList.on("mouseover", ".s-item", function(event) {
-                var jQSlice = $(this), model = jQSlice.data("model");
-                $("#ID-" + model.objectID).addClass("is-slice");
-            });
+
+            jQResolution
+                .click(function(event) {
+                    event.stopPropagation();
+                    self.toggleResolutionList();
+                    $(".dropdown:not(.resolution_list)").addClass("hide");
+                });
+
+            jQAbout
+                .click(function(event) {
+                    event.stopPropagation();
+                    self.toggleAboutList();
+                    $(".dropdown:not(.about_list)").addClass("hide");
+                });
+
+            jQColorFormat
+                .on("click", function(event) {
+                    event.stopPropagation();
+                    var colorFormat = self.colorFormat;
+                    colorFormat += 1;
+                    self.colorFormat = colorFormat > 2 ? 0 :colorFormat;
+                    self.colorFormatShow();
+                    $(".dropdown").addClass("hide");
+                });
+
+            jQToggle
+                .on("click", function(event) {
+                    event.stopPropagation();
+                    self.togglePins();
+                    $(".dropdown").addClass("hide");
+                });
+
+            jQResolutionList
+                .on("click", "div", function(event) {
+                    var jQThis = $(this), model = jQThis.data("model");
+                    self.resolution = model.index;
+                    if (jQSelection) self.inspector();
+                    self.render(self.index());
+                })
+                .on("mouseover", "div", function() {
+                    var jQResolutionItem = $(this), model = jQResolutionItem.data("model");
+                    jQResolutionItem.addClass("resolution-hover");
+                })
+                .on("mouseout", "div", function() {
+                    var jQResolutionItem = $(this), model = jQResolutionItem.data("model");
+                    jQResolutionItem.removeClass("resolution-hover");
+                });
+
+            jQArtboardList
+                .on("click", ".a-item", function(event){
+                    var jQThis = $(this), model = jQThis.data("model");
+                    if(jQThis.hasClass("current")) return false;
+
+                    window.location.href = model.name + ".html";
+                });
+
+            jQAllSliceList
+                .on("click", ".s-item", function(event){
+                    var jQThis = $(this), model = jQThis.data("model");
+                    jQThis = $("#ID-" + model.objectID);
+                    if(jQThis.length <= 0) return;
+                    if (!jQSelection) self.toggleSidebar();
+                    self.select(jQThis);
+                    self.inspector();
+                })
+                .on("mouseover", ".s-item", function(event) {
+                    var jQSlice = $(this), model = jQSlice.data("model");
+                    $("#ID-" + model.objectID).addClass("is-slice");
+                })
+                .on("mouseout", ".s-item", function(event) {
+                    var jQSlice = $(this), model = jQSlice.data("model");
+                    $("#ID-" + model.objectID).removeClass("is-slice");
+                });
+            
+            jQArtboard
+                .on("click", function(event) {
+                    event.stopPropagation();
+                    var jQThis = $(this);
+                    if(!jQArtboard.hasClass("m")) return false;
+                    self.toggleNavbar();
+                    $(".dropdown").addClass("hide");
+                });
+
+            jQNavbar
+                .click(function(event){
+                    $(".dropdown").addClass("hide");
+                })
+                .on("click", ".a-tab", function(event){
+                    var jQThis = $(this);
+
+                    if( jQThis.hasClass("current") ) return false;
+
+                    self.toggleTabs();
+                })
+                .on("click", ".s-tab", function(event){
+                    var jQThis = $(this);
+
+                    if( jQThis.hasClass("current") ) return false;
+
+                    self.toggleTabs();
+                });
+
+            jQSidebar
+                .click(function(event){
+                    $(".dropdown").addClass("hide");
+                });
+
+            $(".main")
+                .click(function() {
+                    $(".selected").removeClass("selected");
+                    self.hideSize();
+                    self.hideGuideline();
+                    self.hideDistance();
+                    $(".dropdown").addClass("hide");
+                    if (jQSelection) self.toggleSidebar();
+                    jQSelection = null;
+                });
+            
         },
-        mouseout:function() {
-            var self = this;
-            jQLayers.on("mouseout", ".layer", function(event) {
-                $(this).removeClass("hover");
-                if (jQSelection) {
-                    self.showSize();
-                    self.hideDistance();
-                }
-            });
-            jQLayers.on("mouseout", ".edge", function(event) {
-                $(this).removeClass("hover");
-                if (jQSelection) {
-                    self.showSize();
-                    self.hideDistance();
-                }
-            });
-            jQLayers.on("mouseout", ".pin", function(event) {
-                var jQNote = $(this);
-                jQNote.removeClass("pin-hover");
-                jQNoteTip.hide();
-            });
-            jQResolutionList.on("mouseout", "div", function() {
-                var jQResolutionItem = $(this), model = jQResolutionItem.data("model");
-                jQResolutionItem.removeClass("resolution-hover");
-            });
-            jQAllSliceList.on("mouseout", ".s-item", function(event) {
-                var jQSlice = $(this), model = jQSlice.data("model");
-                $("#ID-" + model.objectID).removeClass("is-slice");
-            });
-        }
     };
     var init = Spec.fn.init = function(options) {
         var self = this;
@@ -1593,14 +1580,15 @@ return new Za.prototype.init(a,b,c,d,e)}m.Tween=Za,Za.prototype={constructor:Za,
         jQToggle = $("#toggle");
         jQNoteTip = $("#note_tip").hide();
         jQResolution = $("#resolution");
-        jQResolutionList = $("#resolution_list").hide();
+        jQResolutionList = $("#resolution_list");
         jQArtboard = $("#artboard");
         jQNavbar = $("#navbar").addClass("navoff");
+        jQSidebar = $("#sidebar").addClass("sideoff");
         jQTabs = $("#tabs").hide();
         jQArtboardList = $("#artboard_list").hide().empty();
         jQAllSliceList = $("#slice_list").hide().empty();
         jQAbout = $("#about");
-        jQAboutList = $("#about_list").hide();
+        jQAboutList = $("#about_list");
         jQColorFormat = $("#color_format");
         jQSlices = $("#exportable").hide();
         jQProperties = $("#properties").hide();
