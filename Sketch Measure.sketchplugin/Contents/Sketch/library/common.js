@@ -1779,10 +1779,7 @@ com.utom.extend({
                         layer.lineHeight = msLayer.lineSpacing();
                     }
 
-                    if ( type ===  "slice" ) {
-                        layer.exportSizes = this.getSizes(msLayer, slicesPath);
-                        slicesData.push(layer);
-                    }
+                    if ( type ===  "slice" ) slicesData.push(layer);
 
                     layers.push(layer);
 
@@ -1816,7 +1813,7 @@ com.utom.extend({
                     notes: notes
                 });
 
-                var content = template1 + "jQuery(function(){Spec(" + JSON.stringify(data).replace(/\u2028/g,'\\u2028').replace(/\u2029/g,'\\u2029') + ").artboardList(artboards || undefined).sliceList(slices || undefined)});" + template2;
+                var content = template1 + "jQuery(function(){Spec(" + JSON.stringify(data).replace(/\u2028/g,'\\u2028').replace(/\u2029/g,'\\u2029') + ").artboardList(window.artboards || undefined).sliceList(window.slices || undefined)});" + template2;
                 content = NSString.stringWithString(content);
 
                 var exportURL = savePath.stringByAppendingPathComponent( msArtboard.name() + ".html");
@@ -1832,10 +1829,8 @@ com.utom.extend({
         var sliceLayers = this.page.exportableLayers();
 
         if(slicesData.length > 1){
-
             var sContent = NSString.stringWithString("var slices = " + JSON.stringify(slicesData) + ";");
             var sExportURL = savePath.stringByAppendingPathComponent( "slices.js");
-
             [sContent writeToFile: sExportURL
                               atomically: false
                                 encoding: NSUTF8StringEncoding
