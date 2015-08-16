@@ -1492,6 +1492,7 @@ return new Za.prototype.init(a,b,c,d,e)}m.Tween=Za,Za.prototype={constructor:Za,
                     self.resolution = model.index;
                     if (jQSelection) self.inspector();
                     self.render(self.index());
+                    $(".dropdown").addClass("hide");
                 })
                 .on("mouseover", "div", function() {
                     var jQResolutionItem = $(this), model = jQResolutionItem.data("model");
