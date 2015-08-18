@@ -1039,7 +1039,7 @@ com.utom.extend({
 
         var alert = COSAlertWindow.new();
         alert.setMessageText(_("Get properties"));
-        alert.setInformativeText(_("* Customize the property puide that will be created."));
+        alert.setInformativeText(_("* Customize the property guide that will be created."));
         alert.addButtonWithTitle(_("OK"));
         alert.addButtonWithTitle(_("Cancel"));
 
