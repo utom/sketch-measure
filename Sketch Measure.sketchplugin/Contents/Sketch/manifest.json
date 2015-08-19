@@ -98,6 +98,13 @@
             "shortcut": "ctrl shift e",
             "handler": "specExport",
             "script": "measure.sketchscript"
+        },
+        {
+            "name": "Design resolution",
+            "identifier": "design-resolution",
+            "shortcut": "",
+            "handler": "designResolution",
+            "script": "measure.sketchscript"
         }
     ],
     "menu" : {
@@ -117,7 +124,8 @@
             "clear-measure",
             "lite-width",
             "lite-height",
-            "spec-export"
+            "spec-export",
+            "design-resolution"
         ],
         "title" : "Measure"
     },

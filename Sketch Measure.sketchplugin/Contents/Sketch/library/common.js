@@ -378,6 +378,7 @@ com.utom.extend({
         }
     ],
     resolutionSetting: function(){
+        var self = this;
         var cellWidth = 300;
         var cellHeight = 260;
         var allResolution = this.allResolution;
@@ -389,13 +390,15 @@ com.utom.extend({
             numberOfRows: allResolution.length
             numberOfColumns:1
         ];
-        [matrix setCellSize:NSMakeSize(cellWidth, 25)]
+        matrix.setCellSize(NSMakeSize(cellWidth, 25))
 
         allResolution.forEach(function(data, i) {
-            var cell = [matrix cells][i]
-            [cell setButtonType:NSRadioButton]
-            [cell setTitle:data.name]
-            [cell setTag:i]
+            var cell = matrix.cells()[i]
+            cell.setButtonType(NSRadioButton);
+            cell.setTitle(data.name);
+            cell.setTag(i);
+            cell.setState(false);
+            if(self.configs.resolution === i) cell.setState(true);
         });
 
         [accessory addSubview:matrix]
@@ -1338,6 +1341,28 @@ com.utom.extend({
         }
 
         this.getConfigs();
+    },
+    designResolution: function(){
+        if(!this.configs) return false;
+
+        var resolution = this.resolutionSetting();
+
+        if( (!resolution && resolution !== 0) || ( (resolution || resolution !== 0) && this.configs.resolution === resolution) ) return false;
+        this.configs = resolution;
+
+        var page = this.page;
+
+        var layers = page.children().objectEnumerator();
+        var specLayers = [];
+
+        while(item = layers.nextObject()) {
+            if(this.is(item, MSLayerGroup) && /WIDTH\#|HEIGHT\#/.exec(item.name())){
+                // regexName: /OVERLAYER\#|WIDTH\#|HEIGHT\#|TOP\#|RIGHT\#|BOTTOM\#|LEFT\#|VERTICAL\#|HORIZONTAL\#|NOTE\#|LABEL\#|TYPOGRAPHY\#|PROPERTY\#|LITE\#/,
+                var split = this.toJSString( item.name() ).split("#");
+                var target = this.find(split[1], page, false, "objectID");
+                var itemFrame = this.getFrame(target);
+            }
+        }
     }
 });
 
