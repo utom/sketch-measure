@@ -477,6 +477,7 @@ com.utom.extend({
 
         var text = textL.duplicate();
         text.setStringValue(this.updateLength(frame.width));
+        text.setName(this.updateLength(frame.width));
 
         if (this.isPercentage) {
             text.setStringValue(this.updatePercentLength(frame.width, true));
@@ -877,7 +878,7 @@ com.utom.extend({
 })
 
 com.utom.extend({
-    createNote: function(target, reference, styles, name, position){
+    createNote: function(target, reference, styles, name, configs){
         if(!this.configs) return false;
         var selection = (this.selection.count() && this.selection[0]) ? this.selection[0]: undefined;
         var target = target || selection;
@@ -941,6 +942,7 @@ com.utom.extend({
             container.addLayers([text]);
 
             text.setStyle(textStyle);
+            if(configs) text.setName(JSON.stringify(configs));
         }
 
         textFrameAbsoluteRect = text.absoluteRect();
@@ -954,7 +956,8 @@ com.utom.extend({
         labelFrame.setWidth(textFrameAbsoluteRect.width() + 8);
         labelFrame.setHeight(textFrameAbsoluteRect.height() + 6);
 
-        if(position != undefined){
+        if(configs && configs.position != undefined){
+            var position = configs.position;
             gap = shape.duplicate();
 
             var gapFrame = gap.absoluteRect();
@@ -1117,7 +1120,7 @@ com.utom.extend({
         var propertyConfigs = this.propertyDialog();
         var types = propertyConfigs.types;
         var position = propertyConfigs.position;
-        this.colorFormat = propertyConfigs.colorFormat;
+        var colorFormat = propertyConfigs.colorFormat;
 
         if(!types) return false;
 
@@ -1251,7 +1254,11 @@ com.utom.extend({
         tempFrame.setX(tempX);
         tempFrame.setY(tempY);
 
-        this.createNote(temp, frame, styles, name, position);
+        this.createNote(temp, frame, styles, name, {
+            types: types,
+            position: position,
+            colorFormat: colorFormat
+        });
     }
 });
 
@@ -1690,8 +1697,8 @@ com.utom.extend({
         if(!savePath) return false;
         [[NSFileManager defaultManager] createDirectoryAtPath:savePath withIntermediateDirectories:true attributes:nil error:nil];
 
-        var slicesPath = savePath.stringByAppendingPathComponent("slices");
-        [[NSFileManager defaultManager] createDirectoryAtPath:slicesPath withIntermediateDirectories:true attributes:nil error:nil];
+        // var slicesPath = savePath.stringByAppendingPathComponent("slices");
+        // [[NSFileManager defaultManager] createDirectoryAtPath:slicesPath withIntermediateDirectories:true attributes:nil error:nil];
 
         var resolution = this.configs.resolution;
 
