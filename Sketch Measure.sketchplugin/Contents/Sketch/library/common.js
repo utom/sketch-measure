@@ -81,6 +81,7 @@ com.utom = {
         return target;
     },
     is: function(layer, theClass){
+        if(!layer) return false;
         var klass = [layer class];
         return klass === theClass;
     },
@@ -1697,8 +1698,8 @@ com.utom.extend({
         if(!savePath) return false;
         [[NSFileManager defaultManager] createDirectoryAtPath:savePath withIntermediateDirectories:true attributes:nil error:nil];
 
-        // var slicesPath = savePath.stringByAppendingPathComponent("slices");
-        // [[NSFileManager defaultManager] createDirectoryAtPath:slicesPath withIntermediateDirectories:true attributes:nil error:nil];
+        var slicesPath = savePath.stringByAppendingPathComponent("slices");
+        [[NSFileManager defaultManager] createDirectoryAtPath:slicesPath withIntermediateDirectories:true attributes:nil error:nil];
 
         var resolution = this.configs.resolution;
 
@@ -1724,7 +1725,7 @@ com.utom.extend({
 
                 while(msLayer = layerIter.nextObject()) {
                     var msGroup = msLayer.parentGroup();
-                    if(this.is(msLayer, MSLayerGroup) && /LABEL\#|NOTE\#/.exec(msLayer.name())){
+                    if(msLayer && this.is(msLayer, MSLayerGroup) && /LABEL\#|NOTE\#/.exec(msLayer.name())){
                         var msText = msLayer.children()[2];
 
                         notes.push({
