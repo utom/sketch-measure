@@ -100,10 +100,10 @@
             "script": "measure.sketchscript"
         },
         {
-            "name": "Design resolution",
-            "identifier": "design-resolution",
+            "name": "Reset Configs",
+            "identifier": "reset-configs",
             "shortcut": "",
-            "handler": "designResolution",
+            "handler": "resetConfigs",
             "script": "measure.sketchscript"
         }
     ],
@@ -125,7 +125,7 @@
             "lite-width",
             "lite-height",
             "spec-export",
-            "design-resolution"
+            "reset-configs"
         ],
         "title" : "Measure"
     },

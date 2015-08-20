@@ -480,7 +480,6 @@ com.utom.extend({
 
         var text = textL.duplicate();
         text.setStringValue(this.updateLength(frame.width));
-        text.setName(this.updateLength(frame.width));
 
         if (this.isPercentage) {
             text.setStringValue(this.updatePercentLength(frame.width, true));
@@ -1341,7 +1340,7 @@ com.utom.extend({
 
         this.getConfigs();
     },
-    designResolution: function(){
+    resetConfigs: function(){
         if(!this.configs) return false;
         var configsGroup = this.find("@Sketch Measure Configs", this.configsURL);
         this.removeLayer(configsGroup);

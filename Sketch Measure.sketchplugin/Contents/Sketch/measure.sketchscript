@@ -70,7 +70,7 @@ function specExport(context) {
     com.utom.specExport();
 }
 
-function designResolution(context) {
+function resetConfigs(context) {
     com.utom.init(context);
-    com.utom.designResolution();
+    com.utom.resetConfigs();
 }
