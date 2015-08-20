@@ -1347,29 +1347,35 @@ com.utom.extend({
         this.removeLayer(configsGroup);
         this.getConfigs();
 
-        var page = this.page;
+        // var page = this.page;
 
-        var layers = page.children().objectEnumerator();
+        // var layers = page.children().objectEnumerator();
 
-        var sizeStyle = [
-            this.sharedLayerStyle("@Size / Layer", "#FF5500"),
-            this.sharedTextStyle("@Size / Text", "#FFFFFF", 1, true)
-        ];
+        // var sizeStyle = [
+        //     this.sharedLayerStyle("@Size / Layer", "#FF5500"),
+        //     this.sharedTextStyle("@Size / Text", "#FFFFFF", 1, true)
+        // ];
 
-        while(item = layers.nextObject()) {
-            if(this.is(item, MSLayerGroup) && /WIDTH\#|HEIGHT\#/.exec(item.name())){
-                var split = this.toJSString( item.name() ).split("#");
-                var target = this.find(split[1], page, false, "objectID");
-                var itemFrame = this.getFrame(item);
+        // while(item = layers.nextObject()) {
+        //     if(this.is(item, MSLayerGroup) && /WIDTH\#|HEIGHT\#/.exec(item.name())){
+        //         var split = this.toJSString( item.name() ).split("#");
+        //         var target = this.find(split[1], page, false, "objectID");
+        //         var itemFrame = this.getFrame(item);
 
-                if( /WIDTH\#/.exec(item.name()) ){
-                    this.measureWidth(target, sizeStyle).absoluteRect().setY(itemFrame.y);
-                }
-                if( /HEIGHT\#/.exec(item.name()) ){
-                    this.measureHeight(target, sizeStyle).absoluteRect().setX(itemFrame.x);
-                }
-            }
-        }
+        //         if( /WIDTH\#/.exec(item.name()) ){
+        //             var a = this.measureWidth(target, sizeStyle).absoluteRect();
+        //             a.setY(itemFrame.y);
+        //         }
+        //         if( /HEIGHT\#/.exec(item.name()) ){
+        //             var a = this.measureHeight(target, sizeStyle).absoluteRect();
+        //             var dx = this.mathHalf( a.width() - itemFrame.width );
+        //             a.setX(itemFrame.x - dx);
+        //         }
+        //     }
+        //     else if( this.is(item, MSLayerGroup) && /WIDTH\#|VERTICAL\#/.exec(item.name()) ){
+
+        //     }
+        // }
     }
 });
 
