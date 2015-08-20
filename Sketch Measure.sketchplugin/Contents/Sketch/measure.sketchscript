@@ -66,6 +66,11 @@ function liteHeight(context) {
 }
 
 function specExport(context) {
-	com.utom.init(context);
+    com.utom.init(context);
     com.utom.specExport();
+}
+
+function resetConfigs(context) {
+    com.utom.init(context);
+    com.utom.resetConfigs();
 }

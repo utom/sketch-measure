@@ -98,6 +98,13 @@
             "shortcut": "ctrl shift e",
             "handler": "specExport",
             "script": "measure.sketchscript"
+        },
+        {
+            "name": "Reset Configs",
+            "identifier": "reset-configs",
+            "shortcut": "",
+            "handler": "resetConfigs",
+            "script": "measure.sketchscript"
         }
     ],
     "menu" : {
@@ -117,7 +124,8 @@
             "clear-measure",
             "lite-width",
             "lite-height",
-            "spec-export"
+            "spec-export",
+            "reset-configs"
         ],
         "title" : "Measure"
     },

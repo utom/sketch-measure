@@ -28,10 +28,10 @@ I18N["zh-Hans"] = {
     "OK"                                                : "确定",
     "Cancel"                                            : "取消",
     "Select 1 or multiple artboards"                    : "选中一个或多个画板",
-    "Position Top"                                      : "上侧",
-    "Position Right"                                    : "右侧",
-    "Position Bottom"                                   : "下侧",
-    "Position Left"                                     : "左侧",
+    "Position top"                                      : "上侧",
+    "Position right"                                    : "右侧",
+    "Position bottom"                                   : "下侧",
+    "Position left"                                     : "左侧",
     "Show position:"                                    : "显示位置:",
     "Color hex, E.g. #FFFFFF 100%"                      : "Color hex, E.g. #FFFFFF 100%",
     "ARGB hex, E.g. #FFFFFFFF"                          : "ARGB hex, E.g. #FFFFFFFF",
@@ -378,6 +378,7 @@ com.utom.extend({
         }
     ],
     resolutionSetting: function(){
+        var self = this;
         var cellWidth = 300;
         var cellHeight = 260;
         var allResolution = this.allResolution;
@@ -389,13 +390,15 @@ com.utom.extend({
             numberOfRows: allResolution.length
             numberOfColumns:1
         ];
-        [matrix setCellSize:NSMakeSize(cellWidth, 25)]
+        matrix.setCellSize(NSMakeSize(cellWidth, 25))
 
         allResolution.forEach(function(data, i) {
-            var cell = [matrix cells][i]
-            [cell setButtonType:NSRadioButton]
-            [cell setTitle:data.name]
-            [cell setTag:i]
+            var cell = matrix.cells()[i]
+            cell.setButtonType(NSRadioButton);
+            cell.setTitle(data.name);
+            cell.setTag(i);
+            // cell.setState(false);
+            // if(self.configs && self.configs.resolution === i) cell.setState(true);
         });
 
         [accessory addSubview:matrix]
@@ -416,23 +419,22 @@ com.utom.extend({
         return false;
     }
 });
-
 com.utom.extend({
     measureSize: function(){
         if(!this.configs) return false;
 
-        var styles = [
+        var sizeStyle = [
             this.sharedLayerStyle("@Size / Layer", "#FF5500"),
             this.sharedTextStyle("@Size / Text", "#FFFFFF", 1, true)
-        ];
+        ]
 
         if (this.selection.count() < 1){
             this.message(_("Please select a layer for measuring."));
             return false;
         }
 
-        this.measureWidth(this.selection[0], styles);
-        this.measureHeight(this.selection[0], styles);
+        this.measureWidth(this.selection[0], sizeStyle);
+        this.measureHeight(this.selection[0], sizeStyle);
     },
     measureWidth: function(layer, styles, name, isCenter){
         if(!this.configs) return false;
@@ -478,7 +480,6 @@ com.utom.extend({
 
         var text = textL.duplicate();
         text.setStringValue(this.updateLength(frame.width));
-        text.setName(this.updateLength(frame.width));
 
         if (this.isPercentage) {
             text.setStringValue(this.updatePercentLength(frame.width, true));
@@ -1338,6 +1339,42 @@ com.utom.extend({
         }
 
         this.getConfigs();
+    },
+    resetConfigs: function(){
+        if(!this.configs) return false;
+        var configsGroup = this.find("@Sketch Measure Configs", this.configsURL);
+        this.removeLayer(configsGroup);
+        this.getConfigs();
+
+        // var page = this.page;
+
+        // var layers = page.children().objectEnumerator();
+
+        // var sizeStyle = [
+        //     this.sharedLayerStyle("@Size / Layer", "#FF5500"),
+        //     this.sharedTextStyle("@Size / Text", "#FFFFFF", 1, true)
+        // ];
+
+        // while(item = layers.nextObject()) {
+        //     if(this.is(item, MSLayerGroup) && /WIDTH\#|HEIGHT\#/.exec(item.name())){
+        //         var split = this.toJSString( item.name() ).split("#");
+        //         var target = this.find(split[1], page, false, "objectID");
+        //         var itemFrame = this.getFrame(item);
+
+        //         if( /WIDTH\#/.exec(item.name()) ){
+        //             var a = this.measureWidth(target, sizeStyle).absoluteRect();
+        //             a.setY(itemFrame.y);
+        //         }
+        //         if( /HEIGHT\#/.exec(item.name()) ){
+        //             var a = this.measureHeight(target, sizeStyle).absoluteRect();
+        //             var dx = this.mathHalf( a.width() - itemFrame.width );
+        //             a.setX(itemFrame.x - dx);
+        //         }
+        //     }
+        //     else if( this.is(item, MSLayerGroup) && /WIDTH\#|VERTICAL\#/.exec(item.name()) ){
+
+        //     }
+        // }
     }
 });
 
