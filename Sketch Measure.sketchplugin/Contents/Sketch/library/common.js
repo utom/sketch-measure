@@ -397,8 +397,8 @@ com.utom.extend({
             cell.setButtonType(NSRadioButton);
             cell.setTitle(data.name);
             cell.setTag(i);
-            cell.setState(false);
-            if(self.configs.resolution === i) cell.setState(true);
+            // cell.setState(false);
+            // if(self.configs && self.configs.resolution === i) cell.setState(true);
         });
 
         [accessory addSubview:matrix]
@@ -419,23 +419,22 @@ com.utom.extend({
         return false;
     }
 });
-
 com.utom.extend({
     measureSize: function(){
         if(!this.configs) return false;
 
-        var styles = [
+        var sizeStyle = [
             this.sharedLayerStyle("@Size / Layer", "#FF5500"),
             this.sharedTextStyle("@Size / Text", "#FFFFFF", 1, true)
-        ];
+        ]
 
         if (this.selection.count() < 1){
             this.message(_("Please select a layer for measuring."));
             return false;
         }
 
-        this.measureWidth(this.selection[0], styles);
-        this.measureHeight(this.selection[0], styles);
+        this.measureWidth(this.selection[0], sizeStyle);
+        this.measureHeight(this.selection[0], sizeStyle);
     },
     measureWidth: function(layer, styles, name, isCenter){
         if(!this.configs) return false;
@@ -1344,23 +1343,31 @@ com.utom.extend({
     },
     designResolution: function(){
         if(!this.configs) return false;
-
-        var resolution = this.resolutionSetting();
-
-        if( (!resolution && resolution !== 0) || ( (resolution || resolution !== 0) && this.configs.resolution === resolution) ) return false;
-        this.configs = resolution;
+        var configsGroup = this.find("@Sketch Measure Configs", this.configsURL);
+        this.removeLayer(configsGroup);
+        this.getConfigs();
 
         var page = this.page;
 
         var layers = page.children().objectEnumerator();
-        var specLayers = [];
+
+        var sizeStyle = [
+            this.sharedLayerStyle("@Size / Layer", "#FF5500"),
+            this.sharedTextStyle("@Size / Text", "#FFFFFF", 1, true)
+        ];
 
         while(item = layers.nextObject()) {
             if(this.is(item, MSLayerGroup) && /WIDTH\#|HEIGHT\#/.exec(item.name())){
-                // regexName: /OVERLAYER\#|WIDTH\#|HEIGHT\#|TOP\#|RIGHT\#|BOTTOM\#|LEFT\#|VERTICAL\#|HORIZONTAL\#|NOTE\#|LABEL\#|TYPOGRAPHY\#|PROPERTY\#|LITE\#/,
                 var split = this.toJSString( item.name() ).split("#");
                 var target = this.find(split[1], page, false, "objectID");
-                var itemFrame = this.getFrame(target);
+                var itemFrame = this.getFrame(item);
+
+                if( /WIDTH\#/.exec(item.name()) ){
+                    this.measureWidth(target, sizeStyle).absoluteRect().setY(itemFrame.y);
+                }
+                if( /HEIGHT\#/.exec(item.name()) ){
+                    this.measureHeight(target, sizeStyle).absoluteRect().setX(itemFrame.x);
+                }
             }
         }
     }
