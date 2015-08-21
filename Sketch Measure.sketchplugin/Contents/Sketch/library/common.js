@@ -1334,9 +1334,9 @@ com.utom.extend({
     clearMeasure: function(){
         if(!this.configs) return false;
 
-        var artboard = this.artboard;
+        var page = this.page;
 
-        var layers = artboard.children().objectEnumerator();
+        var layers = page.children().objectEnumerator();
 
         while(item = layers.nextObject()) {
             if(this.is(item, MSLayerGroup) && this.regexName.exec(item.name())){
@@ -1344,7 +1344,6 @@ com.utom.extend({
             }
         }
 
-        this.getConfigs();
     },
     resetMeasureSizes: function(layerGroup){
         var layers = layerGroup.children().objectEnumerator(),
