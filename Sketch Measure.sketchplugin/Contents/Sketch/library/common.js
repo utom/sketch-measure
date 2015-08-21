@@ -480,6 +480,7 @@ com.utom.extend({
 
         var text = textL.duplicate();
         text.setStringValue(this.updateLength(frame.width));
+        text.setName("text");
 
         if (this.isPercentage) {
             text.setStringValue(this.updatePercentLength(frame.width, true));
@@ -607,7 +608,7 @@ com.utom.extend({
 
         var text = textL.duplicate();
         text.setStringValue(this.updateLength(frame.height));
-
+        text.setName("text");
         if (this.isPercentage) {
           text.setStringValue(this.updatePercentLength(frame.height, false));
 
@@ -992,6 +993,8 @@ com.utom.extend({
         this.removeLayer(shape);
 
         container.resizeRoot(true);
+
+        return container;
     },
     allProperty: [
         {
@@ -1102,12 +1105,12 @@ com.utom.extend({
         }
 
     },
-    getProperty: function(){
+    getProperty: function( layer, propertyConfigs ){
         var self = this;
 
         if(!this.configs) return false;
 
-        if( this.selection.count() < 1 ){
+        if( !layer && this.selection.count() < 1 ){
             this.message(_("Please select a layer for getting properties."));
             return false;
         }
@@ -1119,7 +1122,11 @@ com.utom.extend({
             this.sharedTextStyle("@Property / Text", "#FFFFFF")
         ];
 
-        var propertyConfigs = this.propertyDialog();
+        if(!propertyConfigs){
+            var propertyConfigs = this.propertyDialog();
+            if(!propertyConfigs) return false;
+        }
+
         var types = propertyConfigs.types;
         var position = propertyConfigs.position;
         var colorFormat = propertyConfigs.colorFormat;
@@ -1130,14 +1137,13 @@ com.utom.extend({
         var layerStyle = layer.style();
 
         var colorContent = function(color){
-            var alpha = color.a;
-            if(self.colorFormat === 0){
+            if(colorFormat === 0){
                 return "#" + self.rgbToHex(color.r, color.g, color.b) + " " + Math.round(color.a * 100) + "%";
             }
-            else if(self.colorFormat === 1){
+            else if(colorFormat === 1){
                 return "#" + self.rgbToHex(color.r, color.g, color.b, color.a);
             }
-            return "rgba(" + color.r + "," + color.g + "," + color.b + "," + color.a + ")";
+            return "rgba(" + color.r + "," + color.g + "," + color.b + "," + Math.round(color.a * 10) / 10 + ")";
         }
 
         var colorTypeContent = function(fillJSON){
@@ -1256,7 +1262,7 @@ com.utom.extend({
         tempFrame.setX(tempX);
         tempFrame.setY(tempY);
 
-        this.createNote(temp, frame, styles, name, {
+        return this.createNote(temp, frame, styles, name, {
             types: types,
             position: position,
             colorFormat: colorFormat
@@ -1340,7 +1346,7 @@ com.utom.extend({
 
         this.getConfigs();
     },
-    resetMeasureLayer: function(layerGroup){
+    resetMeasureSizes: function(layerGroup){
         var layers = layerGroup.children().objectEnumerator(),
             label, gap, text;
 
@@ -1360,14 +1366,24 @@ com.utom.extend({
 
         ntf = this.getFrame(text);
 
-        // (gf.maxX > lf.maxX)
-        // (gf.x < lf.x)
         var la = label.absoluteRect();
         var ta = text.absoluteRect();
         var dx = this.mathHalf(ntf.width - tf.width);
+        dx = (gf.maxX > lf.maxX)? (ntf.width - tf.width): dx;
+        dx = (gf.x < lf.x)? 0: dx;
         ta.setX(tf.x - dx);
         la.setX(lf.x - dx);
         la.setWidth( ta.width() + 8 );
+    },
+    resetMeasureProperties: function(layer){
+        var splitName = layer.name().split("#");
+        var msLayer = this.find(splitName[1], this.page, false, "objectID");
+        var msText = this.find(MSTextLayer, layer, false, "class");
+        var lf = this.getFrame(layer);
+        var nl = this.getProperty(msLayer, JSON.parse(msText.name())).absoluteRect();
+
+        nl.setX(lf.x);
+        nl.setY(lf.y);
     },
     resetConfigs: function(){
         if(!this.configs) return false;
@@ -1385,11 +1401,11 @@ com.utom.extend({
         ];
 
         while(item = layers.nextObject()) {
-            if(this.is(item, MSLayerGroup) && /WIDTH\#|HEIGHT\#/.exec(item.name())){
-                this.resetMeasureLayer(item);
+            if(this.is(item, MSLayerGroup) && /WIDTH\#|HEIGHT\#|TOP\#|RIGHT\#|BOTTOM\#|LEFT\#|VERTICAL\#|HORIZONTAL\#|LITE\#/.exec(item.name())){
+                this.resetMeasureSizes(item);
             }
-            else if( this.is(item, MSLayerGroup) && /WIDTH\#|VERTICAL\#/.exec(item.name()) ){
-
+            else if( this.is(item, MSLayerGroup) && /PROPERTY\#/.exec(item.name()) ){
+                this.resetMeasureProperties(item);
             }
         }
     }
