@@ -72,7 +72,7 @@
             "script": "measure.sketchscript"
         },
         {
-            "name": "Clear artboard measure",
+            "name": "Clear page measure",
             "identifier": "clear-measure",
             "shortcut": "",
             "handler": "clearMeasure",
