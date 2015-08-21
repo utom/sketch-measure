@@ -18,6 +18,7 @@ I18N["zh-Hans"] = {
     "Line height"                                       : "行高",
     "Font face"                                         : "字体",
     "Get properties"                                    : "获取属性",
+    "Style name"                                        : "样式名称",
     "Properties:"                                       : "属性:",
     "Please select a layer for getting properties."     : "请选择图层标注它的属性",
   "* Customize the property guide that will be created.": "* 选择标注的属性和显示位置.",
@@ -1032,6 +1033,10 @@ com.utom.extend({
         {
             name: _("Font face"),
             slug: "font-face"
+        },
+        {
+            name: _("Style name"),
+            slug: "style-name"
         }
 
     ],
@@ -1227,6 +1232,10 @@ com.utom.extend({
                 case "font-face":
                     if(!self.is(layer, MSTextLayer)) return false;
                     content.push("font-face: " + layer.fontPostscriptName());
+                    break;
+                case "style-name":
+                    if(!self.getStyleName( layer.style() )) return false;
+                    content.push("style-name: " + self.getStyleName( layer.style() ) );
                     break;
             }
         });
@@ -1718,8 +1727,16 @@ com.utom.extend({
 
         return shadows;
     },
-    getOpacity: function(layerStyle){
-        return layerStyle.contextSettings().opacity()
+    getOpacity: function(style){
+        return style.contextSettings().opacity()
+    },
+    getStyleName: function(style, isText){
+        var msStyles = (isText)? this.document.documentData().layerTextStyles(): this.document.documentData().layerStyles();
+        var sharedObjectID = style.sharedObjectID();
+        var styles = msStyles.objectsSortedByName();
+        var style = this.find(sharedObjectID, styles, true, "objectID");
+        if(!style) return "";
+        return this.toJSString(style.name());
     },
     exportSizes: function(layer, slicesPath){
         var exportSizes = [],
@@ -1844,6 +1861,7 @@ com.utom.extend({
                         layer.fills = this.getFills(layerStyle);
                         layer.shadows = this.getShadows(layerStyle);
                         layer.opacity = this.getOpacity(layerStyle);
+                        layer.styleName = (this.is(msLayer, MSTextLayer))? this.getStyleName(layerStyle, true): this.getStyleName(layerStyle);
                     }
 
                     if ( this.is(msLayer, MSTextLayer) ) {
