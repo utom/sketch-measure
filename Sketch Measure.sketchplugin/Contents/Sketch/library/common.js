@@ -480,6 +480,7 @@ com.utom.extend({
 
         var text = textL.duplicate();
         text.setStringValue(this.updateLength(frame.width));
+        text.setName( this.toJSString(frame.width) );
 
         if (this.isPercentage) {
             text.setStringValue(this.updatePercentLength(frame.width, true));
@@ -607,6 +608,7 @@ com.utom.extend({
 
         var text = textL.duplicate();
         text.setStringValue(this.updateLength(frame.height));
+        text.setName( this.toJSString(frame.height) );
 
         if (this.isPercentage) {
           text.setStringValue(this.updatePercentLength(frame.height, false));
