@@ -1340,41 +1340,58 @@ com.utom.extend({
 
         this.getConfigs();
     },
+    resetMeasureLayer: function(layerGroup){
+        var layers = layerGroup.children().objectEnumerator(),
+            label, gap, text;
+
+        while(layer = layers.nextObject()) {
+            if(this.is(layer, MSShapeGroup) && !isNaN(layer.name())) label = layer;
+            if(layer.name() == "gap") gap = layer;
+            if(this.is(layer, MSTextLayer)) text = layer;
+        }
+
+        lf = this.getFrame(label);
+        gf = this.getFrame(gap);
+        tf = this.getFrame(text);
+
+        text.setStringValue(this.updateLength(label.name()));
+        text.setTextBehaviour(1);
+        text.setTextBehaviour(0);
+
+        ntf = this.getFrame(text);
+
+        // (gf.maxX > lf.maxX)
+        // (gf.x < lf.x)
+        var la = label.absoluteRect();
+        var ta = text.absoluteRect();
+        var dx = this.mathHalf(ntf.width - tf.width);
+        ta.setX(tf.x - dx);
+        la.setX(lf.x - dx);
+        la.setWidth( ta.width() + 8 );
+    },
     resetConfigs: function(){
         if(!this.configs) return false;
         var configsGroup = this.find("@Sketch Measure Configs", this.configsURL);
         this.removeLayer(configsGroup);
         this.getConfigs();
 
-        // var page = this.page;
+        var page = this.page;
 
-        // var layers = page.children().objectEnumerator();
+        var layers = page.children().objectEnumerator();
 
-        // var sizeStyle = [
-        //     this.sharedLayerStyle("@Size / Layer", "#FF5500"),
-        //     this.sharedTextStyle("@Size / Text", "#FFFFFF", 1, true)
-        // ];
+        var sizeStyle = [
+            this.sharedLayerStyle("@Size / Layer", "#FF5500"),
+            this.sharedTextStyle("@Size / Text", "#FFFFFF", 1, true)
+        ];
 
-        // while(item = layers.nextObject()) {
-        //     if(this.is(item, MSLayerGroup) && /WIDTH\#|HEIGHT\#/.exec(item.name())){
-        //         var split = this.toJSString( item.name() ).split("#");
-        //         var target = this.find(split[1], page, false, "objectID");
-        //         var itemFrame = this.getFrame(item);
+        while(item = layers.nextObject()) {
+            if(this.is(item, MSLayerGroup) && /WIDTH\#|HEIGHT\#/.exec(item.name())){
+                this.resetMeasureLayer(item);
+            }
+            else if( this.is(item, MSLayerGroup) && /WIDTH\#|VERTICAL\#/.exec(item.name()) ){
 
-        //         if( /WIDTH\#/.exec(item.name()) ){
-        //             var a = this.measureWidth(target, sizeStyle).absoluteRect();
-        //             a.setY(itemFrame.y);
-        //         }
-        //         if( /HEIGHT\#/.exec(item.name()) ){
-        //             var a = this.measureHeight(target, sizeStyle).absoluteRect();
-        //             var dx = this.mathHalf( a.width() - itemFrame.width );
-        //             a.setX(itemFrame.x - dx);
-        //         }
-        //     }
-        //     else if( this.is(item, MSLayerGroup) && /WIDTH\#|VERTICAL\#/.exec(item.name()) ){
-
-        //     }
-        // }
+            }
+        }
     }
 });
 
