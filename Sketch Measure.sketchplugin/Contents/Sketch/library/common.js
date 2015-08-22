@@ -1364,6 +1364,8 @@ com.utom.extend({
             if(this.is(layer, MSTextLayer)) text = layer;
         }
 
+        if(/\%/.exec( this.toJSString(text.storage().string()) )) return false;
+
         lf = this.getFrame(label);
         gf = this.getFrame(gap);
         tf = this.getFrame(text);

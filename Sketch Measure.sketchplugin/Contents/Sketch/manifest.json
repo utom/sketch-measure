@@ -120,12 +120,17 @@
             "percentage-spacing",
             "toggle-hidden",
             "toggle-locked",
-            "move-to-group",
-            "clear-measure",
             "lite-width",
             "lite-height",
             "spec-export",
-            "reset-configs"
+            {
+                "title": "Settings",
+                "items": [
+                    "move-to-group",
+                    "clear-measure",
+                    "reset-configs"
+                ]
+            }
         ],
         "title" : "Measure"
     },
