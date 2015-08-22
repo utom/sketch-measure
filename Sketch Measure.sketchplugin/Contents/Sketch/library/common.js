@@ -1234,8 +1234,9 @@ com.utom.extend({
                     content.push("font-face: " + layer.fontPostscriptName());
                     break;
                 case "style-name":
-                    if(!self.getStyleName( layer.style() )) return false;
-                    content.push("style-name: " + self.getStyleName( layer.style() ) );
+                    var styleName = self.getStyleName( layer.style(), self.is(layer, MSTextLayer) );
+                    if( !styleName ) return false;
+                    content.push("style-name: " + styleName );
                     break;
             }
         });
