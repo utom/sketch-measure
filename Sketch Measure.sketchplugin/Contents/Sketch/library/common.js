@@ -57,6 +57,7 @@ com.utom = {
     artboard: undefined,
     current: undefined,
     styles: undefined,
+    smStyle: 1,
     isPercentage: false,
     init: function(context){
         this.context = context;
@@ -425,7 +426,8 @@ com.utom.extend({
 
         var sizeStyle = [
             this.sharedLayerStyle("@Size / Layer", "#FF5500"),
-            this.sharedTextStyle("@Size / Text", "#FFFFFF", 1, true)
+            this.sharedTextStyle("@Size / Text", "#FFFFFF", 1),
+            this.sharedTextStyle("@Size / Type", "#FF5500", 1)
         ]
 
         if (this.selection.count() < 1){
@@ -564,6 +566,115 @@ com.utom.extend({
 
         return container;
     },
+    measureWidthNop: function(layer, styles, name, isCenter){
+        if(!this.configs) return false;
+
+        var layer = layer || this.selection[0];
+        var frame = this.getFrame(layer);
+        var name = name || "WIDTH#" + layer.objectID();
+        var container = this.find(name);
+        var distance = this.getDistance(frame);
+        var layerStyle = styles[0];
+        var textStyle = styles[2];
+
+        if (container) this.removeLayer(container);
+
+        container = this.addGroup();
+        container.setName(name);
+
+        var shape = this.addShape(container);
+        shape.setStyle(layerStyle);
+        var textL = this.addText(container);
+        textL.setStyle(textStyle);
+
+        var line = shape.duplicate();
+        var lineFrame = line.absoluteRect();
+        line.setName("line");
+        lineFrame.setWidth(frame.width);
+        lineFrame.setHeight(1);
+        lineFrame.setX( frame.x );
+
+        var start = shape.duplicate();
+        var startFrame = start.absoluteRect();
+        start.setName("start");
+        startFrame.setWidth(1);
+        startFrame.setHeight(5);
+        startFrame.setX( frame.x );
+
+        var end = shape.duplicate();
+        var endFrame = end.absoluteRect();
+        end.setName("end");
+        endFrame.setWidth(1);
+        endFrame.setHeight(5);
+        endFrame.setX( frame.x + frame.width - 1 );
+
+        var text = textL.duplicate();
+        text.setStringValue(this.updateLength(frame.width));
+        text.setName("text");
+
+        if (this.isPercentage) {
+            text.setStringValue(this.updatePercentLength(frame.width, true));
+
+        } else {
+            text.setStringValue(this.updateLength(frame.width));
+
+        }
+        text.setTextBehaviour(1);
+        text.setTextBehaviour(0);
+        var textFrame = text.absoluteRect();
+        textFrame.setX( frame.x + this.mathHalf(frame.width - textFrame.width()) )
+
+        var arrow = shape.duplicate();
+        var arrowFrame = arrow.absoluteRect();
+        arrowFrame.setWidth(1);
+        arrowFrame.setHeight(6);
+        arrowFrame.setX( frame.x + this.mathHalf(frame.width - 1)  );
+
+        if(distance[0] < distance[2] && distance[2] >= 50 && !isCenter){
+            lineFrame.setY( frame.maxY + 3 );
+            startFrame.setY( frame.maxY + 1 );
+            endFrame.setY( frame.maxY + 1 );
+            arrowFrame.setY( frame.maxY + 3 );
+            textFrame.setY( frame.maxY + 10 );
+        }
+        else if( distance[0] >= 50 && !isCenter ){
+            lineFrame.setY( frame.y - 4 );
+            startFrame.setY( frame.y - 6 );
+            endFrame.setY( frame.y - 6 );
+            arrowFrame.setY( frame.y - 9 );
+            textFrame.setY( frame.y - textFrame.height() - 10 );
+        }
+        else{
+            var ly = frame.y + this.mathHalf(frame.height);
+            lineFrame.setY( ly );
+            startFrame.setY( ly - 2 );
+            endFrame.setY( ly - 2 );
+            if(distance[0] < distance[2]){
+                arrowFrame.setY( ly);
+                textFrame.setY( ly + 7 );
+            }
+            else{
+                arrowFrame.setY( ly - 5);
+                textFrame.setY( ly - textFrame.height() - 6 );
+            }
+        }
+
+        var aFrame = this.getFrame(this.current);
+        var tFrame = this.getFrame(text);
+
+        if( aFrame.x > tFrame.x ){
+            textFrame.setX( aFrame.x );
+        }
+        else if(aFrame.maxX < tFrame.maxX){
+            textFrame.setX( tFrame.x - (tFrame.maxX - aFrame.maxX) );
+        }
+
+        this.removeLayer(shape);
+        this.removeLayer(textL);
+        container.resizeRoot(true);
+
+        return container;
+    },
     measureHeight: function(layer, styles, name, isCenter){
         if(!this.configs) return false;
 
@@ -691,6 +802,105 @@ com.utom.extend({
         container.resizeRoot(true);
 
         return container;
+    },
+    measureHeightNop: function(layer, styles, name, isCenter){
+        if(!this.configs) return false;
+
+        var layer = layer || this.selection[0];
+        var frame = this.getFrame(layer);
+        var name = name || "HEIGHT#" + layer.objectID();
+        var container = this.find(name);
+        var distance = this.getDistance(frame);
+        var layerStyle = styles[0];
+        var textStyle = styles[2];
+
+        if (container) this.removeLayer(container);
+
+        container = this.addGroup();
+        container.setName(name);
+
+        var shape = this.addShape(container);
+        shape.setStyle(layerStyle);
+        var textL = this.addText(container);
+        textL.setStyle(textStyle);
+
+        var line = shape.duplicate();
+        var lineFrame = line.absoluteRect();
+        line.setName("line");
+        lineFrame.setWidth(1);
+        lineFrame.setHeight(frame.height);
+        lineFrame.setY( frame.y );
+
+        var start = shape.duplicate();
+        var startFrame = start.absoluteRect();
+        start.setName("start");
+        startFrame.setWidth(5);
+        startFrame.setHeight(1);
+        startFrame.setY( frame.y );
+
+        var end = shape.duplicate();
+        var endFrame = end.absoluteRect();
+        end.setName("end");
+        endFrame.setWidth(5);
+        endFrame.setHeight(1);
+        endFrame.setY( frame.y + frame.height - 1 );
+
+        var text = textL.duplicate();
+        text.setStringValue(this.updateLength(frame.height));
+        text.setName("text");
+        if (this.isPercentage) {
+          text.setStringValue(this.updatePercentLength(frame.height, false));
+
+        } else {
+          text.setStringValue(this.updateLength(frame.height));
+        }
+
+        text.setTextBehaviour(1);
+        text.setTextBehaviour(0);
+
+        var textFrame = text.absoluteRect();
+        textFrame.setY( frame.y + this.mathHalf(frame.height - textFrame.height()) )
+
+        var arrow = shape.duplicate();
+        var arrowFrame = arrow.absoluteRect();
+        arrowFrame.setWidth(6);
+        arrowFrame.setHeight(1);
+        arrowFrame.setY( frame.y + this.mathHalf(frame.height - 1)  );
+
+        if (distance[1] < distance[3] && distance[3] >= 50 && !isCenter) {
+            lineFrame.setX( frame.x - 4 );
+            startFrame.setX( frame.x - 6 );
+            endFrame.setX( frame.x - 6 );
+            arrowFrame.setX( frame.x - 9 );
+            textFrame.setX( frame.x - textFrame.width() - 10 );
+        }
+        else if( distance[1] >= 50 && !isCenter){
+            lineFrame.setX( frame.maxX + 3 );
+            startFrame.setX( frame.maxX + 1 );
+            endFrame.setX( frame.maxX + 1 );
+            arrowFrame.setX( frame.maxX + 3 );
+            textFrame.setX( frame.maxX + 10 );
+        }
+        else{
+            lx = frame.x + this.mathHalf(frame.width);
+            lineFrame.setX( lx );
+            startFrame.setX( lx - 2 );
+            endFrame.setX( lx - 2 );
+            if(distance[1] < distance[3]){
+                arrowFrame.setX( lx - 5 );
+                textFrame.setX( lx - textFrame.width() - 6 );
+            }
+            else{
+                arrowFrame.setX( lx );
+                textFrame.setX( lx + 7 );
+            }
+        }
+
+        this.removeLayer(shape);
+        this.removeLayer(textL);
+        container.resizeRoot(true);
+
+        return container;
     }
 });
 
@@ -700,7 +910,8 @@ com.utom.extend({
 
         var styles = styles || [
             this.sharedLayerStyle("@Spacing / Layer", "#50E3C2"),
-            this.sharedTextStyle("@Spacing / Text", "#FFFFFF", 1, true)
+            this.sharedTextStyle("@Spacing / Text", "#FFFFFF", 1),
+            this.sharedTextStyle("@Spacing / Type", "#50E3C2", 1)
         ];
 
         if (this.selection.count() < 1 || this.selection.count() > 2){
@@ -1380,7 +1591,7 @@ com.utom.extend({
         var ta = text.absoluteRect();
         var dx = this.mathHalf(ntf.width - tf.width);
         dx = (gf.maxX > lf.maxX)? (ntf.width - tf.width): dx;
-        dx = (gf.x < lf.x)? 0: dx;
+        dx = (gf.x < lf.x && gf.maxX < lf.maxX)? 0: dx;
         ta.setX(tf.x - dx);
         la.setX(lf.x - dx);
         la.setWidth( ta.width() + 8 );
@@ -1404,11 +1615,6 @@ com.utom.extend({
         var page = this.page;
 
         var layers = page.children().objectEnumerator();
-
-        var sizeStyle = [
-            this.sharedLayerStyle("@Size / Layer", "#FF5500"),
-            this.sharedTextStyle("@Size / Text", "#FFFFFF", 1, true)
-        ];
 
         while(item = layers.nextObject()) {
             if(this.is(item, MSLayerGroup) && /WIDTH\#|HEIGHT\#|TOP\#|RIGHT\#|BOTTOM\#|LEFT\#|VERTICAL\#|HORIZONTAL\#|LITE\#/.exec(item.name())){
