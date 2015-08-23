@@ -292,7 +292,6 @@ com.utom.extend({
             }
 
             defaultConfigs.resolution = resolution;
-            // defaultConfigs.typography = ["font", "size", "color", "line"];
             defaultConfigs.property = ["color", "border"];
             defaultConfigs.colorFormat = 0;
             this.setConfigs(defaultConfigs);
@@ -1355,7 +1354,7 @@ com.utom.extend({
         }
 
     },
-    resetMeasureSizes: function(layerGroup){
+    resetSizeGuide: function(layerGroup){
         var layers = layerGroup.children().objectEnumerator(),
             label, gap, text;
 
@@ -1386,7 +1385,7 @@ com.utom.extend({
         la.setX(lf.x - dx);
         la.setWidth( ta.width() + 8 );
     },
-    resetMeasureProperties: function(layer){
+    resetPropertyGuide: function(layer){
         var splitName = layer.name().split("#");
         var msLayer = this.find(splitName[1], this.page, false, "objectID");
         var msText = this.find(MSTextLayer, layer, false, "class");
@@ -1413,10 +1412,10 @@ com.utom.extend({
 
         while(item = layers.nextObject()) {
             if(this.is(item, MSLayerGroup) && /WIDTH\#|HEIGHT\#|TOP\#|RIGHT\#|BOTTOM\#|LEFT\#|VERTICAL\#|HORIZONTAL\#|LITE\#/.exec(item.name())){
-                this.resetMeasureSizes(item);
+                this.resetSizeGuide(item);
             }
             else if( this.is(item, MSLayerGroup) && /PROPERTY\#/.exec(item.name()) ){
-                this.resetMeasureProperties(item);
+                this.resetPropertyGuide(item);
             }
         }
     }
