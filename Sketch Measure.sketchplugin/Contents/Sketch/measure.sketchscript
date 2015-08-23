@@ -74,3 +74,8 @@ function resetConfigs(context) {
     com.utom.init(context);
     com.utom.resetConfigs();
 }
+
+function toggleTheme(context) {
+    com.utom.init(context);
+    com.utom.toggleTheme();
+}
