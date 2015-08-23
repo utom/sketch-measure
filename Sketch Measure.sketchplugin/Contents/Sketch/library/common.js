@@ -38,7 +38,7 @@ I18N["zh-Hans"] = {
     "ARGB hex, E.g. #FFFFFFFF"                          : "ARGB hex, E.g. #FFFFFFFF",
     "RGBA CSS, E.g. rgba(255, 255, 255, 1)"             : "RGBA CSS, E.g. rgba(255, 255, 255, 1)",
     "Color format"                                      : "Color format",
-    "Remeasure all guides and see the new theme."       : "Remeasure all guides and see the new theme."
+    "Remeasure all guides to see the new theme."        : "Remeasure all guides to see the new theme."
 };
  
 function _(str){
@@ -1708,7 +1708,7 @@ com.utom.extend({
 
         this.setConfigs({theme: this.configs.theme});
 
-        this.message(_("Remeasure all guides and see the new theme."));
+        this.message(_("Remeasure all guides to see the new theme."));
     }
 });
 
