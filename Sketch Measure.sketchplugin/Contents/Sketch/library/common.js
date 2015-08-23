@@ -37,7 +37,8 @@ I18N["zh-Hans"] = {
     "Color hex, E.g. #FFFFFF 100%"                      : "Color hex, E.g. #FFFFFF 100%",
     "ARGB hex, E.g. #FFFFFFFF"                          : "ARGB hex, E.g. #FFFFFFFF",
     "RGBA CSS, E.g. rgba(255, 255, 255, 1)"             : "RGBA CSS, E.g. rgba(255, 255, 255, 1)",
-    "Color format"                                      : "Color format"
+    "Color format"                                      : "Color format",
+    "Remeasure all guides and see the new theme."       : "Remeasure all guides and see the new theme."
 };
  
 function _(str){
@@ -57,7 +58,6 @@ com.utom = {
     artboard: undefined,
     current: undefined,
     styles: undefined,
-    smStyle: 1,
     isPercentage: false,
     init: function(context){
         this.context = context;
@@ -291,7 +291,7 @@ com.utom.extend({
             if(!resolution && resolution !== 0){
                 return false;
             }
-
+            defaultConfigs.theme = 0;
             defaultConfigs.resolution = resolution;
             defaultConfigs.property = ["color", "border"];
             defaultConfigs.colorFormat = 0;
@@ -440,7 +440,7 @@ com.utom.extend({
     },
     measureWidth: function(layer, styles, name, isCenter){
         if(!this.configs) return false;
-
+        if(this.configs.theme) return this.measureWidthNop(layer, styles, name, isCenter);
         var layer = layer || this.selection[0];
         var frame = this.getFrame(layer);
         var name = name || "WIDTH#" + layer.objectID();
@@ -626,6 +626,7 @@ com.utom.extend({
 
         var arrow = shape.duplicate();
         var arrowFrame = arrow.absoluteRect();
+        arrow.setName("" + frame.width);
         arrowFrame.setWidth(1);
         arrowFrame.setHeight(6);
         arrowFrame.setX( frame.x + this.mathHalf(frame.width - 1)  );
@@ -677,7 +678,7 @@ com.utom.extend({
     },
     measureHeight: function(layer, styles, name, isCenter){
         if(!this.configs) return false;
-
+        if(this.configs.theme) return this.measureHeightNop(layer, styles, name, isCenter);
         var layer = layer || this.selection[0];
         var frame = this.getFrame(layer);
         var name = name || "HEIGHT#" + layer.objectID();
@@ -863,6 +864,7 @@ com.utom.extend({
 
         var arrow = shape.duplicate();
         var arrowFrame = arrow.absoluteRect();
+        arrow.setName("" + frame.height);
         arrowFrame.setWidth(6);
         arrowFrame.setHeight(1);
         arrowFrame.setY( frame.y + this.mathHalf(frame.height - 1)  );
@@ -1596,6 +1598,80 @@ com.utom.extend({
         la.setX(lf.x - dx);
         la.setWidth( ta.width() + 8 );
     },
+    resetSizeGuide: function(layerGroup){
+        if(this.configs.theme) return this.resetSizeGuideNop( layerGroup );
+        var layers = layerGroup.children().objectEnumerator(),
+            label, gap, text;
+
+        while(layer = layers.nextObject()) {
+            if(this.is(layer, MSShapeGroup) && !isNaN(layer.name())) label = layer;
+            if(layer.name() == "gap") gap = layer;
+            if(this.is(layer, MSTextLayer)) text = layer;
+        }
+
+        if(/\%/.exec( this.toJSString(text.storage().string()) )) return false;
+
+        lf = this.getFrame(label);
+        gf = this.getFrame(gap);
+        tf = this.getFrame(text);
+
+        text.setStringValue(this.updateLength(label.name()));
+        text.setTextBehaviour(1);
+        text.setTextBehaviour(0);
+
+        ntf = this.getFrame(text);
+
+        var la = label.absoluteRect();
+        var ta = text.absoluteRect();
+        var dx = this.mathHalf(ntf.width - tf.width);
+        dx = (gf.maxX > lf.maxX)? (ntf.width - tf.width): dx;
+        dx = (gf.x < lf.x && gf.maxX < lf.maxX)? 0: dx;
+        ta.setX(tf.x - dx);
+        la.setX(lf.x - dx);
+        la.setWidth( ta.width() + 8 );
+
+        layerGroup.resizeRoot(true);
+
+        return layerGroup;
+    },
+    resetSizeGuideNop: function(layerGroup){
+        var layers = layerGroup.children().objectEnumerator(),
+            arrow, line, text;
+
+        while(layer = layers.nextObject()) {
+            if(this.is(layer, MSShapeGroup) && !isNaN(layer.name())) arrow = layer;
+            if(layer.name() == "line") line = layer;
+            if(this.is(layer, MSTextLayer)) text = layer;
+        }
+
+        if(/\%/.exec( this.toJSString(text.storage().string()) )) return false;
+
+        af = this.getFrame(arrow);
+        lf = this.getFrame(line);
+        tf = this.getFrame(text);
+
+        text.setStringValue(this.updateLength(arrow.name()));
+        text.setTextBehaviour(1);
+        text.setTextBehaviour(0);
+
+        ntf = this.getFrame(text);
+
+        var aa = arrow.absoluteRect();
+        var ta = text.absoluteRect();
+        var dx = this.mathHalf(ntf.width - tf.width);
+        if(lf.maxX < af.maxX){
+            dx = 0;
+        }
+        else if(lf.x > af.x){
+            dx = dx * 2;
+        }
+
+        ta.setX(tf.x - dx);
+
+        layerGroup.resizeRoot(true);
+
+        return layerGroup;
+    },
     resetPropertyGuide: function(layer){
         var splitName = layer.name().split("#");
         var msLayer = this.find(splitName[1], this.page, false, "objectID");
@@ -1624,6 +1700,15 @@ com.utom.extend({
                 this.resetPropertyGuide(item);
             }
         }
+    },
+    toggleTheme: function(){
+        if(!this.configs) return false;
+
+        this.configs.theme = (this.configs.theme)? 0: 1;
+
+        this.setConfigs({theme: this.configs.theme});
+
+        this.message(_("Remeasure all guides and see the new theme."));
     }
 });
 
@@ -1633,7 +1718,8 @@ com.utom.extend({
 
         var styles = styles || [
             this.sharedLayerStyle("@Lite / Layer", "#9013FE"),
-            this.sharedTextStyle("@Lite / Text", "#FFFFFF")
+            this.sharedTextStyle("@Lite / Text", "#FFFFFF"),
+            this.sharedTextStyle("@Lite / Type", "#9013FE")
         ];
 
         if (this.selection.count() != 1){
@@ -1654,7 +1740,8 @@ com.utom.extend({
 
         var styles = styles || [
             this.sharedLayerStyle("@Lite / Layer", "#9013FE"),
-            this.sharedTextStyle("@Lite / Text", "#FFFFFF")
+            this.sharedTextStyle("@Lite / Text", "#FFFFFF"),
+            this.sharedTextStyle("@Lite / Type", "#9013FE")
         ];
 
         if (this.selection.count() != 1){

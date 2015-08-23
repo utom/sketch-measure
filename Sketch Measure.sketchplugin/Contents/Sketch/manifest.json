@@ -105,6 +105,13 @@
             "shortcut": "",
             "handler": "resetConfigs",
             "script": "measure.sketchscript"
+        },
+        {
+            "name": "Toggle Theme",
+            "identifier": "toggle-theme",
+            "shortcut": "",
+            "handler": "toggleTheme",
+            "script": "measure.sketchscript"
         }
     ],
     "menu" : {
@@ -128,7 +135,8 @@
                 "items": [
                     "move-to-group",
                     "clear-measure",
-                    "reset-configs"
+                    "reset-configs",
+                    "toggle-theme"
                 ]
             }
         ],
