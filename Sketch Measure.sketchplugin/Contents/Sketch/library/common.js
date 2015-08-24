@@ -398,8 +398,6 @@ com.utom.extend({
             cell.setButtonType(NSRadioButton);
             cell.setTitle(data.name);
             cell.setTag(i);
-            // cell.setState(false);
-            // if(self.configs && self.configs.resolution === i) cell.setState(true);
         });
 
         [accessory addSubview:matrix]
