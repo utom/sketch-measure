@@ -2224,7 +2224,6 @@ com.utom.extend({
                                 encoding: NSUTF8StringEncoding
                                    error: null];
         }
-
         if(artboardsData.length > 1){
             var aContent = NSString.stringWithString("var artboards = " + JSON.stringify(artboardsData) + ";");
             var aExportURL = savePath.stringByAppendingPathComponent( "artboards.js");
