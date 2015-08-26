@@ -2045,7 +2045,6 @@ com.utom.extend({
         var filePath = this.document.fileURL()? this.document.fileURL().path().stringByDeletingLastPathComponent(): "~";
         var fileName = this.document.displayName().stringByDeletingPathExtension();
         var savePanel = NSSavePanel.savePanel();
-        // var savePanel = NSOpenPanel.openPanel();
 
         savePanel.setTitle(_("Export spec"));
         savePanel.setNameFieldLabel(_("Export to:"));
