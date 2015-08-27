@@ -205,7 +205,6 @@ com.utom.extend({
         } else if (queryResult.count()>0){
             return queryResult;
         } else {
-            // debug("no layer matched while predicating")
             return false;
         }
     }
