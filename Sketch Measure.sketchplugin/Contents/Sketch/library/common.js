@@ -1796,33 +1796,25 @@ com.utom.extend({
                this.is(layer, MSLayerGroup) && this.hasExportSizes(layer)
     },
     isMeasure: function(layer){
-        return (this.regexName.exec(msLayer.parentGroup().name()));
+        var msGroup = layer.parentGroup();
+        return (this.regexName.exec(msGroup.name()));
     },
-    isHidden: function(layer){
+    isEnabled: function(layer){
         while (!this.is(layer, MSArtboardGroup)) {
+            var msGroup = layer.parentGroup();
+
             if (!layer.isVisible()) {
                 return true;
             }
 
-            layer = layer.parentGroup();
-        }
-
-        return false;
-    },
-    isLocked: function(layer){
-        while (!this.is(layer, MSArtboardGroup)) {
             if (layer.isLocked()) {
                 return true;
             }
 
-            layer = layer.parentGroup();
-        }
+            if ( this.is(msGroup, MSLayerGroup) && this.hasExportSizes(msGroup) ) {
+                return true;
+            }
 
-        return false;
-    },
-    isMask: function(layer){
-        while (!this.is(layer, MSArtboardGroup)) {
-            var msGroup = layer.parentGroup();
             if (
                 this.maskObjectID &&
                 msGroup.objectID() == this.maskObjectID &&
@@ -1832,18 +1824,6 @@ com.utom.extend({
             }
 
             layer = msGroup;
-        }
-
-        return false;
-    },
-    isSliceGroup: function(layer){
-        while (!this.is(layer, MSArtboardGroup)) {
-            var msGroup = layer.parentGroup();
-            if ( this.is(msGroup, MSLayerGroup) && this.hasExportSizes(msGroup) ) {
-                return true;
-            }
-
-            layer = layer.parentGroup();
         }
 
         return false;
@@ -2114,12 +2094,9 @@ com.utom.extend({
                     }
 
                     if (
-                        this.isMask(msLayer) ||
-                        this.isHidden(msLayer) ||
-                        this.isLocked(msLayer) ||
                         !this.isExportable(msLayer) ||
-                        this.isMeasure(msLayer) ||
-                        this.isSliceGroup(msLayer)
+                        this.isEnabled(msLayer) ||
+                        this.isMeasure(msLayer)
                     )
                     {
                         continue;
@@ -2144,6 +2121,7 @@ com.utom.extend({
                     layer.exportSizes = this.exportSizes(msLayer, slicesPath);
 
                     if ( !this.is(msLayer, MSSliceLayer) ) {
+                        log( msLayer )
                         var layerStyle = msLayer.style();
 
                         layer.rotation = msLayer.rotation();
