@@ -1562,38 +1562,6 @@ com.utom.extend({
                 this.removeLayer(item);
             }
         }
-
-    },
-    resetSizeGuide: function(layerGroup){
-        var layers = layerGroup.children().objectEnumerator(),
-            label, gap, text;
-
-        while(layer = layers.nextObject()) {
-            if(this.is(layer, MSShapeGroup) && !isNaN(layer.name())) label = layer;
-            if(layer.name() == "gap") gap = layer;
-            if(this.is(layer, MSTextLayer)) text = layer;
-        }
-
-        if(/\%/.exec( this.toJSString(text.storage().string()) )) return false;
-
-        lf = this.getFrame(label);
-        gf = this.getFrame(gap);
-        tf = this.getFrame(text);
-
-        text.setStringValue(this.updateLength(label.name()));
-        text.setTextBehaviour(1);
-        text.setTextBehaviour(0);
-
-        ntf = this.getFrame(text);
-
-        var la = label.absoluteRect();
-        var ta = text.absoluteRect();
-        var dx = this.mathHalf(ntf.width - tf.width);
-        dx = (gf.maxX > lf.maxX)? (ntf.width - tf.width): dx;
-        dx = (gf.x < lf.x && gf.maxX < lf.maxX)? 0: dx;
-        ta.setX(tf.x - dx);
-        la.setX(lf.x - dx);
-        la.setWidth( ta.width() + 8 );
     },
     resetSizeGuide: function(layerGroup){
         if(this.configs.theme) return this.resetSizeGuideNop( layerGroup );
@@ -1634,7 +1602,6 @@ com.utom.extend({
     resetSizeGuideNop: function(layerGroup){
         var layers = layerGroup.children().objectEnumerator(),
             arrow, line, text;
-
         while(layer = layers.nextObject()) {
             if(this.is(layer, MSShapeGroup) && !isNaN(layer.name())) arrow = layer;
             if(layer.name() == "line") line = layer;
@@ -1681,9 +1648,12 @@ com.utom.extend({
     },
     resetConfigs: function(){
         if(!this.configs) return false;
+        var theme = this.configs.theme;
         var configsGroup = this.find("@Sketch Measure Configs", this.configsURL);
         this.removeLayer(configsGroup);
         this.getConfigs();
+
+        this.setConfigs({theme: theme});
 
         var page = this.page;
 
@@ -1796,33 +1766,25 @@ com.utom.extend({
                this.is(layer, MSLayerGroup) && this.hasExportSizes(layer)
     },
     isMeasure: function(layer){
-        return (this.regexName.exec(msLayer.parentGroup().name()));
+        var msGroup = layer.parentGroup();
+        return (this.regexName.exec(msGroup.name()));
     },
-    isHidden: function(layer){
+    isEnabled: function(layer){
         while (!this.is(layer, MSArtboardGroup)) {
+            var msGroup = layer.parentGroup();
+
             if (!layer.isVisible()) {
                 return true;
             }
 
-            layer = layer.parentGroup();
-        }
-
-        return false;
-    },
-    isLocked: function(layer){
-        while (!this.is(layer, MSArtboardGroup)) {
             if (layer.isLocked()) {
                 return true;
             }
 
-            layer = layer.parentGroup();
-        }
+            if ( this.is(msGroup, MSLayerGroup) && this.hasExportSizes(msGroup) ) {
+                return true;
+            }
 
-        return false;
-    },
-    isMask: function(layer){
-        while (!this.is(layer, MSArtboardGroup)) {
-            var msGroup = layer.parentGroup();
             if (
                 this.maskObjectID &&
                 msGroup.objectID() == this.maskObjectID &&
@@ -1832,18 +1794,6 @@ com.utom.extend({
             }
 
             layer = msGroup;
-        }
-
-        return false;
-    },
-    isSliceGroup: function(layer){
-        while (!this.is(layer, MSArtboardGroup)) {
-            var msGroup = layer.parentGroup();
-            if ( this.is(msGroup, MSLayerGroup) && this.hasExportSizes(msGroup) ) {
-                return true;
-            }
-
-            layer = layer.parentGroup();
         }
 
         return false;
@@ -2114,12 +2064,9 @@ com.utom.extend({
                     }
 
                     if (
-                        this.isMask(msLayer) ||
-                        this.isHidden(msLayer) ||
-                        this.isLocked(msLayer) ||
                         !this.isExportable(msLayer) ||
-                        this.isMeasure(msLayer) ||
-                        this.isSliceGroup(msLayer)
+                        this.isEnabled(msLayer) ||
+                        this.isMeasure(msLayer)
                     )
                     {
                         continue;
@@ -2144,6 +2091,7 @@ com.utom.extend({
                     layer.exportSizes = this.exportSizes(msLayer, slicesPath);
 
                     if ( !this.is(msLayer, MSSliceLayer) ) {
+                        log( msLayer )
                         var layerStyle = msLayer.style();
 
                         layer.rotation = msLayer.rotation();
