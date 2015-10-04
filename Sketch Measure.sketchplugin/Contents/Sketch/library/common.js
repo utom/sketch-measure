@@ -162,7 +162,7 @@ com.utom.extend({
         }
 
         if (scale === 27) {
-          unit = " gu";
+          unit = "gu";
         }
 
         return length + unit;

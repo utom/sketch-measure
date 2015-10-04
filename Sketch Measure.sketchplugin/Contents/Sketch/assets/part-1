@@ -769,7 +769,7 @@ return new Za.prototype.init(a,b,c,d,e)}m.Tween=Za,Za.prototype={constructor:Za,
             var unit = this.resolution > 3 ? "dp" :"px";
             unit = this.resolution > 0 && this.resolution < 4 ? "pt" : unit;
             unit = this.resolution > 3 && sp ? "sp" : unit;
-            unit = this.resolution === 10? " gu" : unit;
+            unit = this.resolution === 10? "gu" : unit;
 
             return size + unit;
         },
