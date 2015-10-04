@@ -1,3 +1,5 @@
+@import "color-names.js"
+
 var I18N = {};
 var lang = NSUserDefaults.standardUserDefaults().objectForKey("AppleLanguages").objectAtIndex(0);
 I18N["zh-Hans"] = {
@@ -59,6 +61,7 @@ com.utom = {
     current: undefined,
     styles: undefined,
     isPercentage: false,
+    colorNames: typeof ColorNames !== 'undefined'? ColorNames : {},
     init: function(context){
         this.context = context;
         this.document = context.document;
@@ -1350,14 +1353,22 @@ com.utom.extend({
         var content = [];
         var layerStyle = layer.style();
 
+        var colorName = function(str, color) {
+          var hexColor = '#' + self.rgbToHex(color.r, color.g, color.b).toLowerCase();
+          if (hexColor in self.colorNames) {
+            return str + ' (' + self.colorNames[hexColor] + ')';
+          }
+          return str;
+        };
+
         var colorContent = function(color){
             if(colorFormat === 0){
-                return "#" + self.rgbToHex(color.r, color.g, color.b) + " " + Math.round(color.a * 100) + "%";
+                return colorName("#" + self.rgbToHex(color.r, color.g, color.b) + " " + Math.round(color.a * 100) + "%", color);
             }
             else if(colorFormat === 1){
-                return "#" + self.rgbToHex(color.r, color.g, color.b, color.a);
+                return colorName("#" + self.rgbToHex(color.r, color.g, color.b, color.a), color);
             }
-            return "rgba(" + color.r + "," + color.g + "," + color.b + "," + Math.round(color.a * 10) / 10 + ")";
+            return colorName("rgba(" + color.r + "," + color.g + "," + color.b + "," + Math.round(color.a * 10) / 10 + ")", color);
         }
 
         var colorTypeContent = function(fillJSON){
