@@ -161,6 +161,10 @@ com.utom.extend({
             unit = "sp";
         }
 
+        if (scale === 27) {
+          unit = " gu";
+        }
+
         return length + unit;
     },
     updatePercentLength: function(length, width){
@@ -375,13 +379,18 @@ com.utom.extend({
         {
             name: "XXXHDPI @4x (dp, sp)",
             scale: 4
-        }
+        },
+        {
+            name: "Ubuntu Grid Units (27px)",
+            scale: 27
+        },
     ],
     resolutionSetting: function(){
         var self = this;
         var cellWidth = 300;
-        var cellHeight = 260;
+        var rowHeight = 26;
         var allResolution = this.allResolution;
+        var cellHeight = rowHeight * allResolution.length;
 
         var accessory = NSView.alloc().initWithFrame(NSMakeRect(0, 0, cellWidth, cellHeight + 30));
         var matrix = [[NSMatrix alloc] initWithFrame:NSMakeRect(0, 30, cellWidth, cellHeight)
