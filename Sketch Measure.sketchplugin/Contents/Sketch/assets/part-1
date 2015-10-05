@@ -748,14 +748,20 @@ return new Za.prototype.init(a,b,c,d,e)}m.Tween=Za,Za.prototype={constructor:Za,
         },
         updateColor:function(color) {
             var alpha = Math.round(color.a * 100) / 100;
+            var hex = this.rgbToHex(color.r, color.g, color.b);
+            var colorname = ''
+            if (typeof ColorNames !== "undefined") {
+              colorname = ColorNames[hex.toLowerCase()];
+            }
             return {
                 r:color.r,
                 g:color.g,
                 b:color.b,
                 a:alpha,
-                hex:this.rgbToHex(color.r, color.g, color.b),
+                hex:hex,
                 argb:this.rgbToHex(color.r, color.g, color.b, alpha),
-                alpha:Math.round(100 * alpha) + "%"
+                alpha:Math.round(100 * alpha) + "%",
+                colorname: colorname? '(' + colorname + ')' : '',
             };
         },
         resolutionSize:function(size, sp) {
@@ -1662,4 +1668,5 @@ return new Za.prototype.init(a,b,c,d,e)}m.Tween=Za,Za.prototype={constructor:Za,
     </script>
     <script type="text/javascript" src="artboards.js"></script>
     <script type="text/javascript" src="slices.js"></script>
+    <script type="text/javascript" src="color-names.js"></script>
     <script type="text/javascript">

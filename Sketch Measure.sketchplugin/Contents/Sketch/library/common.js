@@ -2047,6 +2047,16 @@ com.utom.extend({
         var template1 = [NSString stringWithContentsOfFile:template1Path encoding:NSUTF8StringEncoding error:nil];
         var template2 = [NSString stringWithContentsOfFile:template2Path encoding:NSUTF8StringEncoding error:nil];
 
+        // Copy the colornames file if it exists
+        var colorsFilePath = pluginPath.stringByAppendingPathComponent("color-names.js");
+        var colorsFileSavePath = savePath.stringByAppendingPathComponent( "color-names.js");
+        if ([[NSFileManager defaultManager] isReadableFileAtPath:colorsFilePath]) {
+          if ([[NSFileManager defaultManager] fileExistsAtPath:colorsFileSavePath]) {
+            [[NSFileManager defaultManager] removeItemAtPath:colorsFileSavePath error:nil];
+          }
+          [[NSFileManager defaultManager] copyItemAtPath:colorsFilePath toPath:colorsFileSavePath error:nil];
+        }
+
         var artboardsData = [];
         var slicesData = [];
 

@@ -170,7 +170,7 @@
       </script>
 
       <script id="color-template" type="application/template">
-        <li><i class="connect"></i><em class="color" style="background-color: rgba(${r}, ${g}, ${b}, ${a})"></em> <strong class="color-text normal">${hex}, ${alpha}</strong><strong class="color-text rgba">rgba(${r}, ${g}, ${b}, ${a})</strong><strong class="color-text argb">${argb}</strong> </li>
+        <li><i class="connect"></i><em class="color" style="background-color: rgba(${r}, ${g}, ${b}, ${a})"></em> <strong class="color-text normal">${hex}, ${alpha} ${colorname}</strong><strong class="color-text rgba">rgba(${r}, ${g}, ${b}, ${a}) ${colorname}</strong><strong class="color-text argb">${argb} ${colorname}</strong> </li>
       </script>
 
       <script id="border-template" type="application/template">
