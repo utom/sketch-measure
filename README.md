@@ -57,6 +57,11 @@ _NOTE: If your Mac has not installed GitHub client, You need to install [GitHub 
 ### SPEC EXPORT (beta)
 http://ux.utom.us/preview/
 
+### Named Colors
+
+Sketch Measure allow you to define color names, that will appear alongside the color code. To define these names, open the Sketch Measure Plugin Package (Right click on `Sketch Measure.sketchplugin` => _Show Package Contents_), and edit the `Contents/Sketch/color-names.js` file.
+
+
 ##Contact
 
 * Follow [@utom](http://twitter.com/utom) on Twitter
