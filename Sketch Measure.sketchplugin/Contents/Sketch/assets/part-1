@@ -142,7 +142,7 @@ h1.m span{
     height: auto;
     top: 4px;
     right: 48px;
-    width: 160px;
+    width: 200px;
     font-size: 14px;
     background: #F0F0F0;
     box-shadow: 0 1px 4px rgba(0, 0, 0, .2);
@@ -703,26 +703,32 @@ return new Za.prototype.init(a,b,c,d,e)}m.Tween=Za,Za.prototype={constructor:Za,
     jQBorders,
     jQShadows,
     jQSidebar,
-    ResolutionType = [ 1, // 0: Standard
-    1, // 1: Points @1x (pt)
-    2, // 2: Retina @2x (pt)
-    3, // 3: Retina HD @3x (pt)
-    .75, // 4: LDPI @0.75x (dp)
-    1, // 5: MDPI @1x (dp)
-    1.5, // 6: HDPI @1.5x (dp)
-    2, // 7: XHDPI @2x (dp)
-    3, // 8: XXHDPI @3x (dp)
-    4 ],
-    ResolutionName = [ "Standard", // 0
-    "Points @1x (pt)", // 1
-    "Retina @2x (pt)", // 2
-    "Retina HD @3x (pt)", // 3
-    "LDPI @0.75x (dp)", // 4
-    "MDPI @1x (dp)", // 5
-    "HDPI @1.5x (dp)", // 6
-    "XHDPI @2x (dp)", // 7
-    "XXHDPI @3x (dp)", // 8
-    "XXXHDPI @4x (dp)" ],
+    ResolutionType = [
+      1,   //  0: Standard
+      1,   //  1: Points @1x (pt)
+      2,   //  2: Retina @2x (pt)
+      3,   //  3: Retina HD @3x (pt)
+      .75, //  4: LDPI @0.75x (dp)
+      1,   //  5: MDPI @1x (dp)
+      1.5, //  6: HDPI @1.5x (dp)
+      2,   //  7: XHDPI @2x (dp)
+      3,   //  8: XXHDPI @3x (dp)
+      4,   //  9: XXXHDPI @4x (dp)
+      27,  // 10: Ubuntu Grid Units (27px)
+    ],
+    ResolutionName = [
+      "Standard",                    // 0
+      "Points @1x (pt)",             // 1
+      "Retina @2x (pt)",             // 2
+      "Retina HD @3x (pt)",          // 3
+      "LDPI @0.75x (dp)",            // 4
+      "MDPI @1x (dp)",               // 5
+      "HDPI @1.5x (dp)",             // 6
+      "XHDPI @2x (dp)",              // 7
+      "XXHDPI @3x (dp)",             // 8
+      "XXXHDPI @4x (dp)",            // 9
+      "Ubuntu Grid Units (27px)",    // 10
+    ],
     ColorFormat = [
         "Color Hex",
         "RGBA CSS",
@@ -759,10 +765,11 @@ return new Za.prototype.init(a,b,c,d,e)}m.Tween=Za,Za.prototype={constructor:Za,
             };
         },
         resolutionSize:function(size, sp) {
-            var size = Math.round(size / ResolutionType[this.resolution] * 10) / 10,
-                unit = this.resolution > 3 ? "dp" :"px",
-                unit = this.resolution > 0 && this.resolution < 4 ? "pt" :unit,
-                unit = this.resolution > 3 && sp ? "sp" :unit;
+            var size = Math.round(size / ResolutionType[this.resolution] * 10) / 10;
+            var unit = this.resolution > 3 ? "dp" :"px";
+            unit = this.resolution > 0 && this.resolution < 4 ? "pt" : unit;
+            unit = this.resolution > 3 && sp ? "sp" : unit;
+            unit = this.resolution === 10? "gu" : unit;
 
             return size + unit;
         },
