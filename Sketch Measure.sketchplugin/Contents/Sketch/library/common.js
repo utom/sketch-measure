@@ -259,8 +259,8 @@ com.utom.extend({
 
             var textLayer = this.addText(this.page);
             textLayer.setTextColor(color);
+
             textLayer.setFontSize(14);
-            textLayer.setLineSpacing(16);
             textLayer.setFontPostscriptName("HelveticaNeue");
             if(center) textLayer.setTextAlignment(2);
 
@@ -435,6 +435,14 @@ com.utom.extend({
         this.measureWidth(this.selection[0], sizeStyle);
         this.measureHeight(this.selection[0], sizeStyle);
     },
+    getLabelDims: function(textWidth, textHeight) {
+        var totalPadding = textHeight * 0.4;
+        return {
+            width: Math.round(textWidth + totalPadding),
+            height: Math.round(textHeight + totalPadding),
+            padding: totalPadding / 2,
+        };
+    },
     measureWidth: function(layer, styles, name, isCenter){
         if(!this.configs) return false;
         if(this.configs.theme) return this.measureWidthNop(layer, styles, name, isCenter);
@@ -500,12 +508,14 @@ com.utom.extend({
         var gapY;
         var gapWidth;
         var gapHeight;
-        var labelWidth = Math.round( textFrame.width() + 8 );
-        var labelHeight = Math.round( textFrame.height() + 6 );
+
+        var labelDims = this.getLabelDims(textFrame.width(), textFrame.height());
+        var labelWidth = labelDims.width;
+        var labelHeight = labelDims.height;
 
         label.setName("" + frame.width);
-        labelFrame.setWidth( labelWidth );
-        labelFrame.setHeight( labelHeight );
+        labelFrame.setWidth(labelWidth);
+        labelFrame.setHeight(labelHeight);
 
         var gap = shape.duplicate();
         var gapFrame = gap.absoluteRect();
@@ -554,8 +564,9 @@ com.utom.extend({
         labelFrame.setY(labelY);
         gapFrame.setX(gapX);
         gapFrame.setY(gapY);
-        textFrame.setX(labelX + 4);
-        textFrame.setY(labelY + 3);
+
+        textFrame.setX(labelX + labelDims.padding);
+        textFrame.setY(labelY + labelDims.padding);
 
         this.removeLayer(shape);
         this.removeLayer(textL);
@@ -737,8 +748,10 @@ com.utom.extend({
         var gapY;
         var gapWidth;
         var gapHeight;
-        var labelWidth = Math.round( textFrame.width() + 8 );
-        var labelHeight = Math.round( textFrame.height() + 6 );
+
+        var labelDims = this.getLabelDims(textFrame.width(), textFrame.height());
+        var labelWidth = labelDims.width;
+        var labelHeight = labelDims.height;
 
         label.setName("" + frame.height);
         labelFrame.setWidth( labelWidth );
@@ -791,9 +804,9 @@ com.utom.extend({
         labelFrame.setY(labelY);
         gapFrame.setX(gapX);
         gapFrame.setY(gapY);
-        textFrame.setX(labelX + 4);
-        textFrame.setY(labelY + 3);
 
+        textFrame.setX(labelX + labelDims.padding);
+        textFrame.setY(labelY + labelDims.padding);
 
         this.removeLayer(shape);
         this.removeLayer(textL);
