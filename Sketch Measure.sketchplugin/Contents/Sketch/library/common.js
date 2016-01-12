@@ -2079,7 +2079,7 @@ com.utom.extend({
 
                         notes.push({
                             rect: this.rectToJSON(msLayer.absoluteRect(), artboardFrame),
-                            note: this.toJSString(msText.stringValue())
+                            note: this.toJSString(msText.stringValue()).replace(/\n/g,"<br>")
                         });
 
                         msLayer.setIsVisible(false);
@@ -2168,7 +2168,7 @@ com.utom.extend({
                     notes: notes
                 });
 
-                var content = template1 + "jQuery(function(){Spec(" + JSON.stringify(data).replace(/\u2028/g,'\\u2028').replace(/\u2029/g,'\\u2029').replace(/\\n/g,'\<br\>') + ").artboardList(window.artboards || undefined).sliceList(window.slices || undefined)});" + template2;
+                var content = template1 + "jQuery(function(){Spec(" + JSON.stringify(data).replace(/\u2028/g,'\\u2028').replace(/\u2029/g,'\\u2029') + ").artboardList(window.artboards || undefined).sliceList(window.slices || undefined)});" + template2;
                 content = NSString.stringWithString(content);
                 var artname = this.toJSString( msArtboard.name() ).replace(/[\/\\]/g, "-");
                 var exportURL = savePath.stringByAppendingPathComponent( artname + ".html");
