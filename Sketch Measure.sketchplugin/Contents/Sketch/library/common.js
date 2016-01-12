@@ -2113,7 +2113,6 @@ com.utom.extend({
                     layer.exportSizes = this.exportSizes(msLayer, slicesPath);
 
                     if ( !this.is(msLayer, MSSliceLayer) ) {
-                        log( msLayer )
                         var layerStyle = msLayer.style();
 
                         layer.rotation = msLayer.rotation();
@@ -2169,7 +2168,7 @@ com.utom.extend({
                     notes: notes
                 });
 
-                var content = template1 + "jQuery(function(){Spec(" + JSON.stringify(data).replace(/\u2028/g,'\\u2028').replace(/\u2029/g,'\\u2029') + ").artboardList(window.artboards || undefined).sliceList(window.slices || undefined)});" + template2;
+                var content = template1 + "jQuery(function(){Spec(" + JSON.stringify(data).replace(/\u2028/g,'\\u2028').replace(/\u2029/g,'\\u2029').replace(/\\n/g,'\<br\>') + ").artboardList(window.artboards || undefined).sliceList(window.slices || undefined)});" + template2;
                 content = NSString.stringWithString(content);
                 var artname = this.toJSString( msArtboard.name() ).replace(/[\/\\]/g, "-");
                 var exportURL = savePath.stringByAppendingPathComponent( artname + ".html");
@@ -2192,6 +2191,7 @@ com.utom.extend({
                                 encoding: NSUTF8StringEncoding
                                    error: null];
         }
+
         if(artboardsData.length > 1){
             var aContent = NSString.stringWithString("var artboards = " + JSON.stringify(artboardsData) + ";");
             var aExportURL = savePath.stringByAppendingPathComponent( "artboards.js");
