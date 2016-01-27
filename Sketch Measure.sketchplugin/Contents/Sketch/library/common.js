@@ -331,7 +331,7 @@ com.utom.extend({
 
         textLayer.setTextBehaviour(1);
         textLayer.setTextBehaviour(0);
-        configsGroup.resizeToFitChildrenWithOption(1);
+        configsGroup.resizeToFitChildrenWithOption(0);
         configsGroup.setIsLocked(true);
         configsGroup.setIsVisible(false);
     }
@@ -579,7 +579,7 @@ com.utom.extend({
 
         this.removeLayer(shape);
         this.removeLayer(textL);
-        container.resizeToFitChildrenWithOption(1);
+        container.resizeToFitChildrenWithOption(0);
 
         return container;
     },
@@ -689,7 +689,7 @@ com.utom.extend({
 
         this.removeLayer(shape);
         this.removeLayer(textL);
-        container.resizeToFitChildrenWithOption(1);
+        container.resizeToFitChildrenWithOption(0);
 
         return container;
     },
@@ -819,7 +819,7 @@ com.utom.extend({
 
         this.removeLayer(shape);
         this.removeLayer(textL);
-        container.resizeToFitChildrenWithOption(1);
+        container.resizeToFitChildrenWithOption(0);
 
         return container;
     },
@@ -919,7 +919,7 @@ com.utom.extend({
 
         this.removeLayer(shape);
         this.removeLayer(textL);
-        container.resizeToFitChildrenWithOption(1);
+        container.resizeToFitChildrenWithOption(0);
 
         return container;
     }
@@ -1097,7 +1097,7 @@ com.utom.extend({
         overlayerFrame.setWidth(frame.width);
         overlayerFrame.setHeight(frame.height);
 
-        container.resizeToFitChildrenWithOption(1);
+        container.resizeToFitChildrenWithOption(0);
     }
 });
 
@@ -1224,7 +1224,7 @@ com.utom.extend({
 
         this.removeLayer(shape);
 
-        container.resizeToFitChildrenWithOption(1);
+        container.resizeToFitChildrenWithOption(0);
 
         return container;
     },
@@ -1569,7 +1569,7 @@ com.utom.extend({
         }
 
         groupSpecs.addLayers(specLayers);
-        groupSpecs.resizeToFitChildrenWithOption(1);
+        groupSpecs.resizeToFitChildrenWithOption(0);
         groupSpecs.setIsLocked(true);
     },
     clearMeasure: function(){
@@ -1617,7 +1617,7 @@ com.utom.extend({
         la.setX(lf.x - dx);
         la.setWidth( ta.width() + 8 );
 
-        layerGroup.resizeToFitChildrenWithOption(1);
+        layerGroup.resizeToFitChildrenWithOption(0);
 
         return layerGroup;
     },
@@ -1654,7 +1654,7 @@ com.utom.extend({
 
         ta.setX(tf.x - dx);
 
-        layerGroup.resizeToFitChildrenWithOption(1);
+        layerGroup.resizeToFitChildrenWithOption(0);
 
         return layerGroup;
     },
