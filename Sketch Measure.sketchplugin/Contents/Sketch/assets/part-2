@@ -111,38 +111,39 @@
     </script>
 
     <div id="sidebar" class="sidebar sideoff">
+      <h2 id="layer_name"></h2>
       <div id="properties">
-        <h3 id="side-title">PROPERTIES</h3>
+        <h3 class="side-title">PROPERTIES</h3>
         <ul></ul>
       </div>
 
       <div id="typeface">
-        <h3 id="side-title">TYPEFACE</h3>
+        <h3 class="side-title">TYPEFACE</h3>
         <ul></ul>
       </div>
 
       <div id="content">
-        <h3 id="side-title">CONTENT</h3>
+        <h3 class="side-title">CONTENT</h3>
         <ul></ul>
       </div>
 
       <div id="fills">
-        <h3 id="side-title">FILLS</h3>
+        <h3 class="side-title">FILLS</h3>
         <ul></ul>
       </div>
 
       <div id="borders">
-        <h3 id="side-title">BORDERS</h3>
+        <h3 class="side-title">BORDERS</h3>
         <ul></ul>
       </div>
 
       <div id="shadows">
-        <h3 id="side-title">SHADOWS</h3>
+        <h3 class="side-title">SHADOWS</h3>
         <ul></ul>
       </div>
 
       <div id="exportable">
-        <h3 id="side-title">EXPORTABLE</h3>
+        <h3 class="side-title">EXPORTABLE</h3>
         <ul>
           <li></li>
         </ul>

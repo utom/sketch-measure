@@ -1821,7 +1821,7 @@ com.utom.extend({
         return false;
     },
     hasExportSizes: function(layer){
-        return layer.exportOptions().sizes().count() > 0;
+        return layer.exportOptions().exportFormats().count() > 0;
     },
     toJSString: function(str){
         return new String(str).toString();
@@ -1894,23 +1894,25 @@ com.utom.extend({
         };
     },
     exportSizesToJSON: function(size, layer, slicesPath) {
-        var slice = MSSliceMaker.slicesFromExportableLayer(layer).firstObject();
-        slice.scale = size.scale();
-        slice.format = size.format();
+        var slice = MSExportRequest.exportRequestsFromExportableLayer(layer).firstObject();
+        var size = this.toJSString(size).split(" ");
+        var document = this.document;
+        slice.scale = size[0];
+        slice.format = size[2];
 
-        var suffix = this.toJSString(size.name());
+        var suffix = this.toJSString(size[1]);
         suffix = (suffix)? suffix : "";
 
-        var sliceName = this.toJSString(layer.name() + suffix + "." + size.format());
+        var sliceName = this.toJSString(layer.name() + suffix + "." + size[2]);
         var sliceFileName = slicesPath.stringByAppendingPathComponent( sliceName );
 
-        [[MSSliceExporter dataForRequest: slice] writeToFile: sliceFileName atomically:true];
+        [document saveArtboardOrSlice:slice toFile:sliceFileName];
 
         return {
             sliceName: "slices/" + sliceName,
-            scale: this.toJSString(size.scale()),
+            scale: size[0],
             suffix: suffix,
-            format: this.toJSString(size.format())
+            format: size[2]
         };
     },
     getBorders: function(style) {
@@ -2004,7 +2006,7 @@ com.utom.extend({
     },
     exportSizes: function(layer, slicesPath){
         var exportSizes = [],
-            size, sizesInter = layer.exportOptions().sizes().array().objectEnumerator();
+            size, sizesInter = layer.exportOptions().exportFormats().array().objectEnumerator();
 
         while (size = sizesInter.nextObject()) {
             exportSizes.push(this.exportSizesToJSON(size, layer, slicesPath));

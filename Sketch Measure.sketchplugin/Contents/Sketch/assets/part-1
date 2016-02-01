@@ -504,7 +504,11 @@ h1.m span{
 .width .label {
     left: 50%;
 }
-
+.sidebar h2{
+    margin: 0 0 10px;
+    padding: 0 0 6px;
+    font-size: 18px;
+}
 .sidebar h3 {
     margin: 0 0 10px;
     padding: 0 0 6px;
@@ -696,6 +700,7 @@ return new Za.prototype.init(a,b,c,d,e)}m.Tween=Za,Za.prototype={constructor:Za,
     jQNavbar,
     jQTabs,
     jQSlices,
+    jQLayerName,
     jQProperties,
     jQTypeface,
     jQContent,
@@ -770,7 +775,6 @@ return new Za.prototype.init(a,b,c,d,e)}m.Tween=Za,Za.prototype={constructor:Za,
             unit = this.resolution > 0 && this.resolution < 4 ? "pt" : unit;
             unit = this.resolution > 3 && sp ? "sp" : unit;
             unit = this.resolution === 10? "gu" : unit;
-
             return size + unit;
         },
         zoomSize:function(size) {
@@ -1094,6 +1098,7 @@ return new Za.prototype.init(a,b,c,d,e)}m.Tween=Za,Za.prototype={constructor:Za,
         },
         inspector:function() {
             var self = this, jQColorTemplate = $("#color-template"), model = jQSelection.data("model");
+            jQLayerName.text(model.name);
             jQSlices.hide().find("li").empty();
             jQProperties.hide().find("ul").empty();
             jQTypeface.hide().find("ul").empty();
@@ -1627,6 +1632,7 @@ return new Za.prototype.init(a,b,c,d,e)}m.Tween=Za,Za.prototype={constructor:Za,
         jQAboutList = $("#about_list");
         jQColorFormat = $("#color_format");
         jQSlices = $("#exportable").hide();
+        jQLayerName = $("#layer_name");
         jQProperties = $("#properties").hide();
         jQTypeface = $("#typeface").hide();
         jQContent = $("#content").hide();
