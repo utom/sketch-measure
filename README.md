@@ -1,10 +1,10 @@
 # Sketch Measure
 
-A measure tool for measurements & design specs, **Sketch 3.3+ support**. 
+A measure tool for measurements & design specs, **Sketch 3.5+ support**. 
 
-![Banner](http://utom.us/new/assets/imgs/sketch-measure-icon@2x.png)
+![Banner](http://utom.design/measure/256.png)
 ## Change Log
-* Only Sketch 3.3 support
+* Only Sketch 3.5+ support
 * Spec Export
 * New Interactive
 * Style Shared Support
@@ -55,7 +55,7 @@ _NOTE: If your Mac has not installed GitHub client, You need to install [GitHub 
 9. Reset(Clear) Artboard Measure
 
 ### SPEC EXPORT (beta)
-http://ux.utom.us/preview/
+http://utom.design/measure/spec-export-demo/
 
 ##Contact
 
