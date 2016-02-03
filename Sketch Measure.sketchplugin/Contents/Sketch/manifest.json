@@ -107,6 +107,13 @@
             "script": "measure.sketchscript"
         },
         {
+            "name": "Color names",
+            "identifier": "color-names",
+            "shortcut": "",
+            "handler": "colorNames",
+            "script": "measure.sketchscript"
+        },
+        {
             "name": "Toggle Theme",
             "identifier": "toggle-theme",
             "shortcut": "",

@@ -1698,6 +1698,16 @@ com.utom.extend({
         this.setConfigs({theme: this.configs.theme});
 
         this.message(_("Remeasure all guides to see the new theme."));
+    },
+    colorNames: function(){
+        if(!this.configs) return false;
+
+        var configsColors = this.find("@Color List", this.configsURL);
+        // this.configs.theme = (this.configs.theme)? 0: 1;
+
+        // this.setConfigs({theme: this.configs.theme});
+
+        // this.message(_("Remeasure all guides to see the new theme."));
     }
 });
 
@@ -1778,6 +1788,7 @@ com.utom.extend({
 });  
 
 com.utom.extend({
+    slicesPath: undefined,
     maskObjectID: undefined,
     sliceObjectID: undefined,
     isExportable: function(layer) {
@@ -2004,12 +2015,19 @@ com.utom.extend({
         if(!style) return "";
         return this.toJSString(style.name());
     },
-    exportSizes: function(layer, slicesPath){
-        var exportSizes = [],
+    exportSizes: function(layer, savePath){
+        var self = this,
+            exportSizes = [],
             size, sizesInter = layer.exportOptions().exportFormats().array().objectEnumerator();
 
         while (size = sizesInter.nextObject()) {
-            exportSizes.push(this.exportSizesToJSON(size, layer, slicesPath));
+            if (!self.slicesPath){
+                var slicesPath = savePath.stringByAppendingPathComponent("slices");
+                self.slicesPath = slicesPath;
+                [[NSFileManager defaultManager] createDirectoryAtPath:slicesPath withIntermediateDirectories:true attributes:nil error:nil];
+            }
+
+            exportSizes.push(this.exportSizesToJSON(size, layer, self.slicesPath));
         }
 
         return exportSizes;
@@ -2048,9 +2066,6 @@ com.utom.extend({
         var savePath = this.savePath();
         if(!savePath) return false;
         [[NSFileManager defaultManager] createDirectoryAtPath:savePath withIntermediateDirectories:true attributes:nil error:nil];
-
-        var slicesPath = savePath.stringByAppendingPathComponent("slices");
-        [[NSFileManager defaultManager] createDirectoryAtPath:slicesPath withIntermediateDirectories:true attributes:nil error:nil];
 
         var resolution = this.configs.resolution;
 
@@ -2112,7 +2127,7 @@ com.utom.extend({
                     layer.type = type;
                     layer.name = this.toJSString(msLayer.name());
                     layer.rect = this.rectToJSON(msLayer.absoluteRect(), artboardFrame);
-                    layer.exportSizes = this.exportSizes(msLayer, slicesPath);
+                    layer.exportSizes = this.exportSizes(msLayer, savePath);
 
                     if ( !this.is(msLayer, MSSliceLayer) ) {
                         var layerStyle = msLayer.style();
@@ -2136,7 +2151,10 @@ com.utom.extend({
                         layer.lineHeight = msLayer.lineSpacing();
                     }
 
-                    if ( type ===  "slice" ) slicesData.push(layer);
+                    if ( type ===  "slice" ){
+                        slicesData.push(layer);
+
+                    }
 
                     layers.push(layer);
 

@@ -79,3 +79,8 @@ function toggleTheme(context) {
     com.utom.init(context);
     com.utom.toggleTheme();
 }
+
+function colorNames(context) {
+    com.utom.init(context);
+    com.utom.colorNames();
+}
