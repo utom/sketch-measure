@@ -84,7 +84,7 @@ com.utom = {
     },
     is: function(layer, theClass){
         if(!layer) return false;
-        var klass = [layer class];
+        var klass = layer.class();
         return klass === theClass;
     },
     isIntersect: function(lf, tf){
@@ -220,7 +220,8 @@ com.utom.extend({
         var layerStyles = this.document.documentData().layerStyles();
         var layerStylesLibrary = layerStyles.objectsSortedByName();
         var layerStyle = this.find(name, layerStylesLibrary, true);
-        layerStyle = layerStyle;
+        layerStyle = ( !layerStyle || this.is(layerStyle, MSSharedStyle))? layerStyle: layerStyle[0];
+
         var alpha = alpha || 1;
 
         if( layerStyle == false ){
@@ -253,7 +254,8 @@ com.utom.extend({
         var textStyles = this.document.documentData().layerTextStyles();
         var textStylesLibrary = textStyles.objectsSortedByName();
         var textStyle = this.find(name, textStylesLibrary, true);
-        textStyle = textStyle;
+        textStyle = (!textStyle || this.is(textStyle, MSSharedStyle))? textStyle: textStyle[0];
+
         var alpha = alpha || 1;
 
         if( textStyle == false ){
@@ -1615,7 +1617,7 @@ com.utom.extend({
         dx = (gf.x < lf.x && gf.maxX < lf.maxX)? 0: dx;
         ta.setX(tf.x - dx);
         la.setX(lf.x - dx);
-        la.setWidth( ta.width() + 8 );
+        la.setWidth( ta.width() + 7 );
 
         layerGroup.resizeToFitChildrenWithOption(0);
 
