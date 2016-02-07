@@ -4,6 +4,7 @@ A measure tool for measurements & design specs, **Sketch 3.5+ support**.
 
 ![Banner](http://utom.design/measure/256.png)
 ## Change Log
+* Color name
 * Only Sketch 3.5+ support
 * Spec Export
 * New Interactive

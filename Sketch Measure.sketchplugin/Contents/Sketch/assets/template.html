@@ -1,7 +1,27 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="">
+    <meta name="author" content="">
+    <title>Viewer</title>
+    <style type="text/css">
+    <!-- cssNormalize -->
+    <!-- cssApp -->
+    </style>
+    <script type="text/javascript">
+    <!-- jsjQuery -->
+    <!-- jsApp -->
+    <!-- jsSpec -->
     </script>
+    <script type="text/javascript" src="artboards.js"></script>
+    <script type="text/javascript" src="slices.js"></script>
+    <script type="text/javascript" src="colors.js"></script>
   </head>
 
-  <body class="off">
+ <body class="off">
     <div class="header">
       <div class="art-name">
         <h1 id="artboard" class="artboard-name"><span></span></h1>
@@ -167,11 +187,11 @@
       </script>
 
       <script id="content-template" type="application/template">
-        <li><strong>${content}</strong></li>
+        <li><textarea rows="3" onclick="this.select()">${content}</textarea></li>
       </script>
 
       <script id="color-template" type="application/template">
-        <li><i class="connect"></i><em class="color" style="background-color: rgba(${r}, ${g}, ${b}, ${a})"></em> <strong class="color-text normal">${hex}, ${alpha}</strong><strong class="color-text rgba">rgba(${r}, ${g}, ${b}, ${a})</strong><strong class="color-text argb">${argb}</strong> </li>
+        <li><i class="connect"></i><em class="color" style="background-color: rgba(${r}, ${g}, ${b}, ${a})"></em> <strong class="color-name">${name}, ${alpha}</strong> <span class="color-info"><strong class="color-text normal">${hex}, ${alpha}</strong><strong class="color-text rgba">rgba(${r}, ${g}, ${b}, ${a})</strong><strong class="color-text argb">${argb}</strong></span> </li>
       </script>
 
       <script id="border-template" type="application/template">

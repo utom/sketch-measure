@@ -38,7 +38,8 @@ I18N["zh-Hans"] = {
     "ARGB hex, E.g. #FFFFFFFF"                          : "ARGB hex, E.g. #FFFFFFFF",
     "RGBA CSS, E.g. rgba(255, 255, 255, 1)"             : "RGBA CSS, E.g. rgba(255, 255, 255, 1)",
     "Color format"                                      : "Color format",
-    "Remeasure all guides to see the new theme."        : "Remeasure all guides to see the new theme."
+    "Remeasure all guides to see the new theme."        : "Remeasure all guides to see the new theme.",
+    "Show color name"                                   : "Show color name"
 };
  
 function _(str){
@@ -48,12 +49,14 @@ function _(str){
 var com = com || {};
 
 com.utom = {
-    configsGroup: undefined,
-    configsURL: undefined,
+    configsPage: undefined,
+    configsLayer: undefined,
+    configsColors: undefined,
     configs: undefined,
     context: undefined,
     document: undefined,
     selection: undefined,
+    pages: undefined,
     page: undefined,
     artboard: undefined,
     current: undefined,
@@ -63,16 +66,16 @@ com.utom = {
         this.context = context;
         this.document = context.document;
         this.selection = context.selection;
+        this.pages = this.document.pages();
         this.page = this.document.currentPage();
         this.artboard = this.page.currentArtboard();
         this.current = this.artboard || this.page;
-        this.configsURL = this.page;
         if(!this.is(this.current, MSArtboardGroup)){
             this.message(_("You need an artboard."));
             return false;
         }
 
-        this.getConfigs();
+        this.initConfigs();
     },
     extend: function( options, target ){
         var target = target || this;
@@ -284,12 +287,18 @@ com.utom.extend({
 
 //Configs
 com.utom.extend({
-    getConfigs: function(){
-        var configsGroup = this.find("@Sketch Measure Configs", this.configsURL);
-        configsGroup = (!configsGroup || this.is(configsGroup, MSLayerGroup))? configsGroup: configsGroup[0];
-        var textLayer;
+    initConfigs: function(){
+        this.configsPage = this.find("@Sketch Measure", this.pages, true);
+        var currentPage = this.page;
+        if(this.configsPage == false){
+            this.configsPage = this.document.addBlankPage();
+            this.configsPage.setName("@Sketch Measure");
+            this.document.setCurrentPage(currentPage);
+        }
 
-        if(configsGroup == false){
+        this.configsLayer = this.find("Configs", this.configsPage);
+        this.configsLayer = (!this.configsLayer || this.is(this.configsLayer, MSTextLayer))? this.configsLayer: undefined;
+        if(this.configsLayer == false){
             var defaultConfigs = {};
             var resolution = this.resolutionSetting();
 
@@ -303,39 +312,27 @@ com.utom.extend({
             this.setConfigs(defaultConfigs);
         }
         else{
-            var textLayer = configsGroup.children().firstObject();
-            this.configs = JSON.parse(textLayer.stringValue());
+            this.configs = JSON.parse(this.configsLayer.stringValue());
         }
+        this.configsColors = this.find("Color List", this.configsPage);
     },
     setConfigs: function(configs){
-        var configsGroup = this.find("@Sketch Measure Configs", this.configsURL);
-        configsGroup = (!configsGroup || this.is(configsGroup, MSLayerGroup))? configsGroup: configsGroup[0];
-        var textLayer;
-
         this.configs = this.configs || {};
-
 
         this.extend(configs, this.configs);
         this.configs.timestamp = new Date().getTime();
 
-        if(configsGroup == false){
-            configsGroup = this.addGroup(this.configsURL);
-            configsGroup.setName("@Sketch Measure Configs");
-
-            textLayer = this.addText(configsGroup);
-            textLayer.setName("Configs");
-        }
-        else{
-            textLayer = configsGroup.children().firstObject();
+        if(this.configsLayer == false){
+            this.configsLayer = this.addText(this.configsPage);
+            this.configsLayer.setName("Configs");
         }
 
-        textLayer.setStringValue(JSON.stringify(this.configs));
+        this.configsLayer.setStringValue(JSON.stringify(this.configs));
 
-        textLayer.setTextBehaviour(1);
-        textLayer.setTextBehaviour(0);
-        configsGroup.resizeToFitChildrenWithOption(0);
-        configsGroup.setIsLocked(true);
-        configsGroup.setIsVisible(false);
+        this.configsLayer.setTextBehaviour(1);
+        this.configsLayer.setTextBehaviour(0);
+        this.configsLayer.setIsLocked(true);
+        this.configsLayer.setIsVisible(false);
     }
 });
 
@@ -1277,11 +1274,12 @@ com.utom.extend({
     colorFormats: [_("Color hex, E.g. #FFFFFF 100%"), _("ARGB hex, E.g. #FFFFFFFF"), _("RGBA CSS, E.g. rgba(255, 255, 255, 1)")],
     propertyDialog: function(){
         var cellWidth = 250;
-        var cellHeight = 190;
+        var cellHeight = 200;
         var allProperty = this.allProperty;
         var propertyConfigs = this.configs.property;
         var colorFormatConfigs = this.configs.colorFormat || 0;
         var propertyPosition = this.configs.propertyPosition || 0;
+        var showColorName = this.configs.showColorName || 0;
 
         var alert = COSAlertWindow.new();
         alert.setMessageText(_("Get properties"));
@@ -1318,6 +1316,14 @@ com.utom.extend({
         alert.addTextLabelWithValue(_("Color format:"));
         alert.addAccessoryView(comboColorFormatBox);
 
+        var comboShowColorNameBtn = NSButton.alloc().initWithFrame(NSMakeRect(0, 0, 200, 14));
+        comboShowColorNameBtn.setButtonType(NSSwitchButton);
+        comboShowColorNameBtn.setState(false);
+        comboShowColorNameBtn.setTitle(_("Show color name"));
+        if(showColorName){
+            comboShowColorNameBtn.setState(true);
+        }
+        alert.addAccessoryView(comboShowColorNameBtn);
 
         var responseCode = alert.runModal();
 
@@ -1331,11 +1337,12 @@ com.utom.extend({
                 }
             });
 
-            this.setConfigs({property: types, propertyPosition: position, colorFormat: colorFormat});
+            this.setConfigs({property: types, propertyPosition: position, colorFormat: colorFormat, showColorName: comboShowColorNameBtn.state() });
             return {
                 types: types,
                 position: position,
-                colorFormat: colorFormat
+                colorFormat: colorFormat,
+                showColorName: comboShowColorNameBtn.state()
             };
         }
         else{
@@ -1368,13 +1375,23 @@ com.utom.extend({
         var types = propertyConfigs.types;
         var position = propertyConfigs.position;
         var colorFormat = propertyConfigs.colorFormat;
+        var showColorName = propertyConfigs.showColorName;
 
         if(!types) return false;
+
+        if(showColorName){
+            this.colorNames();
+        }
 
         var content = [];
         var layerStyle = layer.style();
 
         var colorContent = function(color){
+            var colorName = self.configs.colors["#" + self.rgbToHex(color.r, color.g, color.b)];
+            if(propertyConfigs.showColorName && colorName){
+                return colorName + " " + Math.round(color.a * 100) + "%";
+            }
+
             if(colorFormat === 0){
                 return "#" + self.rgbToHex(color.r, color.g, color.b) + " " + Math.round(color.a * 100) + "%";
             }
@@ -1673,9 +1690,8 @@ com.utom.extend({
     resetConfigs: function(){
         if(!this.configs) return false;
         var theme = this.configs.theme;
-        var configsGroup = this.find("@Sketch Measure Configs", this.configsURL);
-        this.removeLayer(configsGroup);
-        this.getConfigs();
+        this.removeLayer(this.configsLayer);
+        this.initConfigs();
 
         this.setConfigs({theme: theme});
 
@@ -1701,15 +1717,81 @@ com.utom.extend({
 
         this.message(_("Remeasure all guides to see the new theme."));
     },
+    getColorList: function(){
+        var colorJSON = {};
+        var colorGroups = this.configsColors.layers().array().objectEnumerator();
+
+        while (colorGroup = colorGroups.nextObject()) {
+            var colorLayer = this.find(MSShapeGroup, colorGroup, false, "class");
+            var nameLayer = this.find(MSTextLayer, colorGroup, false, "class");
+            var color = this.getFills(colorLayer.style()).pop().color;
+            var RGBHex = this.rgbToHex(color.r, color.g, color.b);
+            var name = nameLayer.stringValue();
+            colorJSON["#" + RGBHex] = this.toJSString(name);
+        }
+        this.setConfigs({colors: colorJSON});
+        return colorJSON;
+    },
+    addColorGroup: function(name, hex){
+        var count = this.configsColors.layers().count();
+        var group = this.addGroup( this.configsColors );
+        var shape = this.addShape( group );
+        var text = this.addText( group );
+        var borderColor = MSColor.colorWithSVGString("#D8D8D8");
+        var textColor = MSColor.colorWithSVGString("#4A4A4A");
+        var shapeColor = MSColor.colorWithSVGString(hex);
+
+        group.setName(name);
+        shape.setName("Color");
+        text.setName("Text");
+
+        shape.frame().setWidth(32);
+        shape.frame().setHeight(32);
+
+        var sf = shape.style().fills().addNewStylePart();
+        sf.color = shapeColor;
+        var sb = shape.style().borders().addNewStylePart();
+        sb.color = borderColor;
+        sb.thickness = 1;
+
+        text.frame().setX(48);
+        text.frame().setY(2);
+        text.setTextColor(textColor);
+        text.setFontSize(24);
+        text.setFontPostscriptName("HelveticaNeue");
+        text.setStringValue(name);
+        text.setTextBehaviour(1);
+        text.setTextBehaviour(0);
+
+        group.resizeToFitChildrenWithOption(0);
+        group.frame().setX(64);
+
+        var y = 64 + (32 + 24) * count
+        group.frame().setY(y);
+    },
     colorNames: function(){
         if(!this.configs) return false;
 
-        var configsColors = this.find("@Color List", this.configsURL);
-        // this.configs.theme = (this.configs.theme)? 0: 1;
+        this.configsColors = this.find("Color List", this.configsPage);
+        this.configsColors = (!this.configsColors || this.is(this.configsColors, MSArtboardGroup))? this.configsColors: undefined;
 
-        // this.setConfigs({theme: this.configs.theme});
+        if( this.configsColors == false ){
+            this.configsColors = MSArtboardGroup.new();
+            frame = this.configsColors.frame();
+            frame.setY(100);
+            frame.setWidth(800);
+            frame.setHeight(600);
+            frame.setConstrainProportions(false);
+            this.configsPage.addLayers([this.configsColors]);
+            this.configsColors.setName("Color List");
+            this.document.setCurrentPage(this.configsPage);
 
-        // this.message(_("Remeasure all guides to see the new theme."));
+            this.addColorGroup("Aquamarine", "#50E3C2");
+            this.addColorGroup("CornflowerBlue", "#4A90E2");
+            this.addColorGroup("OrangeRed", "#FF5500");
+        }
+
+        this.getColorList();
     }
 });
 
@@ -2072,13 +2154,23 @@ com.utom.extend({
         var resolution = this.configs.resolution;
 
         var pluginPath = NSString.stringWithString(this.context.scriptPath).stringByDeletingLastPathComponent();
-        var template1Path = pluginPath.stringByAppendingPathComponent("assets/part-1");
-        var template2Path = pluginPath.stringByAppendingPathComponent("assets/part-2");
-        var template1 = [NSString stringWithContentsOfFile:template1Path encoding:NSUTF8StringEncoding error:nil];
-        var template2 = [NSString stringWithContentsOfFile:template2Path encoding:NSUTF8StringEncoding error:nil];
+        var tempPath = pluginPath.stringByAppendingPathComponent("assets/template.html");
+        var jqPath = pluginPath.stringByAppendingPathComponent("assets/jquery-1.12.0.min.js");
+        var jsappPath = pluginPath.stringByAppendingPathComponent("assets/app.js");
+        var specPath = pluginPath.stringByAppendingPathComponent("assets/spec.js");
+        var cssnorPath = pluginPath.stringByAppendingPathComponent("assets/normalize-3.0.3.min.css");
+        var cssappPath = pluginPath.stringByAppendingPathComponent("assets/app.css");
+
+        var tempCon = [NSString stringWithContentsOfFile:tempPath encoding:NSUTF8StringEncoding error:nil];
+        var jqCon = [NSString stringWithContentsOfFile:jqPath encoding:NSUTF8StringEncoding error:nil];
+        var jsappCon = [NSString stringWithContentsOfFile:jsappPath encoding:NSUTF8StringEncoding error:nil];
+        var specCon = [NSString stringWithContentsOfFile:specPath encoding:NSUTF8StringEncoding error:nil];
+        var cssnorCon = [NSString stringWithContentsOfFile:cssnorPath encoding:NSUTF8StringEncoding error:nil];
+        var cssappCon = [NSString stringWithContentsOfFile:cssappPath encoding:NSUTF8StringEncoding error:nil];
 
         var artboardsData = [];
         var slicesData = [];
+        var colorData = [];
 
         selectionArtboards = (this.is(selectionArtboards, MSArtboardGroup))? NSArray.arrayWithObjects(selectionArtboards): selectionArtboards;
         selectionArtboards = selectionArtboards.objectEnumerator();
@@ -2190,7 +2282,15 @@ com.utom.extend({
                     notes: notes
                 });
 
-                var content = template1 + "jQuery(function(){Spec(" + JSON.stringify(data).replace(/\u2028/g,'\\u2028').replace(/\u2029/g,'\\u2029') + ").artboardList(window.artboards || undefined).sliceList(window.slices || undefined)});" + template2;
+                var specContent = this.template(specCon, {json: JSON.stringify(data).replace(/\u2028/g,'\\u2028').replace(/\u2029/g,'\\u2029')});
+
+                var content = this.template(tempCon, {
+                    cssNormalize: cssnorCon,
+                    cssApp: cssappCon,
+                    jsjQuery: jqCon,
+                    jsApp: jsappCon,
+                    jsSpec: specContent
+                });
                 content = NSString.stringWithString(content);
                 var artname = this.toJSString( msArtboard.name() ).replace(/[\/\\]/g, "-");
                 var exportURL = savePath.stringByAppendingPathComponent( artname + ".html");
@@ -2223,7 +2323,28 @@ com.utom.extend({
                                 encoding: NSUTF8StringEncoding
                                    error: null];
         }
+
+        if(this.configsColors){
+            this.colorNames();
+            var cContent = NSString.stringWithString("var colors = " + JSON.stringify(this.configs.colors) + ";");
+            var cExportURL = savePath.stringByAppendingPathComponent( "colors.js");
+
+            [cContent writeToFile: cExportURL
+                              atomically: false
+                                encoding: NSUTF8StringEncoding
+                                   error: null];
+        }
         this.message(_("Export complete!"));
 
+    },
+    template: function(content, data) {
+        var content = content.replace(new RegExp("\\<\\!\\-\\-\\s([^\\s\\-\\-\\>]+)\\s\\-\\-\\>", "gi"), function($0, $1) {
+            if ($1 in data) {
+                return data[$1];
+            } else {
+                return $0;
+            }
+        });
+        return content;
     }
 });

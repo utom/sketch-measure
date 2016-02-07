@@ -136,6 +136,7 @@
             "toggle-locked",
             "lite-width",
             "lite-height",
+            "color-names",
             "spec-export",
             {
                 "title": "Settings",
@@ -150,7 +151,7 @@
         "title" : "Measure"
     },
     "identifier": "com.utom.sketch-measure",
-    "version": "0.9.22",
+    "version": "0.9.23",
     "description" : "A measure tool for measurements & design specs.",
     "authorEmail" : "utombox@gmail.com",
     "name" : "Sketch Measure"
