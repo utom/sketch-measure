@@ -151,7 +151,7 @@
         "title" : "Measure"
     },
     "identifier": "com.utom.sketch-measure",
-    "version": "0.9.23",
+    "version": "0.9.3",
     "description" : "A measure tool for measurements & design specs.",
     "authorEmail" : "utombox@gmail.com",
     "name" : "Sketch Measure"
