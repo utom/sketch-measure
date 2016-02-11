@@ -1722,12 +1722,14 @@ com.utom.extend({
         var colorGroups = this.configsColors.layers().array().objectEnumerator();
 
         while (colorGroup = colorGroups.nextObject()) {
-            var colorLayer = this.find(MSShapeGroup, colorGroup, false, "class");
-            var nameLayer = this.find(MSTextLayer, colorGroup, false, "class");
-            var color = this.getFills(colorLayer.style()).pop().color;
-            var RGBHex = this.rgbToHex(color.r, color.g, color.b);
-            var name = nameLayer.stringValue();
-            colorJSON["#" + RGBHex] = this.toJSString(name);
+            if( this.is( colorGroup, MSLayerGroup ) ){
+                var colorLayer = this.find(MSShapeGroup, colorGroup, false, "class");
+                var nameLayer = this.find(MSTextLayer, colorGroup, false, "class");
+                var color = this.getFills(colorLayer.style()).pop().color;
+                var RGBHex = this.rgbToHex(color.r, color.g, color.b);
+                var name = nameLayer.stringValue();
+                colorJSON["#" + RGBHex] = this.toJSString(name);
+            }
         }
         this.setConfigs({colors: colorJSON});
         return colorJSON;
