@@ -1387,8 +1387,8 @@ com.utom.extend({
         var layerStyle = layer.style();
 
         var colorContent = function(color){
+            var colorName = (self.configs.colors["#" + self.rgbToHex(color.r, color.g, color.b)])? self.configs.colors["#" + self.rgbToHex(color.r, color.g, color.b)]: undefined;
             if(propertyConfigs.showColorName && colorName){
-                var colorName = self.configs.colors["#" + self.rgbToHex(color.r, color.g, color.b)];
                 return colorName + " " + Math.round(color.a * 100) + "%";
             }
 

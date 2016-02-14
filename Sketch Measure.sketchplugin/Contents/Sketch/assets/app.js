@@ -346,10 +346,10 @@
                 jQArtboardList.append(jQArtboardItem);
             });
 
-            return self;
+            return this;
         },
         sliceList:function(slices) {
-            if(!slices) return false;
+            if(!slices) return this;
             var self = this, jQTemplate = $("#slice-item-template");
             jQArtboard.addClass("m");
 
