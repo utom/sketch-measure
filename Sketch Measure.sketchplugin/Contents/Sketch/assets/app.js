@@ -47,6 +47,7 @@
       3,   //  8: XXHDPI @3x (dp)
       4,   //  9: XXXHDPI @4x (dp)
       27,  // 10: Ubuntu Grid Units (27px)
+      14,  // 11: Css Rem (14px)
     ],
     ResolutionName = [
       "Standard",                    // 0
@@ -60,6 +61,7 @@
       "XXHDPI @3x (dp)",             // 8
       "XXXHDPI @4x (dp)",            // 9
       "Ubuntu Grid Units (27px)",    // 10
+      "Css Rem (14px)",              // 11
     ],
     ColorFormat = [
         "Color Hex",
@@ -106,6 +108,7 @@
             unit = this.resolution > 0 && this.resolution < 4 ? "pt" : unit;
             unit = this.resolution > 3 && sp ? "sp" : unit;
             unit = this.resolution === 10? "gu" : unit;
+            unit = this.resolution === 11? "rem" : unit;
             return size + unit;
         },
         zoomSize:function(size) {
