@@ -168,6 +168,10 @@ com.utom.extend({
           unit = "gu";
         }
 
+        if (scale === 14) {
+          unit = "rem";
+        }
+
         return length + unit;
     },
     updatePercentLength: function(length, width){
@@ -382,6 +386,10 @@ com.utom.extend({
         {
             name: "Ubuntu Grid Units (27px)",
             scale: 27
+        },
+        {
+            name: "Css Rem (14px)",
+            scale: 14
         },
     ],
     resolutionSetting: function(){
