@@ -40,12 +40,12 @@
       1,   //  1: Points @1x (pt)
       2,   //  2: Retina @2x (pt)
       3,   //  3: Retina HD @3x (pt)
-      .75, //  4: LDPI @0.75x (dp)
-      1,   //  5: MDPI @1x (dp)
-      1.5, //  6: HDPI @1.5x (dp)
-      2,   //  7: XHDPI @2x (dp)
-      3,   //  8: XXHDPI @3x (dp)
-      4,   //  9: XXXHDPI @4x (dp)
+      .75, //  4: LDPI @0.75x (dp, sp)
+      1,   //  5: MDPI @1x (dp, sp)
+      1.5, //  6: HDPI @1.5x (dp, sp)
+      2,   //  7: XHDPI @2x (dp, sp)
+      3,   //  8: XXHDPI @3x (dp, sp)
+      4,   //  9: XXXHDPI @4x (dp, sp)
       27,  // 10: Ubuntu Grid Units (27px)
       14,  // 11: CSS Rem (14px)
     ],
@@ -54,12 +54,12 @@
       "Points @1x (pt)",             // 1
       "Retina @2x (pt)",             // 2
       "Retina HD @3x (pt)",          // 3
-      "LDPI @0.75x (dp)",            // 4
-      "MDPI @1x (dp)",               // 5
-      "HDPI @1.5x (dp)",             // 6
-      "XHDPI @2x (dp)",              // 7
-      "XXHDPI @3x (dp)",             // 8
-      "XXXHDPI @4x (dp)",            // 9
+      "LDPI @0.75x (dp, sp)",            // 4
+      "MDPI @1x (dp, sp)",               // 5
+      "HDPI @1.5x (dp, sp)",             // 6
+      "XHDPI @2x (dp, sp)",              // 7
+      "XXHDPI @3x (dp, sp)",             // 8
+      "XXXHDPI @4x (dp, sp)",            // 9
       "Ubuntu Grid Units (27px)",    // 10
       "CSS Rem (14px)",              // 11
     ],
