@@ -388,7 +388,7 @@ com.utom.extend({
             scale: 27
         },
         {
-            name: "Css Rem (14px)",
+            name: "CSS Rem (14px)",
             scale: 14
         },
     ],
@@ -2266,8 +2266,9 @@ com.utom.extend({
 
                 var imageFileName = name + ".png";
                 var imagePath = this.toJSString( NSTemporaryDirectory().stringByAppendingPathComponent(imageFileName) );
-
-                [document saveArtboardOrSlice: msArtboard
+                var sliceArtboard = MSExportRequest.exportRequestsFromExportableLayer(msArtboard).firstObject();
+                sliceArtboard.scale = 2
+                [document saveArtboardOrSlice: sliceArtboard
                     toFile: imagePath ];
 
                 var imageURL = NSURL.fileURLWithPath(imagePath);

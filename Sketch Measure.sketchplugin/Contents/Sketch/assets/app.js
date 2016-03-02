@@ -47,7 +47,7 @@
       3,   //  8: XXHDPI @3x (dp)
       4,   //  9: XXXHDPI @4x (dp)
       27,  // 10: Ubuntu Grid Units (27px)
-      14,  // 11: Css Rem (14px)
+      14,  // 11: CSS Rem (14px)
     ],
     ResolutionName = [
       "Standard",                    // 0
@@ -61,7 +61,7 @@
       "XXHDPI @3x (dp)",             // 8
       "XXXHDPI @4x (dp)",            // 9
       "Ubuntu Grid Units (27px)",    // 10
-      "Css Rem (14px)",              // 11
+      "CSS Rem (14px)",              // 11
     ],
     ColorFormat = [
         "Color Hex",
