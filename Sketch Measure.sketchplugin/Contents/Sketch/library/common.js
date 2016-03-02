@@ -62,7 +62,7 @@ com.utom = {
     current: undefined,
     styles: undefined,
     isPercentage: false,
-    init: function(context){
+    init: function(context, currentIsArtboard){
         this.context = context;
         this.document = context.document;
         this.selection = context.selection;
@@ -70,7 +70,7 @@ com.utom = {
         this.page = this.document.currentPage();
         this.artboard = this.page.currentArtboard();
         this.current = this.artboard || this.page;
-        if(!this.is(this.current, MSArtboardGroup)){
+        if(currentIsArtboard && !this.is(this.current, MSArtboardGroup)){
             this.message(_("You need an artboard."));
             return false;
         }
@@ -1545,12 +1545,12 @@ com.utom.extend({
     toggleHidden: function(){
         if(!this.configs) return false;
 
-        var artboard = this.artboard;
+        var page = this.page;
 
         var isHidden = (this.configs.isHidden)? false : !Boolean(this.configs.isHidden);
         this.setConfigs({isHidden: isHidden});
 
-        var layers = artboard.children().objectEnumerator();
+        var layers = page.children().objectEnumerator();
 
         while(item = layers.nextObject()) {
             if(this.is(item, MSLayerGroup) && this.regexName.exec(item.name())){
@@ -1561,12 +1561,12 @@ com.utom.extend({
     toggleLocked: function(){
         if(!this.configs) return false;
 
-        var artboard = this.artboard;
+        var page = this.page;
 
         var isLocked = (this.configs.isLocked)? false : !Boolean(this.configs.isLocked);
         this.setConfigs({isLocked: isLocked});
 
-        var layers = artboard.children().objectEnumerator();
+        var layers = page.children().objectEnumerator();
 
         while(item = layers.nextObject()) {
             if(this.is(item, MSLayerGroup) && this.regexName.exec(item.name())){

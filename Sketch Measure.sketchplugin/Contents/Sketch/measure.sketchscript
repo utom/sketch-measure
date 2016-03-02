@@ -1,37 +1,37 @@
 @import "library/common.js"
 
 function createOverlay(context) {
-    com.utom.init(context);
+    com.utom.init(context, true);
     com.utom.createOverlay();
 }
 
 function measureSize(context) {
-    com.utom.init(context);
+    com.utom.init(context, true);
     com.utom.measureSize();
 }
 
 function measureSpacing(context) {
-    com.utom.init(context);
+    com.utom.init(context, true);
     com.utom.measureSpacing();
 }
 
 function getProperty(context) {
-    com.utom.init(context);
+    com.utom.init(context, true);
     com.utom.getProperty();
 }
 
 function createNote(context) {
-    com.utom.init(context);
+    com.utom.init(context, true);
     com.utom.createNote();
 }
 
 function measurePercentageSize(context) {
-    com.utom.init(context);
+    com.utom.init(context, true);
     com.utom.measurePercentageSize();
 }
 
 function measurePercentageSpacing(context) {
-    com.utom.init(context);
+    com.utom.init(context, true);
     com.utom.measurePercentageSpacing();
 }
 
@@ -46,7 +46,7 @@ function toggleLocked(context) {
 }
 
 function moveToGroup(context) {
-    com.utom.init(context);
+    com.utom.init(context, true);
     com.utom.moveToGroup();
 }
 
@@ -56,12 +56,12 @@ function clearMeasure(context) {
 }
 
 function liteWidth(context) {
-    com.utom.init(context);
+    com.utom.init(context, true);
     com.utom.liteWidth();
 }
 
 function liteHeight(context) {
-    com.utom.init(context);
+    com.utom.init(context, true);
     com.utom.liteHeight();
 }
 
