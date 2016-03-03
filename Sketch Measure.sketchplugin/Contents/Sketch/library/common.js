@@ -384,7 +384,7 @@ com.utom.extend({
             scale: 4
         },
         {
-            name: "Ubuntu Grid Units (27px)",
+            name: "Ubuntu Grid (27px)",
             scale: 27
         },
         {

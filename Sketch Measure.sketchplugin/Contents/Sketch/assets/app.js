@@ -60,7 +60,7 @@
       "XHDPI @2x (dp, sp)",              // 7
       "XXHDPI @3x (dp, sp)",             // 8
       "XXXHDPI @4x (dp, sp)",            // 9
-      "Ubuntu Grid Units (27px)",    // 10
+      "Ubuntu Grid (27px)",    // 10
       "CSS Rem (14px)",              // 11
     ],
     ColorFormat = [
