@@ -50,10 +50,11 @@ var com = com || {};
 
 com.utom = {
     configsPage: undefined,
-    configsLayer: undefined,
     configsColors: undefined,
+    prefix: "SMConfigs",
     configs: undefined,
     context: undefined,
+    command: undefined,
     document: undefined,
     selection: undefined,
     pages: undefined,
@@ -65,6 +66,7 @@ com.utom = {
     init: function(context, currentIsArtboard){
         this.context = context;
         this.document = context.document;
+        this.command = context.command;
         this.selection = context.selection;
         this.pages = this.document.pages();
         this.page = this.document.currentPage();
@@ -291,8 +293,35 @@ com.utom.extend({
 
 //Configs
 com.utom.extend({
+    getConfigs: function(container){
+        var container = (container)? container: this.page;
+        var command = this.command;
+        var prefix = this.prefix;
+        var configsData = [command valueForKey: prefix onLayer: container];
+        return JSON.parse(configsData);
+    },
+    setConfigs: function(newConfigs, container){
+        var container = (container)? container: this.page;
+        var command = this.command;
+        var prefix = this.prefix;
+        var configs = this.extend(newConfigs, this.getConfigs() || {});
+        configs.timestamp = new Date().getTime();
+
+        var configsData = JSON.stringify(configs);
+        [command setValue: configsData forKey: prefix onLayer: container];
+        return configs;
+    },
+    removeConfigs: function(container){
+        var container = (container)? container: this.page;
+        var command = this.command;
+        var prefix = this.prefix;
+
+        [command setValue: null forKey: prefix onLayer: container];
+    },
     initConfigs: function(){
+        this.configs = this.getConfigs();
         this.configsPage = this.find("@Sketch Measure", this.pages, true);
+
         var currentPage = this.page;
         if(this.configsPage == false){
             this.configsPage = this.document.addBlankPage();
@@ -300,9 +329,7 @@ com.utom.extend({
             this.document.setCurrentPage(currentPage);
         }
 
-        this.configsLayer = this.find("Configs", this.configsPage);
-        this.configsLayer = (!this.configsLayer || this.is(this.configsLayer, MSTextLayer))? this.configsLayer: undefined;
-        if(this.configsLayer == false){
+        if(!this.configs){
             var defaultConfigs = {};
             var resolution = this.resolutionSetting();
 
@@ -313,30 +340,11 @@ com.utom.extend({
             defaultConfigs.resolution = resolution;
             defaultConfigs.property = ["color", "border"];
             defaultConfigs.colorFormat = 0;
-            this.setConfigs(defaultConfigs);
+            this.configs = this.setConfigs(defaultConfigs);
         }
-        else{
-            this.configs = JSON.parse(this.configsLayer.stringValue());
-        }
+
         this.configsColors = this.find("Color List", this.configsPage);
-    },
-    setConfigs: function(configs){
-        this.configs = this.configs || {};
 
-        this.extend(configs, this.configs);
-        this.configs.timestamp = new Date().getTime();
-
-        if(this.configsLayer == false){
-            this.configsLayer = this.addText(this.configsPage);
-            this.configsLayer.setName("Configs");
-        }
-
-        this.configsLayer.setStringValue(JSON.stringify(this.configs));
-
-        this.configsLayer.setTextBehaviour(1);
-        this.configsLayer.setTextBehaviour(0);
-        this.configsLayer.setIsLocked(true);
-        this.configsLayer.setIsVisible(false);
     }
 });
 
@@ -529,7 +537,7 @@ com.utom.extend({
         var labelWidth = labelDims.width;
         var labelHeight = labelDims.height;
 
-        label.setName("" + frame.width);
+        label.setName("label");
         labelFrame.setWidth(labelWidth);
         labelFrame.setHeight(labelHeight);
 
@@ -583,6 +591,8 @@ com.utom.extend({
 
         textFrame.setX(labelX + labelDims.padding);
         textFrame.setY(labelY + labelDims.padding);
+
+        this.setConfigs({original: frame.width}, container);
 
         this.removeLayer(shape);
         this.removeLayer(textL);
@@ -650,7 +660,7 @@ com.utom.extend({
 
         var arrow = shape.duplicate();
         var arrowFrame = arrow.absoluteRect();
-        arrow.setName("" + frame.width);
+        arrow.setName("arrow");
         arrowFrame.setWidth(1);
         arrowFrame.setHeight(6);
         arrowFrame.setX( frame.x + this.mathHalf(frame.width - 1)  );
@@ -693,6 +703,8 @@ com.utom.extend({
         else if(aFrame.maxX < tFrame.maxX){
             textFrame.setX( tFrame.x - (tFrame.maxX - aFrame.maxX) );
         }
+
+        this.setConfigs({original: frame.width}, container);
 
         this.removeLayer(shape);
         this.removeLayer(textL);
@@ -769,7 +781,7 @@ com.utom.extend({
         var labelWidth = labelDims.width;
         var labelHeight = labelDims.height;
 
-        label.setName("" + frame.height);
+        label.setName("label");
         labelFrame.setWidth( labelWidth );
         labelFrame.setHeight( labelHeight );
 
@@ -823,6 +835,8 @@ com.utom.extend({
 
         textFrame.setX(labelX + labelDims.padding);
         textFrame.setY(labelY + labelDims.padding);
+
+        this.setConfigs({original: frame.height}, container);
 
         this.removeLayer(shape);
         this.removeLayer(textL);
@@ -890,7 +904,7 @@ com.utom.extend({
 
         var arrow = shape.duplicate();
         var arrowFrame = arrow.absoluteRect();
-        arrow.setName("" + frame.height);
+        arrow.setName("arrow");
         arrowFrame.setWidth(6);
         arrowFrame.setHeight(1);
         arrowFrame.setY( frame.y + this.mathHalf(frame.height - 1)  );
@@ -923,6 +937,8 @@ com.utom.extend({
                 textFrame.setX( lx + 7 );
             }
         }
+
+        this.setConfigs({original: frame.height}, container);
 
         this.removeLayer(shape);
         this.removeLayer(textL);
@@ -1184,7 +1200,7 @@ com.utom.extend({
             container.addLayers([text]);
 
             text.setStyle(textStyle);
-            if(configs) text.setName(JSON.stringify(configs));
+            if(configs) this.setConfigs(configs, container);
         }
 
         textFrameAbsoluteRect = text.absoluteRect();
@@ -1345,7 +1361,7 @@ com.utom.extend({
                 }
             });
 
-            this.setConfigs({property: types, propertyPosition: position, colorFormat: colorFormat, showColorName: comboShowColorNameBtn.state() });
+            this.configs = this.setConfigs({property: types, propertyPosition: position, colorFormat: colorFormat, showColorName: comboShowColorNameBtn.state() });
             return {
                 types: types,
                 position: position,
@@ -1548,7 +1564,7 @@ com.utom.extend({
         var page = this.page;
 
         var isHidden = (this.configs.isHidden)? false : !Boolean(this.configs.isHidden);
-        this.setConfigs({isHidden: isHidden});
+        this.configs = this.setConfigs({isHidden: isHidden});
 
         var layers = page.children().objectEnumerator();
 
@@ -1564,7 +1580,7 @@ com.utom.extend({
         var page = this.page;
 
         var isLocked = (this.configs.isLocked)? false : !Boolean(this.configs.isLocked);
-        this.setConfigs({isLocked: isLocked});
+        this.configs = this.setConfigs({isLocked: isLocked});
 
         var layers = page.children().objectEnumerator();
 
@@ -1614,11 +1630,12 @@ com.utom.extend({
     },
     resetSizeGuide: function(layerGroup){
         if(this.configs.theme) return this.resetSizeGuideNop( layerGroup );
-        var layers = layerGroup.children().objectEnumerator(),
+        var smConfigs = this.getConfigs(layerGroup),
+            layers = layerGroup.children().objectEnumerator(),
             label, gap, text;
 
         while(layer = layers.nextObject()) {
-            if(this.is(layer, MSShapeGroup) && !isNaN(layer.name())) label = layer;
+            if(layer.name() == "label") label = layer;
             if(layer.name() == "gap") gap = layer;
             if(this.is(layer, MSTextLayer)) text = layer;
         }
@@ -1629,7 +1646,7 @@ com.utom.extend({
         gf = this.getFrame(gap);
         tf = this.getFrame(text);
 
-        text.setStringValue(this.updateLength(label.name()));
+        text.setStringValue(this.updateLength(smConfigs.original));
         text.setTextBehaviour(1);
         text.setTextBehaviour(0);
 
@@ -1649,10 +1666,11 @@ com.utom.extend({
         return layerGroup;
     },
     resetSizeGuideNop: function(layerGroup){
-        var layers = layerGroup.children().objectEnumerator(),
+        var smConfigs = this.getConfigs(layerGroup),
+            layers = layerGroup.children().objectEnumerator(),
             arrow, line, text;
         while(layer = layers.nextObject()) {
-            if(this.is(layer, MSShapeGroup) && !isNaN(layer.name())) arrow = layer;
+            if(layer.name() == "arrow") arrow = layer;
             if(layer.name() == "line") line = layer;
             if(this.is(layer, MSTextLayer)) text = layer;
         }
@@ -1663,7 +1681,7 @@ com.utom.extend({
         lf = this.getFrame(line);
         tf = this.getFrame(text);
 
-        text.setStringValue(this.updateLength(arrow.name()));
+        text.setStringValue(this.updateLength(smConfigs.original));
         text.setTextBehaviour(1);
         text.setTextBehaviour(0);
 
@@ -1685,23 +1703,26 @@ com.utom.extend({
 
         return layerGroup;
     },
-    resetPropertyGuide: function(layer){
-        var splitName = layer.name().split("#");
+    resetPropertyGuide: function(layerGroup){
+        var smConfigs = this.getConfigs(layerGroup);
+        var splitName = layerGroup.name().split("#");
         var msLayer = this.find(splitName[1], this.page, false, "objectID");
-        var msText = this.find(MSTextLayer, layer, false, "class");
-        var lf = this.getFrame(layer);
-        var nl = this.getProperty(msLayer, JSON.parse(msText.name())).absoluteRect();
+        var msText = this.find(MSTextLayer, layerGroup, false, "class");
+        var lf = this.getFrame(layerGroup);
+        var nl = this.getProperty(msLayer, smConfigs).absoluteRect();
 
         nl.setX(lf.x);
         nl.setY(lf.y);
+
+        return layerGroup;
     },
     resetConfigs: function(){
         if(!this.configs) return false;
         var theme = this.configs.theme;
-        this.removeLayer(this.configsLayer);
+        this.removeConfigs();
         this.initConfigs();
 
-        this.setConfigs({theme: theme});
+        this.configs = this.setConfigs({theme: theme});
 
         var page = this.page;
 
@@ -1721,7 +1742,7 @@ com.utom.extend({
 
         this.configs.theme = (this.configs.theme)? 0: 1;
 
-        this.setConfigs({theme: this.configs.theme});
+        this.configs = this.setConfigs({theme: this.configs.theme});
 
         this.message(_("Remeasure all guides to see the new theme."));
     },
@@ -1739,7 +1760,7 @@ com.utom.extend({
                 colorJSON["#" + RGBHex] = this.toJSString(name);
             }
         }
-        this.setConfigs({colors: colorJSON});
+        this.configs = this.setConfigs({colors: colorJSON});
         return colorJSON;
     },
     addColorGroup: function(name, hex){
