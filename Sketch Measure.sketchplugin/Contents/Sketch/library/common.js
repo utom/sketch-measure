@@ -1411,9 +1411,9 @@ com.utom.extend({
         var layerStyle = layer.style();
 
         var colorContent = function(color){
-            var colorName = (self.configs.colors && self.configs.colors["#" + self.rgbToHex(color.r, color.g, color.b)])? self.configs.colors["#" + self.rgbToHex(color.r, color.g, color.b)]: undefined;
+            var colorName = (self.configs.colors && self.configs.colors["#" + self.rgbToHex(color.r, color.g, color.b, color.a)])? self.configs.colors["#" + self.rgbToHex(color.r, color.g, color.b, color.a)]: undefined;
             if(propertyConfigs.showColorName && colorName){
-                return colorName + " " + Math.round(color.a * 100) + "%";
+                return colorName;
             }
 
             if(colorFormat === 0){
@@ -1755,11 +1755,12 @@ com.utom.extend({
                 var colorLayer = this.find(MSShapeGroup, colorGroup, false, "class");
                 var nameLayer = this.find(MSTextLayer, colorGroup, false, "class");
                 var color = this.getFills(colorLayer.style()).pop().color;
-                var RGBHex = this.rgbToHex(color.r, color.g, color.b);
+                var ARGBHex = this.rgbToHex(color.r, color.g, color.b, color.a);
                 var name = nameLayer.stringValue();
-                colorJSON["#" + RGBHex] = this.toJSString(name);
+                colorJSON["#" + ARGBHex] = this.toJSString(name);
             }
         }
+        log(colorJSON)
         this.configs = this.setConfigs({colors: colorJSON});
         return colorJSON;
     },

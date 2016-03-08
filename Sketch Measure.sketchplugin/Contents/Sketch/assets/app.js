@@ -89,7 +89,8 @@
         updateColor:function(color) {
             var alpha = Math.round(color.a * 100) / 100,
                 hex = this.rgbToHex(color.r, color.g, color.b),
-                name = this.colorNames? this.colorNames[hex]: undefined;
+                argbhex = this.rgbToHex(color.r, color.g, color.b, alpha),
+                name = this.colorNames? this.colorNames[argbhex]: undefined;
 
             return {
                 r: color.r,
@@ -97,7 +98,7 @@
                 b: color.b,
                 a: alpha,
                 hex: hex,
-                argb: this.rgbToHex(color.r, color.g, color.b, alpha),
+                argb: argbhex,
                 alpha: Math.round(100 * alpha) + "%",
                 name: name? name: undefined
             }
@@ -413,7 +414,6 @@
             }
         },
         color:function(fill, jQTarget, index, max) {
-            console.log(fill)
             var self = this, jQColorTemplate = $("#color-template"), jQFill;
             if (fill.fillType == "color") {
                 var colorJSON = self.updateColor(fill.color),
