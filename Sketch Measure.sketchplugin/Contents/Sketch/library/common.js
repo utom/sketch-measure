@@ -2236,8 +2236,8 @@ com.utom.extend({
                     {
                         continue;
                     }
-
-                    if(msLayer.hasClippingMask()){
+log(msLayer.name())
+                    if(msLayer.hasClippingMask() && msLayer.name() != "Duplicate control"){
                         this.maskObjectID = msGroup.objectID();
                     }
                     else if (this.maskObjectID != msGroup.objectID() || msLayer.shouldBreakMaskChain()) {
