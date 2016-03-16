@@ -466,7 +466,7 @@
                 y:self.resolutionSize(model.rect.y),
                 width:self.resolutionSize(model.rect.width),
                 height:self.resolutionSize(model.rect.height),
-                opacity:model.opacity * 100 + "%",
+                opacity: Math.round(model.opacity * 100) + "%",
                 radius:self.resolutionSize(model.radius)
             }));
             if (!model.radius) $(".radius").hide();
