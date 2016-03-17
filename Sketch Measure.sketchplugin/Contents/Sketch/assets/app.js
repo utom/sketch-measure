@@ -476,6 +476,7 @@
                     self.template($("#type-template"), {
                         size:self.resolutionSize(model.fontSize, true),
                         line:self.resolutionSize(model.lineHeight, true),
+                        character:self.resolutionSize(model.letterSpacing, true),
                         face:model.fontFace
                     })
                 )

@@ -1281,6 +1281,10 @@ com.utom.extend({
             slug: "font-size"
         },
         {
+            name: _("Character"),
+            slug: "character"
+        },
+        {
             name: _("Line height"),
             slug: "line-height"
         },
@@ -1498,6 +1502,10 @@ com.utom.extend({
                 case "font-size":
                     if(!self.is(layer, MSTextLayer)) return false;
                     content.push("font-size: " + self.updateLength(layer.fontSize(), true) );
+                    break;
+                case "character":
+                    if(!self.is(layer, MSTextLayer)) return false;
+                    content.push("character: " + self.updateLength(layer.characterSpacing(), true) );
                     break;
                 case "line-height":
                     if(!self.is(layer, MSTextLayer)) return false;
@@ -2338,7 +2346,7 @@ log(msLayer.name())
 
         var sliceLayers = this.page.exportableLayers();
 
-        if(slicesData.length > 1){
+        if(slicesData.length > 0){
             var sContent = NSString.stringWithString("var slices = " + JSON.stringify(slicesData) + ";");
             var sExportURL = savePath.stringByAppendingPathComponent( "slices.js");
             [sContent writeToFile: sExportURL
