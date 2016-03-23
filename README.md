@@ -62,18 +62,19 @@ To create your own custom shortcuts, go to Keyboard in your System Preferences a
 
 Menu Titles:
 
-* `Plugins->Measure->1. Create overlay`
-* `Plugins->Measure->2. Measure size`
-* `Plugins->Measure->3. Measure spacing`
-* `Plugins->Measure->4. Get property`
-* `Plugins->Measure->5. Create note`
-* `Plugins->Measure->5. Create note`
-* `Plugins->Measure->6. Percentage for size`
-* `Plugins->Measure->7. Percentage for spacing`
-* `Plugins->Measure->Toggle measure hidden`
-* `Plugins->Measure->Lite width`
-* `Plugins->Measure->Lite height`
-* `Plugins->Measure->Spec export`
+* `1. Create overlay`
+* `2. Measure size`
+* `3. Measure spacing`
+* `4. Get property`
+* `5. Create note`
+* `5. Create note`
+* `6. Percentage for size`
+* `7. Percentage for spacing`
+* `Toggle measure hidden`
+* `Toggle measure locked`
+* `Lite width`
+* `Lite height`
+* `Spec export`
 
 ## SPEC EXPORT (beta)
 http://utom.design/measure/spec-export-demo/
