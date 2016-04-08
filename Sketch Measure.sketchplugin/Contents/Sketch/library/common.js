@@ -1768,7 +1768,6 @@ com.utom.extend({
                 colorJSON["#" + ARGBHex] = this.toJSString(name);
             }
         }
-        log(colorJSON)
         this.configs = this.setConfigs({colors: colorJSON});
         return colorJSON;
     },
@@ -1914,7 +1913,7 @@ com.utom.extend({
 com.utom.extend({
     slicesPath: undefined,
     maskObjectID: undefined,
-    sliceObjectID: undefined,
+    maskRect: undefined,
     isExportable: function(layer) {
         return this.is(layer, MSTextLayer) ||
                this.is(layer, MSShapeGroup) ||
@@ -1926,20 +1925,25 @@ com.utom.extend({
         var msGroup = layer.parentGroup();
         return (this.regexName.exec(msGroup.name()));
     },
-    isEnabled: function(layer){
+    getStates: function(layer){
+        var isVisible = true;
+        var isLocked = false;
+        var hasSlices = false;
+        var isMaskChildLayer = false;
+
         while (!this.is(layer, MSArtboardGroup)) {
             var msGroup = layer.parentGroup();
 
             if (!layer.isVisible()) {
-                return true;
+                isVisible = false;
             }
 
             if (layer.isLocked()) {
-                return true;
+                isLocked = true;
             }
 
             if ( this.is(msGroup, MSLayerGroup) && this.hasExportSizes(msGroup) ) {
-                return true;
+                hasSlices = true
             }
 
             if (
@@ -1947,13 +1951,68 @@ com.utom.extend({
                 msGroup.objectID() == this.maskObjectID &&
                 !layer.shouldBreakMaskChain()
             ) {
-                return true;
+                isMaskChildLayer = true
             }
 
             layer = msGroup;
         }
+        return {
+            isVisible: isVisible,
+            isLocked: isLocked,
+            hasSlices: hasSlices,
+            isMaskChildLayer: isMaskChildLayer
+        }
+    },
+    updateMaskRect: function(layer) {
+        var layer = this.extend(layer, {});
+        layer.maxX = layer.x + layer.width;
+        layer.maxY = layer.y + layer.height;
+        var mask = this.extend(this.maskRect, {});
+        mask.maxX = mask.x + mask.width;
+        mask.maxY = mask.y + mask.height;
+        var x = layer.x;
+        var y = layer.y;
+        var width = layer.width;
+        var height = layer.height;
+        var dx = 0;
+        var dy = 0;
 
-        return false;
+        if(this.isIntersect(layer, mask)){
+            if(layer.x < mask.x){
+                x = mask.x;
+                dx = mask.x - layer.x;
+            }
+
+            if(layer.y < mask.y){
+                y = mask.y;
+                dy = mask.y - layer.y;
+            }
+
+            if(layer.maxX > mask.maxX){
+                width = width - (layer.maxX - mask.maxX);
+            }
+            else{
+                width = width - dx;
+            }
+
+            if(layer.maxY > mask.maxY){
+                height = height - (layer.maxY - mask.maxY);
+            }
+            else{
+                height = height - dy;
+            }
+
+            return {
+                x: x,
+                y: y,
+                width: width,
+                height: height
+            }
+        }
+        else{
+            return false
+        }
+
     },
     hasExportSizes: function(layer){
         return layer.exportOptions().exportFormats().count() > 0;
@@ -2225,6 +2284,7 @@ com.utom.extend({
 
                 while(msLayer = layerIter.nextObject()) {
                     var msGroup = msLayer.parentGroup();
+
                     if(msLayer && this.is(msLayer, MSLayerGroup) && /LABEL\#|NOTE\#/.exec(msLayer.name())){
                         var msText = msLayer.children()[2];
 
@@ -2236,27 +2296,24 @@ com.utom.extend({
                         msLayer.setIsVisible(false);
                     }
 
+                    var layerStates = this.getStates(msLayer);
+
                     if (
                         !this.isExportable(msLayer) ||
-                        this.isEnabled(msLayer) ||
+                        !layerStates.isVisible ||
+                        layerStates.isLocked ||
+                        layerStates.hasSlices ||
                         this.isMeasure(msLayer)
                     )
                     {
                         continue;
                     }
-log(msLayer.name())
-                    if(msLayer.hasClippingMask() && msLayer.name() != "Duplicate control"){
-                        this.maskObjectID = msGroup.objectID();
-                    }
-                    else if (this.maskObjectID != msGroup.objectID() || msLayer.shouldBreakMaskChain()) {
-                        this.maskObjectID = undefined;
-                    }
 
-                    var layer = {};
 
                     var type = this.is(msLayer, MSTextLayer) ? "text" : "shape";
                     type = this.hasExportSizes(msLayer) || this.is(msLayer, MSSliceLayer) ? "slice" : type;
 
+                    var layer = {};
                     layer.objectID = this.toJSString(msLayer.objectID());
                     layer.type = type;
                     layer.name = this.toJSString(msLayer.name());
@@ -2285,12 +2342,28 @@ log(msLayer.name())
                         layer.lineHeight = msLayer.lineSpacing();
                     }
 
-                    if ( type ===  "slice" ){
-                        slicesData.push(layer);
-
+                    if(msLayer.hasClippingMask()){
+                        this.maskObjectID = msGroup.objectID();
+                        this.maskRect = this.rectToJSON(msLayer.absoluteRect(), artboardFrame);
+                    }
+                    else if (this.maskObjectID != msGroup.objectID() || msLayer.shouldBreakMaskChain()) {
+                        this.maskObjectID = undefined;
+                        this.maskRect = undefined;
                     }
 
-                    layers.push(layer);
+                    
+
+                    if ( type ===  "slice" ){
+                        slicesData.push(layer);
+                    }
+
+                    if (layerStates.isMaskChildLayer){
+                        layer.rect = this.updateMaskRect(layer.rect)
+                    }
+
+                    if (layer.rect){
+                        layers.push(layer);
+                    }
 
                 }
 
