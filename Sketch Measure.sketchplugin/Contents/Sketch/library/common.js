@@ -1790,8 +1790,8 @@ com.utom.extend({
     },
     addColors: function(colors){
         var self = this;
-        
-        var colors = this.extend(this.colors, colors);
+
+        var colors = this.extend(this.colors, colors || {});
         var pluginPath = NSString.stringWithString(self.context.scriptPath).stringByDeletingLastPathComponent();
         var imagePath = pluginPath.stringByAppendingPathComponent("assets/transparent-background.png");
         var transparentImage = [[NSImage alloc] initWithContentsOfFile:imagePath];
