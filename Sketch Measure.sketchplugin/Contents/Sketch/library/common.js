@@ -304,7 +304,7 @@ com.utom.extend({
         var container = (container)? container: this.page;
         var command = this.command;
         var prefix = this.prefix;
-        var configs = this.extend(newConfigs, this.getConfigs() || {});
+        var configs = this.extend(newConfigs, this.getConfigs(container) || {});
         configs.timestamp = new Date().getTime();
 
         var configsData = JSON.stringify(configs);
@@ -320,13 +320,11 @@ com.utom.extend({
     },
     initConfigs: function(){
         this.configs = this.getConfigs();
-        this.configsPage = this.find("@Sketch Measure", this.pages, true);
+        
+        this.configsPage = this.find("Sketch Measure", this.pages, true);
 
-        var currentPage = this.page;
-        if(this.configsPage == false){
-            this.configsPage = this.document.addBlankPage();
-            this.configsPage.setName("@Sketch Measure");
-            this.document.setCurrentPage(currentPage);
+        if(this.configsPage){
+            this.configsColors = this.find("Color Palette", this.configsPage);
         }
 
         if(!this.configs){
@@ -343,7 +341,7 @@ com.utom.extend({
             this.configs = this.setConfigs(defaultConfigs);
         }
 
-        this.configsColors = this.find("Color List", this.configsPage);
+        
 
     }
 });
@@ -1408,7 +1406,7 @@ com.utom.extend({
         if(!types) return false;
 
         if(showColorName){
-            this.colorNames();
+            this.getColors();
         }
 
         var content = [];
@@ -1754,83 +1752,261 @@ com.utom.extend({
 
         this.message(_("Remeasure all guides to see the new theme."));
     },
-    getColorList: function(){
+    getColors: function(output){
+        if (!this.configsColors){
+            this.configs.colors = {};
+            return false;
+        }
+
         var colorJSON = {};
+        var colorDetailJSON = {};
         var colorGroups = this.configsColors.layers().array().objectEnumerator();
 
         while (colorGroup = colorGroups.nextObject()) {
             if( this.is( colorGroup, MSLayerGroup ) ){
-                var colorLayer = this.find(MSShapeGroup, colorGroup, false, "class");
-                var nameLayer = this.find(MSTextLayer, colorGroup, false, "class");
+                var configs = this.getConfigs(colorGroup);
+                var nameLayer = this.find(configs.nameLayer, colorGroup, false, "objectID");
+                var colorLayer = this.find(configs.colorLayer, colorGroup, false, "objectID");
                 var color = this.getFills(colorLayer.style()).pop().color;
-                var ARGBHex = this.rgbToHex(color.r, color.g, color.b, color.a);
+                var hex = "#" + this.rgbToHex(color.r, color.g, color.b);
+                var argb_hex = "#" + this.rgbToHex(color.r, color.g, color.b, color.a);
                 var name = nameLayer.stringValue();
-                colorJSON["#" + ARGBHex] = this.toJSString(name);
+
+                colorDetailJSON[argb_hex] = this.extend(color, {
+                    name: name,
+                    hex: hex,
+                    argb_hex: argb_hex
+                });
+                if(name != "untitled"){
+                    colorJSON[argb_hex] = this.toJSString(name);
+                }
             }
         }
-        this.configs = this.setConfigs({colors: colorJSON});
-        return colorJSON;
+
+        this.setConfigs({colors: colorJSON});
+        this.configs.colors = colorJSON;
+        this.colors = colorDetailJSON;
+        return colorDetailJSON;
     },
-    addColorGroup: function(name, hex){
-        var count = this.configsColors.layers().count();
-        var group = this.addGroup( this.configsColors );
-        var shape = this.addShape( group );
-        var text = this.addText( group );
-        var borderColor = MSColor.colorWithSVGString("#D8D8D8");
-        var textColor = MSColor.colorWithSVGString("#4A4A4A");
-        var shapeColor = MSColor.colorWithSVGString(hex);
+    addColors: function(colors){
+        var self = this;
+        
+        var colors = this.extend(this.colors, colors);
+        var pluginPath = NSString.stringWithString(self.context.scriptPath).stringByDeletingLastPathComponent();
+        var imagePath = pluginPath.stringByAppendingPathComponent("assets/transparent-background.png");
+        var transparentImage = [[NSImage alloc] initWithContentsOfFile:imagePath];
 
-        group.setName(name);
-        shape.setName("Color");
-        text.setName("Text");
+        var index = 0;
+        var column = 0;
+        var row = 0;
 
-        shape.frame().setWidth(32);
-        shape.frame().setHeight(32);
+        for ( var argb_hex in colors ){
+            var color = colors[argb_hex];
+            var group = self.addGroup( self.configsColors );
+            var shape = self.addShape( group );
+            var nameText = self.addText( group );
+            var infoText = self.addText( group );
+            var name = color.name? color.name: "untitled";
+            var shapeColor = MSColor.colorWithSVGString(color.hex);
+            shapeColor.setAlpha(color.a);
 
-        var sf = shape.style().fills().addNewStylePart();
-        sf.color = shapeColor;
-        var sb = shape.style().borders().addNewStylePart();
-        sb.color = borderColor;
-        sb.thickness = 1;
+            var grayscale = color.r * 0.299 + color.g * 0.587 + color.b * 0.114;
 
-        text.frame().setX(48);
-        text.frame().setY(2);
-        text.setTextColor(textColor);
-        text.setFontSize(24);
-        text.setFontPostscriptName("HelveticaNeue");
-        text.setStringValue(name);
-        text.setTextBehaviour(1);
-        text.setTextBehaviour(0);
+            var textHex = ( grayscale >= 180 )? "#4A4A4A": "#FFFFFF";
 
-        group.resizeToFitChildrenWithOption(0);
-        group.frame().setX(64);
+            var textColor =  MSColor.colorWithSVGString(textHex);
 
-        var y = 64 + (32 + 24) * count
-        group.frame().setY(y);
-    },
-    colorNames: function(){
-        if(!this.configs) return false;
+            group.setName(name);
+            shape.setName("color");
+            nameText.setName("name");
+            infoText.setName("text");
 
-        this.configsColors = this.find("Color List", this.configsPage);
-        this.configsColors = (!this.configsColors || this.is(this.configsColors, MSArtboardGroup))? this.configsColors: undefined;
+            shape.frame().setWidth(160);
+            shape.frame().setHeight(128);
 
-        if( this.configsColors == false ){
-            this.configsColors = MSArtboardGroup.new();
-            frame = this.configsColors.frame();
-            frame.setY(100);
-            frame.setWidth(800);
-            frame.setHeight(600);
-            frame.setConstrainProportions(false);
-            this.configsPage.addLayers([this.configsColors]);
-            this.configsColors.setName("Color List");
-            this.document.setCurrentPage(this.configsPage);
+            var transparentBg = shape.style().fills().addNewStylePart();
+            transparentBg.setFillType(4);
+            transparentBg.setPatternImage(transparentImage);
 
-            this.addColorGroup("Aquamarine", "#50E3C2");
-            this.addColorGroup("CornflowerBlue", "#4A90E2");
-            this.addColorGroup("OrangeRed", "#FF5500");
+            var colorBg = shape.style().fills().addNewStylePart();
+            colorBg.setFillType(0);
+            colorBg.color = shapeColor;
+
+            nameText.frame().setX(16);
+            nameText.frame().setY(16);
+            nameText.setTextColor(textColor);
+            nameText.setFontSize(20);
+            nameText.setFontPostscriptName("HelveticaNeue-Medium");
+            nameText.setStringValue(name);
+            nameText.setTextBehaviour(1);
+            nameText.setTextBehaviour(0);
+
+            info = [
+                "#" + self.rgbToHex(color.r, color.g, color.b) + ", " + Math.round(color.a * 100) + "%",
+                "#" + self.rgbToHex(color.r, color.g, color.b, color.a),
+                "rgba(" + color.r + "," + color.g + "," + color.b + "," + Math.round(color.a * 10) / 10 + ")"
+            ]
+
+            textColor.setAlpha(.64)
+            infoText.frame().setX(16);
+            infoText.frame().setY(48);
+            infoText.setTextColor(textColor);
+            infoText.setFontSize(14);
+            infoText.setFontPostscriptName("HelveticaNeue-Light");
+            infoText.setStringValue(info.join("\r\n"));
+            infoText.setTextBehaviour(1);
+            infoText.setTextBehaviour(0);
+
+            shape.setIsLocked(true);
+            // infoText.setIsLocked(true);
+            group.resizeToFitChildrenWithOption(0);
+            group.frame().setX( 160 * column );
+            group.frame().setY( 128 * row );
+
+            self.setConfigs({nameLayer: self.toJSString(nameText.objectID()), colorLayer: self.toJSString(shape.objectID())}, group);
+
+            if(index % 5 == 4 && column == 4){
+                if(row * 128 > 640) self.configsColors.frame().setHeight(row * 128)
+                row++
+            }
+
+            if(index % 5 == 4){
+                column = 0
+            }
+            else{
+                column++;
+            }
+            index++;
         }
 
-        this.getColorList();
+    },
+    getAllColor: function(){
+        var self = this;
+        var colors = {};
+        var colorsArr = [];
+        var context = this.context;
+        var document = this.document;
+        var selection = this.selection;
+        var getColor = function(color){
+            var color = color;
+            var hex = "#" + self.rgbToHex(color.r, color.g, color.b);
+            var argb_hex = "#" + self.rgbToHex(color.r, color.g, color.b, color.a);
+            var obj = self.extend(color, {
+                name: "untitled",
+                hex: hex,
+                argb_hex: argb_hex
+            });
+
+            if(!colors[argb_hex]){
+                colorsArr.push(obj);
+            }
+            colors[argb_hex] = obj
+
+        };
+        var getColorType = function(fillJSON){
+            var fillJSON = fillJSON;
+            
+            if(fillJSON.fillType == "color"){
+                getColor(fillJSON.color);
+            }
+
+            if(fillJSON.fillType == "gradient"){
+                fillJSON.gradient.colorStops.forEach(function(gradient){
+                    getColor(gradient.color);
+                });
+            }
+        }
+
+        var selectionArtboards = this.find(MSArtboardGroup, selection, true, "class");
+
+        if(!selectionArtboards){
+            this.message(_("Select 1 or multiple artboards"));
+            return false;
+        }
+
+        selectionArtboards = (this.is(selectionArtboards, MSArtboardGroup))? NSArray.arrayWithObjects(selectionArtboards): selectionArtboards;
+        selectionArtboards = selectionArtboards.objectEnumerator();
+        while(msArtboard = selectionArtboards.nextObject()){
+            if(msArtboard instanceof MSArtboardGroup){
+                var layerIter = msArtboard.children().objectEnumerator();
+                while(msLayer = layerIter.nextObject()) {
+                    var msGroup = msLayer.parentGroup();
+
+                    if(msLayer && this.is(msLayer, MSLayerGroup) && /LABEL\#|NOTE\#/.exec(msLayer.name())){
+                        var msText = msLayer.children()[2];
+                        msLayer.setIsVisible(false);
+                    }
+
+                    var layerStates = this.getStates(msLayer);
+
+                    if (
+                        !this.isExportable(msLayer) ||
+                        !layerStates.isVisible ||
+                        layerStates.isLocked ||
+                        layerStates.hasSlices ||
+                        this.isMeasure(msLayer)
+                    )
+                    {
+                        continue;
+                    }
+
+                    if ( !this.is(msLayer, MSSliceLayer) ) {
+                        var layerStyle = msLayer.style();
+
+
+                        var fillsJSON = this.getFills(layerStyle);
+                        if(fillsJSON.length > 0){
+                            var fillJSON = fillsJSON.pop();
+                            getColorType(fillJSON)
+
+                        }
+
+                        var bordersJSON = self.getBorders(layerStyle);
+                        if(bordersJSON.length > 0){
+                            var borderJSON = bordersJSON.pop();
+                            getColorType(borderJSON)
+                        }
+
+                    }
+
+                    if ( this.is(msLayer, MSTextLayer) ) {
+                        getColor(self.colorToJSON(msLayer.textColor()))
+                    }
+                }
+            }
+        }
+
+        return colors
+    },
+    colorPalette: function(){
+        if(!this.configs) return false;
+
+        var currentPage = this.page;
+        if(this.configsPage == false){
+            this.configsPage = this.document.addBlankPage();
+            this.configsPage.setName("Sketch Measure");
+            this.document.setCurrentPage(currentPage);
+        }
+
+        this.configsColors = this.find("Color Palette", this.configsPage);
+        this.configsColors = (!this.configsColors || this.is(this.configsColors, MSArtboardGroup))? this.configsColors: undefined;
+        
+        if( this.configsColors ){
+            this.getColors()
+            this.removeLayer(this.configsColors);
+        }
+        this.configsColors = MSArtboardGroup.new();
+        frame = this.configsColors.frame();
+        frame.setWidth(800);
+        frame.setHeight(640);
+        frame.setConstrainProportions(false);
+        this.configsPage.addLayers([this.configsColors]);
+        this.configsColors.setName("Color Palette");
+        this.document.setCurrentPage(this.configsPage);
+
+
+        this.addColors(this.getAllColor());
+
     }
 });
 
@@ -2439,7 +2615,7 @@ com.utom.extend({
         }
 
         if(this.configsColors){
-            this.colorNames();
+            this.getColors();
             var cContent = NSString.stringWithString("var colors = " + JSON.stringify(this.configs.colors) + ";");
             var cExportURL = savePath.stringByAppendingPathComponent( "colors.js");
 

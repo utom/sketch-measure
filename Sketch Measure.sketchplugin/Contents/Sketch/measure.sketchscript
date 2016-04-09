@@ -80,7 +80,7 @@ function toggleTheme(context) {
     com.utom.toggleTheme();
 }
 
-function colorNames(context) {
+function colorPalette(context) {
     com.utom.init(context);
-    com.utom.colorNames();
+    com.utom.colorPalette();
 }
