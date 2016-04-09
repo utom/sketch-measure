@@ -1835,7 +1835,7 @@ com.utom.extend({
             nameText.frame().setX(16);
             nameText.frame().setY(16);
             nameText.setTextColor(textColor);
-            nameText.setFontSize(20);
+            nameText.setFontSize(18);
             nameText.setFontPostscriptName("HelveticaNeue-Medium");
             nameText.setStringValue(name);
             nameText.setTextBehaviour(1);
