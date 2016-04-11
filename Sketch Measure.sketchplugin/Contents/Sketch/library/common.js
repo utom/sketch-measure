@@ -34,12 +34,13 @@ I18N["zh-Hans"] = {
     "Position bottom"                                   : "下侧",
     "Position left"                                     : "左侧",
     "Show position:"                                    : "显示位置:",
-    "Color hex, E.g. #FFFFFF 100%"                      : "Color hex, E.g. #FFFFFF 100%",
-    "ARGB hex, E.g. #FFFFFFFF"                          : "ARGB hex, E.g. #FFFFFFFF",
-    "RGBA CSS, E.g. rgba(255, 255, 255, 1)"             : "RGBA CSS, E.g. rgba(255, 255, 255, 1)",
-    "Color format"                                      : "Color format",
+    "Color hex, E.g. #FFFFFF 100%"                      : "颜色 hex [#FFFFFF 100%]",
+    "ARGB hex, E.g. #FFFFFFFF"                          : "ARGB hex [#FFFFFFFF]",
+    "RGBA CSS, E.g. rgba(255, 255, 255, 1)"             : "RGBA CSS [rgba(255, 255, 255, 1)]",
+    "Color format"                                      : "颜色格式",
     "Remeasure all guides to see the new theme."        : "Remeasure all guides to see the new theme.",
-    "Show color name"                                   : "Show color name"
+    "Show color name"                                   : "显示颜色名称",
+    "untitled"                                          : "未命名"
 };
  
 function _(str){
@@ -1777,7 +1778,7 @@ com.utom.extend({
                     hex: hex,
                     argb_hex: argb_hex
                 });
-                if(name != "untitled"){
+                if(name != _("untitled")){
                     colorJSON[argb_hex] = this.toJSString(name);
                 }
             }
@@ -1806,13 +1807,14 @@ com.utom.extend({
             var shape = self.addShape( group );
             var nameText = self.addText( group );
             var infoText = self.addText( group );
-            var name = color.name? color.name: "untitled";
+            var name = color.name? color.name: _("untitled");
             var shapeColor = MSColor.colorWithSVGString(color.hex);
             shapeColor.setAlpha(color.a);
 
             var grayscale = color.r * 0.299 + color.g * 0.587 + color.b * 0.114;
 
             var textHex = ( grayscale >= 180 )? "#4A4A4A": "#FFFFFF";
+            textHex = (color.a <= .3)? "#4A4A4A": textHex;
 
             var textColor =  MSColor.colorWithSVGString(textHex);
 
@@ -1892,7 +1894,7 @@ com.utom.extend({
             var hex = "#" + self.rgbToHex(color.r, color.g, color.b);
             var argb_hex = "#" + self.rgbToHex(color.r, color.g, color.b, color.a);
             var obj = self.extend(color, {
-                name: "untitled",
+                name: _("untitled"),
                 hex: hex,
                 argb_hex: argb_hex
             });
