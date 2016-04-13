@@ -1828,6 +1828,7 @@ com.utom.extend({
 
             var transparentBg = shape.style().fills().addNewStylePart();
             transparentBg.setFillType(4);
+            transparentBg.setPatternFillType(0);
             transparentBg.setPatternImage(transparentImage);
 
             var colorBg = shape.style().fills().addNewStylePart();
@@ -2110,9 +2111,8 @@ com.utom.extend({
         var hasSlices = false;
         var isMaskChildLayer = false;
 
-        while (!this.is(layer, MSArtboardGroup)) {
+        while (!( this.is(layer, MSArtboardGroup) || this.is(layer, MSSymbolMaster) ) ) {
             var msGroup = layer.parentGroup();
-
             if (!layer.isVisible()) {
                 isVisible = false;
             }
@@ -2394,7 +2394,7 @@ com.utom.extend({
 
         return exportSizes;
     },
-    savePath: function(){
+    getSavePath: function(){
         var filePath = this.document.fileURL()? this.document.fileURL().path().stringByDeletingLastPathComponent(): "~";
         var fileName = this.document.displayName().stringByDeletingPathExtension();
         var savePanel = NSSavePanel.savePanel();
@@ -2411,142 +2411,120 @@ com.utom.extend({
 
         return savePanel.URL().path();
     },
-    specExport: function(){
-        if(!this.configs) return false;
-
+    getArtboard: function( msArtboard, savePath, symbolOffset ){
         var context = this.context;
         var document = this.document;
         var selection = this.selection;
 
-        var selectionArtboards = this.find(MSArtboardGroup, selection, true, "class");
+        var tempCon = this.templateContents.tempCon;
+        var jqCon = this.templateContents.jqCon;
+        var jsappCon = this.templateContents.jsappCon;
+        var specCon = this.templateContents.specCon;
+        var cssnorCon = this.templateContents.cssnorCon;
+        var cssappCon = this.templateContents.cssappCon;
 
-        if(!selectionArtboards){
-            this.message(_("Select 1 or multiple artboards"));
-            return false;
-        }
+        if(msArtboard instanceof MSArtboardGroup || msArtboard instanceof MSSymbolMaster){
+            var artboardFrame = msArtboard.frame();
+            var layers = [];
+            var notes = [];
+            var layerIter = msArtboard.children().objectEnumerator();
+            var name = msArtboard.objectID();
 
-        var savePath = this.savePath();
-        if(!savePath) return false;
-        [[NSFileManager defaultManager] createDirectoryAtPath:savePath withIntermediateDirectories:true attributes:nil error:nil];
+            while(msLayer = layerIter.nextObject()) {
+                var msGroup = msLayer.parentGroup();
 
-        var resolution = this.configs.resolution;
+                if(msLayer && this.is(msLayer, MSLayerGroup) && /LABEL\#|NOTE\#/.exec(msLayer.name())){
+                    var msText = msLayer.children()[2];
 
-        var pluginPath = NSString.stringWithString(this.context.scriptPath).stringByDeletingLastPathComponent();
-        var tempPath = pluginPath.stringByAppendingPathComponent("assets/template.html");
-        var jqPath = pluginPath.stringByAppendingPathComponent("assets/jquery-1.12.0.min.js");
-        var jsappPath = pluginPath.stringByAppendingPathComponent("assets/app.js");
-        var specPath = pluginPath.stringByAppendingPathComponent("assets/spec.js");
-        var cssnorPath = pluginPath.stringByAppendingPathComponent("assets/normalize-3.0.3.min.css");
-        var cssappPath = pluginPath.stringByAppendingPathComponent("assets/app.css");
+                    notes.push({
+                        rect: this.rectToJSON(msLayer.absoluteRect(), artboardFrame),
+                        note: this.toJSString(msText.stringValue()).replace(/\n/g,"<br>")
+                    });
 
-        var tempCon = [NSString stringWithContentsOfFile:tempPath encoding:NSUTF8StringEncoding error:nil];
-        var jqCon = [NSString stringWithContentsOfFile:jqPath encoding:NSUTF8StringEncoding error:nil];
-        var jsappCon = [NSString stringWithContentsOfFile:jsappPath encoding:NSUTF8StringEncoding error:nil];
-        var specCon = [NSString stringWithContentsOfFile:specPath encoding:NSUTF8StringEncoding error:nil];
-        var cssnorCon = [NSString stringWithContentsOfFile:cssnorPath encoding:NSUTF8StringEncoding error:nil];
-        var cssappCon = [NSString stringWithContentsOfFile:cssappPath encoding:NSUTF8StringEncoding error:nil];
-
-        var artboardsData = [];
-        var slicesData = [];
-        var colorData = [];
-
-        selectionArtboards = (this.is(selectionArtboards, MSArtboardGroup))? NSArray.arrayWithObjects(selectionArtboards): selectionArtboards;
-        selectionArtboards = selectionArtboards.objectEnumerator();
-
-        while(msArtboard = selectionArtboards.nextObject()){
-            if(msArtboard instanceof MSArtboardGroup){
-                var artboardFrame = msArtboard.frame();
-                var layers = [];
-                var notes = [];
-                var layerIter = msArtboard.children().objectEnumerator();
-                var name = msArtboard.objectID();
-
-                while(msLayer = layerIter.nextObject()) {
-                    var msGroup = msLayer.parentGroup();
-
-                    if(msLayer && this.is(msLayer, MSLayerGroup) && /LABEL\#|NOTE\#/.exec(msLayer.name())){
-                        var msText = msLayer.children()[2];
-
-                        notes.push({
-                            rect: this.rectToJSON(msLayer.absoluteRect(), artboardFrame),
-                            note: this.toJSString(msText.stringValue()).replace(/\n/g,"<br>")
-                        });
-
-                        msLayer.setIsVisible(false);
-                    }
-
-                    var layerStates = this.getStates(msLayer);
-
-                    if (
-                        !this.isExportable(msLayer) ||
-                        !layerStates.isVisible ||
-                        layerStates.isLocked ||
-                        layerStates.hasSlices ||
-                        this.isMeasure(msLayer)
-                    )
-                    {
-                        continue;
-                    }
-
-
-                    var type = this.is(msLayer, MSTextLayer) ? "text" : "shape";
-                    type = this.is(msLayer, MSSymbolInstance) ? "symbol" : type;
-                    type = this.hasExportSizes(msLayer) || this.is(msLayer, MSSliceLayer) ? "slice" : type;
-
-                    var layer = {};
-                    layer.objectID = this.toJSString(msLayer.objectID());
-                    layer.type = type;
-                    layer.name = this.toJSString(msLayer.name());
-                    layer.rect = this.rectToJSON(msLayer.absoluteRect(), artboardFrame);
-                    layer.exportSizes = this.exportSizes(msLayer, savePath);
-
-                    if ( !this.is(msLayer, MSSliceLayer) || !this.is(msLayer, MSSymbolInstance) ) {
-                        var layerStyle = msLayer.style();
-
-                        layer.rotation = msLayer.rotation();
-                        layer.radius = ( msLayer.layers && this.is(msLayer.layers().firstObject(), MSRectangleShape) ) ? msLayer.layers().firstObject().fixedRadius(): null;
-                        layer.borders = this.getBorders(layerStyle);
-                        layer.fills = this.getFills(layerStyle);
-                        layer.shadows = this.getShadows(layerStyle);
-                        layer.opacity = this.getOpacity(layerStyle);
-                        layer.styleName = (this.is(msLayer, MSTextLayer))? this.getStyleName(layerStyle, true): this.getStyleName(layerStyle);
-                    }
-
-                    if ( this.is(msLayer, MSTextLayer) ) {
-                        layer.content = this.toJSString(msLayer.storage().string()),
-                        layer.color = this.colorToJSON(msLayer.textColor());
-                        layer.fontSize = msLayer.fontSize();
-                        layer.fontFace = this.toJSString(msLayer.fontPostscriptName());
-                        layer.textAlign = this.TextAligns[msLayer.textAlignment()];
-                        layer.letterSpacing = msLayer.characterSpacing();
-                        layer.lineHeight = msLayer.lineSpacing();
-                    }
-
-                    if(msLayer.hasClippingMask()){
-                        this.maskObjectID = msGroup.objectID();
-                        this.maskRect = this.rectToJSON(msLayer.absoluteRect(), artboardFrame);
-                    }
-                    else if (this.maskObjectID != msGroup.objectID() || msLayer.shouldBreakMaskChain()) {
-                        this.maskObjectID = undefined;
-                        this.maskRect = undefined;
-                    }
-
-                    
-
-                    if ( type ===  "slice" ){
-                        slicesData.push(layer);
-                    }
-
-                    if (layerStates.isMaskChildLayer){
-                        layer.rect = this.updateMaskRect(layer.rect)
-                    }
-
-                    if (layer.rect){
-                        layers.push(layer);
-                    }
-
+                    msLayer.setIsVisible(false);
                 }
 
+                var layerStates = this.getStates(msLayer);
+
+                if (
+                    !this.isExportable(msLayer) ||
+                    !layerStates.isVisible ||
+                    layerStates.isLocked ||
+                    layerStates.hasSlices ||
+                    this.isMeasure(msLayer)
+                )
+                {
+                    continue;
+                }
+
+                var type = this.is(msLayer, MSTextLayer) ? "text" : "shape";
+                type = this.is(msLayer, MSSymbolInstance) ? "symbol" : type;
+                type = this.hasExportSizes(msLayer) || this.is(msLayer, MSSliceLayer) ? "slice" : type;
+
+                var layer = {};
+                layer.objectID = this.toJSString(msLayer.objectID());
+                layer.type = type;
+                layer.name = this.toJSString(msLayer.name());
+                layer.rect = this.rectToJSON(msLayer.absoluteRect(), artboardFrame);
+                if(symbolOffset){
+                    layer.rect.x = symbolOffset.x + layer.rect.x;
+                    layer.rect.y = symbolOffset.y + layer.rect.y;
+                }
+                layer.exportSizes = this.exportSizes(msLayer, savePath);
+
+                if ( !this.is(msLayer, MSSliceLayer) || !this.is(msLayer, MSSymbolInstance) ) {
+                    var layerStyle = msLayer.style();
+
+                    layer.rotation = msLayer.rotation();
+                    layer.radius = ( msLayer.layers && this.is(msLayer.layers().firstObject(), MSRectangleShape) ) ? msLayer.layers().firstObject().fixedRadius(): null;
+                    layer.borders = this.getBorders(layerStyle);
+                    layer.fills = this.getFills(layerStyle);
+                    layer.shadows = this.getShadows(layerStyle);
+                    layer.opacity = this.getOpacity(layerStyle);
+                    layer.styleName = (this.is(msLayer, MSTextLayer))? this.getStyleName(layerStyle, true): this.getStyleName(layerStyle);
+                }
+
+                if ( this.is(msLayer, MSTextLayer) ) {
+                    layer.content = this.toJSString(msLayer.storage().string()),
+                    layer.color = this.colorToJSON(msLayer.textColor());
+                    layer.fontSize = msLayer.fontSize();
+                    layer.fontFace = this.toJSString(msLayer.fontPostscriptName());
+                    layer.textAlign = this.TextAligns[msLayer.textAlignment()];
+                    layer.letterSpacing = msLayer.characterSpacing();
+                    layer.lineHeight = msLayer.lineHeight();
+                }
+
+
+                if(msLayer.hasClippingMask()){
+                    this.maskObjectID = msGroup.objectID();
+                    this.maskRect = this.rectToJSON(msLayer.absoluteRect(), artboardFrame);
+                }
+                else if (this.maskObjectID != msGroup.objectID() || msLayer.shouldBreakMaskChain()) {
+                    this.maskObjectID = undefined;
+                    this.maskRect = undefined;
+                }
+
+                if ( type ===  "slice" ){
+                    this.slicesData.push(layer);
+                }
+
+                if (layerStates.isMaskChildLayer){
+                    layer.rect = this.updateMaskRect(layer.rect)
+                }
+
+                if (layer.rect){
+                    layers.push(layer);
+                }
+
+                if( this.is(msLayer, MSSymbolInstance) ){
+                    var symbolLayers = this.getArtboard(msLayer.symbolMaster(), savePath, {x: layer.rect.x, y: layer.rect.y});
+                    symbolLayers.forEach(function(layer){
+                        layers.push(layer);
+                    });
+                }
+            }
+
+            if(!symbolOffset){
                 var imageFileName = name + ".png";
                 var imagePath = this.toJSString( NSTemporaryDirectory().stringByAppendingPathComponent(imageFileName) );
                 var sliceArtboard = MSExportRequest.exportRequestsFromExportableLayer(msArtboard).firstObject();
@@ -2566,11 +2544,11 @@ com.utom.extend({
                     height: artboardFrame.height()
                 };
 
-                artboardsData.push(artboardData);
+                this.artboardsData.push(artboardData);
 
 
                 var data = this.extend(artboardData, {
-                    resolution: resolution,
+                    resolution: this.configs.resolution,
                     zoom: 1,
                     layers: layers,
                     notes: notes
@@ -2594,10 +2572,65 @@ com.utom.extend({
                             encoding: NSUTF8StringEncoding
                                error: null];
             }
-            
+            else{
+                return layers
+            }
+        }
+    },
+    artboardsData: [],
+    slicesData: [],
+    specExport: function(){
+        if(!this.configs) return false;
+
+        var context = this.context;
+        var document = this.document;
+        var selection = this.selection;
+
+        var selectionArtboards = this.find(MSArtboardGroup, selection, true, "class");
+
+        if(!selectionArtboards){
+            this.message(_("Select 1 or multiple artboards"));
+            return false;
+        }
+
+        savePath = this.getSavePath();
+        if(!savePath) return false;
+        [[NSFileManager defaultManager] createDirectoryAtPath:savePath withIntermediateDirectories:true attributes:nil error:nil];
+
+        var pluginPath = NSString.stringWithString(this.context.scriptPath).stringByDeletingLastPathComponent();
+        var tempPath = pluginPath.stringByAppendingPathComponent("assets/template.html");
+        var jqPath = pluginPath.stringByAppendingPathComponent("assets/jquery-1.12.0.min.js");
+        var jsappPath = pluginPath.stringByAppendingPathComponent("assets/app.js");
+        var specPath = pluginPath.stringByAppendingPathComponent("assets/spec.js");
+        var cssnorPath = pluginPath.stringByAppendingPathComponent("assets/normalize-3.0.3.min.css");
+        var cssappPath = pluginPath.stringByAppendingPathComponent("assets/app.css");
+
+        var tempCon = [NSString stringWithContentsOfFile:tempPath encoding:NSUTF8StringEncoding error:nil];
+        var jqCon = [NSString stringWithContentsOfFile:jqPath encoding:NSUTF8StringEncoding error:nil];
+        var jsappCon = [NSString stringWithContentsOfFile:jsappPath encoding:NSUTF8StringEncoding error:nil];
+        var specCon = [NSString stringWithContentsOfFile:specPath encoding:NSUTF8StringEncoding error:nil];
+        var cssnorCon = [NSString stringWithContentsOfFile:cssnorPath encoding:NSUTF8StringEncoding error:nil];
+        var cssappCon = [NSString stringWithContentsOfFile:cssappPath encoding:NSUTF8StringEncoding error:nil];
+        this.templateContents = {
+            tempCon: tempCon,
+            jqCon: jqCon,
+            jsappCon: jsappCon,
+            specCon: specCon,
+            cssnorCon: cssnorCon,
+            cssappCon: cssappCon
+        }
+
+        selectionArtboards = (this.is(selectionArtboards, MSArtboardGroup))? NSArray.arrayWithObjects(selectionArtboards): selectionArtboards;
+        selectionArtboards = selectionArtboards.objectEnumerator();
+
+        while(msArtboard = selectionArtboards.nextObject()){
+            this.getArtboard(msArtboard, savePath);
         }
 
         var sliceLayers = this.page.exportableLayers();
+
+        var artboardsData = this.slicesData;
+        var slicesData = this.artboardsData;
 
         if(slicesData.length > 0){
             var sContent = NSString.stringWithString("var slices = " + JSON.stringify(slicesData) + ";");
