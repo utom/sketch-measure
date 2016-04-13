@@ -2473,7 +2473,6 @@ com.utom.extend({
                 layer.exportSizes = this.exportSizes(msLayer, savePath);
 
                 if ( ! ( this.is(msLayer, MSSliceLayer) || this.is(msLayer, MSSymbolInstance) ) ) {
-                    log(msLayer)
                     var layerStyle = msLayer.style();
 
                     layer.rotation = msLayer.rotation();
@@ -2630,8 +2629,8 @@ com.utom.extend({
 
         var sliceLayers = this.page.exportableLayers();
 
-        var artboardsData = this.slicesData;
-        var slicesData = this.artboardsData;
+        var artboardsData = this.artboardsData;
+        var slicesData = this.slicesData;
 
         if(slicesData.length > 0){
             var sContent = NSString.stringWithString("var slices = " + JSON.stringify(slicesData) + ";");
