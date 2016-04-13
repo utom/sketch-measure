@@ -2472,7 +2472,8 @@ com.utom.extend({
                 }
                 layer.exportSizes = this.exportSizes(msLayer, savePath);
 
-                if ( !this.is(msLayer, MSSliceLayer) || !this.is(msLayer, MSSymbolInstance) ) {
+                if ( ! ( this.is(msLayer, MSSliceLayer) || this.is(msLayer, MSSymbolInstance) ) ) {
+                    log(msLayer)
                     var layerStyle = msLayer.style();
 
                     layer.rotation = msLayer.rotation();
