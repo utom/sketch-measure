@@ -2097,6 +2097,7 @@ com.utom.extend({
                this.is(layer, MSShapeGroup) ||
                this.is(layer, MSBitmapLayer) ||
                this.is(layer, MSSliceLayer) ||
+               this.is(layer, MSSymbolInstance) ||
                this.is(layer, MSLayerGroup) && this.hasExportSizes(layer)
     },
     isMeasure: function(layer){
@@ -2489,6 +2490,7 @@ com.utom.extend({
 
 
                     var type = this.is(msLayer, MSTextLayer) ? "text" : "shape";
+                    type = this.is(msLayer, MSSymbolInstance) ? "symbol" : type;
                     type = this.hasExportSizes(msLayer) || this.is(msLayer, MSSliceLayer) ? "slice" : type;
 
                     var layer = {};
@@ -2498,7 +2500,7 @@ com.utom.extend({
                     layer.rect = this.rectToJSON(msLayer.absoluteRect(), artboardFrame);
                     layer.exportSizes = this.exportSizes(msLayer, savePath);
 
-                    if ( !this.is(msLayer, MSSliceLayer) ) {
+                    if ( !this.is(msLayer, MSSliceLayer) || !this.is(msLayer, MSSymbolInstance) ) {
                         var layerStyle = msLayer.style();
 
                         layer.rotation = msLayer.rotation();
