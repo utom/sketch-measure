@@ -171,7 +171,7 @@ com.utom.extend({
           unit = "gu";
         }
 
-        if (scale === 14) {
+        if (scale === 16) {
           unit = "rem";
         }
 
@@ -395,8 +395,8 @@ com.utom.extend({
             scale: 27
         },
         {
-            name: "CSS Rem (14px)",
-            scale: 14
+            name: "CSS Rem (16px)",
+            scale: 16
         },
     ],
     resolutionSetting: function(){
