@@ -2168,14 +2168,14 @@ com.utom.extend({
             }
 
             if(layer.maxX > mask.maxX){
-                width = width - (layer.maxX - mask.maxX);
+                width = width - (layer.maxX - mask.maxX) - dx;
             }
             else{
                 width = width - dx;
             }
 
             if(layer.maxY > mask.maxY){
-                height = height - (layer.maxY - mask.maxY);
+                height = height - (layer.maxY - mask.maxY) - dy;
             }
             else{
                 height = height - dy;

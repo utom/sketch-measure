@@ -55,7 +55,11 @@ _NOTE: If your Mac has not installed GitHub client, You need to install [GitHub 
 8. Toggle All Measure Locked `⌃` + `⇧` + `L`
 9. Reset(Clear) Artboard Measure
 
-### Change ShortcutsS
+## SPEC EXPORT (beta)
+http://utom.design/measure/spec-export-demo/
+![SPEC EXPORT](http://utom.design/measure/3.pic_hd.jpg)
+
+## Change ShortcutsS
 To create your own custom shortcuts, go to Keyboard in your System Preferences and click the Shortcuts tab. Select App Shortcuts and click ‘+’ to create a new shortcut. Choose Sketch from the Application list, then enter the exact name of the menu item you want to create the shortcut for. Finally choose your own shortcut combination and you’re all set.
 
 ![Settings](http://sketchshortcuts.com/images/mac.png)
@@ -76,8 +80,6 @@ Menu Titles:
 * `Lite height`
 * `Spec export`
 
-## SPEC EXPORT (beta)
-http://utom.design/measure/spec-export-demo/
 
 ##Contact
 
