@@ -73,7 +73,7 @@ com.utom = {
         this.page = this.document.currentPage();
         this.artboard = this.page.currentArtboard();
         this.current = this.artboard || this.page;
-        if(currentIsArtboard && !this.is(this.current, MSArtboardGroup)){
+        if(currentIsArtboard && !(this.is(this.current, MSArtboardGroup) || this.is(this.current, MSSymbolMaster))){
             this.message(_("You need an artboard."));
             return false;
         }
@@ -2093,6 +2093,7 @@ com.utom.extend({
     slicesPath: undefined,
     maskObjectID: undefined,
     maskRect: undefined,
+    symbols: {},
     isExportable: function(layer) {
         return this.is(layer, MSTextLayer) ||
                this.is(layer, MSShapeGroup) ||
