@@ -1,6 +1,7 @@
 # Sketch Measure
 
-A measure tool for measurements & design specs, **Sketch 3.5+ support**. 
+A measure tool for measurements & design specs, **Sketch 3.7+ support**. 
+>一款使用在Sketch(http://sketchapp.com)中的标注和导出设计规范的神奇插件。
 
 ![Banner](http://utom.design/measure/256.png)
 ## Change Log
