@@ -6,7 +6,7 @@ A measure tool for measurements & design specs, **Sketch 3.7+ support**.
 ![Banner](http://utom.design/measure/256.png)
 ## Change Log
 * Color palette and fixed spec export mask bugs
-* Only Sketch 3.5+ support
+* Please use the latest version **Sketch Version 3.7.2 (28276)**
 * Spec Export
 * New Interactive
 * Style Shared Support
