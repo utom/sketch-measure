@@ -240,7 +240,7 @@ com.utom.extend({
 
             color.setAlpha(alpha);
 
-            var fill = style.fills().addNewStylePart();
+            var fill = style.addStylePartOfType(0);
             fill.color = color;
 
             layerStyles.addSharedStyleWithName_firstInstance(name, style);
@@ -252,7 +252,7 @@ com.utom.extend({
     },
     sharedLayerStyleBorder: function(style, color, alpha) {
         var alpha = alpha || 1;
-        var border = style.borders().addNewStylePart();
+        var border = style.addStylePartOfType(1);
         var color = MSColor.colorWithSVGString(color);
         color.setAlpha(alpha);
         border.color = color;
@@ -1826,12 +1826,12 @@ com.utom.extend({
             shape.frame().setWidth(160);
             shape.frame().setHeight(128);
 
-            var transparentBg = shape.style().fills().addNewStylePart();
+            var transparentBg = shape.style().addStylePartOfType(0);
             transparentBg.setFillType(4);
             transparentBg.setPatternFillType(0);
             transparentBg.setPatternImage(transparentImage);
 
-            var colorBg = shape.style().fills().addNewStylePart();
+            var colorBg = shape.style().addStylePartOfType(0);
             colorBg.setFillType(0);
             colorBg.color = shapeColor;
 
