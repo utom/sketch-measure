@@ -2094,6 +2094,7 @@ com.utom.extend({
     maskObjectID: undefined,
     maskRect: undefined,
     symbols: {},
+    slices: {},
     isExportable: function(layer) {
         return this.is(layer, MSTextLayer) ||
                this.is(layer, MSShapeGroup) ||
@@ -2412,7 +2413,7 @@ com.utom.extend({
 
         return savePanel.URL().path();
     },
-    getArtboard: function( msArtboard, savePath, symbolOffset ){
+    getArtboard: function( msArtboard, savePath, isSymbol ){
         var context = this.context;
         var document = this.document;
         var selection = this.selection;
@@ -2467,10 +2468,7 @@ com.utom.extend({
                 layer.type = type;
                 layer.name = this.toJSString(msLayer.name());
                 layer.rect = this.rectToJSON(msLayer.absoluteRect(), artboardFrame);
-                if(symbolOffset){
-                    layer.rect.x = symbolOffset.x + layer.rect.x;
-                    layer.rect.y = symbolOffset.y + layer.rect.y;
-                }
+
                 layer.exportSizes = this.exportSizes(msLayer, savePath);
 
                 if ( ! ( this.is(msLayer, MSSliceLayer) || this.is(msLayer, MSSymbolInstance) ) ) {
@@ -2506,7 +2504,11 @@ com.utom.extend({
                 }
 
                 if ( type ===  "slice" ){
-                    this.slicesData.push(layer);
+                    var sliceObjectID = msLayer.objectID();
+                    if (!this.slices[sliceObjectID]){
+                        var sliceLayer = this.slices[sliceObjectID] = layer;
+                        this.slicesData.push(sliceLayer);
+                    }             
                 }
 
                 if (layerStates.isMaskChildLayer){
@@ -2518,14 +2520,26 @@ com.utom.extend({
                 }
 
                 if( this.is(msLayer, MSSymbolInstance) ){
-                    var symbolLayers = this.getArtboard(msLayer.symbolMaster(), savePath, {x: layer.rect.x, y: layer.rect.y});
+                    var symbolObjectID = msLayer.symbolMaster().objectID(),
+                        parentRect = {x: layer.rect.x, y: layer.rect.y};
+
+                    if( !this.symbols[symbolObjectID] ){
+                        var symbolLayers = this.symbols[symbolObjectID] = this.getArtboard(msLayer.symbolMaster(), savePath, true);
+                    }
+                    else{
+                        var symbolLayers = this.symbols[symbolObjectID];
+                    }
+
+
                     symbolLayers.forEach(function(layer){
+                        layer.rect.x = parentRect.x + layer.rect.x;
+                        layer.rect.y = parentRect.y + layer.rect.y;
                         layers.push(layer);
                     });
                 }
             }
 
-            if(!symbolOffset){
+            if(!isSymbol){
                 var imageFileName = name + ".png";
                 var imagePath = this.toJSString( NSTemporaryDirectory().stringByAppendingPathComponent(imageFileName) );
                 var sliceArtboard = MSExportRequest.exportRequestsFromExportableLayer(msArtboard).firstObject();
