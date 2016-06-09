@@ -2491,6 +2491,7 @@ com.utom.extend({
                     layer.textAlign = this.TextAligns[msLayer.textAlignment()];
                     layer.letterSpacing = msLayer.characterSpacing();
                     layer.lineHeight = msLayer.lineHeight();
+                    layer.baseLineHeight = msLayer.baseLineHeight();
                 }
 
 
