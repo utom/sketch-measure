@@ -475,7 +475,7 @@
                 jQTypeface.show().find("ul").append(
                     self.template($("#type-template"), {
                         size:self.resolutionSize(model.fontSize, true),
-                        line:self.resolutionSize(model.lineHeight, true),
+                        line:self.resolutionSize(model.lineHeight === 0 ? model.baseLineHeight : model.lineHeight, true),
                         character:self.resolutionSize(model.letterSpacing, true),
                         face:model.fontFace
                     })
