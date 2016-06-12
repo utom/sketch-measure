@@ -2489,13 +2489,7 @@ com.utom.extend({
                     layer.fontSize = msLayer.fontSize();
                     layer.fontFace = this.toJSString(msLayer.fontPostscriptName());
                     layer.textAlign = this.TextAligns[msLayer.textAlignment()];
-                    if(msLayer.characterSpacing() !== null){
-                        var characterSpacing = msLayer.characterSpacing();
-                        var spacingFloatValue = [characterSpacing floatValue]; // get float value from NSNumber
-                        layer.letterSpacing = spacingFloatValue;
-                    } else {
-                        layer.letterSpacing = 0;
-                    }
+                    layer.letterSpacing = msLayer.characterSpacing();
                     layer.lineHeight = msLayer.lineHeight();
                 }
 
