@@ -2529,20 +2529,22 @@ com.utom.extend({
 
                 if( this.is(msLayer, MSSymbolInstance) ){
                     var symbolObjectID = msLayer.symbolMaster().objectID(),
-                        parentRect = {x: layer.rect.x, y: layer.rect.y};
+                        parentRect = {x: layer.rect.x, y: layer.rect.y},
+                        symbolLayers = this.symbols[symbolObjectID] = this.getArtboard(msLayer.symbolMaster(), savePath, true);
+                    
+                    // if( !this.symbols[symbolObjectID] ){
+                    //     var symbolLayers = this.symbols[symbolObjectID] = this.getArtboard(msLayer.symbolMaster(), savePath, true);
+                    // }
+                    // else{
+                    //     var symbolLayers = this.symbols[symbolObjectID];
+                    // }
 
-                    if( !this.symbols[symbolObjectID] ){
-                        var symbolLayers = this.symbols[symbolObjectID] = this.getArtboard(msLayer.symbolMaster(), savePath, true);
-                    }
-                    else{
-                        var symbolLayers = this.symbols[symbolObjectID];
-                    }
 
-
-                    symbolLayers.forEach(function(layer){
-                        layer.rect.x = parentRect.x + layer.rect.x;
-                        layer.rect.y = parentRect.y + layer.rect.y;
-                        layers.push(layer);
+                    symbolLayers.forEach(function(symbolLayer){
+                        symbolLayer.rect.x = parentRect.x + symbolLayer.rect.x;
+                        symbolLayer.rect.y = parentRect.y + symbolLayer.rect.y;
+                        layers.push(symbolLayer);
+                        // log(layers);
                     });
                 }
             }
