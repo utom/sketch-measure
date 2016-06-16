@@ -684,8 +684,8 @@
                 delay = delay || 0;
             jQZoom.find(".zoom-text").text(self.zoom * 100 + "%");
             jQZoom.find(".disable").removeClass("disable");
-            if (self.zoom <= .5) jQZoom.find(".zoom-out").addClass("disable");
-            if (self.zoom >= 1) jQZoom.find(".zoom-in").addClass("disable");
+            if (self.zoom <= .25) jQZoom.find(".zoom-out").addClass("disable");
+            if (self.zoom >= 4) jQZoom.find(".zoom-in").addClass("disable");
             self.screen();
             self.layers(index, delay);
             self.resolutionList();
@@ -812,16 +812,26 @@
                     $(".dropdown").addClass("hide");
                 })
                 .on("click", ".zoom-out", function(event) {
-                    self.zoom -= .25;
                     if (self.zoom <= .25) {
-                        self.zoom = .5;
+                        self.zoom = .25;
+                    } else if (self.zoom <= 1) {
+                        self.zoom -= .25;
+                    } else if (self.zoom <= 2) {
+                        self.zoom -= .5;
+                    } else {
+                        self.zoom -= 1;
                     }
                     self.render(self.index(), 300);
                 })
                 .on("click", ".zoom-in", function(event) {
-                    self.zoom += .25;
-                    if (self.zoom >= 1) {
-                        self.zoom = 1;
+                    if (self.zoom >= 4) {
+                        self.zoom = 4;
+                    } else if (self.zoom >= 2) {
+                        self.zoom += 1;
+                    } else if (self.zoom >= 1) {
+                        self.zoom += .5;
+                    } else {
+                        self.zoom += .25;
                     }
                     self.render(self.index(), 300);
                 });
