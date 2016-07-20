@@ -127,16 +127,24 @@ com.utom = {
         return container.addLayerOfType(type);
     },
     addGroup: function(container){
-        var container = container || this.current;
-        return this.addLayer("group", container);
+        var container = container || this.current,
+            group = MSLayerGroup.new();
+        container.addLayers([group]);
+        return group;
     },
     addShape: function(container){
-        var container = container || this.current;
-        return this.addLayer("rectangle", container);
+        var container = container || this.current,
+            shape = MSRectangleShape.alloc().initWithFrame(NSMakeRect(0, 0, 100, 100)),
+            shapeGroup = MSShapeGroup.shapeWithPath(shape);
+        container.addLayers([shapeGroup]);
+        return shapeGroup;
     },
     addText: function(container){
-        var container = container || this.current;
-        return this.addLayer("text", container);
+        var container = container || this.current,
+            text = MSTextLayer.new();
+        text.setStringValue("text");
+        container.addLayers([text]);
+        return text;
     },
     removeLayer: function(layer){
         var container = layer.parentGroup();
