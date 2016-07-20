@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Measure sizes - Sketch Measure 2.0</title>
+
+    <link href="assets/css/normalize.css" rel="stylesheet">
+    <link href="assets/css/app.css" rel="stylesheet">
+    <script type="text/javascript" src="assets/js/jquery-2.2.4.min.js"></script>
+    <script type="text/javascript" src="assets/js/common.js"></script>
+    <script type="text/javascript">
+    <!--
+    var toggleWidth = function(){
+            if( $('input[name=width-enable]:checked').length > 0 ){
+                $('input[name=width-placement]').attr('disabled', false);
+            }
+            else{
+                $('input[name=width-placement]').attr('disabled', true);
+            }
+        },
+        toggleHeight = function(){
+            if( $('input[name=height-enable]:checked').length > 0 ){
+                $('input[name=height-placement]').attr('disabled', false);
+            }
+            else{
+                $('input[name=height-placement]').attr('disabled', true);
+            }
+        },
+        togggleButton = function(){
+            if( $('input[name=height-enable]:checked').length <= 0 && $('input[name=width-enable]:checked').length <= 0 ){
+                $('.submit').attr('disabled', true);
+            }
+            else{
+                $('.submit').attr('disabled', false);
+            }
+        },
+        submit = function(){
+            var options = {};
+            if( $('input[name=width-enable]:checked').length > 0 ) options.widthPlacement = $('input[name=width-placement]:checked').val();
+            if( $('input[name=height-enable]:checked').length > 0 ) options.heightPlacement = $('input[name=height-placement]:checked').val();
+            if( $('input[name=percentage]:checked').length > 0 ) options.byPercentage = 1;
+            smAction({data:JSON.stringify(options)});
+        }
+        init = function( options ){
+            $('body').html([
+                '<div class="container">',
+                    '<div class="options">',
+                        '<div class="slidebox">',
+                            '<input id="width" type="checkbox" name="width-enable" checked="checked">',
+                            '<label for="width"></label>',
+                        '</div>',
+                        '<label for="width">' + _('Width') + '</label>',
+                        '<div class="radiosbox mrb24">',
+                            '<div class="one-third">',
+                                '<div class="radiobox top-radio">',
+                                    '<input id="top-radio" type="radio" name="width-placement" value="top">',
+                                    '<label for="top-radio"></label>',
+                                '</div>',
+                            '</div>',
+                            '<div class="one-third text-center">',
+                                '<div class="radiobox middle-radio">',
+                                    '<input id="middle-radio" type="radio" name="width-placement" value="middle">',
+                                    '<label for="middle-radio"></label>',
+                                '</div>',
+                            '</div>',
+                            '<div class="one-third text-right">',
+                                '<div class="radiobox bottom-radio">',
+                                    '<input id="bottom-radio" type="radio" name="width-placement" value="bottom">',
+                                    '<label for="bottom-radio"></label>',
+                                '</div>',
+                            '</div>',
+                        '</div>',
+
+                        '<div class="slidebox">',
+                            '<input id="height" type="checkbox" name="height-enable">',
+                            '<label for="height"></label>',
+                        '</div>',
+                        '<label for="height">' + _('Height') + '</label>',
+                        '<div class="radiosbox mrb24">',
+                            '<div class="one-third">',
+                                '<div class="radiobox left-radio">',
+                                    '<input id="left-radio" type="radio" name="height-placement" value="left">',
+                                    '<label for="left-radio"></label>',
+                                '</div>',
+                            '</div>',
+                            '<div class="one-third text-center">',
+                                '<div class="radiobox center-radio">',
+                                    '<input id="center-radio" type="radio" name="height-placement" value="center">',
+                                    '<label for="center-radio"></label>',
+                                '</div>',
+                            '</div>',
+                            '<div class="one-third text-right">',
+                                '<div class="radiobox right-radio">',
+                                    '<input id="right-radio" type="radio" name="height-placement" value="right">',
+                                    '<label for="right-radio"></label>',
+                                '</div>',
+                            '</div>',
+                        '</div>',
+
+                        '<div>',
+                            '<label class="item mrb10">',
+                                '<div class="checkbox">',
+                                    '<input id="percentage" type="checkbox" name="percentage" value="1">',
+                                    '<label for="percentage"></label>',
+                                '</div>',
+                                _('Percentage of artboard'),
+                            '</label>',
+                        '</div>',
+                        
+                    '</div>',
+                    '<div class="footer">',
+                        '<button id="submit" class="submit">' + _('Mark') + '</button>',
+                    '</div>',
+                '</div>'
+                ].join(''))
+
+
+            var options = $.extend({
+                    widthPlacement: 'top'
+                }, options);
+            $('input[name=width-enable]').change(toggleWidth);
+            $('input[name=height-enable]').change(toggleHeight);
+            $('input[type=checkbox]').change(togggleButton);
+
+            if(options.widthPlacement){
+                $('input[name=width-enable]').attr('checked', true);
+                $('#' + options.widthPlacement + '-radio').attr('checked', true);
+            }
+            else{
+                $('#top-radio').attr('checked', true);
+            }
+
+            if(options.heightPlacement){
+                $('input[name=height-enable]').attr('checked', true);
+                $('#' + options.heightPlacement + '-radio').attr('checked', true);
+            }
+            else{
+                $('#left-radio').attr('checked', true);
+            }
+
+            if(options.byPercentage){
+                $('#percentage').attr('checked', true);
+            }
+
+            toggleWidth();
+            toggleHeight();
+            togggleButton();
+
+            $('.radiobox label').click(function(){
+                var $this = $(this);
+                if($this.parent().find('input[name=width-placement]:disabled').length > 0) $('input[name=width-enable]').click();
+                if($this.parent().find('input[name=height-placement]:disabled').length > 0) $('input[name=height-enable]').click();
+            });
+
+            $("#submit").click(submit);
+
+        };
+    -->
+    </script>
+  </head>
+  <body></body>
+</html>
