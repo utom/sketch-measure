@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Get properties - Sketch Measure 2.0</title>
+
+    <link href="assets/css/normalize.css" rel="stylesheet">
+    <link href="assets/css/app.css" rel="stylesheet">
+    <script type="text/javascript" src="assets/js/jquery-2.2.4.min.js"></script>
+    <script type="text/javascript" src="assets/js/common.js"></script>
+    <script type="text/javascript">
+    <!--
+    var init = function(options){
+        $('body').html([
+            '<div class="container">',
+                '<div class="options">',
+                    '<div class="half">',
+                        '<div class="item">',
+                            '<label>',
+                                '<div class="checkbox">',
+                                    '<input id="color" type="checkbox" name="properties" value="color">',
+                                    '<label for="color"></label>',
+                                '</div>',
+                                _('Fill / Color'),
+                            '</label>',
+                        '</div>',
+                        '<div class="item">',
+                            '<label>',
+                                '<div class="checkbox">',
+                                    '<input id="border" type="checkbox" name="properties" value="border">',
+                                    '<label for="border"></label>',
+                                '</div>',
+                                _('Border'),
+                            '</label>',
+                        '</div>',
+                        '<div class="item">',
+                            '<label>',
+                                '<div class="checkbox">',
+                                    '<input id="opacity" type="checkbox" name="properties" value="opacity">',
+                                    '<label for="opacity"></label>',
+                                '</div>',
+                                _('Opacity'),
+                            '</label>',
+                        '</div>',
+                        '<div class="item">',
+                            '<label>',
+                                '<div class="checkbox">',
+                                    '<input id="radius" type="checkbox" name="properties" value="radius">',
+                                    '<label for="radius"></label>',
+                                '</div>',
+                                _('Radius'),
+                            '</label>',
+                        '</div>',
+                        '<div class="item">',
+                            '<label>',
+                                '<div class="checkbox">',
+                                    '<input id="shadow" type="checkbox" name="properties" value="shadow">',
+                                    '<label for="shadow"></label>',
+                                '</div>',
+                                _('Shadow'),
+                            '</label>',
+                        '</div>',
+                    '</div>',
+                    '<div class="half">',
+                        '<div class="item">',
+                            '<label>',
+                                '<div class="checkbox">',
+                                    '<input id="font-size" type="checkbox" name="properties" value="font-size">',
+                                    '<label for="font-size"></label>',
+                                '</div>',
+                                _('Font size'),
+                            '</label>',
+                        '</div>',
+                        '<div class="item">',
+                            '<label>',
+                                '<div class="checkbox">',
+                                    '<input id="font-face" type="checkbox" name="properties" value="font-face">',
+                                    '<label for="font-face"></label>',
+                                '</div>',
+                                _('Typeface'),
+                            '</label>',
+                        '</div>',
+                        '<div class="item">',
+                            '<label>',
+                                '<div class="checkbox">',
+                                    '<input id="character" type="checkbox" name="properties" value="character">',
+                                    '<label for="character"></label>',
+                                '</div>',
+                                _('Character'),
+                            '</label>',
+                        '</div>',
+                        '<div class="item">',
+                            '<label>',
+                                '<div class="checkbox">',
+                                    '<input id="line-height" type="checkbox" name="properties" value="line-height">',
+                                    '<label for="line-height"></label>',
+                                '</div>',
+                                _('Line'),
+                            '</label>',
+                        '</div>',
+                        '<div class="item">',
+                            '<label>',
+                                '<div class="checkbox">',
+                                    '<input id="paragraph" type="checkbox" name="properties" value="paragraph">',
+                                    '<label for="paragraph"></label>',
+                                '</div>',
+                                _('Paragraph'),
+                            '</label>',
+                        '</div>',
+                    '</div>',
+                    '<div class="radiosbox">',
+                        '<div class="quarter">',
+                            '<div class="radiobox top-radio">',
+                                '<input id="top" type="radio" name="placement" value="top">',
+                                '<label for="top"></label>',
+                            '</div>',
+                        '</div>',
+                        '<div class="quarter text-right pdr7">',
+                            '<div class="radiobox right-radio">',
+                                '<input id="right" type="radio" name="placement" value="right">',
+                                '<label for="right"></label>',
+                            '</div>',
+                        '</div>',
+                        '<div class="quarter pdr7 pdl7">',
+                            '<div class="radiobox bottom-radio">',
+                                '<input id="bottom" type="radio" name="placement" value="bottom">',
+                                '<label for="bottom"></label>',
+                            '</div>',
+                        '</div>',
+                        '<div class="quarter text-right">',
+                            '<div class="radiobox left-radio">',
+                                '<input id="left" type="radio" name="placement" value="left">',
+                                '<label for="left"></label>',
+                            '</div>',
+                        '</div>',
+                    '</div>',
+                '</div>',
+                '<div class="footer">',
+                    '<button id="submit" class="submit">' + _('Mark') + '</button>',
+                '</div>',
+            '</div>'
+            ].join(''));
+        var options = $.extend({
+                    properties: ['color', 'border'],
+                    placement: 'top'
+                }, options);
+        $.each(options.properties, function(i, property){
+            $('#' + property).attr('checked', true);
+        });
+        $('#' + options.placement).attr('checked', true);
+
+        $('#submit').click(function(){
+            var options = {}
+            options.placement = $('input[name=placement]:checked').val();
+            options.properties = [];
+            $('input[name=properties]:checked').each(function(){
+                var $this = $(this);
+                options.properties.push($this.val());
+            });
+
+            smAction({data:JSON.stringify(options)});
+
+        });
+    }
+    -->
+    </script>
+  </head>
+  <body></body>
+</html>

@@ -1,2213 +1,203 @@
-var I18N = {};
-var lang = NSUserDefaults.standardUserDefaults().objectForKey("AppleLanguages").objectAtIndex(0);
-I18N["zh-Hans"] = {
-    "You need an artboard."                             : "请在画板中使用该功能.",
-    "Resolution setup"                                  : "设计分辨率设定",
-    "* Choose your design resolution"                   : "* 请选择你的设计分辨率", 
-    "Please select a layer for measuring."              : "请选择 1 个图层.",
-    "Please select 1 or 2 layers for measuring."        : "请选择 1 个或 2 个图层",
-    "Please select a layer for creating."               : "请选择 1 个图层.",
-    "Please select a text layer for creating."          : "请选择 1 个文字图层.",
-    "Fill / Text color / Gradient"                      : "填充 / 字体颜色 / 渐变",
-    "Border"                                            : "边框",
-    "Layer opacity"                                     : "图层不透明度",
-    "Radius"                                            : "圆角",
-    "Shadow"                                            : "外阴影",
-    "Inner shadow"                                      : "内阴影",
-    "Font size"                                         : "字号",
-    "Line height"                                       : "行高",
-    "Font face"                                         : "字体",
-    "Get properties"                                    : "获取属性",
-    "Style name"                                        : "样式名称",
-    "Properties:"                                       : "属性:",
-    "Please select a layer for getting properties."     : "请选择图层标注它的属性",
-  "* Customize the property guide that will be created.": "* 选择标注的属性和显示位置.",
-    "Export spec"                                       : "导出规范",
-    "Export to:"                                        : "导出到:",
-    "Export"                                            : "导出",
-    "Export complete!"                                  : "导出成功!",
-    "OK"                                                : "确定",
-    "Cancel"                                            : "取消",
-    "Select 1 or multiple artboards"                    : "选中一个或多个画板",
-    "Position top"                                      : "上侧",
-    "Position right"                                    : "右侧",
-    "Position bottom"                                   : "下侧",
-    "Position left"                                     : "左侧",
-    "Show position:"                                    : "显示位置:",
-    "Color hex, E.g. #FFFFFF 100%"                      : "颜色 hex [#FFFFFF 100%]",
-    "ARGB hex, E.g. #FFFFFFFF"                          : "ARGB hex [#FFFFFFFF]",
-    "RGBA CSS, E.g. rgba(255, 255, 255, 1)"             : "RGBA CSS [rgba(255, 255, 255, 1)]",
-    "Color format"                                      : "颜色格式",
-    "Remeasure all guides to see the new theme."        : "Remeasure all guides to see the new theme.",
-    "Show color name"                                   : "显示颜色名称",
-    "untitled"                                          : "未命名"
-};
+var I18N = {},
+    webI18N = {
+        "zh-Hans": 'zh-cn'
+    },
+    lang = NSUserDefaults.standardUserDefaults().objectForKey("AppleLanguages").objectAtIndex(0),
+    language = "";
  
 function _(str){
     return (I18N[lang] && I18N[lang][str])? I18N[lang][str]: str;
 }
 
-var com = com || {};
+var SM = {
+        init: function(context, command){
+            this.extend(context);
+            this.document = context.document;
+            this.documentData = this.document.documentData();
+            this.window = this.document.window();
+            this.pages = this.document.pages();
+            this.page = this.document.currentPage();
+            this.artboard = this.page.currentArtboard();
+            this.current = this.artboard || this.page;
+            this.pluginRoot = this.scriptPath
+                    .stringByDeletingLastPathComponent()
+                    .stringByDeletingLastPathComponent()
+                    .stringByDeletingLastPathComponent();
+            this.pluginSketch = this.pluginRoot + "/Contents/Sketch/library";
 
-com.utom = {
-    configsPage: undefined,
-    configsColors: undefined,
-    prefix: "SMConfigs",
-    configs: undefined,
-    context: undefined,
-    command: undefined,
-    document: undefined,
-    selection: undefined,
-    pages: undefined,
-    page: undefined,
-    artboard: undefined,
-    current: undefined,
-    styles: undefined,
-    isPercentage: false,
-    init: function(context, currentIsArtboard){
-        this.context = context;
-        this.document = context.document;
-        this.command = context.command;
-        this.selection = context.selection;
-        this.pages = this.document.pages();
-        this.page = this.document.currentPage();
-        this.artboard = this.page.currentArtboard();
-        this.current = this.artboard || this.page;
-        if(currentIsArtboard && !(this.is(this.current, MSArtboardGroup) || this.is(this.current, MSSymbolMaster))){
-            this.message(_("You need an artboard."));
-            return false;
+            if(NSFileManager.defaultManager().fileExistsAtPath(this.pluginSketch + "/i18n/" + lang + ".json")){
+                language = [NSString stringWithContentsOfFile:this.pluginSketch + "/i18n/" + lang + ".json" encoding:NSUTF8StringEncoding error:nil];
+                I18N[lang] = JSON.parse(language);
+                language = "I18N[\'" + webI18N[lang] + "\'] = " + language;
+            }
+
+            this.symbolsPage = this.find({key: "(name != NULL) && (name == %@)", match: "Symbols"}, this.document);
+
+            if(!this.symbolsPage){
+                this.symbolsPage = this.document.addBlankPage();
+                this.symbolsPage.setName("Symbols");
+                this.document.setCurrentPage(this.page);
+            }
+
+            this.loadFramework();
+
+            this.configs = this.getConfigs();
+
+            if(!this.configs){
+                if(!this.settingsPanel()) return false;
+            }
+
+            switch (command) {
+                case "overlay":
+                    this.mark("overlay");
+                    break;
+                case "size":
+                    this.mark("sizes");
+                    break;
+                case "spacing":
+                    this.mark("spacings");
+                    break;
+                case "property":
+                    this.mark("properties");
+                    break;
+                case "note":
+                    this.mark("note");
+                    break;
+                case "width":
+                    this.lite("width");
+                    break;
+                case "height":
+                    this.lite("height");
+                    break;
+                case "locked":
+                    this.toggleLocked();
+                    break;
+                case "hidden":
+                    this.toggleHidden();
+                    break;
+                case "clear":
+                    this.clearAllMarks();
+                    break;
+                case "color":
+                    this.manageColors();
+                    break;
+                case "setting":
+                    this.settingsPanel();
+                    break;
+                case "export":
+                    this.export();
+                    break;
+            }
+
+
+            // this.export();
+
+
+        },
+        loadFramework:function(){
+
+            if (NSClassFromString("SMModalView") == null) {
+                var mocha = [Mocha sharedRuntime]
+                return [mocha loadFrameworkWithName: "SMModalView" inDirectory: this.pluginSketch];
+            } else {
+                return true
+            }
+        },
+        extend: function( options, target ){
+            var target = target || this;
+
+            for ( var key in options ){
+                target[key] = options[key];
+            }
+            return target;
         }
-
-        this.initConfigs();
     },
-    extend: function( options, target ){
-        var target = target || this;
+    BorderPositions = ["center", "inside", "outside"],
+    FillTypes = ["color", "gradient"],
+    GradientTypes = ["linear", "radial", "angular"],
+    ShadowTypes = ["outer", "inner"],
+    TextAligns = ["left", "right", "center", "justify", "left"],
+    ResizingType = ["stretch", "corner", "resize", "float"];
 
-        for ( var key in options ){
-            target[key] = options[key];
+SM.extend({
+    prefix: "SMConfigs2",
+    regexNames: /OVERLAY\#|WIDTH\#|HEIGHT\#|TOP\#|RIGHT\#|BOTTOM\#|LEFT\#|VERTICAL\#|HORIZONTAL\#|NOTE\#|PROPERTY\#|LITE\#/,
+    colors: {
+        overlay: {
+            layer: { r: 1, g: 0.333333, b: 0, a: 0.3 },
+            text: { r: 1, g: 1, b: 1, a: 1 }
+        },
+        size: {
+            layer: { r: 1, g: 0.333333, b: 0, a: 1 },
+            text: { r: 1, g: 1, b: 1, a: 1 }
+        },
+        spacing: {
+            layer: { r: 0.313725, g: 0.890196, b: 0.760784, a: 1 },
+            text: { r: 1, g: 1, b: 1, a: 1 }
+        },
+        property: {
+            layer: { r: 0.960784, g: 0.650980, b: 0.137255, a: 1 },
+            text: { r: 1, g: 1, b: 1, a: 1 }
+        },
+        lite: {
+            layer: { r: 0.564706, g: 0.074510, b: 0.996078, a: 1 },
+            text: { r: 1, g: 1, b: 1, a: 1 }
+        },
+        note: {
+            layer: { r: 1, g: 0.988235, b: 0.862745, a: 1 },
+            border: { r: 0.8, g: 0.8, b: 0.8, a: 1},
+            text: { r: 0.333333, g: 0.333333, b: 0.333333, a: 1 }
         }
-        return target;
-    },
+    }
+});
+
+// api.js
+SM.extend({
     is: function(layer, theClass){
         if(!layer) return false;
         var klass = layer.class();
         return klass === theClass;
     },
-    isIntersect: function(lf, tf){
-        return !(
-            lf.maxX <= tf.x ||
-            lf.x >= tf.maxX ||
-            lf.y >= tf.maxY ||
-            lf.maxY <= tf.y
-        );
+    addGroup: function(){
+        return MSLayerGroup.new();
     },
-    getFrame: function(layer) {
-        var rect = layer.absoluteRect();
-        return {
-            x: Math.round(rect.x()),
-            y: Math.round(rect.y()),
-            width: Math.round(rect.width()),
-            height: Math.round(rect.height()),
-            maxX: Math.round(rect.x() + rect.width()),
-            maxY: Math.round(rect.y() + rect.height())
-        };
-    },
-    getDistance: function(frame, target){
-        var tf = target || this.getFrame(this.current);
-
-        return [
-            ( frame.y - tf.y ),
-            ( (tf.x + tf.width) - frame.maxX ),
-            ( (tf.y + tf.height) - frame.maxY ),
-            ( frame.x - tf.x )
-        ];
-    },
-    addLayer: function(type, container){
-        var container = container || this.current;
-        return container.addLayerOfType(type);
-    },
-    addGroup: function(container){
-        var container = container || this.current,
-            group = MSLayerGroup.new();
-        container.addLayers([group]);
-        return group;
-    },
-    addShape: function(container){
-        var container = container || this.current,
-            shape = MSRectangleShape.alloc().initWithFrame(NSMakeRect(0, 0, 100, 100)),
-            shapeGroup = MSShapeGroup.shapeWithPath(shape);
-        container.addLayers([shapeGroup]);
-        return shapeGroup;
+    addShape: function(){
+        var shape = MSRectangleShape.alloc().initWithFrame(NSMakeRect(0, 0, 100, 100));
+        return MSShapeGroup.shapeWithPath(shape);
     },
     addText: function(container){
-        var container = container || this.current,
-            text = MSTextLayer.new();
+        var text = MSTextLayer.new();
         text.setStringValue("text");
-        container.addLayers([text]);
         return text;
     },
     removeLayer: function(layer){
         var container = layer.parentGroup();
         if (container) container.removeLayer(layer);
     },
-    message: function(message){
-        this.document.showMessage(message);
-    }
-};
-
-
-//Math
-com.utom.extend({
-    mathHalf: function(number){
-        return Math.round( number / 2 );
-    },
-    math255: function(number){
-        return Math.round( 255 * number );
-    },
-    updateLength: function(length, sp){
-        var unit = (this.configs.resolution > 0)? "pt": "px";
-        unit = (this.configs.resolution > 3)? "dp": unit;
-        var scale = this.allResolution[this.configs.resolution].scale;
-
-        length = Math.round( length / scale * 10 ) / 10;
-
-        if(this.configs.resolution > 2 && sp){
-            unit = "sp";
-        }
-
-        if (scale === 27) {
-          unit = "gu";
-        }
-
-        if (scale === 14) {
-          unit = "rem";
-        }
-
-        return length + unit;
-    },
-    updatePercentLength: function(length, width){
-        var aFrame = this.artboard.frame();
-        if (width) {
-             return Math.round((length / aFrame.width()) * 1000) / 10 + "%";
-
-        } 
-        return Math.round((length / aFrame.height()) * 1000) / 10 + "%";
-    },
-    toHex:function(c) {
-        var hex = Math.round(c).toString(16).toUpperCase();
-        return hex.length == 1 ? "0" + hex :hex;
-    },
-    rgbToHex:function(r, g, b, a) {
-        if (a === undefined) {
-            return this.toHex(r) + this.toHex(g) + this.toHex(b);
-        } else {
-            return this.toHex(a * 255) + this.toHex(r) + this.toHex(g) + this.toHex(b);
-        }
-    }
-});
-
-//Find
-com.utom.extend({
-    find: function(name, container, isArray, field){
-        var field = field || "name";
-        var predicate = NSPredicate.predicateWithFormat("(" + field + " != NULL) && (" + field + " == %@)", name);
-        var container = container || this.current;
-        var items;
-        if(isArray){
-            items = container;
-        }
-        else{
-            items = container.children();
-        }
-
-        var queryResult = items.filteredArrayUsingPredicate(predicate);
-
-        if (queryResult.count()==1){
-            return queryResult[0];
-        } else if (queryResult.count()>0){
-            return queryResult;
-        } else {
-            return false;
-        }
-    }
-});
-
-//Shared
-com.utom.extend({
-    sharedLayerStyle: function(name, color, alpha) {
-        var layerStyles = this.document.documentData().layerStyles();
-        var layerStylesLibrary = layerStyles.objectsSortedByName();
-        var layerStyle = this.find(name, layerStylesLibrary, true);
-        layerStyle = ( !layerStyle || this.is(layerStyle, MSSharedStyle))? layerStyle: layerStyle[0];
-
-        var alpha = alpha || 1;
-
-        if( layerStyle == false ){
-            var style = MSStyle.alloc().init();
-            var color = MSColor.colorWithSVGString(color);
-
-            color.setAlpha(alpha);
-
-            var fill = style.addStylePartOfType(0);
-            fill.color = color;
-
-            layerStyles.addSharedStyleWithName_firstInstance(name, style);
-
-            layerStyle = style;
-        }
-
-        return (layerStyle.newInstance)? layerStyle.newInstance(): layerStyle;
-    },
-    sharedLayerStyleBorder: function(style, color, alpha) {
-        var alpha = alpha || 1;
-        var border = style.addStylePartOfType(1);
-        var color = MSColor.colorWithSVGString(color);
-        color.setAlpha(alpha);
-        border.color = color;
-        border.thickness = 1;
-
-        return style;
-    },
-    sharedTextStyle: function(name, color, alpha, center) {
-        var textStyles = this.document.documentData().layerTextStyles();
-        var textStylesLibrary = textStyles.objectsSortedByName();
-        var textStyle = this.find(name, textStylesLibrary, true);
-        textStyle = (!textStyle || this.is(textStyle, MSSharedStyle))? textStyle: textStyle[0];
-
-        var alpha = alpha || 1;
-
-        if( textStyle == false ){
-            var color = MSColor.colorWithSVGString(color);
-
-            color.setAlpha(alpha);
-
-            var textLayer = this.addText(this.page);
-            textLayer.setTextColor(color);
-
-            textLayer.setFontSize(14);
-            textLayer.setFontPostscriptName("HelveticaNeue");
-            if(center) textLayer.setTextAlignment(2);
-
-            var style = textLayer.style();
-            this.removeLayer(textLayer);
-
-            textStyles.addSharedStyleWithName_firstInstance(name, textLayer.style());
-
-            textStyle = style;
-        }
-
-        return (textStyle.newInstance)? textStyle.newInstance(): textStyle;
-    }
-})
-
-//Configs
-com.utom.extend({
-    getConfigs: function(container){
-        var container = (container)? container: this.page;
-        var command = this.command;
-        var prefix = this.prefix;
-        var configsData = [command valueForKey: prefix onLayer: container];
-        return JSON.parse(configsData);
-    },
-    setConfigs: function(newConfigs, container){
-        var container = (container)? container: this.page;
-        var command = this.command;
-        var prefix = this.prefix;
-        var configs = this.extend(newConfigs, this.getConfigs(container) || {});
-        configs.timestamp = new Date().getTime();
-
-        var configsData = JSON.stringify(configs);
-        [command setValue: configsData forKey: prefix onLayer: container];
-        return configs;
-    },
-    removeConfigs: function(container){
-        var container = (container)? container: this.page;
-        var command = this.command;
-        var prefix = this.prefix;
-
-        [command setValue: null forKey: prefix onLayer: container];
-    },
-    initConfigs: function(){
-        this.configs = this.getConfigs();
-        
-        this.configsPage = this.find("Sketch Measure", this.pages, true);
-
-        if(this.configsPage){
-            this.configsColors = this.find("Color Palette", this.configsPage);
-        }
-
-        if(!this.configs){
-            var defaultConfigs = {};
-            var resolution = this.resolutionSetting();
-
-            if(!resolution && resolution !== 0){
-                return false;
-            }
-            defaultConfigs.theme = 0;
-            defaultConfigs.resolution = resolution;
-            defaultConfigs.property = ["color", "border"];
-            defaultConfigs.colorFormat = 0;
-            this.configs = this.setConfigs(defaultConfigs);
-        }
-
-        
-
-    }
-});
-
-// Settings
-com.utom.extend({
-    allResolution: [
-        {
-            name: "Standard @1x (px)",
-            scale: 1
-        },
-        {
-            name: "Points @1x (pt)",
-            scale: 1
-        },
-        {
-            name: "Retina @2x (pt)",
-            scale: 2
-        },
-        {
-            name: "Retina HD @3x (pt)",
-            scale: 3
-        },
-        {
-            name: "LDPI @0.75x (dp, sp)",
-            scale: .75
-        },
-        {
-            name: "MDPI @1x (dp, sp)",
-            scale: 1
-        },
-        {
-            name: "HDPI @1.5x (dp, sp)",
-            scale: 1.5
-        },
-        {
-            name: "XHDPI @2x (dp, sp)",
-            scale: 2
-        },
-        {
-            name: "XXHDPI @3x (dp, sp)",
-            scale: 3
-        },
-        {
-            name: "XXXHDPI @4x (dp, sp)",
-            scale: 4
-        },
-        {
-            name: "Ubuntu Grid (27px)",
-            scale: 27
-        },
-        {
-            name: "CSS Rem (14px)",
-            scale: 14
-        },
-    ],
-    resolutionSetting: function(){
-        var self = this;
-        var cellWidth = 300;
-        var rowHeight = 26;
-        var allResolution = this.allResolution;
-        var cellHeight = rowHeight * allResolution.length;
-
-        var accessory = NSView.alloc().initWithFrame(NSMakeRect(0, 0, cellWidth, cellHeight + 30));
-        var matrix = [[NSMatrix alloc] initWithFrame:NSMakeRect(0, 30, cellWidth, cellHeight)
-            mode:NSRadioModeMatrix
-            cellClass:[NSButtonCell class]
-            numberOfRows: allResolution.length
-            numberOfColumns:1
-        ];
-        matrix.setCellSize(NSMakeSize(cellWidth, 25))
-
-        allResolution.forEach(function(data, i) {
-            var cell = matrix.cells()[i]
-            cell.setButtonType(NSRadioButton);
-            cell.setTitle(data.name);
-            cell.setTag(i);
-        });
-
-        [accessory addSubview:matrix]
-
-        var alert = NSAlert.alloc().init();
-        alert.setMessageText(_("Resolution setup"));
-        alert.setInformativeText(_("* Choose your design resolution"));
-        alert.addButtonWithTitle(_("OK"));
-        alert.addButtonWithTitle(_("Cancel"));
-        alert.setAccessoryView(accessory);
-
-        var buttonReturnValue = [alert runModal],
-            selectedIndex = [[matrix selectedCell] tag];
-
-        if (buttonReturnValue === NSAlertFirstButtonReturn) {
-            return selectedIndex;
-        }
-        return false;
-    }
-});
-com.utom.extend({
-    measureSize: function(){
-        if(!this.configs) return false;
-
-        var sizeStyle = [
-            this.sharedLayerStyle("@Size / Layer", "#FF5500"),
-            this.sharedTextStyle("@Size / Text", "#FFFFFF", 1),
-            this.sharedTextStyle("@Size / Type", "#FF5500", 1)
-        ]
-
-        if (this.selection.count() < 1){
-            this.message(_("Please select a layer for measuring."));
-            return false;
-        }
-
-        this.measureWidth(this.selection[0], sizeStyle);
-        this.measureHeight(this.selection[0], sizeStyle);
-    },
-    getLabelDims: function(textWidth, textHeight) {
-        var totalPadding = textHeight * 0.4;
+    getRect: function(layer){
+     var rect = layer.absoluteRect();
         return {
-            width: Math.round(textWidth + totalPadding),
-            height: Math.round(textHeight + totalPadding),
-            padding: totalPadding / 2,
+            x: Math.round(rect.x()),
+            y: Math.round(rect.y()),
+            width: Math.round(rect.width()),
+            height: Math.round(rect.height()),
+            maxX: Math.round(rect.x() + rect.width()),
+            maxY: Math.round(rect.y() + rect.height()),
+            setX: function(x){ rect.setX(x); this.x = x; this.maxX = this.x + this.width; },
+            setY: function(y){ rect.setY(y); this.y = y; this.maxY = this.y + this.height; },
+            setWidth: function(width){ rect.setWidth(width); this.width = width; this.maxX = this.x + this.width; },
+            setHeight: function(height){ rect.setHeight(height); this.height = height; this.maxY = this.y + this.height; }
         };
     },
-    measureWidth: function(layer, styles, name, isCenter){
-        if(!this.configs) return false;
-        if(this.configs.theme) return this.measureWidthNop(layer, styles, name, isCenter);
-        var layer = layer || this.selection[0];
-        var frame = this.getFrame(layer);
-        var name = name || "WIDTH#" + layer.objectID();
-        var container = this.find(name);
-        var distance = this.getDistance(frame);
-        var layerStyle = styles[0];
-        var textStyle = styles[1];
-
-        if (container) this.removeLayer(container);
-
-        container = this.addGroup();
-        container.setName(name);
-
-        var shape = this.addShape(container);
-        shape.setStyle(layerStyle);
-        var textL = this.addText(container);
-        textL.setStyle(textStyle);
-
-        var line = shape.duplicate();
-        var lineFrame = line.absoluteRect();
-        line.setName("line");
-        lineFrame.setWidth(frame.width);
-        lineFrame.setHeight(1);
-        lineFrame.setX( frame.x );
-
-        var start = shape.duplicate();
-        var startFrame = start.absoluteRect();
-        start.setName("start");
-        startFrame.setWidth(1);
-        startFrame.setHeight(5);
-        startFrame.setX( frame.x );
-
-        var end = shape.duplicate();
-        var endFrame = end.absoluteRect();
-        end.setName("end");
-        endFrame.setWidth(1);
-        endFrame.setHeight(5);
-        endFrame.setX( frame.x + frame.width - 1 );
-
-        var text = textL.duplicate();
-        text.setStringValue(this.updateLength(frame.width));
-        text.setName("text");
-
-        if (this.isPercentage) {
-            text.setStringValue(this.updatePercentLength(frame.width, true));
-
-        } else {
-            text.setStringValue(this.updateLength(frame.width));
-
-        }
-        text.setTextBehaviour(1);
-        text.setTextBehaviour(0);
-
-        var textFrame = text.absoluteRect();
-        var label = shape.duplicate();
-        var labelFrame = label.absoluteRect();
-        var labelX;
-        var labelY;
-        var gapX;
-        var gapY;
-        var gapWidth;
-        var gapHeight;
-
-        var labelDims = this.getLabelDims(textFrame.width(), textFrame.height());
-        var labelWidth = labelDims.width;
-        var labelHeight = labelDims.height;
-
-        label.setName("label");
-        labelFrame.setWidth(labelWidth);
-        labelFrame.setHeight(labelHeight);
-
-        var gap = shape.duplicate();
-        var gapFrame = gap.absoluteRect();
-        gap.setName("gap");
-        gap.setRotation(45);
-        gap.flatten();
-        gapFrame.setWidth(8);
-        gapFrame.setHeight(8);
-        gapFrame = gap.absoluteRect();
-        gapWidth = Math.round( gapFrame.width() );
-        gapHeight = Math.round( gapFrame.height() );
-
-        labelX = frame.x + this.mathHalf(frame.width) - this.mathHalf(labelWidth);
-        gapX = labelX + this.mathHalf(labelWidth) - this.mathHalf(gapWidth);
-
-        if(distance[0] < distance[2] && distance[2] >= 50 && !isCenter){
-            lineFrame.setY( frame.y + frame.height + 3 );
-            startFrame.setY( frame.y + frame.height + 1 );
-            endFrame.setY( frame.y + frame.height + 1 );
-        }
-        else if( distance[0] >= 50 && !isCenter ){
-            lineFrame.setY( frame.y - 4 );
-            startFrame.setY( frame.y - 6 );
-            endFrame.setY( frame.y - 6 );
-        }
-        else{
-            lineFrame.setY( frame.y + this.mathHalf(frame.height) );
-            startFrame.setY( frame.y + this.mathHalf(frame.height) - 2 );
-            endFrame.setY( frame.y + this.mathHalf(frame.height) - 2 );
-        }
-
-        var lineY = lineFrame.y();
-        labelY = lineY - this.mathHalf(labelHeight);
-        gapY = labelY + this.mathHalf(labelHeight) - this.mathHalf(gapHeight);
-
-        if( (labelWidth + 10) > frame.width ){
-            labelY = (distance[0] < distance[2])? lineY + 6: lineY - labelHeight - 5;
-            gapY = (distance[0] < distance[2])? lineY + 3: lineY - 10;
-        }
-
-        var aFrame = this.getFrame(this.current);
-        labelX = (aFrame.x > labelX)? aFrame.x : labelX;
-        labelX = (aFrame.maxX < ( labelX + labelWidth ) )? ( labelX - ( (labelX + labelWidth) - aFrame.maxX ) ): labelX;
-
-        labelFrame.setX(labelX);
-        labelFrame.setY(labelY);
-        gapFrame.setX(gapX);
-        gapFrame.setY(gapY);
-
-        textFrame.setX(labelX + labelDims.padding);
-        textFrame.setY(labelY + labelDims.padding);
-
-        this.setConfigs({original: frame.width}, container);
-
-        this.removeLayer(shape);
-        this.removeLayer(textL);
-        container.resizeToFitChildrenWithOption(0);
-
-        return container;
-    },
-    measureWidthNop: function(layer, styles, name, isCenter){
-        if(!this.configs) return false;
-
-        var layer = layer || this.selection[0];
-        var frame = this.getFrame(layer);
-        var name = name || "WIDTH#" + layer.objectID();
-        var container = this.find(name);
-        var distance = this.getDistance(frame);
-        var layerStyle = styles[0];
-        var textStyle = styles[2];
-
-        if (container) this.removeLayer(container);
-
-        container = this.addGroup();
-        container.setName(name);
-
-        var shape = this.addShape(container);
-        shape.setStyle(layerStyle);
-        var textL = this.addText(container);
-        textL.setStyle(textStyle);
-
-        var line = shape.duplicate();
-        var lineFrame = line.absoluteRect();
-        line.setName("line");
-        lineFrame.setWidth(frame.width);
-        lineFrame.setHeight(1);
-        lineFrame.setX( frame.x );
-
-        var start = shape.duplicate();
-        var startFrame = start.absoluteRect();
-        start.setName("start");
-        startFrame.setWidth(1);
-        startFrame.setHeight(5);
-        startFrame.setX( frame.x );
-
-        var end = shape.duplicate();
-        var endFrame = end.absoluteRect();
-        end.setName("end");
-        endFrame.setWidth(1);
-        endFrame.setHeight(5);
-        endFrame.setX( frame.x + frame.width - 1 );
-
-        var text = textL.duplicate();
-        text.setStringValue(this.updateLength(frame.width));
-        text.setName("text");
-
-        if (this.isPercentage) {
-            text.setStringValue(this.updatePercentLength(frame.width, true));
-
-        } else {
-            text.setStringValue(this.updateLength(frame.width));
-
-        }
-        text.setTextBehaviour(1);
-        text.setTextBehaviour(0);
-        var textFrame = text.absoluteRect();
-        textFrame.setX( frame.x + this.mathHalf(frame.width - textFrame.width()) )
-
-        var arrow = shape.duplicate();
-        var arrowFrame = arrow.absoluteRect();
-        arrow.setName("arrow");
-        arrowFrame.setWidth(1);
-        arrowFrame.setHeight(6);
-        arrowFrame.setX( frame.x + this.mathHalf(frame.width - 1)  );
-
-        if(distance[0] < distance[2] && distance[2] >= 50 && !isCenter){
-            lineFrame.setY( frame.maxY + 3 );
-            startFrame.setY( frame.maxY + 1 );
-            endFrame.setY( frame.maxY + 1 );
-            arrowFrame.setY( frame.maxY + 3 );
-            textFrame.setY( frame.maxY + 10 );
-        }
-        else if( distance[0] >= 50 && !isCenter ){
-            lineFrame.setY( frame.y - 4 );
-            startFrame.setY( frame.y - 6 );
-            endFrame.setY( frame.y - 6 );
-            arrowFrame.setY( frame.y - 9 );
-            textFrame.setY( frame.y - textFrame.height() - 10 );
-        }
-        else{
-            var ly = frame.y + this.mathHalf(frame.height);
-            lineFrame.setY( ly );
-            startFrame.setY( ly - 2 );
-            endFrame.setY( ly - 2 );
-            if(distance[0] < distance[2]){
-                arrowFrame.setY( ly);
-                textFrame.setY( ly + 7 );
-            }
-            else{
-                arrowFrame.setY( ly - 5);
-                textFrame.setY( ly - textFrame.height() - 6 );
-            }
-        }
-
-        var aFrame = this.getFrame(this.current);
-        var tFrame = this.getFrame(text);
-
-        if( aFrame.x > tFrame.x ){
-            textFrame.setX( aFrame.x );
-        }
-        else if(aFrame.maxX < tFrame.maxX){
-            textFrame.setX( tFrame.x - (tFrame.maxX - aFrame.maxX) );
-        }
-
-        this.setConfigs({original: frame.width}, container);
-
-        this.removeLayer(shape);
-        this.removeLayer(textL);
-        container.resizeToFitChildrenWithOption(0);
-
-        return container;
-    },
-    measureHeight: function(layer, styles, name, isCenter){
-        if(!this.configs) return false;
-        if(this.configs.theme) return this.measureHeightNop(layer, styles, name, isCenter);
-        var layer = layer || this.selection[0];
-        var frame = this.getFrame(layer);
-        var name = name || "HEIGHT#" + layer.objectID();
-        var container = this.find(name);
-        var distance = this.getDistance(frame);
-        var layerStyle = styles[0];
-        var textStyle = styles[1];
-
-        if (container) this.removeLayer(container);
-
-        container = this.addGroup();
-        container.setName(name);
-
-        var shape = this.addShape(container);
-        shape.setStyle(layerStyle);
-        var textL = this.addText(container);
-        textL.setStyle(textStyle);
-
-        var line = shape.duplicate();
-        var lineFrame = line.absoluteRect();
-        line.setName("line");
-        lineFrame.setWidth(1);
-        lineFrame.setHeight(frame.height);
-        lineFrame.setY( frame.y );
-
-        var start = shape.duplicate();
-        var startFrame = start.absoluteRect();
-        start.setName("start");
-        startFrame.setWidth(5);
-        startFrame.setHeight(1);
-        startFrame.setY( frame.y );
-
-        var end = shape.duplicate();
-        var endFrame = end.absoluteRect();
-        end.setName("end");
-        endFrame.setWidth(5);
-        endFrame.setHeight(1);
-        endFrame.setY( frame.y + frame.height - 1 );
-
-        var text = textL.duplicate();
-        text.setStringValue(this.updateLength(frame.height));
-        text.setName("text");
-        if (this.isPercentage) {
-          text.setStringValue(this.updatePercentLength(frame.height, false));
-
-        } else {
-          text.setStringValue(this.updateLength(frame.height));
-        }
-
-        text.setTextBehaviour(1);
-        text.setTextBehaviour(0);
-
-        var textFrame = text.absoluteRect();
-        var label = shape.duplicate();
-        var labelFrame = label.absoluteRect();
-        var labelX;
-        var labelY;
-        var gapX;
-        var gapY;
-        var gapWidth;
-        var gapHeight;
-
-        var labelDims = this.getLabelDims(textFrame.width(), textFrame.height());
-        var labelWidth = labelDims.width;
-        var labelHeight = labelDims.height;
-
-        label.setName("label");
-        labelFrame.setWidth( labelWidth );
-        labelFrame.setHeight( labelHeight );
-
-        var gap = shape.duplicate();
-        var gapFrame = gap.absoluteRect();
-        gap.setName("gap");
-        gap.setRotation(45);
-        gap.flatten();
-        gapFrame.setWidth(8);
-        gapFrame.setHeight(8);
-        gapFrame = gap.absoluteRect();
-        gapWidth = Math.round( gapFrame.width() );
-        gapHeight = Math.round( gapFrame.height() );
-
-        labelY = frame.y + this.mathHalf(frame.height) - this.mathHalf(labelHeight);
-        gapY = labelY + this.mathHalf(labelHeight) - this.mathHalf(gapHeight);
-
-        if (distance[1] < distance[3] && distance[3] >= 50 && !isCenter) {
-            lineFrame.setX( frame.x - 4 );
-            startFrame.setX( frame.x - 6 );
-            endFrame.setX( frame.x - 6 );
-        }
-        else if( distance[1] >= 50 && !isCenter){
-            lineFrame.setX( frame.x + frame.width + 3 );
-            startFrame.setX( frame.x + frame.width + 1 );
-            endFrame.setX( frame.x + frame.width + 1 );
-        }
-        else{
-            lineFrame.setX( frame.x + this.mathHalf(frame.width) );
-            startFrame.setX( frame.x + this.mathHalf(frame.width) - 2 );
-            endFrame.setX( frame.x + this.mathHalf(frame.width) - 2 );
-        }
-
-        var lineX = lineFrame.x();
-        labelX = lineX - this.mathHalf(labelWidth);
-        gapX = labelX + this.mathHalf(labelWidth) - this.mathHalf(gapWidth);
-
-        if( (labelHeight + 10) > frame.height ){
-            labelX = (distance[1] < distance[3])? lineX - labelWidth - 5 : lineX + 6;
-            gapX = (distance[1] < distance[3])? lineX - 10 : lineX + 3;
-        }
-
-        var aFrame = this.getFrame(this.current);
-        labelY = (aFrame.y > labelY)? aFrame.y : labelY;
-        labelY = (aFrame.maxY < ( labelY + labelHeight ) )? ( labelY - ( (labelY + labelHeight) - aFrame.maxY ) ): labelY;
-
-        labelFrame.setX(labelX);
-        labelFrame.setY(labelY);
-        gapFrame.setX(gapX);
-        gapFrame.setY(gapY);
-
-        textFrame.setX(labelX + labelDims.padding);
-        textFrame.setY(labelY + labelDims.padding);
-
-        this.setConfigs({original: frame.height}, container);
-
-        this.removeLayer(shape);
-        this.removeLayer(textL);
-        container.resizeToFitChildrenWithOption(0);
-
-        return container;
-    },
-    measureHeightNop: function(layer, styles, name, isCenter){
-        if(!this.configs) return false;
-
-        var layer = layer || this.selection[0];
-        var frame = this.getFrame(layer);
-        var name = name || "HEIGHT#" + layer.objectID();
-        var container = this.find(name);
-        var distance = this.getDistance(frame);
-        var layerStyle = styles[0];
-        var textStyle = styles[2];
-
-        if (container) this.removeLayer(container);
-
-        container = this.addGroup();
-        container.setName(name);
-
-        var shape = this.addShape(container);
-        shape.setStyle(layerStyle);
-        var textL = this.addText(container);
-        textL.setStyle(textStyle);
-
-        var line = shape.duplicate();
-        var lineFrame = line.absoluteRect();
-        line.setName("line");
-        lineFrame.setWidth(1);
-        lineFrame.setHeight(frame.height);
-        lineFrame.setY( frame.y );
-
-        var start = shape.duplicate();
-        var startFrame = start.absoluteRect();
-        start.setName("start");
-        startFrame.setWidth(5);
-        startFrame.setHeight(1);
-        startFrame.setY( frame.y );
-
-        var end = shape.duplicate();
-        var endFrame = end.absoluteRect();
-        end.setName("end");
-        endFrame.setWidth(5);
-        endFrame.setHeight(1);
-        endFrame.setY( frame.y + frame.height - 1 );
-
-        var text = textL.duplicate();
-        text.setStringValue(this.updateLength(frame.height));
-        text.setName("text");
-        if (this.isPercentage) {
-          text.setStringValue(this.updatePercentLength(frame.height, false));
-
-        } else {
-          text.setStringValue(this.updateLength(frame.height));
-        }
-
-        text.setTextBehaviour(1);
-        text.setTextBehaviour(0);
-
-        var textFrame = text.absoluteRect();
-        textFrame.setY( frame.y + this.mathHalf(frame.height - textFrame.height()) )
-
-        var arrow = shape.duplicate();
-        var arrowFrame = arrow.absoluteRect();
-        arrow.setName("arrow");
-        arrowFrame.setWidth(6);
-        arrowFrame.setHeight(1);
-        arrowFrame.setY( frame.y + this.mathHalf(frame.height - 1)  );
-
-        if (distance[1] < distance[3] && distance[3] >= 50 && !isCenter) {
-            lineFrame.setX( frame.x - 4 );
-            startFrame.setX( frame.x - 6 );
-            endFrame.setX( frame.x - 6 );
-            arrowFrame.setX( frame.x - 9 );
-            textFrame.setX( frame.x - textFrame.width() - 10 );
-        }
-        else if( distance[1] >= 50 && !isCenter){
-            lineFrame.setX( frame.maxX + 3 );
-            startFrame.setX( frame.maxX + 1 );
-            endFrame.setX( frame.maxX + 1 );
-            arrowFrame.setX( frame.maxX + 3 );
-            textFrame.setX( frame.maxX + 10 );
-        }
-        else{
-            lx = frame.x + this.mathHalf(frame.width);
-            lineFrame.setX( lx );
-            startFrame.setX( lx - 2 );
-            endFrame.setX( lx - 2 );
-            if(distance[1] < distance[3]){
-                arrowFrame.setX( lx - 5 );
-                textFrame.setX( lx - textFrame.width() - 6 );
-            }
-            else{
-                arrowFrame.setX( lx );
-                textFrame.setX( lx + 7 );
-            }
-        }
-
-        this.setConfigs({original: frame.height}, container);
-
-        this.removeLayer(shape);
-        this.removeLayer(textL);
-        container.resizeToFitChildrenWithOption(0);
-
-        return container;
-    }
-});
-
-com.utom.extend({
-    measureSpacing: function(){
-        if(!this.configs) return false;
-
-        var styles = styles || [
-            this.sharedLayerStyle("@Spacing / Layer", "#50E3C2"),
-            this.sharedTextStyle("@Spacing / Text", "#FFFFFF", 1),
-            this.sharedTextStyle("@Spacing / Type", "#50E3C2", 1)
-        ];
-
-        if (this.selection.count() < 1 || this.selection.count() > 2){
-            this.message(_("Please select 1 or 2 layers for measuring."));
-            return false;
-        }
-
-        var layers = this.selection;
-        var layer;
-        var target;
-
-        if( layers.count() == 1 ){
-            layer = layers[0];
-            target = this.current;
-            this.measureVertical(layer, target, styles);
-            this.measureVertical(layer, target, styles, true);
-            this.measureHorizontal(layer, target, styles);
-            this.measureHorizontal(layer, target, styles, true);
-        }
-        else if( layers.count() == 2 ){
-            layer = layers[1];
-            target = layers[0];
-            this.measureVertical(layer, target, styles);
-            this.measureVertical(layer, target, styles, true);
-            this.measureHorizontal(layer, target, styles);
-            this.measureHorizontal(layer, target, styles, true);
-        }
-    },
-    measureVertical: function(layer, target, styles, position){
-        if(!this.configs) return false;
-
-        var layer = layer;
-        var target = target;
-        var lf = this.getFrame(layer);
-        var tf = this.getFrame(target);
-        var distance = this.getDistance(lf, tf);
-        var idname = layer.objectID() + '#' + target.objectID();
-        var intersect = this.isIntersect(lf, tf);
-
-        var slug = (!position)? "TOP#": "BOTTOM#";
-        slug = (!intersect)? "VERTICAL#": slug;
-        var name = slug + idname;
-        var temp = this.addShape(this.current);
-        var tempFrame = temp.absoluteRect();
-        var tempX;
-        var tempY;
-        var tempWidth;
-        var tempHeight;
-
-        tempX = lf.x;
-        tempWidth = lf.width;
-        if( intersect ){
-            tempY = (position)? lf.y + lf.height: lf.y - distance[0];
-            tempHeight = (position)? distance[2]: distance[0];
-        }
-        else{
-
-            if(lf.maxY <  tf.y ){
-                tempY = lf.maxY;
-                tempHeight = tf.y - lf.maxY;
-            }
-            else if( lf.y > tf.maxY ){
-                tempY = tf.maxY;
-                tempHeight = lf.y - tf.maxY;
-            }
-        }
-
-        if( 
-            ( intersect && ( ( this.is(target, MSArtboardGroup) && tempHeight > 0 ) || ( !this.is(target, MSArtboardGroup) && tempHeight != 0 ) ) ) ||
-            ( !intersect && tempHeight > 0 )
-        ){
-            tempFrame.setX( tempX );
-            tempFrame.setY( tempY );
-            tempFrame.setWidth( tempWidth );
-            tempFrame.setHeight( tempHeight );
-            this.measureHeight(temp, styles, name, true);
-        }
-
-        this.removeLayer(temp);
-    },
-    measureHorizontal: function(layer, target, styles, position){
-        if(!this.configs) return false;
-
-        var layer = layer;
-        var target = target;
-        var lf = this.getFrame(layer);
-        var tf = this.getFrame(target);
-        var distance = this.getDistance(lf, tf);
-        var idname = layer.objectID() + '#' + target.objectID();
-        var intersect = this.isIntersect(lf, tf);
-
-        var slug = (!position)? "LEFT#": "RIGHT#";
-        slug = (!intersect)? "HORIZONTAL#": slug;
-        var name = slug + idname;
-        var temp = this.addShape(this.current);
-        var tempFrame = temp.absoluteRect();
-
-        var tempX;
-        var tempY;
-        var tempWidth;
-        var tempHeight;
-
-        tempY = lf.y;
-        tempHeight = lf.height;
-        if( intersect ){
-            tempX = (position)? lf.x + lf.width : lf.x - distance[3];
-            tempWidth = (position)? distance[1]: distance[3];
-        }
-        else{
-           if(lf.maxX <  tf.x ){
-                tempX = lf.maxX;
-                tempWidth = tf.x - lf.maxX;
-            }
-            else if( lf.x > tf.maxX ){
-                tempX = tf.maxX;
-                tempWidth = lf.x - tf.maxX;
-            }
-        }
-
-        if(
-            ( intersect && ( ( this.is(target, MSArtboardGroup) && tempWidth > 0 ) || ( !this.is(target, MSArtboardGroup) && tempWidth != 0 ) ) ) ||
-            ( !intersect && tempWidth > 0 )
-        ){
-            tempFrame.setX( tempX );
-            tempFrame.setY( tempY );
-            tempFrame.setWidth( tempWidth );
-            tempFrame.setHeight( tempHeight );
-            this.measureWidth(temp, styles, name, true);
-        }
-
-        this.removeLayer(temp);
-    }
-});
-
-com.utom.extend({
-    createOverlay: function(){
-        if(!this.configs) return false;
-
-        if (this.selection.count() < 1){
-            this.message(_("Please select a layer for creating."));
-            return false;
-        }
-
-        var layer = layer || this.selection[0];
-
-        var frame = this.getFrame(layer);
-        var name = "OVERLAYER#" + layer.objectID();
-        var container = this.find(name);
-        var layerStyle = this.sharedLayerStyle("@Overlayer / Layer", "#FF5500", .3);
-
-        if (container) this.removeLayer(container);
-
-        container = this.addGroup();
-        container.setName(name);
-
-        var overlayer = this.addShape(container);
-        var overlayerFrame = overlayer.absoluteRect();
-        overlayer.setStyle(layerStyle);
-        overlayer.setName('overlayer');
-        overlayerFrame.setX(frame.x);
-        overlayerFrame.setY(frame.y);
-        overlayerFrame.setWidth(frame.width);
-        overlayerFrame.setHeight(frame.height);
-
-        container.resizeToFitChildrenWithOption(0);
-    }
-});
-
-com.utom.extend({
-    measurePercentageSize: function(){
-        this.isPercentage = true;
-        this.measureSize();
-    },
-    measurePercentageSpacing: function(){
-        this.isPercentage = true;
-        this.measureSpacing();
-    }
-})
-
-com.utom.extend({
-    createNote: function(target, reference, styles, name, configs){
-        if(!this.configs) return false;
-        var selection = (this.selection.count() && this.selection[0]) ? this.selection[0]: undefined;
-        var target = target || selection;
-
-        if (
-            !target ||
-            ( target && !this.is(target, MSTextLayer) )
-        ){
-            this.message(_("Please select a text layer for creating."));
-            return false;
-        }
-
-        var text = target;
-        var textFrame;
-        var container = text.parentGroup();
-        var shape;
-        var label;
-        var gap;
-        var gapFrame;
-        var labelFrame;
-
-        if(/NOTE\#|LABEL\#|TYPOGRAPHY\#|PROPERTY\#/.exec(container.name())){
-            label = this.find('label', container);
-            labelFrame = this.getFrame(label);
-            gap = this.find('gap', container);
-            if(gap){
-                gapFrame = this.getFrame(gap);
-                var old = {
-                    ly: labelFrame.y,
-                    lh: labelFrame.height,
-                    gy: gapFrame.y
-                }
-            }
-
-        }
-        else{
-            var name = name || "NOTE#" + text.objectID();
-            container = this.find(name);
-
-            var styles = styles || [
-                this.sharedLayerStyleBorder(this.sharedLayerStyle("@NOTE / Layer", "#FFFCDC"), "#CCCCCC"),
-                this.sharedTextStyle("@NOTE / Text", "#555555")
-            ];
-
-            var layerStyle = styles[0];
-            var textStyle = styles[1];
-
-            if (container) this.removeLayer(container);
-
-            container = this.addGroup();
-            container.setName(name);
-
-            shape = this.addShape(container);
-            shape.setStyle(layerStyle);
-
-            label = shape.duplicate();
-            label.setName("label");
-            textFrame = this.getFrame(text);
-
-            this.removeLayer(text);
-            container.addLayers([text]);
-
-            text.setStyle(textStyle);
-            if(configs) this.setConfigs(configs, container);
-        }
-
-        textFrameAbsoluteRect = text.absoluteRect();
-        if(textFrame){
-            textFrameAbsoluteRect.setX(textFrame.x);
-            textFrameAbsoluteRect.setY(textFrame.y);
-        }
-        labelFrame = label.absoluteRect();
-        labelFrame.setX(textFrameAbsoluteRect.x() - 4);
-        labelFrame.setY(textFrameAbsoluteRect.y() - 3);
-        labelFrame.setWidth(textFrameAbsoluteRect.width() + 8);
-        labelFrame.setHeight(textFrameAbsoluteRect.height() + 6);
-
-        if(configs && configs.position != undefined){
-            var position = configs.position;
-            gap = shape.duplicate();
-
-            var gapFrame = gap.absoluteRect();
-            gap.setName("gap");
-            gap.setRotation(45);
-            gap.flatten();
-            gapFrame.setWidth(8);
-            gapFrame.setHeight(8);
-            gapFrame = gap.absoluteRect();
-            gapWidth = Math.round( gapFrame.width() );
-            gapHeight = Math.round( gapFrame.height() );
-
-            var gapX = labelFrame.x() + this.mathHalf(labelFrame.width() - gapFrame.width());
-            var gapY = labelFrame.y() + this.mathHalf(labelFrame.height() - gapFrame.height());
-
-            gapX = (position === 1)? labelFrame.x() - 4: gapX;
-            gapX = (position === 3)? labelFrame.x() + labelFrame.width() - 4: gapX;
-
-            gapY = (position === 0)? labelFrame.y() + labelFrame.height() - 4: gapY;
-            gapY = (position === 2)? labelFrame.y() - 4: gapY;
-
-            gapFrame.setX(gapX);
-            gapFrame.setY(gapY);
-        }
-        else if(old && old.ly < old.gy){
-            gapFrame = gap.absoluteRect();
-            gapFrame.setY(old.gy - (old.lh - labelFrame.height()));
-        }
-
-        this.removeLayer(shape);
-
-        container.resizeToFitChildrenWithOption(0);
-
-        return container;
-    },
-    allProperty: [
-        {
-            name: _("Fill / Text color / Gradient"),
-            slug: "color"
-        },
-        {
-            name: _("Border"),
-            slug: "border"
-        },
-        {
-            name: _("Layer opacity"),
-            slug: "opacity"
-        },
-        {
-            name: _("Radius"),
-            slug: "radius"
-        },
-        {
-            name: _("Shadow"),
-            slug: "shadow"
-        },
-        {
-            name: _("Inner shadow"),
-            slug: "inner-shadow"
-        },
-        {
-            name: _("Font size"),
-            slug: "font-size"
-        },
-        {
-            name: _("Character"),
-            slug: "character"
-        },
-        {
-            name: _("Line height"),
-            slug: "line-height"
-        },
-        {
-            name: _("Font face"),
-            slug: "font-face"
-        },
-        {
-            name: _("Style name"),
-            slug: "style-name"
-        }
-
-    ],
-    propertyPosition: [_("Position top"), _("Position right"), _("Position bottom"), _("Position left")],
-    colorFormats: [_("Color hex, E.g. #FFFFFF 100%"), _("ARGB hex, E.g. #FFFFFFFF"), _("RGBA CSS, E.g. rgba(255, 255, 255, 1)")],
-    propertyDialog: function(){
-        var cellWidth = 250;
-        var cellHeight = 200;
-        var allProperty = this.allProperty;
-        var propertyConfigs = this.configs.property;
-        var colorFormatConfigs = this.configs.colorFormat || 0;
-        var propertyPosition = this.configs.propertyPosition || 0;
-        var showColorName = this.configs.showColorName || 0;
-
-        var alert = COSAlertWindow.new();
-        alert.setMessageText(_("Get properties"));
-        alert.setInformativeText(_("* Customize the property guide that will be created."));
-        alert.addButtonWithTitle(_("OK"));
-        alert.addButtonWithTitle(_("Cancel"));
-
-        alert.addTextLabelWithValue(_("Properties:"));
-        var btns = [];
-        allProperty.forEach(function(data, i) {
-            btns[i] = NSButton.alloc().initWithFrame(NSMakeRect(0, 0, 200, 14));
-            btns[i].setButtonType(NSSwitchButton);
-            btns[i].setTitle(data.name);
-            btns[i].setState(false);
-            propertyConfigs.forEach(function(slug){
-                if(slug == data.slug){
-                    btns[i].setState(true);
-                }
-            });
-            alert.addAccessoryView(btns[i]);
-        });
-
-        var comboBox = NSComboBox.alloc().initWithFrame(NSMakeRect(0,0,200,25));
-        comboBox.addItemsWithObjectValues(this.propertyPosition);
-        comboBox.selectItemAtIndex(propertyPosition);
-
-        alert.addTextLabelWithValue(_("Show position:"));
-        alert.addAccessoryView(comboBox);
-
-        var comboColorFormatBox = NSComboBox.alloc().initWithFrame(NSMakeRect(0,0,300,25));
-        comboColorFormatBox.addItemsWithObjectValues(this.colorFormats);
-        comboColorFormatBox.selectItemAtIndex(colorFormatConfigs);
-
-        alert.addTextLabelWithValue(_("Color format:"));
-        alert.addAccessoryView(comboColorFormatBox);
-
-        var comboShowColorNameBtn = NSButton.alloc().initWithFrame(NSMakeRect(0, 0, 200, 14));
-        comboShowColorNameBtn.setButtonType(NSSwitchButton);
-        comboShowColorNameBtn.setState(false);
-        comboShowColorNameBtn.setTitle(_("Show color name"));
-        if(showColorName){
-            comboShowColorNameBtn.setState(true);
-        }
-        alert.addAccessoryView(comboShowColorNameBtn);
-
-        var responseCode = alert.runModal();
-
-        if(responseCode == 1000){
-            var types = [];
-            var position = comboBox.indexOfSelectedItem();
-            var colorFormat = comboColorFormatBox.indexOfSelectedItem();
-            btns.forEach(function(btn, i) {
-                if(btn.state()){
-                    types.push(allProperty[i].slug);
-                }
-            });
-
-            this.configs = this.setConfigs({property: types, propertyPosition: position, colorFormat: colorFormat, showColorName: comboShowColorNameBtn.state() });
-            return {
-                types: types,
-                position: position,
-                colorFormat: colorFormat,
-                showColorName: comboShowColorNameBtn.state()
-            };
-        }
-        else{
-            return false;
-        }
-
-    },
-    getProperty: function( layer, propertyConfigs ){
-        var self = this;
-
-        if(!this.configs) return false;
-
-        if( !layer && this.selection.count() < 1 ){
-            this.message(_("Please select a layer for getting properties."));
-            return false;
-        }
-
-        var layer = layer || this.selection[0];
-
-        var styles = [
-            this.sharedLayerStyle("@Property / Layer", "#F5A623"),
-            this.sharedTextStyle("@Property / Text", "#FFFFFF")
-        ];
-
-        if(!propertyConfigs){
-            var propertyConfigs = this.propertyDialog();
-            if(!propertyConfigs) return false;
-        }
-
-        var types = propertyConfigs.types;
-        var position = propertyConfigs.position;
-        var colorFormat = propertyConfigs.colorFormat;
-        var showColorName = propertyConfigs.showColorName;
-
-        if(!types) return false;
-
-        if(showColorName){
-            this.getColors();
-        }
-
-        var content = [];
-        var layerStyle = layer.style();
-
-        var colorContent = function(color){
-            var colorName = (self.configs.colors && self.configs.colors["#" + self.rgbToHex(color.r, color.g, color.b, color.a)])? self.configs.colors["#" + self.rgbToHex(color.r, color.g, color.b, color.a)]: undefined;
-            if(propertyConfigs.showColorName && colorName){
-                return colorName;
-            }
-
-            if(colorFormat === 0){
-                return "#" + self.rgbToHex(color.r, color.g, color.b) + " " + Math.round(color.a * 100) + "%";
-            }
-            else if(colorFormat === 1){
-                return "#" + self.rgbToHex(color.r, color.g, color.b, color.a);
-            }
-            return "rgba(" + color.r + "," + color.g + "," + color.b + "," + Math.round(color.a * 10) / 10 + ")";
-        }
-
-        var colorTypeContent = function(fillJSON){
-            var fillJSON = fillJSON;
-
-            if(fillJSON.fillType == "color"){
-                return colorContent(fillJSON.color);
-            }
-
-            if(fillJSON.fillType == "gradient"){
-                var fc = [];
-                fc.push(fillJSON.gradient.type)
-                fillJSON.gradient.colorStops.forEach(function(gradient){
-                    fc.push(" * " + colorContent(gradient.color));
-                });
-                return fc.join("\r\n");
-            }
-        }
-
-        var shadowContent = function(shadow){
-            var shadowJSON = self.shadowToJSON(shadow);
-            var sc = [];
-            if(shadowJSON <= 0) return false;
-
-            sc.push(" * x, y - " + self.updateLength(shadowJSON.offsetX) + ", " + self.updateLength(shadowJSON.offsetY) );
-            if(shadowJSON.blurRadius) sc.push(" * blur - " + self.updateLength(shadowJSON.blurRadius) );
-            if(shadowJSON.spread) sc.push(" * spread - " + self.updateLength(shadowJSON.spread) );
-            return sc.join("\r\n")
-        }
-
-        if(types.length <= 0) return false;
-
-        types.forEach(function(type){
-            switch(type){
-                case "color":
-                    if(self.is(layer, MSShapeGroup)){
-                        var fillsJSON = self.getFills(layerStyle);
-
-                        if(fillsJSON.length <= 0) return false;
-
-                        var fillJSON = fillsJSON.pop();
-
-                        content.push("fill: " + colorTypeContent(fillJSON));
-                    }
-                    if(self.is(layer, MSTextLayer)){
-                        content.push("text-color: " + colorContent(self.colorToJSON(layer.textColor())));
-
-                    }
-                    break;
-                case "border":
-                    var bordersJSON = self.getBorders(layerStyle);
-                    if(bordersJSON.length <= 0) return false;
-                    var borderJSON = bordersJSON.pop();
-
-                    content.push("border: " + self.updateLength(borderJSON.thickness) + " " + borderJSON.position + "\r\n * " + colorTypeContent(borderJSON) );
-                    break;
-                case "opacity":
-                    content.push("opacity: " + Math.round( layerStyle.contextSettings().opacity() * 100) + "%");
-                    break;
-                case "radius":
-                    if(!self.is(layer, MSShapeGroup) || !self.is(layer.layers().firstObject(), MSRectangleShape)) return false;
-                    var shape = self.is(layer.layers().firstObject(), MSRectangleShape)? layer.layers().firstObject(): undefined;
-                    content.push("radius: " + self.updateLength(shape.fixedRadius()));
-                    break;
-                case "shadow":
-                    if(!layerStyle.shadow() || (layerStyle.shadow() && !layerStyle.shadow().isEnabled()) ) return false;
-                    content.push("shadow: \r\n" + shadowContent(layerStyle.shadow()));
-                    break;
-                case "inner-shadow":
-                    if(!layerStyle.innerShadow() || (layerStyle.innerShadow() && !layerStyle.innerShadow().isEnabled()) ) return false;
-                    content.push("inner-shadow: \r\n" + shadowContent(layerStyle.innerShadow()));
-                    break;
-                case "font-size":
-                    if(!self.is(layer, MSTextLayer)) return false;
-                    content.push("font-size: " + self.updateLength(layer.fontSize(), true) );
-                    break;
-                case "character":
-                    if(!self.is(layer, MSTextLayer)) return false;
-                    content.push("character: " + self.updateLength(layer.characterSpacing(), true) );
-                    break;
-                case "line-height":
-                    if(!self.is(layer, MSTextLayer)) return false;
-                    content.push("line: " + self.updateLength(layer.lineSpacing(), true) + " (" + Math.round(layer.lineSpacing() / layer.fontSize() * 10) / 10  + ")" );
-                    break;
-                case "font-face":
-                    if(!self.is(layer, MSTextLayer)) return false;
-                    content.push("font-face: " + layer.fontPostscriptName());
-                    break;
-                case "style-name":
-                    var styleName = self.getStyleName( layer.style(), self.is(layer, MSTextLayer) );
-                    if( !styleName ) return false;
-                    content.push("style-name: " + styleName );
-                    break;
-            }
-        });
-
-        if(content.length <= 0) return false;
-
-        var name = "PROPERTY#" + layer.objectID();
-        var frame = this.getFrame(layer);
-        var distance = this.getDistance(frame);
-
-        var temp = this.addText();
-        temp.setStyle(styles[1]);
-        temp.setStringValue(content.join("\r\n"));
-        temp.setTextBehaviour(1);
-        temp.setTextBehaviour(0);
-
-        var aFrame = this.getFrame(this.current);
-        var tempFrame = temp.absoluteRect();
-
-
-        var tw = tempFrame.width() + 8;
-        var th = tempFrame.height() + 6;
-
-        var tempX = frame.x - this.mathHalf(tempFrame.width() - frame.width);
-        var tempY = frame.y - this.mathHalf(tempFrame.height() - frame.height);
-
-        tempX = (position === 1)? frame.x + frame.width + 7: tempX;
-        tempX = (position === 3)? frame.x - tempFrame.width() -7: tempX;
-
-        tempY = (position === 0)? frame.y - tempFrame.height() - 6: tempY;
-        tempY = (position === 2)? frame.y + frame.height + 6: tempY;
-
-        tempFrame.setX(tempX);
-        tempFrame.setY(tempY);
-
-        return this.createNote(temp, frame, styles, name, {
-            types: types,
-            position: position,
-            colorFormat: colorFormat
-        });
-    }
-});
-
-com.utom.extend({
-    isHidden: false,
-    isLocked: false,
-    regexName: /OVERLAYER\#|WIDTH\#|HEIGHT\#|TOP\#|RIGHT\#|BOTTOM\#|LEFT\#|VERTICAL\#|HORIZONTAL\#|NOTE\#|LABEL\#|TYPOGRAPHY\#|PROPERTY\#|LITE\#/,
-    toggleHidden: function(){
-        if(!this.configs) return false;
-
-        var page = this.page;
-
-        var isHidden = (this.configs.isHidden)? false : !Boolean(this.configs.isHidden);
-        this.configs = this.setConfigs({isHidden: isHidden});
-
-        var layers = page.children().objectEnumerator();
-
-        while(item = layers.nextObject()) {
-            if(this.is(item, MSLayerGroup) && this.regexName.exec(item.name())){
-                item.setIsVisible(!isHidden);
-            }
-        }
-    },
-    toggleLocked: function(){
-        if(!this.configs) return false;
-
-        var page = this.page;
-
-        var isLocked = (this.configs.isLocked)? false : !Boolean(this.configs.isLocked);
-        this.configs = this.setConfigs({isLocked: isLocked});
-
-        var layers = page.children().objectEnumerator();
-
-        while(item = layers.nextObject()) {
-            if(this.is(item, MSLayerGroup) && this.regexName.exec(item.name())){
-                item.setIsLocked(isLocked);
-            }
-        }
-    },
-    moveToGroup: function(){
-        if(!this.configs) return false;
-
-        var artboard = this.artboard;
-
-        var groupSpecs = this.find("@Specs");
-        if(!groupSpecs){
-            groupSpecs = this.addGroup(artboard);
-            groupSpecs.setName("@Specs");
-        }
-
-        var layers = artboard.children().objectEnumerator();
-        var specLayers = [];
-
-        while(item = layers.nextObject()) {
-            if(this.is(item, MSLayerGroup) && this.regexName.exec(item.name())){
-                this.removeLayer(item);
-                specLayers.push(item);
-            }
-        }
-
-        groupSpecs.addLayers(specLayers);
-        groupSpecs.resizeToFitChildrenWithOption(0);
-        groupSpecs.setIsLocked(true);
-    },
-    clearMeasure: function(){
-        if(!this.configs) return false;
-
-        var page = this.page;
-
-        var layers = page.children().objectEnumerator();
-
-        while(item = layers.nextObject()) {
-            if(this.is(item, MSLayerGroup) && this.regexName.exec(item.name())){
-                this.removeLayer(item);
-            }
-        }
-    },
-    resetSizeGuide: function(layerGroup){
-        if(this.configs.theme) return this.resetSizeGuideNop( layerGroup );
-        var smConfigs = this.getConfigs(layerGroup),
-            layers = layerGroup.children().objectEnumerator(),
-            label, gap, text;
-
-        while(layer = layers.nextObject()) {
-            if(layer.name() == "label") label = layer;
-            if(layer.name() == "gap") gap = layer;
-            if(this.is(layer, MSTextLayer)) text = layer;
-        }
-
-        if(/\%/.exec( this.toJSString(text.storage().string()) )) return false;
-
-        lf = this.getFrame(label);
-        gf = this.getFrame(gap);
-        tf = this.getFrame(text);
-
-        text.setStringValue(this.updateLength(smConfigs.original));
-        text.setTextBehaviour(1);
-        text.setTextBehaviour(0);
-
-        ntf = this.getFrame(text);
-
-        var la = label.absoluteRect();
-        var ta = text.absoluteRect();
-        var dx = this.mathHalf(ntf.width - tf.width);
-        dx = (gf.maxX > lf.maxX)? (ntf.width - tf.width): dx;
-        dx = (gf.x < lf.x && gf.maxX < lf.maxX)? 0: dx;
-        ta.setX(tf.x - dx);
-        la.setX(lf.x - dx);
-        la.setWidth( ta.width() + 7 );
-
-        layerGroup.resizeToFitChildrenWithOption(0);
-
-        return layerGroup;
-    },
-    resetSizeGuideNop: function(layerGroup){
-        var smConfigs = this.getConfigs(layerGroup),
-            layers = layerGroup.children().objectEnumerator(),
-            arrow, line, text;
-        while(layer = layers.nextObject()) {
-            if(layer.name() == "arrow") arrow = layer;
-            if(layer.name() == "line") line = layer;
-            if(this.is(layer, MSTextLayer)) text = layer;
-        }
-
-        if(/\%/.exec( this.toJSString(text.storage().string()) )) return false;
-
-        af = this.getFrame(arrow);
-        lf = this.getFrame(line);
-        tf = this.getFrame(text);
-
-        text.setStringValue(this.updateLength(smConfigs.original));
-        text.setTextBehaviour(1);
-        text.setTextBehaviour(0);
-
-        ntf = this.getFrame(text);
-
-        var aa = arrow.absoluteRect();
-        var ta = text.absoluteRect();
-        var dx = this.mathHalf(ntf.width - tf.width);
-        if(lf.maxX < af.maxX){
-            dx = 0;
-        }
-        else if(lf.x > af.x){
-            dx = dx * 2;
-        }
-
-        ta.setX(tf.x - dx);
-
-        layerGroup.resizeToFitChildrenWithOption(0);
-
-        return layerGroup;
-    },
-    resetPropertyGuide: function(layerGroup){
-        var smConfigs = this.getConfigs(layerGroup);
-        var splitName = layerGroup.name().split("#");
-        var msLayer = this.find(splitName[1], this.page, false, "objectID");
-        var msText = this.find(MSTextLayer, layerGroup, false, "class");
-        var lf = this.getFrame(layerGroup);
-        var nl = this.getProperty(msLayer, smConfigs).absoluteRect();
-
-        nl.setX(lf.x);
-        nl.setY(lf.y);
-
-        return layerGroup;
-    },
-    resetConfigs: function(){
-        if(!this.configs) return false;
-        var theme = this.configs.theme;
-        this.removeConfigs();
-        this.initConfigs();
-
-        this.configs = this.setConfigs({theme: theme});
-
-        var page = this.page;
-
-        var layers = page.children().objectEnumerator();
-
-        while(item = layers.nextObject()) {
-            if(this.is(item, MSLayerGroup) && /WIDTH\#|HEIGHT\#|TOP\#|RIGHT\#|BOTTOM\#|LEFT\#|VERTICAL\#|HORIZONTAL\#|LITE\#/.exec(item.name())){
-                this.resetSizeGuide(item);
-            }
-            else if( this.is(item, MSLayerGroup) && /PROPERTY\#/.exec(item.name()) ){
-                this.resetPropertyGuide(item);
-            }
-        }
-    },
-    toggleTheme: function(){
-        if(!this.configs) return false;
-
-        this.configs.theme = (this.configs.theme)? 0: 1;
-
-        this.configs = this.setConfigs({theme: this.configs.theme});
-
-        this.message(_("Remeasure all guides to see the new theme."));
-    },
-    getColors: function(output){
-        if (!this.configsColors){
-            this.configs.colors = {};
-            return false;
-        }
-
-        var colorJSON = {};
-        var colorDetailJSON = {};
-        var colorGroups = this.configsColors.layers().objectEnumerator();
-
-        while (colorGroup = colorGroups.nextObject()) {
-            if( this.is( colorGroup, MSLayerGroup ) ){
-                var configs = this.getConfigs(colorGroup);
-                var nameLayer = this.find(configs.nameLayer, colorGroup, false, "objectID");
-                var colorLayer = this.find(configs.colorLayer, colorGroup, false, "objectID");
-                var color = this.getFills(colorLayer.style()).pop().color;
-                var hex = "#" + this.rgbToHex(color.r, color.g, color.b);
-                var argb_hex = "#" + this.rgbToHex(color.r, color.g, color.b, color.a);
-                var name = nameLayer.stringValue();
-
-                colorDetailJSON[argb_hex] = this.extend(color, {
-                    name: name,
-                    hex: hex,
-                    argb_hex: argb_hex
-                });
-                if(name != _("untitled")){
-                    colorJSON[argb_hex] = this.toJSString(name);
-                }
-            }
-        }
-
-        this.setConfigs({colors: colorJSON});
-        this.configs.colors = colorJSON;
-        this.colors = colorDetailJSON;
-        return colorDetailJSON;
-    },
-    addColors: function(colors){
-        var self = this;
-
-        var colors = this.extend(this.colors, colors || {});
-        var pluginPath = NSString.stringWithString(self.context.scriptPath).stringByDeletingLastPathComponent();
-        var imagePath = pluginPath.stringByAppendingPathComponent("assets/transparent-background.png");
-        var transparentImage = [[NSImage alloc] initWithContentsOfFile:imagePath];
-
-        var index = 0;
-        var column = 0;
-        var row = 0;
-
-        for ( var argb_hex in colors ){
-            var color = colors[argb_hex];
-            var group = self.addGroup( self.configsColors );
-            var shape = self.addShape( group );
-            var nameText = self.addText( group );
-            var infoText = self.addText( group );
-            var name = color.name? color.name: _("untitled");
-            var shapeColor = MSColor.colorWithSVGString(color.hex);
-            shapeColor.setAlpha(color.a);
-
-            var grayscale = color.r * 0.299 + color.g * 0.587 + color.b * 0.114;
-
-            var textHex = ( grayscale >= 180 )? "#4A4A4A": "#FFFFFF";
-            textHex = (color.a <= .3)? "#4A4A4A": textHex;
-
-            var textColor =  MSColor.colorWithSVGString(textHex);
-
-            group.setName(name);
-            shape.setName("color");
-            nameText.setName("name");
-            infoText.setName("text");
-
-            shape.frame().setWidth(160);
-            shape.frame().setHeight(128);
-
-            var transparentBg = shape.style().addStylePartOfType(0);
-            transparentBg.setFillType(4);
-            transparentBg.setPatternFillType(0);
-            transparentBg.setPatternImage(transparentImage);
-
-            var colorBg = shape.style().addStylePartOfType(0);
-            colorBg.setFillType(0);
-            colorBg.color = shapeColor;
-
-            nameText.frame().setX(16);
-            nameText.frame().setY(16);
-            nameText.setTextColor(textColor);
-            nameText.setFontSize(18);
-            nameText.setFontPostscriptName("HelveticaNeue-Medium");
-            nameText.setStringValue(name);
-            nameText.setTextBehaviour(1);
-            nameText.setTextBehaviour(0);
-
-            info = [
-                "#" + self.rgbToHex(color.r, color.g, color.b) + ", " + Math.round(color.a * 100) + "%",
-                "#" + self.rgbToHex(color.r, color.g, color.b, color.a),
-                "rgba(" + color.r + "," + color.g + "," + color.b + "," + Math.round(color.a * 10) / 10 + ")"
-            ]
-
-            textColor.setAlpha(.64)
-            infoText.frame().setX(16);
-            infoText.frame().setY(48);
-            infoText.setTextColor(textColor);
-            infoText.setFontSize(14);
-            infoText.setFontPostscriptName("HelveticaNeue-Light");
-            infoText.setStringValue(info.join("\r\n"));
-            infoText.setTextBehaviour(1);
-            infoText.setTextBehaviour(0);
-
-            shape.setIsLocked(true);
-            // infoText.setIsLocked(true);
-            group.resizeToFitChildrenWithOption(0);
-            group.frame().setX( 160 * column );
-            group.frame().setY( 128 * row );
-
-            self.setConfigs({nameLayer: self.toJSString(nameText.objectID()), colorLayer: self.toJSString(shape.objectID())}, group);
-
-            if(index % 5 == 4 && column == 4){
-                if(row * 128 > 640) self.configsColors.frame().setHeight(row * 128)
-                row++
-            }
-
-            if(index % 5 == 4){
-                column = 0
-            }
-            else{
-                column++;
-            }
-            index++;
-        }
-
-    },
-    getAllColor: function(){
-        var self = this;
-        var colors = {};
-        var colorsArr = [];
-        var context = this.context;
-        var document = this.document;
-        var selection = this.selection;
-        var getColor = function(color){
-            var color = color;
-            var hex = "#" + self.rgbToHex(color.r, color.g, color.b);
-            var argb_hex = "#" + self.rgbToHex(color.r, color.g, color.b, color.a);
-            var obj = self.extend(color, {
-                name: _("untitled"),
-                hex: hex,
-                argb_hex: argb_hex
-            });
-
-            if(!colors[argb_hex]){
-                colorsArr.push(obj);
-            }
-            colors[argb_hex] = obj
-
-        };
-        var getColorType = function(fillJSON){
-            var fillJSON = fillJSON;
-            
-            if(fillJSON.fillType == "color"){
-                getColor(fillJSON.color);
-            }
-
-            if(fillJSON.fillType == "gradient"){
-                fillJSON.gradient.colorStops.forEach(function(gradient){
-                    getColor(gradient.color);
-                });
-            }
-        }
-
-        var selectionArtboards = this.find(MSArtboardGroup, selection, true, "class");
-
-        if(!selectionArtboards){
-            this.message(_("Select 1 or multiple artboards"));
-            return false;
-        }
-
-        selectionArtboards = (this.is(selectionArtboards, MSArtboardGroup))? NSArray.arrayWithObjects(selectionArtboards): selectionArtboards;
-        selectionArtboards = selectionArtboards.objectEnumerator();
-        while(msArtboard = selectionArtboards.nextObject()){
-            if(msArtboard instanceof MSArtboardGroup){
-                var layerIter = msArtboard.children().objectEnumerator();
-                while(msLayer = layerIter.nextObject()) {
-                    var msGroup = msLayer.parentGroup();
-
-                    if(msLayer && this.is(msLayer, MSLayerGroup) && /LABEL\#|NOTE\#/.exec(msLayer.name())){
-                        var msText = msLayer.children()[2];
-                        msLayer.setIsVisible(false);
-                    }
-
-                    var layerStates = this.getStates(msLayer);
-
-                    if (
-                        !this.isExportable(msLayer) ||
-                        !layerStates.isVisible ||
-                        layerStates.isLocked ||
-                        layerStates.hasSlices ||
-                        this.isMeasure(msLayer)
-                    )
-                    {
-                        continue;
-                    }
-
-                    if ( !this.is(msLayer, MSSliceLayer) ) {
-                        var layerStyle = msLayer.style();
-
-
-                        var fillsJSON = this.getFills(layerStyle);
-                        if(fillsJSON.length > 0){
-                            var fillJSON = fillsJSON.pop();
-                            getColorType(fillJSON)
-
-                        }
-
-                        var bordersJSON = self.getBorders(layerStyle);
-                        if(bordersJSON.length > 0){
-                            var borderJSON = bordersJSON.pop();
-                            getColorType(borderJSON)
-                        }
-
-                    }
-
-                    if ( this.is(msLayer, MSTextLayer) ) {
-                        getColor(self.colorToJSON(msLayer.textColor()))
-                    }
-                }
-            }
-        }
-
-        return colors
-    },
-    colorPalette: function(){
-        if(!this.configs) return false;
-
-        var currentPage = this.page;
-        if(this.configsPage == false){
-            this.configsPage = this.document.addBlankPage();
-            this.configsPage.setName("Sketch Measure");
-            this.document.setCurrentPage(currentPage);
-        }
-
-        this.configsColors = this.find("Color Palette", this.configsPage);
-        this.configsColors = (!this.configsColors || this.is(this.configsColors, MSArtboardGroup))? this.configsColors: undefined;
-        
-        if( this.configsColors ){
-            this.getColors()
-            this.removeLayer(this.configsColors);
-        }
-        this.configsColors = MSArtboardGroup.new();
-        frame = this.configsColors.frame();
-        frame.setWidth(800);
-        frame.setHeight(640);
-        frame.setConstrainProportions(false);
-        this.configsPage.addLayers([this.configsColors]);
-        this.configsColors.setName("Color Palette");
-        this.document.setCurrentPage(this.configsPage);
-
-
-        this.addColors(this.getAllColor());
-
-    }
-});
-
-com.utom.extend({
-    liteWidth: function(){
-        if(!this.configs) return false;
-
-        var styles = styles || [
-            this.sharedLayerStyle("@Lite / Layer", "#9013FE"),
-            this.sharedTextStyle("@Lite / Text", "#FFFFFF"),
-            this.sharedTextStyle("@Lite / Type", "#9013FE")
-        ];
-
-        if (this.selection.count() != 1){
-            this.message(_("Please select 1 layers for be measure."));
-            return false;
-        }
-
-        var name = "LITE#" + this.selection[0].objectID();
-
-        var container = this.measureWidth(this.selection[0], styles, name, true);
-
-        this.removeLayer(this.selection[0]);
-
-        container.setIsSelected(true);
-    },
-    liteHeight: function(){
-        if(!this.configs) return false;
-
-        var styles = styles || [
-            this.sharedLayerStyle("@Lite / Layer", "#9013FE"),
-            this.sharedTextStyle("@Lite / Text", "#FFFFFF"),
-            this.sharedTextStyle("@Lite / Type", "#9013FE")
-        ];
-
-        if (this.selection.count() != 1){
-            this.message(_("Please select 1 layers for be measure."));
-            return false;
-        }
-
-        var name = "LITE#" + this.selection[0].objectID();
-
-        var container = this.measureHeight(this.selection[0], styles, name, true);
-
-        this.removeLayer(this.selection[0]);
-
-        container.setIsSelected(true);
-    },
-    liteHeight: function(){
-        if(!this.configs) return false;
-
-        var styles = styles || [
-            this.sharedLayerStyle("@Lite / Layer", "#9013FE"),
-            this.sharedTextStyle("@Lite / Text", "#FFFFFF")
-        ];
-
-        if (this.selection.count() != 1){
-            this.message(_("Please select 1 layers for be measure."));
-            return false;
-        }
-
-        var name = "LITE#" + this.selection[0].objectID();
-
-        var container = this.measureHeight(this.selection[0], styles, name, true);
-
-        this.removeLayer(this.selection[0]);
-
-        container.setIsSelected(true);
-    }
-})
-
-com.utom.extend({
-    BorderPositions: ["center", "inside", "outside"],
-    FillTypes: ["color", "gradient"],
-    GradientTypes: ["linear", "radial", "angular"],
-    ShadowTypes: ["outer", "inner"],
-    TextAligns: ["left", "right", "center", "justify", "left"]
-});  
-
-com.utom.extend({
-    slicesPath: undefined,
-    maskObjectID: undefined,
-    maskRect: undefined,
-    symbols: {},
-    slices: {},
-    isExportable: function(layer) {
-        return this.is(layer, MSTextLayer) ||
-               this.is(layer, MSShapeGroup) ||
-               this.is(layer, MSBitmapLayer) ||
-               this.is(layer, MSSliceLayer) ||
-               this.is(layer, MSSymbolInstance) ||
-               this.is(layer, MSLayerGroup) && this.hasExportSizes(layer)
-    },
-    isMeasure: function(layer){
-        var msGroup = layer.parentGroup();
-        return (this.regexName.exec(msGroup.name()));
-    },
-    getStates: function(layer){
-        var isVisible = true;
-        var isLocked = false;
-        var hasSlices = false;
-        var isMaskChildLayer = false;
-
-        while (!( this.is(layer, MSArtboardGroup) || this.is(layer, MSSymbolMaster) ) ) {
-            var msGroup = layer.parentGroup();
-            if (!layer.isVisible()) {
-                isVisible = false;
-            }
-
-            if (layer.isLocked()) {
-                isLocked = true;
-            }
-
-            if ( this.is(msGroup, MSLayerGroup) && this.hasExportSizes(msGroup) ) {
-                hasSlices = true
-            }
-
-            if (
-                this.maskObjectID &&
-                msGroup.objectID() == this.maskObjectID &&
-                !layer.shouldBreakMaskChain()
-            ) {
-                isMaskChildLayer = true
-            }
-
-            layer = msGroup;
-        }
-        return {
-            isVisible: isVisible,
-            isLocked: isLocked,
-            hasSlices: hasSlices,
-            isMaskChildLayer: isMaskChildLayer
-        }
-    },
-    updateMaskRect: function(layer) {
-        var layer = this.extend(layer, {});
-        layer.maxX = layer.x + layer.width;
-        layer.maxY = layer.y + layer.height;
-        var mask = this.extend(this.maskRect, {});
-        mask.maxX = mask.x + mask.width;
-        mask.maxY = mask.y + mask.height;
-        var x = layer.x;
-        var y = layer.y;
-        var width = layer.width;
-        var height = layer.height;
-        var dx = 0;
-        var dy = 0;
-
-        if(this.isIntersect(layer, mask)){
-            if(layer.x < mask.x){
-                x = mask.x;
-                dx = mask.x - layer.x;
-            }
-
-            if(layer.y < mask.y){
-                y = mask.y;
-                dy = mask.y - layer.y;
-            }
-
-            if(layer.maxX > mask.maxX){
-                width = width - (layer.maxX - mask.maxX) - dx;
-            }
-            else{
-                width = width - dx;
-            }
-
-            if(layer.maxY > mask.maxY){
-                height = height - (layer.maxY - mask.maxY) - dy;
-            }
-            else{
-                height = height - dy;
-            }
-
-            return {
-                x: x,
-                y: y,
-                width: width,
-                height: height
-            }
-        }
-        else{
-            return false
-        }
-
-    },
-    hasExportSizes: function(layer){
-        return layer.exportOptions().exportFormats().count() > 0;
+    toHTMLEncode: function(str){
+        return this.toJSString(str).replace(/\&/g, "&amp;").replace(/\</g, "&lt;").replace(/\>/g, '&gt;').replace(/\'/g, "&#39;").replace(/\"/g, "&quot;");
+        // return str.replace(/\&/g, "&amp;").replace(/\"/g, "&quot;").replace(/\'/g, "&#39;").replace(/\</g, "&lt;").replace(/\>/g, '&gt;');
     },
     toJSString: function(str){
         return new String(str).toString();
+    },
+    toJSNumber: function(str){
+        return Number( this.toJSString(str) );
     },
     pointToJSON: function(point){
         return {
@@ -2215,27 +205,21 @@ com.utom.extend({
             y: parseFloat(point.y)
         };
     },
-    sizeToJSON: function(size){
-        return {
-            width: parseFloat(size.width),
-            height: parseFloat(size.height)
-        };
-    },
     rectToJSON: function(rect, referenceRect) {
         if (referenceRect) {
             return {
-                x: rect.x() - referenceRect.x(),
-                y: rect.y() - referenceRect.y(),
-                width: rect.width(),
-                height: rect.height()
+                x: Math.round( rect.x() - referenceRect.x() ),
+                y: Math.round( rect.y() - referenceRect.y() ),
+                width: Math.round( rect.width() ),
+                height: Math.round( rect.height() )
             };
         }
 
         return {
-            x: rect.x(),
-            y: rect.y(),
-            width: rect.width(),
-            height: rect.height()
+            x: Math.round( rect.x() ),
+            y: Math.round( rect.y() ),
+            width: Math.round( rect.width() ),
+            height: Math.round( rect.height() )
         };
     },
     colorToJSON: function(color) {
@@ -2243,7 +227,21 @@ com.utom.extend({
             r: Math.round(color.red() * 255),
             g: Math.round(color.green() * 255),
             b: Math.round(color.blue() * 255),
-            a: color.alpha()
+            a: color.alpha(),
+            "color-hex": color.immutableModelObject().stringValueWithAlpha(false) + " " + Math.round(color.alpha() * 100) + "%",
+            "argb-hex": "#" + this.toHex(color.alpha() * 255) + color.hexValue(),
+            "css-rgba": "rgba(" + [
+                            Math.round(color.red() * 255),
+                            Math.round(color.green() * 255),
+                            Math.round(color.blue() * 255),
+                            (Math.round(color.alpha() * 100) / 100)
+                        ].join(",") + ")",
+            "ui-color": "(" + [
+                            "r:" + (Math.round(color.red() * 100) / 100).toFixed(2),
+                            "g:" + (Math.round(color.green() * 100) / 100).toFixed(2),
+                            "b:" + (Math.round(color.blue() * 100) / 100).toFixed(2),
+                            "a:" + (Math.round(color.alpha() * 100) / 100).toFixed(2)
+                        ].join(" ") + ")"
         };
     },
     colorStopToJSON: function(colorStop) {
@@ -2253,17 +251,17 @@ com.utom.extend({
         };
     },
     gradientToJSON: function(gradient) {
-        var stops = [],
-            msStop, stopIter = gradient.stops().objectEnumerator();
-        while (msStop = stopIter.nextObject()) {
-            stops.push(this.colorStopToJSON(msStop));
+        var stopsData = [],
+            stop, stopIter = gradient.stops().objectEnumerator();
+        while (stop = stopIter.nextObject()) {
+            stopsData.push(this.colorStopToJSON(stop));
         }
 
         return {
-            type: this.GradientTypes[gradient.gradientType()],
+            type: GradientTypes[gradient.gradientType()],
             from: this.pointToJSON(gradient.from()),
             to: this.pointToJSON(gradient.to()),
-            colorStops: stops
+            colorStops: stopsData
         };
     },
     shadowToJSON: function(shadow) {
@@ -2276,133 +274,1577 @@ com.utom.extend({
             color: this.colorToJSON(shadow.color())
         };
     },
-    exportSizesToJSON: function(size, layer, slicesPath) {
-        var slice = MSExportRequest.exportRequestsFromExportableLayer(layer).firstObject();
-        var size = this.toJSString(size).split(" ");
-        var document = this.document;
-        slice.scale = size[0];
-        slice.format = size[2];
-
-        var suffix = this.toJSString(size[1]);
-        suffix = (suffix)? suffix : "";
-
-        var sliceName = this.toJSString(layer.name() + suffix + "." + size[2]);
-        var sliceFileName = slicesPath.stringByAppendingPathComponent( sliceName );
-
-        [document saveArtboardOrSlice:slice toFile:sliceFileName];
-
-        return {
-            sliceName: "slices/" + sliceName,
-            scale: size[0],
-            suffix: suffix,
-            format: size[2]
-        };
+    getRadius: function(layer){
+        return ( layer.layers && this.is(layer.layers().firstObject(), MSRectangleShape) ) ? layer.layers().firstObject().fixedRadius(): 0;
     },
     getBorders: function(style) {
-        var borders = [],
-            msBorder, borderIter = style.borders().objectEnumerator();
-        while (msBorder = borderIter.nextObject()) {
-            if (msBorder.isEnabled()) {
-                var fillType = this.FillTypes[msBorder.fillType()],
-                    border = {
+        var bordersData = [],
+            border, borderIter = style.borders().objectEnumerator();
+        while (border = borderIter.nextObject()) {
+            if (border.isEnabled()) {
+                var fillType = FillTypes[border.fillType()],
+                    borderData = {
                         fillType: fillType,
-                        position: this.BorderPositions[msBorder.position()],
-                        thickness: msBorder.thickness()
+                        position: BorderPositions[border.position()],
+                        thickness: border.thickness()
                     };
 
                 switch (fillType) {
                     case "color":
-                        border.color = this.colorToJSON(msBorder.color());
+                        borderData.color = this.colorToJSON(border.color());
                         break;
 
                     case "gradient":
-                        border.gradient = this.gradientToJSON(msBorder.gradient());
+                        borderData.gradient = this.gradientToJSON(border.gradient());
                         break;
 
                     default:
                         continue;
                 }
 
-                borders.push(border);
+                bordersData.push(borderData);
             }
         }
 
-        return borders;
+        return bordersData;
     },
     getFills: function(style) {
-        var fills = [],
-            msFill, fillIter = style.fills().objectEnumerator();
-        while (msFill = fillIter.nextObject()) {
-            if (msFill.isEnabled()) {
-                var fillType = this.FillTypes[msFill.fillType()],
-                    fill = {
+        var fillsData = [],
+            fill, fillIter = style.fills().objectEnumerator();
+        while (fill = fillIter.nextObject()) {
+            if (fill.isEnabled()) {
+                var fillType = FillTypes[fill.fillType()],
+                    fillData = {
                         fillType: fillType
                     };
 
                 switch (fillType) {
                     case "color":
-                        fill.color = this.colorToJSON(msFill.color());
+                        fillData.color = this.colorToJSON(fill.color());
                         break;
 
                     case "gradient":
-                        fill.gradient = this.gradientToJSON(msFill.gradient());
+                        fillData.gradient = this.gradientToJSON(fill.gradient());
                         break;
 
                     default:
                         continue;
                 }
 
-                fills.push(fill);
+                fillsData.push(fillData);
             }
         }
 
-        return fills;
+        return fillsData;
     },
     getShadows: function(style) {
-        var shadows = [],
-            msShadow, shadowIter = style.shadows().objectEnumerator();
-        while (msShadow = shadowIter.nextObject()) {
-            if (msShadow.isEnabled()) {
-                shadows.push(this.shadowToJSON(msShadow));
+        var shadowsData = [],
+            shadow, shadowIter = style.shadows().objectEnumerator();
+        while (shadow = shadowIter.nextObject()) {
+            if (shadow.isEnabled()) {
+                shadowsData.push(this.shadowToJSON(shadow));
             }
         }
 
         shadowIter = style.innerShadows().objectEnumerator();
-        while (msShadow = shadowIter.nextObject()) {
-            if (msShadow.isEnabled()) {
-                shadows.push(this.shadowToJSON(msShadow));
+        while (shadow = shadowIter.nextObject()) {
+            if (shadow.isEnabled()) {
+                shadowsData.push(this.shadowToJSON(shadow));
             }
         }
 
-        return shadows;
+        return shadowsData;
     },
     getOpacity: function(style){
         return style.contextSettings().opacity()
-    },
-    getStyleName: function(style, isText){
-        var msStyles = (isText)? this.document.documentData().layerTextStyles(): this.document.documentData().layerStyles();
-        var sharedObjectID = style.sharedObjectID();
-        var styles = msStyles.objectsSortedByName();
-        var style = this.find(sharedObjectID, styles, true, "objectID");
-        if(!style) return "";
-        return this.toJSString(style.name());
-    },
-    exportSizes: function(layer, savePath){
-        var self = this,
-            exportSizes = [],
-            size, sizesInter = layer.exportOptions().exportFormats().objectEnumerator();
+    }
+});
 
-        while (size = sizesInter.nextObject()) {
-            if (!self.slicesPath){
-                var slicesPath = savePath.stringByAppendingPathComponent("slices");
-                self.slicesPath = slicesPath;
-                [[NSFileManager defaultManager] createDirectoryAtPath:slicesPath withIntermediateDirectories:true attributes:nil error:nil];
+// help.js
+SM.extend({
+    mathHalf: function(number){
+        return Math.round( number / 2 );
+    },
+    convertUnit: function(length, isText, percentageType){
+        if(percentageType && this.artboard){
+            var artboardRect = this.getRect( this.artboard );
+            if (percentageType == "width") {
+                 return Math.round((length / artboardRect.width) * 1000) / 10 + "%";
+
             }
-
-            exportSizes.push(this.exportSizesToJSON(size, layer, self.slicesPath));
+            else if(percentageType == "height"){
+                return Math.round((length / artboardRect.height) * 1000) / 10 + "%";
+            }
         }
 
-        return exportSizes;
+        var length = Math.round( length / this.configs.scale * 10 ) / 10,
+            units = this.configs.unit.split("/"),
+            unit = units[0];
+
+        if( units.length > 1 && isText){
+            unit = units[1];
+        }
+
+        return length + unit;
+    },
+    toHex:function(c) {
+        var hex = Math.round(c).toString(16).toUpperCase();
+        return hex.length == 1 ? "0" + hex :hex;
+    },
+    isIntersect: function(targetRect, layerRect){
+        return !(
+            targetRect.maxX <= layerRect.x ||
+            targetRect.x >= layerRect.maxX ||
+            targetRect.y >= layerRect.maxY ||
+            targetRect.maxY <= layerRect.y
+        );
+    },
+    getDistance: function(targetRect, containerRect){
+        var containerRect = containerRect || this.getRect(this.current);
+
+        return {
+            top: (targetRect.y - containerRect.y),
+            right: (containerRect.maxX - targetRect.maxX),
+            bottom: (containerRect.maxY - targetRect.maxY),
+            left: (targetRect.x - containerRect.x),
+        }
+    },
+    message: function(message){
+        this.document.showMessage(message);
+    },
+    find: function(format, container, returnArray){
+        if(!format || !format.key  || !format.match){
+            return false;
+        }
+        var predicate = NSPredicate.predicateWithFormat(format.key,format.match),
+            container = container || this.current,
+            items;
+
+        if(container.class() == __NSArrayI){
+            items = container;
+        }
+        else if(container.pages){
+            items = container.pages();
+        }
+        else if( this.is( container, MSSharedStyleContainer ) || this.is( container, MSSharedTextStyleContainer ) ){
+            items = container.objectsSortedByName();
+        }
+        else{
+            items = container.children();
+        }
+
+        var queryResult = items.filteredArrayUsingPredicate(predicate);
+
+        if(returnArray) return queryResult;
+
+        if (queryResult.count() == 1){
+            return queryResult[0];
+        } else if (queryResult.count() > 0){
+            return queryResult;
+        } else {
+            return false;
+        }
+    },
+    clearAllMarks: function(){
+        var layers = this.page.children().objectEnumerator();
+        while(layer = layers.nextObject()) {
+            if(this.is(layer, MSLayerGroup) && this.regexNames.exec(layer.name())){
+                this.removeLayer(layer)
+            }
+        }
+    },
+    toggleHidden: function(){
+        var isHidden = (this.configs.isHidden)? false : !Boolean(this.configs.isHidden);
+        this.configs = this.setConfigs({isHidden: isHidden});
+
+        var layers = this.page.children().objectEnumerator();
+
+        while(layer = layers.nextObject()) {
+            if(this.is(layer, MSLayerGroup) && this.regexNames.exec(layer.name())){
+                layer.setIsVisible(!isHidden);
+            }
+        }
+    },
+    toggleLocked: function(){
+        var isLocked = (this.configs.isLocked)? false : !Boolean(this.configs.isLocked);
+        this.configs = this.setConfigs({isLocked: isLocked});
+
+        var layers = this.page.children().objectEnumerator();
+
+        while(layer = layers.nextObject()) {
+            if(this.is(layer, MSLayerGroup) && this.regexNames.exec(layer.name())){
+                layer.setIsLocked(isLocked);
+            }
+        }
+    },
+});
+
+// configs.js
+SM.extend({
+    getConfigs: function(container){
+        var container = container || this.symbolsPage,
+            command = this.command,
+            prefix = this.prefix,
+            configsData = [command valueForKey: prefix onLayer: container];
+        return JSON.parse(configsData);
+    },
+    setConfigs: function(newConfigs, container){
+        var container = container || this.symbolsPage,
+            command = this.command,
+            prefix = this.prefix,
+            configs = this.extend(newConfigs, this.getConfigs(container) || {});
+
+        configs.timestamp = new Date().getTime();
+        var configsData = JSON.stringify(configs);
+        [command setValue: configsData forKey: prefix onLayer: container];
+        return configs;
+    },
+    removeConfigs: function(container){
+        var container = container || this.symbolsPage,
+            command = this.command,
+            prefix = this.prefix;
+        [command setValue: null forKey: prefix onLayer: container];
+    }
+});
+
+//shared.js
+SM.extend({
+    sharedLayerStyle: function(name, color, borderColor) {
+        var sharedStyles = this.documentData.layerStyles(),
+            style = this.find({key: "(name != NULL) && (name == %@)", match: name}, sharedStyles);
+
+        style = ( !style || this.is(style, MSSharedStyle))? style: style[0];
+
+        if( style == false ){
+            style = MSStyle.alloc().init();
+
+            var color = MSColor.colorWithRed_green_blue_alpha(color.r, color.g, color.b, color.a),
+                fill = style.addStylePartOfType(0);
+
+            fill.color = color;
+
+            if(borderColor){
+                var border = style.addStylePartOfType(1),
+                    borderColor = MSColor.colorWithRed_green_blue_alpha(borderColor.r, borderColor.g, borderColor.b, borderColor.a);
+
+                border.color = borderColor;
+                border.thickness = 1;
+            }
+
+            sharedStyles.addSharedStyleWithName_firstInstance(name, style);
+        }
+
+        return (style.newInstance)? style.newInstance(): style;
+    },
+    sharedTextStyle: function(name, color, alignment){
+        var sharedStyles = this.document.documentData().layerTextStyles(),
+            style = this.find({key: "(name != NULL) && (name == %@)", match: name}, sharedStyles);
+
+        style = (!style || this.is(style, MSSharedStyle))? style: style[0];
+
+        if( style == false ){
+            var color = MSColor.colorWithRed_green_blue_alpha(color.r, color.g, color.b, color.a),
+                alignment = alignment || 0, //[left, right, center, justify]
+                text = this.addText(this.page);
+
+            text.setTextColor(color);
+
+            text.setFontSize(12);
+            text.setFontPostscriptName("HelveticaNeue");
+            text.setTextAlignment(alignment);
+
+            style = text.style();
+            sharedStyles.addSharedStyleWithName_firstInstance(name, style);
+            this.removeLayer(text);
+        }
+
+        return (style.newInstance)? style.newInstance(): style;
+    }
+});
+
+// ruler.js
+SM.extend({
+    setRuler: function( options ){
+        var options = this.extend(options, {
+                container: this.current,
+                target: this.current,
+                type: "width",
+                placement: "center",
+            }),
+            container = options.container,
+            type = options.type,
+            styles = options.styles,
+            target = options.target,
+            placement = options.placement,
+            shapeTemp = this.addShape();
+
+        if(styles){
+            shapeTemp.setStyle(styles.layer);
+        }
+        else{
+            shapeTemp.style().addStylePartOfType(0);
+        }
+
+        var start = shapeTemp.duplicate(),
+            end = shapeTemp.duplicate(),
+            line = shapeTemp.duplicate(),
+            targetRect = this.getRect(target),
+            startRect = this.getRect(start),
+            endRect = this.getRect(end),
+            lineRect = this.getRect(line);
+
+        container.addLayers([start, end, line]);
+
+        start.setName("ruler-start");
+        end.setName("ruler-end");
+        line.setName("ruler-line");
+
+        // height
+        if(type == "height"){
+            // set sizes
+            lineRect.setWidth(1);
+            lineRect.setHeight(targetRect.height);
+            startRect.setWidth(5);
+            startRect.setHeight(1);
+            endRect.setWidth(5);
+            endRect.setHeight(1);
+
+            // get positions
+            var x = targetRect.x + this.mathHalf(targetRect.width) - 1,
+                y = targetRect.y;
+
+            if(!this.is(target, MSPage) && !this.is(target, MSArtboardGroup)){
+                switch(placement){
+                    case "left":
+                        x = targetRect.x - 4;
+                        break;
+                    case "right":
+                        x = targetRect.maxX + 3;
+                        break;
+                }
+            }
+
+            var startX = x - 2,
+                startY = y,
+                endX = startX,
+                endY = targetRect.maxY - 1;
+        }
+        else{
+            // set sizes
+            lineRect.setWidth(targetRect.width);
+            lineRect.setHeight(1);
+            startRect.setWidth(1);
+            startRect.setHeight(5);
+            endRect.setWidth(1);
+            endRect.setHeight(5);
+
+            // get positions
+            var x = targetRect.x,
+                y = targetRect.y + this.mathHalf(targetRect.height) - 1;
+
+            if(!this.is(target, MSPage) && !this.is(target, MSArtboardGroup)){
+                switch(placement){
+                    case "top":
+                        y = targetRect.y - 4;
+                        break;
+                    case "bottom":
+                        y = targetRect.maxY + 3;
+                        break;
+                }
+            }
+
+            var startX = x,
+                startY = y - 2,
+                endX = targetRect.maxX - 1,
+                endY = startY;
+        }
+
+        // set positions
+        lineRect.setX(x);
+        lineRect.setY(y);
+        startRect.setX(startX);
+        startRect.setY(startY);
+        endRect.setX(endX);
+        endRect.setY(endY);
+
+        return {
+            element: line,
+            rect: lineRect
+        };
+    }
+});
+
+// label.js
+SM.extend({
+    setLabel: function( options ){
+        var options = this.extend(options, {
+                text: "Label",
+                container: this.current,
+                target: this.current
+            }),
+            container = options.container,
+            styles = options.styles,
+            target = options.target,
+            placement = options.placement,
+            shapeTemp = this.addShape(),
+            textTemp = this.addText();
+
+        if(styles){
+            shapeTemp.setStyle(styles.layer);
+            textTemp.setStyle(styles.text);
+        }
+        else{
+            shape.style().addStylePartOfType(0);
+        }
+
+        var arrow = shapeTemp.duplicate(),
+            box = shapeTemp.duplicate(),
+            text = textTemp.duplicate();
+
+        container.addLayers([arrow, box, text]);
+
+        // set radius
+        box.layers().firstObject().setCornerRadiusFromComponents("2")
+
+        // set name
+        arrow.setName("label-arrow");
+        box.setName("label-box");
+        text.setName("label-text");
+
+        // set text
+        text.setStringValue(options.text);
+        text.setTextBehaviour(1);
+        text.setTextBehaviour(0);
+
+        // get rect
+        var targetRect = this.getRect(target),
+            arrowRect = this.getRect(arrow),
+            boxRect = this.getRect(box),
+            textRect = this.getRect(text);
+
+        // rect function
+        var x = targetRect.x + this.mathHalf(targetRect.width) - this.mathHalf(textRect.width),
+            y = targetRect.y + this.mathHalf(targetRect.height) - this.mathHalf(textRect.height),
+            arrowX = x - 4 + this.mathHalf(textRect.width + 8) - 4,
+            arrowY = y - 4 + this.mathHalf(textRect.height + 8) - 4;
+
+        if(!this.is(target, MSPage) && !this.is(target, MSArtboardGroup)){
+            switch(placement){
+                case "top":
+                    y = targetRect.y - textRect.height - 10;
+                    arrowY = y + textRect.height;
+                    break;
+                case "right":
+                    x = targetRect.maxX + 10;
+                    arrowX = x - 8;
+                    break;
+                case "bottom":
+                    y = targetRect.maxY + 10;
+                    arrowY = y - 8;
+                    break;
+                case "left":
+                    x = targetRect.x - textRect.width - 10;
+                    arrowX = x + textRect.width;
+                    break;
+            }
+        }
+
+        if(this.is(this.current, MSArtboardGroup)){
+            var artboardRect = this.getRect(this.current);
+
+            if( x - 4 < artboardRect.x){
+                x = artboardRect.x + 4;
+            }
+            else if( x + textRect.width + 4 > artboardRect.maxX ){
+                x = artboardRect.maxX - (textRect.width + 4);
+            }
+            else if( y - 4 < artboardRect.y ){
+                y = artboardRect.y + 4;
+            }
+            else if( y + textRect.height + 4 > artboardRect.maxY ){
+                y = artboardRect.maxY - (textRect.height + 4);
+            }
+        }
+
+        textRect.setX(x);
+        textRect.setY(y);
+
+        boxRect.setX(x - 4);
+        boxRect.setY(y - 4);
+        boxRect.setWidth(textRect.width + 8);
+        boxRect.setHeight(textRect.height + 8);
+
+        arrow.setRotation(45);
+        arrow.flatten();
+        arrowRect.setWidth(8);
+        arrowRect.setHeight(8);
+
+        arrowRect.setX(arrowX);
+        arrowRect.setY(arrowY);
+
+        return {
+            element: box,
+            rect: boxRect
+        };
+    }
+});
+
+// panel.js
+SM.extend({
+    panel: function( options ){
+        COScript.currentCOScript().setShouldKeepAround_(true);
+        var self = this,
+            options = this.extend(options, {
+                path: this.pluginSketch + "/panel/settings.html",
+                width: 240,
+                height: 316,
+                data: {
+                    density: 2,
+                    unit: "dp/sp"
+                },
+                actionClose: true,
+                callback: function( data ){ log(data) }
+            }),
+            windowSizes = this.window.frame().size,
+            path = options.path;
+            width = options.width,
+            height = options.height,
+            data = options.data,
+            frame = NSMakeRect( windowSizes.width / 2, windowSizes.height / 2, width, height),
+            dataJSONString = JSON.stringify(data),
+            result = false,
+            panel = [[SMModalView alloc] initWithHtmlPath: path frame: frame],
+            delegate = new MochaJSDelegate({
+                "smAction:": (function(data){
+                    options.callback(data);
+                    if(options.actionClose) panel.showModal(false);
+                    COScript.currentCOScript().setShouldKeepAround_(false);
+                    result = true;
+                }),
+                "smInit:": (function(){
+                    panel.stringByEvaluatingJavaScriptFromString(language + "\r\n$(function(){ init(" + dataJSONString + ") })");
+                    COScript.currentCOScript().setShouldKeepAround_(false);
+                }),
+                "smCancel:": (function(fileName){
+                    panel.showModal(false);
+                    COScript.currentCOScript().setShouldKeepAround_(false);
+                })
+            });
+
+        panel.setCBDelegate(delegate.getClassInstance());
+        panel.stringByEvaluatingJavaScriptFromString("$(function(){ $('body').html(1); }");
+        panel.showModal(true);
+        return result;
+    },
+    settingsPanel: function(){
+        var self = this,
+            data = {};
+
+        if(this.configs){
+            data.scale = this.configs.scale;
+            data.unit = this.configs.unit;
+            data.colorFormat = this.configs.colorFormat;
+        }
+
+        return this.panel({
+            width: 240,
+            height: 316,
+            data: data,
+            callback: function( data ){
+
+                self.configs = self.setConfigs({
+                    scale: self.toJSNumber(data.scale),
+                    unit: self.toJSString(data.unit),
+                    colorFormat: self.toJSString(data.colorFormat)
+                });
+
+            }
+        });
+    
+    },
+    sizesPanel: function(){
+        var self = this,
+            data = {};
+
+        if(this.configs.sizes && this.configs.sizes.widthPlacement) data.widthPlacement = this.configs.sizes.widthPlacement;
+        if(this.configs.sizes && this.configs.sizes.heightPlacement) data.heightPlacement = this.configs.sizes.heightPlacement;
+        if(this.configs.sizes && this.configs.sizes.byPercentage) data.byPercentage = this.configs.sizes.byPercentage;
+
+        return this.panel({
+            path: this.pluginSketch + "/panel/sizes.html",
+            width: 240,
+            height: 358,
+            data: data,
+            callback: function( options ){
+                self.configs = self.setConfigs({
+                    sizes: JSON.parse(self.toJSString( options.data ))
+                });
+            }
+        });
+    },
+    spacingsPanel: function(){
+        var self = this,
+            data = {};
+
+            data.placements = (this.configs.spacings && this.configs.spacings.placements)? this.configs.spacings.placements: ["top", "left"];
+            if(this.configs.spacings && this.configs.spacings.byPercentage) data.byPercentage = this.configs.spacings.byPercentage;
+
+        return this.panel({
+            path: this.pluginSketch + "/panel/spacings.html",
+            width: 240,
+            height: 314,
+            data: data,
+            callback: function( options ){
+                self.configs = self.setConfigs({
+                    spacings: JSON.parse(self.toJSString( options.data ))
+                });
+            }
+        });
+    },
+    propertiesPanel: function(){
+        var self = this,
+            data = (this.configs.properties)? this.configs.properties: {
+                        placement: "top",
+                        properties: ["color", "border"]
+                    };
+        return this.panel({
+            path: this.pluginSketch + "/panel/properties.html",
+            width: 280,
+            height: 324,
+            data: data,
+            callback: function( options ){
+                self.configs = self.setConfigs({
+                    properties: JSON.parse(self.toJSString( options.data ))
+                });
+            }
+        });
+    }
+});
+
+// mark.js
+SM.extend({
+    mark: function(type){
+        var self = this,
+            selection = this.selection;
+
+        if(type == "sizes"){
+            if( selection.count() <= 0 ){
+                this.message(_("Select a layer to make marks!"));
+                return false;
+            }
+            if(!this.sizesPanel()) return false;
+            var target = selection[0],
+                objectID = target.objectID(),
+                sizeStyles = {
+                    layer: this.sharedLayerStyle("@Size / Layer", this.colors.size.layer),
+                    text: this.sharedTextStyle("@Size / Text", this.colors.size.text, 2)
+                };
+
+            if(this.configs.sizes.widthPlacement){
+                this.sizes({
+                    name: "WIDTH#" + objectID,
+                    type: "width",
+                    target: target,
+                    placement: this.configs.sizes.widthPlacement,
+                    styles: sizeStyles,
+                    byPercentage: this.configs.sizes.byPercentage
+                });
+            }
+
+            if(this.configs.sizes.heightPlacement){
+                this.sizes({
+                    name: "HEIGHT#" + objectID,
+                    type: "height",
+                    target: target,
+                    placement: this.configs.sizes.heightPlacement,
+                    styles: sizeStyles,
+                    byPercentage: this.configs.sizes.byPercentage
+                });
+            }
+        }
+        else if(type == "spacings"){
+            if( !(selection.count() > 0 && selection.count() < 3) ){
+                this.message(_("Select 1 or 2 layers to make marks!"));
+                return false;
+            }
+            if(!this.spacingsPanel()) return false;
+            var target = (selection.count() == 1)? selection[0]: selection[1],
+                layer = (selection.count() == 1)? this.current: selection[0],
+                placements = ["top", "right", "bottom", "left"];
+
+            if( this.isIntersect(this.getRect(target), this.getRect(layer)) ){
+                placements = this.configs.spacings.placements;
+            }
+
+            var spacingStyles = {
+                    layer: this.sharedLayerStyle("@Spacing / Layer", this.colors.spacing.layer),
+                    text: this.sharedTextStyle("@Spacing / Text", this.colors.spacing.text, 2)
+                };
+            placements.forEach(function(placement) {
+                self.spacings({
+                    target: target,
+                    layer: layer,
+                    placement: placement,
+                    styles: spacingStyles,
+                    byPercentage: self.configs.spacings.byPercentage
+                });
+            });
+        }
+        else if(type == "properties"){
+            if( selection.count() != 1 ){
+                this.message(_("Select a layer to make marks!"));
+                return false;
+            }
+            var target = selection[0];
+
+            if( /PROPERTY\#/.exec(target.parentGroup().name()) ){
+                this.resizeProperties(target.parentGroup());
+            }
+            else{
+                if(!this.propertiesPanel()) return false;
+
+                this.properties({
+                    target: target,
+                    placement: this.configs.properties.placement,
+                    properties: this.configs.properties.properties
+                });
+            }
+        }
+        else if( type == "overlay" && selection.count() == 1 ){
+            if( selection.count() != 1 ){
+                this.message(_("Select a layer to make marks!"));
+                return false;
+            }
+            this.overlay();
+        }
+        else if( type == "note"){
+            if( !(selection.count() == 1 && this.is(selection[0], MSTextLayer)) ){
+                this.message(_("Select a text layer to make marks!"));
+                return false;
+            }
+            var target = selection[0];
+
+            if( /NOTE\#/.exec(target.parentGroup().name()) ){
+                this.resizeNote(target.parentGroup());
+            }
+            else{
+                this.note();
+            }
+        }
+
+    },
+    sizes: function( options ){
+        var options = this.extend(options, {}),
+            name = options.name,
+            type = options.type,
+            placement = options.placement,
+            byPercentage = options.byPercentage,
+            styles = options.styles,
+            target = options.target,
+            targetRect = this.getRect(target),
+            container = this.find({key: "(name != NULL) && (name == %@)", match: name});
+
+        if (container) this.removeLayer(container);
+        container = this.addGroup();
+        this.current.addLayers([container]);
+        container.setName(name);
+
+        var length = (type == "height")? targetRect.height: targetRect.width,
+            percentageType = (byPercentage && type == "width")? "width":
+                             (byPercentage && type == "height")? "height":
+                             undefined,
+            text = this.convertUnit(length, false, percentageType),
+            temp = this.addText();
+
+        temp.setStringValue(text);
+        temp.setTextBehaviour(1);
+        temp.setTextBehaviour(0);
+        temp.setStyle(styles.text);
+
+        var tempRect = this.getRect(temp),
+            ruler = this.setRuler({
+                        type: type,
+                        placement: placement,
+                        styles: styles,
+                        target: target,
+                        container: container
+                    }),
+            distance = this.getDistance(ruler.rect),
+            markPlacement = (type == "height")? (
+                                ( ruler.rect.height > (tempRect.height + 28) )? "center":
+                                ( placement == "right" )? "right":
+                                ( placement == "left" )? "left":
+                                ( distance.right >= distance.left )? "right":
+                                "left"
+                            ):  
+                            (
+                                ( ruler.rect.width > (tempRect.width + 28) )? "middle":
+                                ( placement == "bottom" )? "bottom":
+                                ( placement == "top" )? "top":
+                                ( distance.top >= distance.bottom )? "top":
+                                "bottom"
+                            );
+
+        var label = this.setLabel({
+                container: container,
+                target: ruler.element,
+                styles: styles,
+                text: text,
+                placement: markPlacement
+            });
+
+        this.removeLayer(temp);
+        container.resizeToFitChildrenWithOption(0);
+    },
+    spacings: function( options ){
+        var options = this.extend(options, {}),
+            placement = options.placement,
+            styles = options.styles,
+            target = options.target,
+            layer = options.layer,
+            byPercentage = options.byPercentage,
+            targetObjectID = target.objectID(),
+            layerObjectID = layer.objectID(),
+            objectID = targetObjectID + "#" + layerObjectID,
+            slug = placement.toUpperCase() + "#",
+            sizeType = (placement == "top" || placement == "bottom")? "height": "width",
+            targetRect = this.getRect(target),
+            layerRect = this.getRect(layer),
+            distance = this.getDistance(targetRect, layerRect),
+            isIntersect = this.isIntersect(targetRect, layerRect),
+            tempX = targetRect.x,
+            tempY = targetRect.y,
+            tempWidth = targetRect.width,
+            tempHeight = targetRect.height,
+            render = true;
+
+        if( this.is(layer, MSPage) ) return false;
+
+        if(isIntersect){
+            switch(placement){
+                case "top":
+                    tempY = targetRect.y - distance.top;
+                    tempHeight = distance.top;
+                    break;
+                case "right":
+                    tempX = targetRect.x + targetRect.width;
+                    tempWidth = distance.right;
+                    break;
+                case "bottom":
+                    tempY = targetRect.y + targetRect.height;
+                    tempHeight = distance.bottom;
+                    break;
+                case "left":
+                    tempX = targetRect.x - distance.left;
+                    tempWidth = distance.left;
+                    break;
+                default:
+                    render = false;
+                    break;
+            }
+            if(!tempWidth || !tempHeight){
+                render = false;
+            }
+        }
+        else{
+            switch(placement){
+                case "left" || "right":
+                    slug = "HORIZONTAL#";
+                    if(targetRect.maxX <  layerRect.x ){
+                        tempX = targetRect.maxX;
+                        tempWidth = layerRect.x - targetRect.maxX;
+                    }
+                    else if( targetRect.x > layerRect.maxX ){
+                        tempX = layerRect.maxX;
+                        tempWidth = targetRect.x - layerRect.maxX;
+                    }
+                    else{
+                        render = false;
+                    }
+                    break;
+                case "top" || "bottom":
+                    slug = "VERTICAL#";
+                    if(targetRect.maxY <  layerRect.y ){
+                        tempY = targetRect.maxY;
+                        tempHeight = layerRect.y - targetRect.maxY;
+                    }
+                    else if( targetRect.y > layerRect.maxY ){
+                        tempY = layerRect.maxY;
+                        tempHeight = targetRect.y - layerRect.maxY;
+                    }
+                    else{
+                        render = false;
+                    }
+                    break;
+                default:
+                    render = false;
+                    break;
+            }
+        }
+
+        if(render){
+            var temp = this.addShape(),
+                tempRect = this.getRect(temp);
+            this.current.addLayers([temp]);
+
+            tempRect.setX(tempX);
+            tempRect.setY(tempY);
+            tempRect.setWidth(tempWidth);
+            tempRect.setHeight(tempHeight);
+
+            this.sizes({
+                name: slug + objectID,
+                type: sizeType,
+                target: temp,
+                styles: styles,
+                byPercentage: byPercentage
+            });
+
+            this.removeLayer(temp);
+        }
+    }
+});
+
+
+SM.extend({
+    overlay: function(){
+        var target = this.selection[0],
+            targetRect = this.getRect(target),
+            name = "OVERLAY#" + target.objectID(),
+            container = this.find({key: "(name != NULL) && (name == %@)", match: name}),
+            overlayStyle = this.sharedLayerStyle("@Overlay / Layer", this.colors.overlay.layer);
+
+        if (container) this.removeLayer(container);
+        container = this.addGroup();
+        this.current.addLayers([container]);
+        container.setName(name);
+
+        var overlay = this.addShape(),
+            overlayRect = this.getRect(overlay);
+
+        container.addLayers([overlay]);
+
+        overlay.setStyle(overlayStyle);
+        overlay.setName("overlayer");
+        overlayRect.setX(targetRect.x);
+        overlayRect.setY(targetRect.y);
+        overlayRect.setWidth(targetRect.width);
+        overlayRect.setHeight(targetRect.height);
+
+        container.resizeToFitChildrenWithOption(0);
+    }
+});
+
+// properties.js
+SM.extend({
+    fillTypeContent: function( fillJSON ){
+        var self = this,
+            fillJSON = fillJSON;
+
+        if(fillJSON.fillType == "color"){
+            var colorID = fillJSON.color["argb-hex"];
+            return (self.configs.colorNames && self.configs.colorNames[colorID])? self.configs.colorNames[colorID]: fillJSON.color[self.configs.colorFormat];
+        }
+
+        if(fillJSON.fillType == "gradient"){
+            var fc = [];
+            fc.push(fillJSON.gradient.type)
+            fillJSON.gradient.colorStops.forEach(function(gradient){
+                var colorID = gradient.color["argb-hex"],
+                    color = (self.configs.colorNames && self.configs.colorNames[colorID])? self.configs.colorNames[colorID]: gradient.color[self.configs.colorFormat];
+                fc.push(" * " + color);
+            });
+            return fc.join("\r\n");
+        }
+    },
+    shadowContent: function(shadow){
+        var shadowJSON = this.shadowToJSON(shadow),
+            sc = [];
+        if(shadowJSON <= 0) return false;
+
+        sc.push(" * x, y - " + this.convertUnit(shadowJSON.offsetX) + ", " + this.convertUnit(shadowJSON.offsetY) );
+        if(shadowJSON.blurRadius) sc.push(" * blur - " + this.convertUnit(shadowJSON.blurRadius) );
+        if(shadowJSON.spread) sc.push(" * spread - " + this.convertUnit(shadowJSON.spread) );
+        return sc.join("\r\n")
+    },
+    properties: function( options ){
+        var self = this,
+            options = this.extend(options, {
+                placement: "top",
+                properties: ["color", "border", "opacity", "radius", "shadow", "font-size", "line-height", "font-face", "character", "paragraph"]
+            }),
+            properties = options.properties,
+            placement = options.placement,
+            styles = {
+                layer: this.sharedLayerStyle("@Property / Layer", this.colors.property.layer),
+                text: this.sharedTextStyle("@Property / Text", this.colors.property.text)
+            },
+            target = options.target,
+            targetStyle = target.style(),
+            content = [];
+
+        properties.forEach(function(property){
+            switch(property){
+                case "color":
+                    var fill, color;
+                    if( self.is(target, MSTextLayer) ){
+                        var color = self.colorToJSON( target.textColor() );
+                        content.push("color: " + color[self.configs.colorFormat] )
+                    }
+                    else if( self.is(target, MSShapeGroup) ){
+                        var fillsJSON = self.getFills(targetStyle),
+                            fillJSON = fillsJSON.pop();
+
+                        content.push("fill: " + self.fillTypeContent(fillJSON))
+                    }
+
+                    break;
+                case "border":
+                    var bordersJSON = self.getBorders(targetStyle);
+                    if(bordersJSON.length <= 0) return false;
+                        borderJSON = bordersJSON.pop();
+                    content.push("border: " + self.convertUnit(borderJSON.thickness) + " " + borderJSON.position + "\r\n * " + self.fillTypeContent(borderJSON) );
+                    break;
+                case "opacity":
+                    content.push("opacity: " + Math.round( targetStyle.contextSettings().opacity() * 100) + "%");
+                    break;
+                case "radius":
+                    if(self.is(target, MSShapeGroup) && self.is(target.layers().firstObject(), MSRectangleShape)){
+                        content.push("radius: " + self.convertUnit( self.getRadius(target) ) );
+                    }
+                    break;
+                case "shadow":
+                    if(targetStyle.shadow() || (targetStyle.shadow() && targetStyle.shadow().isEnabled()) ){
+                        content.push("shadow: outer\r\n" + self.shadowContent(targetStyle.shadow()));
+                    }
+
+                    if(targetStyle.innerShadow() || (targetStyle.innerShadow() && targetStyle.innerShadow().isEnabled()) ){
+                        content.push("shadow: inner\r\n" + self.shadowContent(targetStyle.innerShadow()));
+                    }
+                    break;
+                case "font-size":
+                    if(!self.is(target, MSTextLayer)) return false;
+                    content.push("font-size: " + self.convertUnit(target.fontSize(), true) );
+                    break;
+                case "line-height":
+                    if(!self.is(target, MSTextLayer)) return false;
+                    content.push("line: " + self.convertUnit(target.lineSpacing(), true) + " (" + Math.round(target.lineSpacing() / target.fontSize() * 10) / 10  + ")" );
+                    break;
+                case "font-face":
+                    if(!self.is(target, MSTextLayer)) return false;
+                    content.push("font-face: " + target.fontPostscriptName());
+                    break;
+                case "character":
+                    if(!self.is(target, MSTextLayer)) return false;
+                    content.push("character: " + self.convertUnit(target.characterSpacing(), true) );
+                    break;
+                case "paragraph":
+                    if(!self.is(target, MSTextLayer)) return false;
+                    content.push("paragraph: " + self.convertUnit(target.paragraphStyle().paragraphSpacing(), true));
+                    break;
+                default:
+                    render = false;
+                    break;
+            }
+        });
+        
+        var objectID = target.objectID(),
+            name = "PROPERTY#" + objectID,
+            container = this.find({key: "(name != NULL) && (name == %@)", match: name});
+
+        if (container) this.removeLayer(container);
+        container = this.addGroup();
+        this.current.addLayers([container]);
+        container.setName(name);
+
+        var label = this.setLabel({
+            container: container,
+            target: target,
+            styles: styles,
+            text: content.join("\r\n"),
+            placement: placement
+        });
+
+        this.setConfigs({placement: placement}, container);
+
+        container.resizeToFitChildrenWithOption(0);
+    }
+});
+
+// lite.js
+SM.extend({
+    lite: function( type ){
+        if( this.selection.count() <= 0 ){
+            this.message(_("Select a layer to make marks!"));
+            return false;
+        }
+        var target = this.selection[0],
+            objectID = target.objectID(),
+            liteStyle = {
+                layer: this.sharedLayerStyle("@Lite / Layer", this.colors.lite.layer),
+                text: this.sharedTextStyle("@Lite / Text", this.colors.lite.text, 2)
+            };
+
+        if(type == "width"){
+            this.sizes({
+                name: "LITE#" + objectID,
+                type: "width",
+                target: target,
+                placement: "middle",
+                styles: liteStyle
+            });
+            this.removeLayer(target);
+        }
+        else if(type == "height"){
+            this.sizes({
+                name: "LITE#" + objectID,
+                type: "height",
+                target: target,
+                placement: "center",
+                styles: liteStyle
+            });
+            this.removeLayer(target);
+        }
+    },
+    note: function(){
+        var target = this.selection[0],
+            targetRect = this.getRect(target),
+            objectID = target.objectID(),
+            noteStyle = {
+                layer: this.sharedLayerStyle("@Note / Layer", this.colors.note.layer, this.colors.note.border),
+                text: this.sharedTextStyle("@Note / Text", this.colors.note.text)
+            },
+            container = this.addGroup();
+
+        this.current.addLayers([container]);
+        container.setName("NOTE#" + new Date().getTime());
+
+        var note = this.addShape(),
+            text = this.addText();
+
+        container.addLayers([note, text]);
+
+        note.setName("note-box");
+        note.layers().firstObject().setCornerRadiusFromComponents("2")
+
+        text.setStringValue(target.storage().string());
+        text.setTextBehaviour(1);
+        text.setTextBehaviour(0);
+        note.setStyle(noteStyle.layer);
+        text.setStyle(noteStyle.text);
+
+        var noteRect = this.getRect(note),
+            textRect = this.getRect(text);
+
+        textRect.setX(targetRect.x);
+        textRect.setY(targetRect.y);
+        noteRect.setX(textRect.x - 6);
+        noteRect.setY(textRect.y - 6);
+        noteRect.setWidth(textRect.width + 12);
+        noteRect.setHeight(textRect.height + 12);
+
+        container.resizeToFitChildrenWithOption(0);
+        this.removeLayer(target);
+    }
+});
+
+// resize.js
+SM.extend({
+    resizeProperties: function(container){
+        var configs = this.getConfigs(container),
+            placement = configs.placement,
+            text = this.find({key: "(class != NULL) && (class == %@)", match: MSTextLayer}, container),
+            label = this.find({key: "(name != NULL) && (name == %@)", match: "label-box"}, container),
+            textRect = this.getRect(text),
+            labelRect = this.getRect(label),
+            oldWidth = labelRect.width,
+            oldHeight = labelRect.height,
+            newWidth = textRect.width + 8,
+            newHeight = textRect.height + 8,
+            dWidth = newWidth - oldWidth,
+            dHeight = newHeight - oldHeight,
+            dHalfWidth =  this.mathHalf(dWidth),
+            dHalfHeight = this.mathHalf(dHeight),
+            lx = labelRect.x,
+            ly = labelRect.y,
+            lw = labelRect.width,
+            lh = labelRect.height,
+            tx = textRect.x,
+            ty = textRect.y,
+            tw = textRect.width,
+            th = textRect.height;
+
+        if(!dWidth && !dHeight) return false;
+
+        switch(placement){
+            case "top":
+                lx = lx - dHalfWidth;
+                ly = ly - dHeight;
+                lw = lw + dWidth;
+                lh = lh + dHeight;
+                tx = tx - dHalfWidth;
+                ty = ty - dHeight;
+                break;
+            case "right":
+                ly = ly - dHalfHeight;
+                lw = lw + dWidth;
+                lh = lh + dHeight;
+                ty = ty - dHalfHeight;
+                break;
+            case "bottom":
+                lx = lx - dHalfWidth;
+                lw = lw + dWidth;
+                lh = lh + dHeight;
+                tx = tx - dHalfWidth;
+                break;
+            case "left":
+                lx = lx - dWidth;
+                ly = ly - dHalfHeight;
+                lw = lw + dWidth;
+                lh = lh + dHeight;
+                tx = tx - dWidth;
+                ty = ty - dHalfHeight;
+                break;
+        }
+
+        labelRect.setX( lx );
+        labelRect.setY( ly );
+        labelRect.setWidth( lw );
+        labelRect.setHeight( lh );
+
+        textRect.setX( tx );
+        textRect.setY( ty );
+
+        text.setTextBehaviour(1);
+        text.setTextBehaviour(0);
+
+        container.resizeToFitChildrenWithOption(0);
+    },
+    resizeNote: function(container) {
+        var text = this.find({key: "(class != NULL) && (class == %@)", match: MSTextLayer}),
+            label = this.find({key: "(name != NULL) && (name == %@)", match: "note-box"}),
+            textRect = this.getRect(text),
+            labelRect = this.getRect(label),
+            oldWidth = labelRect.width,
+            oldHeight = labelRect.height,
+            newWidth = textRect.width + 12,
+            newHeight = textRect.height + 12,
+            dWidth = newWidth - oldWidth,
+            dHeight = newHeight - oldHeight;
+
+        if(!dWidth && !dHeight) return false;
+
+        labelRect.setX( labelRect.x - this.mathHalf(dWidth) );
+        labelRect.setY( labelRect.y - this.mathHalf(dHeight) );
+        labelRect.setWidth( newWidth );
+        labelRect.setHeight( newHeight );
+
+        textRect.setX( textRect.x - this.mathHalf(dWidth) );
+        textRect.setY( textRect.y - this.mathHalf(dHeight) );
+
+        text.setTextBehaviour(1);
+        text.setTextBehaviour(0);
+
+        container.resizeToFitChildrenWithOption(0);
+    }
+});
+
+// colors.js
+SM.extend({
+    getSelectionColor: function(){
+        var self = this,
+            colors = [];
+
+        for (var i = 0; i < this.selection.count(); i++) {
+            var layer = this.selection[i];
+            if ( !this.is(layer, MSSliceLayer) ) {
+                var layerStyle = layer.style(),
+                    fills = this.getFills(layerStyle),
+                    borders = this.getBorders(layerStyle);
+
+                for (var n = 0; n < fills.length; n++) {
+                    var fill = fills[n];
+                    if(fill.fillType != "gradient"){
+                        colors.push(fill.color);
+                    }
+                    else{
+                        for (var w = 0; w < fill.gradient.colorStops.length; w++) {
+                            var gColor = fill.gradient.colorStops[w];
+                            colors.push(gColor.color);
+                        }
+                    }
+                }
+
+                for (var n = 0; n < borders.length; n++) {
+                    var border = borders[n];
+                    if(border.fillType != "gradient"){
+                        colors.push(border.color);
+                    }
+                    else{
+                        for (var w = 0; w < border.gradient.colorStops.length; w++) {
+                            var gColor = border.gradient.colorStops[w];
+                            colors.push(gColor.color);
+                        }
+                    }
+                }
+            }
+
+            if ( this.is(layer, MSTextLayer) ) {
+                colors.push(this.colorToJSON(layer.textColor()));
+
+            }
+        };
+
+        return colors;
+    },
+    colorNames: function(colors){
+        var colorNames = {};
+
+        colors.forEach(function(color){
+            var colorID = color.color["argb-hex"];
+            colorNames[colorID] = color.name;
+        });
+        return colorNames;
+    },
+    manageColors: function(){
+        var self = this,
+            data = {};
+
+        data.list = (this.configs.colors)? this.configs.colors: [];
+
+        data.add = this.getSelectionColor();
+
+        return this.panel({
+            path: this.pluginSketch + "/panel/colors.html",
+            width: 240,
+            height: 323,
+            data: data,
+            actionClose: false,
+            callback: function( options ){
+                var colors = JSON.parse(self.toJSString( options.data ))
+                self.configs = self.setConfigs({
+                    colors: colors,
+                    colorNames: self.colorNames(colors)
+                });
+                
+            }
+        });
+    }
+})
+
+// export.js
+SM.extend({
+    slices: [],
+    sliceCache: {},
+    maskCache: [],
+    hasExportSizes: function(layer){
+        return layer.exportOptions().exportFormats().count() > 0;
+    },
+    isSliceGroup: function(layer) {
+        return this.is(layer, MSLayerGroup) && this.hasExportSizes(layer);
+    },
+    isExportable: function(layer) {
+        return this.is(layer, MSTextLayer) ||
+               this.is(layer, MSShapeGroup) ||
+               this.is(layer, MSBitmapLayer) ||
+               this.is(layer, MSSliceLayer) ||
+               this.is(layer, MSSymbolInstance) ||
+               this.isSliceGroup(layer)
+    },
+    getStates: function(layer){
+        var isVisible = true,
+            isLocked = false,
+            hasSlice = false,
+            isMaskChildLayer = false,
+            isMeasure = false;
+
+        while (!( this.is(layer, MSArtboardGroup) || this.is(layer, MSSymbolMaster) ) ) {
+            var group = layer.parentGroup();
+
+            if( this.regexNames.exec(group.name()) ){
+                isMeasure = true;
+            }
+
+            if (!layer.isVisible()) {
+                isVisible = false;
+            }
+
+            if (layer.isLocked()) {
+                isLocked = true;
+            }
+
+            if ( this.is(group, MSLayerGroup) && this.hasExportSizes(group) ) {
+                hasSlice = true
+            }
+
+            if (
+                this.maskObjectID &&
+                group.objectID() == this.maskObjectID &&
+                !layer.shouldBreakMaskChain()
+            ) {
+                isMaskChildLayer = true
+            }
+
+            layer = group;
+        }
+        return {
+            isVisible: isVisible,
+            isLocked: isLocked,
+            hasSlice: hasSlice,
+            isMaskChildLayer: isMaskChildLayer,
+            isMeasure: isMeasure
+        }
+    },
+    checkMask: function(group, layer, layerData, layerStates){
+
+        if(layer.hasClippingMask()){
+            if(layerStates.isMaskChildLayer){
+                this.maskCache.push({
+                    objectID: this.maskObjectID,
+                    rect: this.maskRect
+                });
+            }
+            this.maskObjectID = group.objectID();
+            this.maskRect = layerData.rect;
+        }
+        else if( !layerStates.isMaskChildLayer && this.maskCache.length > 0 ){
+            var mask = this.maskCache.pop();
+            this.maskObjectID = mask.objectID;
+            this.maskRect = mask.rect;
+            layerStates.isMaskChildLayer = true;
+        }
+        else if ( !layerStates.isMaskChildLayer ) {
+            this.maskObjectID = undefined;
+            this.maskRect = undefined;
+        }
+
+        if (layerStates.isMaskChildLayer){
+            var layerRect = layerData.rect,
+                maskRect = this.maskRect;
+
+            layerRect.maxX = layerRect.x + layerRect.width;
+            layerRect.maxY = layerRect.y + layerRect.height;
+            maskRect.maxX = maskRect.x + maskRect.width;
+            maskRect.maxY = maskRect.y + maskRect.height;
+
+            var distance = this.getDistance(layerRect, maskRect),
+                width = layerRect.width,
+                height = layerRect.height;
+
+            if(distance.left < 0) width += distance.left;
+            if(distance.right < 0) width += distance.right;
+            if(distance.top < 0) height += distance.top;
+            if(distance.bottom < 0) height += distance.bottom;
+
+            layerData.rect = {
+                    x: ( distance.left < 0 )? maskRect.x: layerRect.x,
+                    y: ( distance.top < 0 )? maskRect.y: layerRect.y,
+                    width: width,
+                    height: height
+                }
+
+        }
+    },
+    exportable: function(layer, savePath){
+        var self = this,
+            exportable = [],
+            size, sizes = layer.exportOptions().exportFormats(),
+            sizesInter = sizes.objectEnumerator();
+
+        var androidDensity = {
+            "@0.75x": "ldpi",
+            "@1x": "mdpi",
+            "@1.5x": "hdpi",
+            "@2x": "xhdpi",
+            "@3x": "xxhdpi",
+            "@4x": "xxxhdpi"
+        }
+
+        while (size = sizesInter.nextObject()) {
+
+            var size = this.toJSString(size).split(" "),
+                scale = self.toJSNumber(size[0]),
+                format = size[2],
+                suffix = this.toJSString(size[1]),
+                suffix = suffix || "",
+                density = suffix,
+                drawablePath = "";
+
+            if( sizes.count() == 1 && self.configs.scale != 1 && !density ){
+                suffix = "@" + self.configs.scale + "x";
+                density = suffix;
+            }
+
+            if( ( ( sizes.count() == 1 && scale == 1 && self.configs.scale == 1 ) && !density ) || ( sizes.count() > 1 && !density ) ){
+                density = "@1x";
+            }
+
+            // Android
+            if(self.configs.unit == "dp/sp"){
+                drawablePath = "drawable-" + androidDensity[density] + "/";
+                density = androidDensity[density];
+                suffix = "";
+            }
+
+            this.exportImage({
+                    layer: layer,
+                    path: self.assetsPath,
+                    scale: scale,
+                    name: drawablePath + layer.name(),
+                    suffix: suffix,
+                    format: format
+                });
+
+            exportable.push({
+                    name: self.toJSString(layer.name()),
+                    density: density,
+                    format: format,
+                    path: drawablePath + layer.name() + suffix + "." + format
+                });
+        }
+
+        return exportable;
+    },
+    checkSlice: function(layer, layerData){
+        if(layerData.type == "slice" || ( layerData.type == "symbol" && this.hasExportSizes(layer.symbolMaster()) && !this.sliceCache[layer.symbolMaster().objectID()] ) ){
+            var sliceLayer = ( layerData.type == "symbol" )? layer.symbolMaster(): layer,
+                objectID = ( layerData.type == "symbol" )? this.toJSString(layer.symbolMaster().objectID()): layerData.objectID;
+
+                this.assetsPath = this.savePath + "/assets";
+                [[NSFileManager defaultManager]
+                    createDirectoryAtPath:this.assetsPath
+                    withIntermediateDirectories:true
+                    attributes:nil error:nil];
+
+            layerData.exportable = this.exportable(sliceLayer);
+            this.sliceCache[objectID] = this.exportable(sliceLayer);
+            this.slices.push({
+                name: layerData.name,
+                objectID: objectID,
+                rect: layerData.rect,
+                exportable: layerData.exportable
+            })
+        }
+        else if( layerData.type == "symbol" && this.sliceCache[ layer.symbolMaster().objectID() ] ){
+            layerData.exportable = this.sliceCache[ layer.symbolMaster().objectID() ];
+        }
+    },
+    checkSymbol: function(layer, layerData, layersData, container){
+        if( layerData.type == "symbol" ){
+            var self = this,
+                symbolObjectID = this.toJSString(layer.symbolMaster().objectID());
+
+            layerData.objectID = symbolObjectID;
+
+            if( !self.hasExportSizes(layer.symbolMaster()) ){
+                var tempSymbol = layer.duplicate(),
+                    tempGroup = tempSymbol.detachByReplacingWithGroup(),
+                    tempGroupRect = this.getRect(tempGroup);
+
+                this.getLayers(tempGroup, container, layer.symbolMaster().children(), layersData);
+                this.removeLayer(tempGroup);
+            }
+        }
     },
     getSavePath: function(){
         var filePath = this.document.fileURL()? this.document.fileURL().path().stringByDeletingLastPathComponent(): "~";
@@ -2421,281 +1863,289 @@ com.utom.extend({
 
         return savePanel.URL().path();
     },
-    getArtboard: function( msArtboard, savePath, isSymbol ){
-        var context = this.context;
-        var document = this.document;
-        var selection = this.selection;
+    exportPanel: function(){
+        var self = this;
+        this.artboardsData = [];
+        this.selectionArtboards = {};
+        var data = {};
+        data.selection = [];
+        data.current = [];
+        data.pages = [];
 
-        var tempCon = this.templateContents.tempCon;
-        var jqCon = this.templateContents.jqCon;
-        var jsappCon = this.templateContents.jsappCon;
-        var specCon = this.templateContents.specCon;
-        var cssnorCon = this.templateContents.cssnorCon;
-        var cssappCon = this.templateContents.cssappCon;
-
-        if(msArtboard instanceof MSArtboardGroup || msArtboard instanceof MSSymbolMaster){
-            var artboardFrame = msArtboard.frame();
-            var layers = [];
-            var notes = [];
-            var layerIter = msArtboard.children().objectEnumerator();
-            var name = msArtboard.objectID();
-
-            while(msLayer = layerIter.nextObject()) {
-                var msGroup = msLayer.parentGroup();
-
-                if(msLayer && this.is(msLayer, MSLayerGroup) && /LABEL\#|NOTE\#/.exec(msLayer.name())){
-                    var msText = msLayer.children()[2];
-
-                    notes.push({
-                        rect: this.rectToJSON(msLayer.absoluteRect(), artboardFrame),
-                        note: this.toJSString(msText.stringValue()).replace(/\n/g,"<br>")
-                    });
-
-                    msLayer.setIsVisible(false);
+        if(this.selection.count() > 0){
+            var selectionArtboards = this.find({key: "(class != NULL) && (class == %@)", match: MSArtboardGroup}, this.selection, true);
+            if(selectionArtboards.count() > 0){
+                selectionArtboards = selectionArtboards.objectEnumerator();
+                while(artboard = selectionArtboards.nextObject()){
+                    data.selection.push(this.toJSString(artboard.objectID()));
                 }
+            }
+        }
+        if(this.artboard) data.current.push(this.toJSString(this.artboard.objectID()));
 
-                var layerStates = this.getStates(msLayer);
+        var pages = this.document.pages().objectEnumerator();
+        while(page = pages.nextObject()){
+            var pageData = {},
+                artboards = page.artboards().objectEnumerator();
+            pageData.name = this.toJSString(page.name());
+            pageData.objectID = this.toJSString(page.objectID());
+            pageData.artboards = [];
 
-                if (
-                    !this.isExportable(msLayer) ||
-                    !layerStates.isVisible ||
-                    layerStates.isLocked ||
-                    layerStates.hasSlices ||
-                    this.isMeasure(msLayer)
-                )
-                {
-                    continue;
+            while(artboard = artboards.nextObject()){
+                if(!this.is(artboard, MSSymbolMaster)){
+                    var artboardData = {};
+                    artboardData.name = this.toJSString(artboard.name());
+                    artboardData.objectID = this.toJSString(artboard.objectID());
+                    pageData.artboards.push(artboardData);
+                    self.artboardsData.push(artboard);
                 }
+            }
+            data.pages.push(pageData);
+        }
 
-                var type = this.is(msLayer, MSTextLayer) ? "text" : "shape";
-                type = this.is(msLayer, MSSymbolInstance) ? "symbol" : type;
-                type = this.hasExportSizes(msLayer) || this.is(msLayer, MSSliceLayer) ? "slice" : type;
+        return this.panel({
+            path: this.pluginSketch + "/panel/export.html",
+            width: 320,
+            height: 521,
+            data: data,
+            callback: function( options ){
+                self.selectionArtboards = JSON.parse(self.toJSString( options.data ))
+            }
+        });
+    },
+    export: function(){
+        if(this.exportPanel()){
+            if(this.selectionArtboards.length <= 0){
+                return false;
+            }
+            var savePath = this.getSavePath(),
+                single = false;
+                data = {},
+                artboardsData = [];
 
-                var layer = {};
-                layer.objectID = this.toJSString(msLayer.objectID());
-                layer.type = type;
-                layer.name = this.toJSString(msLayer.name());
-                layer.rect = this.rectToJSON(msLayer.absoluteRect(), artboardFrame);
+            if(savePath){
+                var template = [NSString stringWithContentsOfFile:this.pluginSketch + "/template.html" encoding:NSUTF8StringEncoding error:nil];
 
-                layer.exportSizes = this.exportSizes(msLayer, savePath);
+                this.savePath = savePath;
+                for (var i = 0; i < this.artboardsData.length; i++) {
+                    var artboard = this.artboardsData[i],
+                        objectID = this.toJSString( artboard.objectID() );
 
-                if ( ! ( this.is(msLayer, MSSliceLayer) || this.is(msLayer, MSSymbolInstance) ) ) {
-                    var layerStyle = msLayer.style();
+                    if(this.selectionArtboards[objectID]){
+                        var artboardRect = this.getRect(artboard),
+                            page = artboard.parentGroup(),
+                            artboardData = {};
 
-                    layer.rotation = msLayer.rotation();
-                    layer.radius = ( msLayer.layers && this.is(msLayer.layers().firstObject(), MSRectangleShape) ) ? msLayer.layers().firstObject().fixedRadius(): null;
-                    layer.borders = this.getBorders(layerStyle);
-                    layer.fills = this.getFills(layerStyle);
-                    layer.shadows = this.getShadows(layerStyle);
-                    layer.opacity = this.getOpacity(layerStyle);
-                    layer.styleName = (this.is(msLayer, MSTextLayer))? this.getStyleName(layerStyle, true): this.getStyleName(layerStyle);
-                }
+                        
 
-                if ( this.is(msLayer, MSTextLayer) ) {
-                    layer.content = this.toJSString(msLayer.storage().string()),
-                    layer.color = this.colorToJSON(msLayer.textColor());
-                    layer.fontSize = msLayer.fontSize();
-                    layer.fontFace = this.toJSString(msLayer.fontPostscriptName());
-                    layer.textAlign = this.TextAligns[msLayer.textAlignment()];
-                    if(msLayer.characterSpacing() !== null){
-                        var characterSpacing = msLayer.characterSpacing();
-                        var spacingFloatValue = [characterSpacing floatValue]; // get float value from NSNumber
-                        layer.letterSpacing = spacingFloatValue;
-                    } else {
-                        layer.letterSpacing = 0;
+                        this.maskCache = [];
+                        this.maskObjectID = undefined;
+                        this.maskRect = undefined;
+
+                        var layersData = this.getLayers(artboard);
+
+                        artboardData.imagePath = "preview/" + objectID + ".png";
+                        artboardData.pageName = this.toHTMLEncode(page.name());
+                        artboardData.pageObjectID = this.toJSString(page.objectID());
+                        artboardData.name = this.toHTMLEncode(artboard.name());
+                        artboardData.objectID = this.toJSString(artboard.objectID());
+                        artboardData.width = artboardRect.width;
+                        artboardData.height = artboardRect.height;
+                        artboardData.layers = layersData.layers;
+                        artboardData.notes = layersData.notes;
+
+                        artboardsData.push(artboardData);
+
+                        this.exportImage({
+                                layer: artboard,
+                                path: this.toJSString(savePath) + "/preview",
+                                scale: 2,
+                                name: objectID,
+                            });
                     }
-                    layer.letterSpacing = spacingFloatValue;
-                    layer.lineHeight = msLayer.lineHeight();
-                    layer.baseLineHeight = msLayer.baseLineHeight();
+
                 }
 
 
-                if(msLayer.hasClippingMask()){
-                    this.maskObjectID = msGroup.objectID();
-                    this.maskRect = this.rectToJSON(msLayer.absoluteRect(), artboardFrame);
-                }
-                else if (this.maskObjectID != msGroup.objectID() || msLayer.shouldBreakMaskChain()) {
-                    this.maskObjectID = undefined;
-                    this.maskRect = undefined;
-                }
+                data.artboards = artboardsData;
+                data.scale = this.configs.scale;
+                data.unit = this.configs.unit;
+                data.colorFormat = this.configs.colorFormat;
 
-                if ( type ===  "slice" ){
-                    var sliceObjectID = msLayer.objectID();
-                    if (!this.slices[sliceObjectID]){
-                        var sliceLayer = this.slices[sliceObjectID] = layer;
-                        this.slicesData.push(sliceLayer);
-                    }             
+                if(this.slices.length > 0){
+                    data.slices = this.slices;
                 }
 
-                if (layerStates.isMaskChildLayer){
-                    layer.rect = this.updateMaskRect(layer.rect)
-                }
-
-                if (layer.rect){
-                    layers.push(layer);
-                }
-
-                if( this.is(msLayer, MSSymbolInstance) ){
-                    var symbolObjectID = msLayer.symbolMaster().objectID(),
-                        parentRect = {x: layer.rect.x, y: layer.rect.y},
-                        symbolLayers = this.symbols[symbolObjectID] = this.getArtboard(msLayer.symbolMaster(), savePath, true);
-                    
-                    // if( !this.symbols[symbolObjectID] ){
-                    //     var symbolLayers = this.symbols[symbolObjectID] = this.getArtboard(msLayer.symbolMaster(), savePath, true);
-                    // }
-                    // else{
-                    //     var symbolLayers = this.symbols[symbolObjectID];
-                    // }
-
-
-                    symbolLayers.forEach(function(symbolLayer){
-                        symbolLayer.rect.x = parentRect.x + symbolLayer.rect.x;
-                        symbolLayer.rect.y = parentRect.y + symbolLayer.rect.y;
-                        layers.push(symbolLayer);
-                        // log(layers);
+                if(this.configs.colors && this.configs.colors.length > 0){
+                    data.colors = this.configs.colors;
+                    this.writeFile({
+                        content: JSON.stringify(this.configs.colors),
+                        path: this.toJSString(savePath),
+                        fileName: "colors.json"
                     });
                 }
-            }
 
-            if(!isSymbol){
-                var imageFileName = name + ".png";
-                var imagePath = this.toJSString( NSTemporaryDirectory().stringByAppendingPathComponent(imageFileName) );
-                var sliceArtboard = MSExportRequest.exportRequestsFromExportableLayer(msArtboard).firstObject();
-                sliceArtboard.scale = 2
-                [document saveArtboardOrSlice: sliceArtboard
-                    toFile: imagePath ];
+                this.writeFile({
+                        content: this.template(template, {lang: language, data: JSON.stringify(data).replace(/\u2028/g,'\\u2028').replace(/\u2029/g,'\\u2029')}),
+                        path: this.toJSString(savePath),
+                        fileName: "index.html"
+                    });
 
-                var imageURL = NSURL.fileURLWithPath(imagePath);
-                var imageData = NSData.dataWithContentsOfURL(imageURL);
-                var imageBase64 = imageData.base64EncodedStringWithOptions(0);
+                this.message(_("Export complete!"));
 
-                var artboardData = {
-                    objectID: this.toJSString(msArtboard.objectID()),
-                    name: this.toJSString(msArtboard.name()),
-                    imageBase64: this.toJSString(imageBase64),
-                    width: artboardFrame.width(),
-                    height: artboardFrame.height()
-                };
-
-                this.artboardsData.push(artboardData);
-
-
-                var data = this.extend(artboardData, {
-                    resolution: this.configs.resolution,
-                    zoom: 1,
-                    layers: layers,
-                    notes: notes
-                });
-
-                var specContent = this.template(specCon, {json: JSON.stringify(data).replace(/\u2028/g,'\\u2028').replace(/\u2029/g,'\\u2029')});
-
-                var content = this.template(tempCon, {
-                    cssNormalize: cssnorCon,
-                    cssApp: cssappCon,
-                    jsjQuery: jqCon,
-                    jsApp: jsappCon,
-                    jsSpec: specContent
-                });
-                content = NSString.stringWithString(content);
-                var artname = this.toJSString( msArtboard.name() ).replace(/[\/\\]/g, "-");
-                var exportURL = savePath.stringByAppendingPathComponent( artname + ".html");
-
-                [content writeToFile: exportURL
-                          atomically: false
-                            encoding: NSUTF8StringEncoding
-                               error: null];
-            }
-            else{
-                return layers
+                NSWorkspace.sharedWorkspace().activateFileViewerSelectingURLs(NSArray.arrayWithObjects(NSURL.fileURLWithPath(savePath + "/index.html")));
             }
         }
     },
-    artboardsData: [],
-    slicesData: [],
-    specExport: function(){
-        if(!this.configs) return false;
+    writeFile: function(options) {
+        var options = this.extend(options, {
+                content: "Type something!",
+                path: this.toJSString(NSTemporaryDirectory()),
+                fileName: "temp.txt"
+            }),
+            content = NSString.stringWithString(options.content),
+            savePathName = [];
 
-        var context = this.context;
-        var document = this.document;
-        var selection = this.selection;
+        [[NSFileManager defaultManager] createDirectoryAtPath:options.path withIntermediateDirectories:true attributes:nil error:nil];
 
-        var selectionArtboards = this.find(MSArtboardGroup, selection, true, "class");
+        savePathName.push(
+            options.path,
+            "/",
+            options.fileName
+        );
+        savePathName = savePathName.join("");
 
-        if(!selectionArtboards){
-            this.message(_("Select 1 or multiple artboards"));
-            return false;
+        [content writeToFile: savePathName
+                  atomically: false
+                    encoding: NSUTF8StringEncoding
+                       error: null];
+    },
+    exportImage: function(options) {
+        var options = this.extend(options, {
+                layer: this.artboard,
+                path: this.toJSString(NSTemporaryDirectory()),
+                scale: 1,
+                name: "preview",
+                suffix: "",
+                format: "png"
+            }),
+            document = this.document,
+            slice = MSExportRequest.exportRequestsFromExportableLayer(options.layer).firstObject(),
+            savePathName = [];
+
+        slice.scale = options.scale;
+        slice.format = options.format;
+
+        savePathName.push(
+                options.path,
+                "/",
+                options.name,
+                options.suffix,
+                ".",
+                options.format
+            );
+        savePathName = savePathName.join("");
+
+        [document saveArtboardOrSlice:slice toFile:savePathName];
+
+        return savePathName;
+    },
+    getLayers: function( container, artboard, symbolMaster, allLayersData ){
+        var self = this,
+            containerRect = (artboard)? artboard.absoluteRect(): container.absoluteRect(),
+            layersData = allLayersData || [],
+            notesData = [],
+            layers = container.children().objectEnumerator();
+
+        if(symbolMaster) var s = -1;
+
+        while( layer = layers.nextObject() ) {
+            var group = layer.parentGroup(),
+                layerStates = this.getStates(layer);
+
+            if(symbolMaster) s += 1;
+
+            if(layer && this.is(layer, MSLayerGroup) && /NOTE\#/.exec(layer.name())){
+                var textLayer = layer.children()[2];
+
+                notesData.push({
+                    rect: this.rectToJSON(textLayer.absoluteRect(), containerRect),
+                    note: this.toHTMLEncode(textLayer.stringValue()).replace(/\n/g, "<br>")
+                });
+
+                layer.setIsVisible(false);
+            }
+
+            if (
+                !this.isExportable(layer) ||
+                !layerStates.isVisible ||
+                layerStates.isLocked ||
+                layerStates.hasSlice ||
+                layerStates.isMeasure
+            )
+            {
+                continue;
+            }
+
+            var layerType = this.is(layer, MSTextLayer) ? "text" :
+                       this.is(layer, MSSymbolInstance) ? "symbol" :
+                       this.is(layer, MSSliceLayer) || this.hasExportSizes(layer)? "slice":
+                       "shape",
+                layerData = {};
+
+
+            layerData.objectID = this.toJSString(layer.objectID());
+            if(symbolMaster){
+                layerData.objectID = this.toJSString(symbolMaster[s].objectID());
+            }
+
+            layerData.type = layerType;
+            layerData.name = this.toHTMLEncode(layer.name());
+            layerData.rect = this.rectToJSON(layer.absoluteRect(), containerRect);
+
+            if ( ! ( layerType == "slice" || layerType == "symbol" ) ) {
+                var layerStyle = layer.style();
+                layerData.rotation = layer.rotation();
+                layerData.radius = this.getRadius(layer);
+                layerData.borders = this.getBorders(layerStyle);
+                layerData.fills = this.getFills(layerStyle);
+                layerData.shadows = this.getShadows(layerStyle);
+                layerData.opacity = this.getOpacity(layerStyle);
+            }
+
+            if ( layerType == "text" ) {
+                layerData.content = this.toHTMLEncode(layer.storage().string());
+                layerData.color = this.colorToJSON(layer.textColor());
+                layerData.fontSize = layer.fontSize();
+                layerData.fontFace = this.toJSString(layer.fontPostscriptName());
+                layerData.textAlign = TextAligns[layer.textAlignment()];
+                layerData.letterSpacing = self.toJSNumber(layer.characterSpacing());
+                layerData.lineHeight = layer.lineHeight();
+            }
+
+            var layerCSSAttributes = layer.CSSAttributes(),
+                css = [];
+
+            for(var i = 0; i < layerCSSAttributes.count(); i++) {
+                var c = layerCSSAttributes[i]
+                if(! /\/\*/.exec(c) ) css.push(self.toJSString(c));
+            }
+            if(css.length > 0) layerData.css = css
+
+            this.checkMask(group, layer, layerData, layerStates);
+            this.checkSlice(layer, layerData);
+            layersData.push(layerData);
+            this.checkSymbol(layer, layerData, layersData, container);
         }
 
-        savePath = this.getSavePath();
-        if(!savePath) return false;
-        [[NSFileManager defaultManager] createDirectoryAtPath:savePath withIntermediateDirectories:true attributes:nil error:nil];
 
-        var pluginPath = NSString.stringWithString(this.context.scriptPath).stringByDeletingLastPathComponent();
-        var tempPath = pluginPath.stringByAppendingPathComponent("assets/template.html");
-        var jqPath = pluginPath.stringByAppendingPathComponent("assets/jquery-1.12.0.min.js");
-        var jsappPath = pluginPath.stringByAppendingPathComponent("assets/app.js");
-        var specPath = pluginPath.stringByAppendingPathComponent("assets/spec.js");
-        var cssnorPath = pluginPath.stringByAppendingPathComponent("assets/normalize-3.0.3.min.css");
-        var cssappPath = pluginPath.stringByAppendingPathComponent("assets/app.css");
 
-        var tempCon = [NSString stringWithContentsOfFile:tempPath encoding:NSUTF8StringEncoding error:nil];
-        var jqCon = [NSString stringWithContentsOfFile:jqPath encoding:NSUTF8StringEncoding error:nil];
-        var jsappCon = [NSString stringWithContentsOfFile:jsappPath encoding:NSUTF8StringEncoding error:nil];
-        var specCon = [NSString stringWithContentsOfFile:specPath encoding:NSUTF8StringEncoding error:nil];
-        var cssnorCon = [NSString stringWithContentsOfFile:cssnorPath encoding:NSUTF8StringEncoding error:nil];
-        var cssappCon = [NSString stringWithContentsOfFile:cssappPath encoding:NSUTF8StringEncoding error:nil];
-        this.templateContents = {
-            tempCon: tempCon,
-            jqCon: jqCon,
-            jsappCon: jsappCon,
-            specCon: specCon,
-            cssnorCon: cssnorCon,
-            cssappCon: cssappCon
+        if(symbolMaster) return layersData;
+
+        return {
+            layers: layersData,
+            notes: notesData
         }
-
-        selectionArtboards = (this.is(selectionArtboards, MSArtboardGroup))? NSArray.arrayWithObjects(selectionArtboards): selectionArtboards;
-        selectionArtboards = selectionArtboards.objectEnumerator();
-
-        while(msArtboard = selectionArtboards.nextObject()){
-            this.getArtboard(msArtboard, savePath);
-        }
-
-        var sliceLayers = this.page.exportableLayers();
-
-        var artboardsData = this.artboardsData;
-        var slicesData = this.slicesData;
-
-        if(slicesData.length > 0){
-            var sContent = NSString.stringWithString("var slices = " + JSON.stringify(slicesData) + ";");
-            var sExportURL = savePath.stringByAppendingPathComponent( "slices.js");
-            [sContent writeToFile: sExportURL
-                              atomically: false
-                                encoding: NSUTF8StringEncoding
-                                   error: null];
-        }
-
-        if(artboardsData.length > 1){
-            var aContent = NSString.stringWithString("var artboards = " + JSON.stringify(artboardsData) + ";");
-            var aExportURL = savePath.stringByAppendingPathComponent( "artboards.js");
-
-            [aContent writeToFile: aExportURL
-                              atomically: false
-                                encoding: NSUTF8StringEncoding
-                                   error: null];
-        }
-
-        if(this.configsColors){
-            this.getColors();
-            var cContent = NSString.stringWithString("var colors = " + JSON.stringify(this.configs.colors) + ";");
-            var cExportURL = savePath.stringByAppendingPathComponent( "colors.js");
-
-            [cContent writeToFile: cExportURL
-                              atomically: false
-                                encoding: NSUTF8StringEncoding
-                                   error: null];
-        }
-        this.message(_("Export complete!"));
-
     },
     template: function(content, data) {
         var content = content.replace(new RegExp("\\<\\!\\-\\-\\s([^\\s\\-\\-\\>]+)\\s\\-\\-\\>", "gi"), function($0, $1) {

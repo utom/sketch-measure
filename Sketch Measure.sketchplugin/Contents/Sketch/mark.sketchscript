@@ -1,0 +1,55 @@
+@import "library/common.js"
+@import "library/MochaJSDelegate.js"
+
+function commandOverlay(context) {
+    SM.init(context, 'overlay');
+}
+
+function commandSize(context) {
+    SM.init(context, 'size');
+}
+
+function commandSpacing(context) {
+    SM.init(context, 'spacing');
+}
+
+function commandProperty(context) {
+    SM.init(context, 'property');
+}
+
+function commandNote(context) {
+    SM.init(context, 'note');
+}
+
+function commandHidden(context) {
+    SM.init(context, 'hidden');
+}
+
+function commandLocked(context) {
+    SM.init(context, 'locked');
+}
+
+function commandClear(context) {
+    SM.init(context, 'clear');
+}
+
+function commandWidth(context) {
+    SM.init(context, 'width');
+}
+
+function commandHeight(context) {
+    SM.init(context, 'height');
+}
+
+function commandColor(context) {
+    SM.init(context, 'color');
+}
+
+function commandSetting(context) {
+    SM.init(context, 'setting');
+}
+
+function commandExport(context) {
+    SM.init(context, 'export');
+}
+

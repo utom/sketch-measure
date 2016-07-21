@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Colors - Sketch Measure 2.0</title>
+
+    <link href="assets/css/normalize.css" rel="stylesheet">
+    <link href="assets/css/app.css" rel="stylesheet">
+    <script type="text/javascript" src="assets/js/jquery-2.2.4.min.js"></script>
+    <script type="text/javascript" src="assets/js/common.js"></script>
+    <script type="text/javascript">
+    <!--
+    var init = function(data) {
+        $('body').html([
+            '<div id="page" class="container">',
+                '<div id="color-list"><div class="empty"><h3>' + _('No slices added!') + '</h3><p>' + _('Select shape layer and run "Color Names" again.') + '</p></div></div>',
+                '<div class="options-bar"><button class="button-remove"></button></div>',
+            '</div>'
+            ].join(''));
+        var colorsHTML = [],
+            add = [],
+            hasColors = {},
+            checkColors = {},
+            selectMultiple = false;
+
+        $.each(data.add, function(index, addColor){
+            var colorID = addColor['argb-hex'];
+            if(!hasColors[colorID]){
+                hasColors[colorID] = true;
+                add.push(addColor);
+            }
+        });
+
+        $.each(data.list, function(index, checkColor){
+            var colorID = checkColor.color['argb-hex'];
+            $.each(add, function(index, addColor){
+                if( colorID == addColor['argb-hex'] ) checkColors[colorID] = true;
+            });
+        });
+
+        $.each(add, function(index, addColor){
+            var classEdit = (!index)? ' edit selected': '',
+                colorID = addColor['argb-hex'];
+
+            if( checkColors[colorID] ) return false;
+
+            colorsHTML.push(
+               '<div class="color-item' + classEdit + '">',
+                    '<div class="color"><em style="background: ' + addColor['css-rgba'] + ';"></em></div>',
+                    '<div class="color-name">Untitled' + ( index || '' ) + '</div>',
+                    '<div class="color-name-edit"><input data-colors="' + encodeURI(JSON.stringify(addColor)) + '" type="text" name="color-name" value="Untitled' + ( index || '' ) + '"></div>',
+                '</div>'
+                );
+        });
+
+        $.each(data.list, function(index, color){
+            var colorID = color.color['argb-hex'],
+                classEdit = (checkColors[colorID])? ' edit selected': '';
+
+            colorsHTML.push(
+               '<div class="color-item' + classEdit + '">',
+                    '<div class="color"><em style="background: ' + color.color['css-rgba'] + ';"></em></div>',
+                    '<div class="color-name">' + color.name + '</div>',
+                    '<div class="color-name-edit"><input data-colors="' + encodeURI(JSON.stringify(color.color)) + '" type="text" name="color-name" value="' + color.name + '"></div>',
+                '</div>'
+                );
+        });
+
+        if(add.length > 0 || data.list.length > 0){
+            $('#color-list').html(colorsHTML.join(''));
+        }
+
+        $('#color-list').on({
+            click: function(event){
+                if(!selectMultiple) $('.selected').removeClass('selected');
+                if($(this).hasClass('selected')){
+                    $(this).removeClass('selected');
+                }
+                else{
+                    $(this).addClass('selected');
+                }
+                event.stopPropagation();
+            }
+        }, '.color-item');
+        $('#color-list').on({
+            dblclick: function(){
+                $(this).hide();
+                $(this).parent().find('.color-name-edit').show();
+                $(this).parent().find('.color-name-edit input').select();
+            }
+        }, '.color-name');
+        $('#color-list').on({
+            blur: function(){
+                var text = $(this).val();
+                $(this).parent().hide();
+                $(this).parent().parent().find('.color-name').text(text).show();
+                pullData()
+            },
+            keypress: function(event){
+                var eventObj = event || e,
+                    keyCode = eventObj.keyCode || eventObj.which;
+
+                if ((keyCode >= 65 && keyCode <= 90) || (keyCode >= 97 && keyCode <= 122) || (keyCode >= 48 && keyCode <= 57) || keyCode == 95){
+                    return true;
+                }
+                else if(keyCode == 13){
+                    var text = $(this).val();
+                    $(this).parent().hide();
+                    $(this).parent().parent().find('.color-name').text(text).show();
+                    pullData()
+                    return false;
+                }
+                else{
+                    return false;
+                }
+            }
+        }, 'input');
+
+        $('.edit input:first-child').select()
+
+        $('body').click(function(){
+            $('.selected').removeClass('selected');
+        })
+
+        $('.button-remove').click(function(event){
+            $('.selected').remove();
+            $('.color-item:first-child').addClass('selected');
+            pullData();
+            event.stopPropagation();
+        });
+
+        $(document)
+            .keydown(function(e){
+                    var eventObj = event || e,
+                        keyCode = eventObj.keyCode || eventObj.which;
+                    if(keyCode == 91) selectMultiple = true;
+                })
+            .keyup(function(e){
+                    var eventObj = event || e,
+                        keyCode = eventObj.keyCode || eventObj.which;
+                    if(keyCode == 91) selectMultiple = false;
+                });
+
+        var pullData = function(){
+            var colorNames = [];
+            $('input[name=color-name]').each(function(){
+                var $this = $(this),
+                    name = $this.val(),
+                    color = JSON.parse(decodeURI($this.attr('data-colors')));
+                colorNames.push({
+                    name: name,
+                    color: color
+                });
+            });
+            smAction({data:JSON.stringify(colorNames)});
+        }
+    }
+    // $(function(){
+    //     init([]);
+    // });
+    -->
+    </script>
+  </head>
+  <body>
+  </body>
+</html>

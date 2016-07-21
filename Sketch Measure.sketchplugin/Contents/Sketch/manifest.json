@@ -2,157 +2,123 @@
     "author": "utom",
     "commands" : [
         {
-            "name": "1. Create overlay",
-            "identifier": "create-overlay",
+            "name": "1. Overlay",
+            "identifier": "commandOverlay",
             "shortcut": "ctrl shift 1",
-            "handler" : "createOverlay",
-            "script": "measure.sketchscript"
+            "handler" : "commandOverlay",
+            "script": "mark.sketchscript"
         },
         {
-            "name": "2. Measure size",
-            "identifier": "measure-size",
+            "name": "2. Size",
+            "identifier": "commandSize",
             "shortcut": "ctrl shift 2",
-            "handler" : "measureSize",
-            "script": "measure.sketchscript"
+            "handler" : "commandSize",
+            "script": "mark.sketchscript"
         },
         {
-            "name": "3. Measure spacing",
-            "identifier": "measure-spacing",
+            "name": "3. Spacing",
+            "identifier": "commandSpacing",
             "shortcut": "ctrl shift 3",
-            "handler" : "measureSpacing",
-            "script": "measure.sketchscript"
+            "handler" : "commandSpacing",
+            "script": "mark.sketchscript"
         },
         {
-            "name": "4. Get property",
-            "identifier": "get-property",
+            "name": "4. Property",
+            "identifier": "commandProperty",
             "shortcut": "ctrl shift 4",
-            "handler" : "getProperty",
-            "script": "measure.sketchscript"
+            "handler" : "commandProperty",
+            "script": "mark.sketchscript"
         },
         {
-            "name": "5. Create note",
-            "identifier": "create-note",
+            "name": "5. Note",
+            "identifier": "commandNote",
             "shortcut": "ctrl shift 5",
-            "handler" : "createNote",
-            "script": "measure.sketchscript"
+            "handler" : "commandNote",
+            "script": "mark.sketchscript"
         },
         {
-            "name": "6. Percentage for size",
-            "identifier": "percentage-size",
-            "shortcut": "ctrl shift 6",
-            "handler": "measurePercentageSize",
-            "script": "measure.sketchscript"
+            "name": "💎 Spec Export",
+            "identifier": "commandExport",
+            "shortcut": "ctrl shift e",
+            "handler" : "commandExport",
+            "script": "mark.sketchscript"
         },
         {
-            "name": "7. Percentage for spacing",
-            "identifier": "percentage-spacing",
-            "shortcut": "ctrl shift 7",
-            "handler": "measurePercentageSpacing",
-            "script": "measure.sketchscript"
-        },
-        {
-            "name": "Toggle measure hidden",
-            "identifier": "toggle-hidden",
+            "name": "Hide marks",
+            "identifier": "commandHidden",
             "shortcut": "ctrl shift h",
-            "handler": "toggleHidden",
-            "script": "measure.sketchscript"
+            "handler": "commandHidden",
+            "script": "mark.sketchscript"
         },
         {
-            "name": "Toggle measure locked",
-            "identifier": "toggle-locked",
+            "name": "Lock marks",
+            "identifier": "commandLocked",
             "shortcut": "ctrl shift l",
-            "handler": "toggleLocked",
-            "script": "measure.sketchscript"
+            "handler": "commandLocked",
+            "script": "mark.sketchscript"
         },
         {
-            "name": "Move to @Specs",
-            "identifier": "move-to-group",
+            "name": "Clear marks",
+            "identifier": "commandClear",
             "shortcut": "",
-            "handler": "moveToGroup",
-            "script": "measure.sketchscript"
-        },
-        {
-            "name": "Clear page measure",
-            "identifier": "clear-measure",
-            "shortcut": "",
-            "handler": "clearMeasure",
-            "script": "measure.sketchscript"
+            "handler": "commandClear",
+            "script": "mark.sketchscript"
         },
         {
             "name": "Lite width",
-            "identifier": "lite-width",
+            "identifier": "commandWidth",
             "shortcut": "ctrl shift [",
-            "handler": "liteWidth",
-            "script": "measure.sketchscript"
+            "handler": "commandWidth",
+            "script": "mark.sketchscript"
         },
         {
             "name": "Lite height",
-            "identifier": "lite-height",
+            "identifier": "commandHeight",
             "shortcut": "ctrl shift ]",
-            "handler": "liteHeight",
-            "script": "measure.sketchscript"
+            "handler": "commandHeight",
+            "script": "mark.sketchscript"
         },
         {
-            "name": "Spec export",
-            "identifier": "spec-export",
-            "shortcut": "ctrl shift e",
-            "handler": "specExport",
-            "script": "measure.sketchscript"
-        },
-        {
-            "name": "Reset Configs",
-            "identifier": "reset-configs",
+            "name": "Settings",
+            "identifier": "commandSetting",
             "shortcut": "",
-            "handler": "resetConfigs",
-            "script": "measure.sketchscript"
+            "handler": "commandSetting",
+            "script": "mark.sketchscript"
         },
         {
-            "name": "Color palette",
-            "identifier": "color-palette",
-            "shortcut": "",
-            "handler": "colorPalette",
-            "script": "measure.sketchscript"
-        },
-        {
-            "name": "Toggle Theme",
-            "identifier": "toggle-theme",
-            "shortcut": "",
-            "handler": "toggleTheme",
-            "script": "measure.sketchscript"
+            "name": "Color names",
+            "identifier": "commandColor",
+            "shortcut": "ctrl shift c",
+            "handler": "commandColor",
+            "script": "mark.sketchscript"
         }
     ],
     "menu" : {
         "isRoot" : false,
         "shortcut" : "",
         "items" : [
-            "create-overlay",
-            "measure-size",
-            "measure-spacing",
-            "get-property",
-            "create-note",
-            "percentage-size",
-            "percentage-spacing",
-            "toggle-hidden",
-            "toggle-locked",
-            "lite-width",
-            "lite-height",
-            "color-palette",
-            "spec-export",
-            {
-                "title": "Settings",
-                "items": [
-                    "move-to-group",
-                    "clear-measure",
-                    "reset-configs",
-                    "toggle-theme"
-                ]
-            }
+            "commandOverlay",
+            "commandSize",
+            "commandSpacing",
+            "commandProperty",
+            "commandNote",
+            "commandWidth",
+            "commandHeight",
+            "-",
+            "commandColor",
+            "commandExport",
+            "-",
+            "commandHidden",
+            "commandLocked",
+            "-",
+            "commandClear",
+            "commandSetting"
         ],
-        "title" : "Measure"
+        "title" : "👍 Sketch Measure"
     },
-    "identifier": "com.utom.sketch-measure",
-    "version": "0.9.4.9",
-    "description" : "A measure tool for measurements & design specs.",
+    "identifier": "com.utom.Smarker",
+    "version": "2.0 beta 1",
+    "description" : "Make it a fun to create spec for developers and teammates",
     "authorEmail" : "utombox@gmail.com",
     "name" : "Sketch Measure"
 }
