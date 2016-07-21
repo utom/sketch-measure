@@ -65,5 +65,6 @@
     "Export to:": "导出到:",
     "Export": "导出",
     "Exporting...": "导出中...",
-    "Export complete!": "导出完成!"
+    "Export complete!": "导出完成!",
+    "The slice not in current artboard.": "切片不在当前画板"
 };
