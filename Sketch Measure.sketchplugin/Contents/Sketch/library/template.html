@@ -268,9 +268,8 @@ var I18N = {},
             }
         },
         message: function(msg){
-        	var $MSG = $('<div class="message">').text(msg);
-        	$('body').append($MSG);
-        	$MSG.hide().fadeIn().delay( 1000 ).fadeOut('fast');
+        	var $message = $('#message').text(msg);
+        	$message.hide().fadeIn().delay( 1000 ).fadeOut('fast');
         },
         render: function() {
             $('#app').html([
@@ -318,7 +317,8 @@ var I18N = {},
                         '</div>',
                     '</section>',
                     '<aside id="inspector" class="inspector"></aside>',
-                '</main>'
+                '</main>',
+                '<div id="message" class="message"></div>'
             ].join(''));
 
             this.zoom();
