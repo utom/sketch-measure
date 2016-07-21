@@ -1,6 +1,6 @@
 # Sketch Measure
 
-Make it a fun to create spec for developers and teammates, **Sketch 3.9.* support**. 
+Make it a fun to create spec for developers and teammates, **Sketch 39.* support**. 
 
 ###[Donate to Sketch Measure](http://utom.design/measure/donate.html)
 
