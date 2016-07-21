@@ -2,6 +2,8 @@
 
 Make it a fun to create spec for developers and teammates, **Sketch 3.9.* support**. 
 
+###[Donate to Sketch Measure](http://utom.design/measure/donate.html)
+
 ![Logo](http://utom.design/logo@2x.png)
 
 ## Installing Plugins
@@ -41,6 +43,6 @@ Menu Titles:
 * Frameworks by [esseak](https://github.com/esseak)
 
 ##Contact
-* [Donate](http://utom.design/measure/donate.html)
+
 * Follow [@utom](http://twitter.com/utom) on Twitter
 * Email <utombox@gmail.com>
