@@ -33,14 +33,14 @@ Menu Titles:
 * `Lite height`
 * `Color names`
 * `💎 Spec Export`
-* `Hidden`
-* `Locked`
+* `Hide marks`
+* `Locke marks`
 
 ##Contributors
-* Author by [utom](http://utom.design)
+* Author [utom](http://utom.design)
 * Frameworks by [esseak](https://github.com/esseak)
 
 ##Contact
-
+* [Donate](http://utom.design/measure/donate.html)
 * Follow [@utom](http://twitter.com/utom) on Twitter
 * Email <utombox@gmail.com>
