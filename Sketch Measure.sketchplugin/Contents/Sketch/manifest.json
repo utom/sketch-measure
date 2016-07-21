@@ -110,8 +110,8 @@
             "-",
             "commandHidden",
             "commandLocked",
-            "-",
             "commandClear",
+            "-",
             "commandSetting"
         ],
         "title" : "👍 Sketch Measure"
