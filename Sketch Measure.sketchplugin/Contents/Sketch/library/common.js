@@ -2079,7 +2079,7 @@ SM.extend({
             if (
                 !this.isExportable(layer) ||
                 !layerStates.isVisible ||
-                layerStates.isLocked ||
+                layerStates.isLocked && !this.is(layer, MSSliceLayer) ||
                 layerStates.hasSlice ||
                 layerStates.isMeasure
             )
