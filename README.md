@@ -12,7 +12,7 @@ Make it a fun to create spec for developers and teammates, **Sketch 39.* support
 
 ## New UI
 Friendly user interface offers you a more intuitive way of making marks.
-![SPEC EXPORT](http://utom.design/ui@2x.png)
+![SPEC EXPORT](http://utom.design/ui.png)
 
 ## Spec Export
 Automatically generating html page with one click, inspect all the design details including CSS Styles on it offline.
