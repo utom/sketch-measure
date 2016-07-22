@@ -676,9 +676,29 @@ body,
     color: rgba(255,255,255,0.30);
 }
 .empty{
-    padding: 60px 10px;
+    padding: 50px 10px;
     text-align: center;
 }
 .empty h3 {
     font-size: 14px;
+}
+.file-import{
+    position: relative;
+    display: inline-block;
+    padding: 8px 16px;
+    font-family: HelveticaNeue-Medium;
+    font-size: 14px;
+    color: #FFF;
+    border: 0;
+    background: #3484F5;
+    border-radius: 4px;
+    cursor: pointer;
+}
+.import{
+    position: absolute;
+    left: 0;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    opacity: 0;
 }

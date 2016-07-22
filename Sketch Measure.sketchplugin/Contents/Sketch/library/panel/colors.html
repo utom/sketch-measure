@@ -13,9 +13,33 @@
     <script type="text/javascript">
     <!--
     var init = function(data) {
+        $(document).on({ 
+            dragleave:function(event){
+                event.preventDefault(); 
+            }, 
+            drop:function(event){
+                event.preventDefault(); 
+            }, 
+            dragenter:function(event){ 
+                event.preventDefault(); 
+            }, 
+            dragover:function(event){
+                event.preventDefault(); 
+            } 
+        });
+
         $('body').html([
             '<div id="page" class="container">',
-                '<div id="color-list"><div class="empty"><h3>' + _('No slices added!') + '</h3><p>' + _('Select shape layer and run "Color Names" again.') + '</p></div></div>',
+                '<div id="color-list">',
+                    '<div class="empty">',
+                        '<h3>' + _('No slices added!') + '</h3>',
+                        '<p>' + _('Select shape layer and run "Color Names" again.') + '</p>',
+                        // '<div class="file-import">',
+                        //     '<span>Import</span>',
+                        //     '<input type="file" class="import" />',
+                        // '</div>',
+                    '</div>',
+                '</div>',
                 '<div class="options-bar"><button class="button-remove"></button></div>',
             '</div>'
             ].join(''));
@@ -158,7 +182,7 @@
         }
     }
     // $(function(){
-    //     init([]);
+    //     init({list:[],add:[]});
     // });
     -->
     </script>
