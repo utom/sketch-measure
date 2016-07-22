@@ -40,7 +40,7 @@ Menu Titles:
 
 ##Contributors
 * Author [utom](http://utom.design)
-* Frameworks by [esseak](https://github.com/esseak)
+* Mac Framework by [esseak](https://github.com/esseak)
 
 ##Contact
 
