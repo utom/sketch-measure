@@ -876,8 +876,13 @@ var I18N = {},
                             '<label><input id="radius" type="text" value="' + this.unitSize(layerData.radius) + '" readonly="readonly"></label>',
                             '<label></label>',
                         '</div>'
+                    ].join(''): '',
+                styleName = (layerData.styleName)? [
+                        '<div class="item" data-label="' +_('Style') + ':">',
+                            '<label><input id="styleName" type="text" value="' + layerData.styleName + '" readonly="readonly"></label>',
+                        '</div>'
                     ].join(''): '';
-            html.push(this.propertyType('PROPERTIES', [ position, size, opacity, radius ].join('')));
+            html.push(this.propertyType('PROPERTIES', [ position, size, opacity, radius, styleName ].join('')));
 
             // FILLS
             if(layerData.fills && layerData.fills.length > 0){

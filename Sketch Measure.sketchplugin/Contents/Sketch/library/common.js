@@ -343,6 +343,17 @@ SM.extend({
     },
     getOpacity: function(style){
         return style.contextSettings().opacity()
+    },
+    getStyleName: function(layer){
+        var styles = (this.is(layer, MSTextLayer))? this.document.documentData().layerTextStyles(): this.document.documentData().layerStyles(),
+            style = layer.style(),
+            sharedObjectID = style.sharedObjectID();
+
+        styles = styles.objectsSortedByName();
+        style = this.find({key: "(objectID != NULL) && (objectID == %@)", match: sharedObjectID}, styles);
+
+        if(!style) return "";
+        return this.toJSString(style.name());
     }
 });
 
@@ -1386,6 +1397,12 @@ SM.extend({
                     if(!self.is(target, MSTextLayer)) return false;
                     content.push("paragraph: " + self.convertUnit(target.paragraphStyle().paragraphSpacing(), true));
                     break;
+                case "style-name":
+                    var styleName = self.getStyleName(target);
+                    if(styleName){
+                        content.push("style-name: " + styleName);
+                    }
+                    break;
                 default:
                     render = false;
                     break;
@@ -2153,6 +2170,7 @@ SM.extend({
                 layerData.fills = this.getFills(layerStyle);
                 layerData.shadows = this.getShadows(layerStyle);
                 layerData.opacity = this.getOpacity(layerStyle);
+                layerData.styleName = this.getStyleName(layer);
             }
 
             if ( layerType == "text" ) {
