@@ -10,6 +10,7 @@
     "EXPORTABLE": "导出",
     "Gradient": "渐变",
     "Color": "颜色",
+    "Weight": "粗细",
     "Style name": "样式名称",
     "Custom": "自定义",
     "Standard": "标准像素",
@@ -68,5 +69,10 @@
     "Export": "导出",
     "Exporting...": "导出中...",
     "Export complete!": "导出完成!",
-    "The slice not in current artboard.": "切片不在当前画板"
+    "The slice not in current artboard.": "切片不在当前画板",
+    "Inside Border": "内边框",
+    "Outside Border": "外边框",
+    "Center Border": "中心边框",
+    "Inner Shadow": "内阴影",
+    "Outer Shadow": "外阴影"
 };
