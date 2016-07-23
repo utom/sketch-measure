@@ -39,12 +39,10 @@ var SM = {
                 this.document.setCurrentPage(this.page);
             }
 
-            this.loadFramework();
-
             this.configs = this.getConfigs();
 
             if(!this.configs){
-                if(!this.settingsPanel()) return false;
+                if(!this.settingsWindow()) return false;
             }
 
             switch (command) {
@@ -82,26 +80,13 @@ var SM = {
                     this.manageColors();
                     break;
                 case "setting":
-                    this.settingsPanel();
+                    this.settingsWindow();
                     break;
                 case "export":
                     this.export();
                     break;
             }
 
-
-            // this.export();
-
-
-        },
-        loadFramework:function(){
-
-            if (NSClassFromString("SMModalView") == null) {
-                var mocha = [Mocha sharedRuntime]
-                return [mocha loadFrameworkWithName: "SMModalView" inDirectory: this.pluginSketch];
-            } else {
-                return true
-            }
         },
         extend: function( options, target ){
             var target = target || this;
@@ -789,54 +774,118 @@ SM.extend({
     }
 });
 
-// panel.js
+// window.js
 SM.extend({
-    panel: function( options ){
-        COScript.currentCOScript().setShouldKeepAround_(true);
-        var self = this,
+    SMWindow: function(options){
+        var self,
             options = this.extend(options, {
-                path: this.pluginSketch + "/panel/settings.html",
+                url: this.pluginSketch + "/panel/settings.html",
                 width: 240,
                 height: 316,
+                state: 1,
                 data: {
                     density: 2,
                     unit: "dp/sp"
                 },
-                actionClose: true,
                 callback: function( data ){ log(data) }
             }),
-            windowSizes = this.window.frame().size,
-            path = options.path;
-            width = options.width,
-            height = options.height,
-            data = options.data,
-            frame = NSMakeRect( windowSizes.width / 2, windowSizes.height / 2, width, height),
-            dataJSONString = JSON.stringify(data),
-            result = false,
-            panel = [[SMModalView alloc] initWithHtmlPath: path frame: frame],
+            result = false;
+        options.url = encodeURI("file://" + options.url);
+
+        COScript.currentCOScript().setShouldKeepAround_(true);
+
+        var frame = NSMakeRect(0, 0, options.width, (options.height + 32)),
+            titleBgColor = NSColor.colorWithRed_green_blue_alpha(0.1, 0.1, 0.1, 1),
+            contentBgColor = NSColor.colorWithRed_green_blue_alpha(0.13, 0.13, 0.13, 1);
+
+        var SMWindow = NSPanel.alloc().init();
+        SMWindow.setTitleVisibility(NSWindowTitleHidden);
+        SMWindow.setTitlebarAppearsTransparent(true);
+        SMWindow.standardWindowButton(NSWindowCloseButton).setHidden(false);
+        SMWindow.standardWindowButton(NSWindowMiniaturizeButton).setHidden(true);
+        SMWindow.standardWindowButton(NSWindowZoomButton).setHidden(true);
+        SMWindow.setFrame_display(frame, false);
+        SMWindow.setBackgroundColor(contentBgColor);
+
+        var contentView = SMWindow.contentView(),
+            webView = WebView.alloc().initWithFrame(NSMakeRect(0, 0, options.width, options.height)),
+            windowObject = webView.windowScriptObject(),
             delegate = new MochaJSDelegate({
-                "smAction:": (function(data){
-                    options.callback(data);
-                    if(options.actionClose) panel.showModal(false);
-                    COScript.currentCOScript().setShouldKeepAround_(false);
-                    result = true;
-                }),
-                "smInit:": (function(){
-                    panel.stringByEvaluatingJavaScriptFromString(language + "\r\n$(function(){ init(" + dataJSONString + ") })");
-                    COScript.currentCOScript().setShouldKeepAround_(false);
-                }),
-                "smCancel:": (function(fileName){
-                    panel.showModal(false);
-                    COScript.currentCOScript().setShouldKeepAround_(false);
-                })
+                "webView:didFinishLoadForFrame:": (function(webView, webFrame){
+                        var SMAction = [
+                                    "function SMAction(data){",
+                                        "window.SMData = encodeURI(JSON.stringify(data));",
+                                        "window.location.hash = 'submit';",
+                                        "console.log(SMData)",
+                                    "}"
+                                ].join(""),
+                            DOMReady = [
+                                    "$(",
+                                        "function(){",
+                                            "init(" + JSON.stringify(options.data) + ")",
+                                        "}",
+                                    ");"
+                                ].join("");
+
+                        windowObject.evaluateWebScript(SMAction);
+                        windowObject.evaluateWebScript(language);
+                        windowObject.evaluateWebScript(DOMReady);
+                        COScript.currentCOScript().setShouldKeepAround_(false);
+                    }),
+                "webView:didChangeLocationWithinPageForFrame:": (function(webView, webFrame){
+                        var data = JSON.parse(decodeURI(windowObject.valueForKey("SMData"))),
+                            request = NSURL.URLWithString(webView.mainFrameURL()).fragment();
+
+                        if(options.state){
+                            if(request == "submit"){
+                                options.callback(data);
+                                result = true;
+                            }
+                            SMWindow.orderOut(nil);
+                            NSApp.stopModal();
+                        }
+                    })
             });
 
-        panel.setCBDelegate(delegate.getClassInstance());
-        panel.stringByEvaluatingJavaScriptFromString("$(function(){ $('body').html(1); }");
-        panel.showModal(true);
+        contentView.setWantsLayer(true);
+        contentView.layer().setFrame( contentView.frame() );
+        contentView.layer().setCornerRadius(6);
+        contentView.layer().setMasksToBounds(true);
+
+        webView.setBackgroundColor(contentBgColor);
+        webView.setFrameLoadDelegate_(delegate.getClassInstance());
+        webView.setMainFrameURL_(options.url);
+
+        contentView.addSubview(webView);
+
+        var closeButton = SMWindow.standardWindowButton(NSWindowCloseButton);
+        closeButton.setCOSJSTargetFunction(function(sender) {
+            var request = NSURL.URLWithString(webView.mainFrameURL()).fragment();
+            if(options.state == 0 && request == "submit"){
+                data = JSON.parse(decodeURI(windowObject.valueForKey("SMData")));
+                options.callback(data);
+            }
+
+            SMWindow.orderOut(nil);
+            NSApp.stopModal();
+        });
+        closeButton.setAction("callAction:")
+
+        var titlebarView = contentView.superview().titlebarViewController().view(),
+            titlebarContainerView = titlebarView.superview();
+        closeButton.setFrameOrigin(NSMakePoint(8, 8));
+        titlebarContainerView.setFrame(NSMakeRect(0, options.height, options.width, 32));
+        titlebarView.setFrameSize(NSMakeSize(options.width, 32));
+        titlebarView.setTransparent(true);
+        titlebarView.setBackgroundColor(titleBgColor);
+        // log(titlebarContainerView.superview().superview())
+        titlebarContainerView.superview().setBackgroundColor(titleBgColor);
+
+        NSApp.runModalForWindow(SMWindow);
+
         return result;
     },
-    settingsPanel: function(){
+    settingsWindow: function(){
         var self = this,
             data = {};
 
@@ -846,23 +895,17 @@ SM.extend({
             data.colorFormat = this.configs.colorFormat;
         }
 
-        return this.panel({
+        return this.SMWindow({
             width: 240,
             height: 316,
             data: data,
             callback: function( data ){
-
-                self.configs = self.setConfigs({
-                    scale: self.toJSNumber(data.scale),
-                    unit: self.toJSString(data.unit),
-                    colorFormat: self.toJSString(data.colorFormat)
-                });
-
+                self.configs = self.setConfigs(data);
             }
         });
     
     },
-    sizesPanel: function(){
+    sizesWindow: function(){
         var self = this,
             data = {};
 
@@ -870,51 +913,51 @@ SM.extend({
         if(this.configs.sizes && this.configs.sizes.heightPlacement) data.heightPlacement = this.configs.sizes.heightPlacement;
         if(this.configs.sizes && this.configs.sizes.byPercentage) data.byPercentage = this.configs.sizes.byPercentage;
 
-        return this.panel({
-            path: this.pluginSketch + "/panel/sizes.html",
+        return this.SMWindow({
+            url: this.pluginSketch + "/panel/sizes.html",
             width: 240,
             height: 358,
             data: data,
-            callback: function( options ){
+            callback: function( data ){
                 self.configs = self.setConfigs({
-                    sizes: JSON.parse(self.toJSString( options.data ))
+                    sizes: data
                 });
             }
         });
     },
-    spacingsPanel: function(){
+    spacingsWindow: function(){
         var self = this,
             data = {};
 
             data.placements = (this.configs.spacings && this.configs.spacings.placements)? this.configs.spacings.placements: ["top", "left"];
             if(this.configs.spacings && this.configs.spacings.byPercentage) data.byPercentage = this.configs.spacings.byPercentage;
 
-        return this.panel({
-            path: this.pluginSketch + "/panel/spacings.html",
+        return this.SMWindow({
+            url: this.pluginSketch + "/panel/spacings.html",
             width: 240,
             height: 314,
             data: data,
-            callback: function( options ){
+            callback: function( data ){
                 self.configs = self.setConfigs({
-                    spacings: JSON.parse(self.toJSString( options.data ))
+                    spacings: data
                 });
             }
         });
     },
-    propertiesPanel: function(){
+    propertiesWindow: function(){
         var self = this,
             data = (this.configs.properties)? this.configs.properties: {
                         placement: "top",
                         properties: ["color", "border"]
                     };
-        return this.panel({
-            path: this.pluginSketch + "/panel/properties.html",
+        return this.SMWindow({
+            url: this.pluginSketch + "/panel/properties.html",
             width: 280,
             height: 324,
             data: data,
-            callback: function( options ){
+            callback: function( data ){
                 self.configs = self.setConfigs({
-                    properties: JSON.parse(self.toJSString( options.data ))
+                    properties: data
                 });
             }
         });
@@ -932,7 +975,7 @@ SM.extend({
                 this.message(_("Select a layer to make marks!"));
                 return false;
             }
-            if(!this.sizesPanel()) return false;
+            if(!this.sizesWindow()) return false;
             var target = selection[0],
                 objectID = target.objectID(),
                 sizeStyles = {
@@ -967,12 +1010,13 @@ SM.extend({
                 this.message(_("Select 1 or 2 layers to make marks!"));
                 return false;
             }
-            if(!this.spacingsPanel()) return false;
+            
             var target = (selection.count() == 1)? selection[0]: selection[1],
                 layer = (selection.count() == 1)? this.current: selection[0],
                 placements = ["top", "right", "bottom", "left"];
 
             if( this.isIntersect(this.getRect(target), this.getRect(layer)) ){
+                if(!this.spacingsWindow()) return false;
                 placements = this.configs.spacings.placements;
             }
 
@@ -1001,7 +1045,7 @@ SM.extend({
                 this.resizeProperties(target.parentGroup());
             }
             else{
-                if(!this.propertiesPanel()) return false;
+                if(!this.propertiesWindow()) return false;
 
                 this.properties({
                     target: target,
@@ -1614,14 +1658,14 @@ SM.extend({
 
         data.add = this.getSelectionColor();
 
-        return this.panel({
-            path: this.pluginSketch + "/panel/colors.html",
+        return this.SMWindow({
+            url: this.pluginSketch + "/panel/colors.html",
             width: 240,
             height: 323,
+            state: 0,
             data: data,
-            actionClose: false,
-            callback: function( options ){
-                var colors = JSON.parse(self.toJSString( options.data ))
+            callback: function( data ){
+                var colors = data;
                 self.configs = self.setConfigs({
                     colors: colors,
                     colorNames: self.colorNames(colors)
@@ -1863,7 +1907,7 @@ SM.extend({
 
         return savePanel.URL().path();
     },
-    exportPanel: function(){
+    exportWindow: function(){
         var self = this;
         this.artboardsData = [];
         this.selectionArtboards = {};
@@ -1903,18 +1947,18 @@ SM.extend({
             data.pages.push(pageData);
         }
 
-        return this.panel({
-            path: this.pluginSketch + "/panel/export.html",
+        return this.SMWindow({
+            url: this.pluginSketch + "/panel/export.html",
             width: 320,
             height: 521,
             data: data,
-            callback: function( options ){
-                self.selectionArtboards = JSON.parse(self.toJSString( options.data ))
+            callback: function( data ){
+                self.selectionArtboards = data;
             }
         });
     },
     export: function(){
-        if(this.exportPanel()){
+        if(this.exportWindow()){
             if(this.selectionArtboards.length <= 0){
                 return false;
             }

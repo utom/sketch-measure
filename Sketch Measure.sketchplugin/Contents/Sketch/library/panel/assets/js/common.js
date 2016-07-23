@@ -1,5 +1,5 @@
 var I18N = {};
-var lang = navigator.language;
+var lang = navigator.language.toLocaleLowerCase();
 var _ = function(str){
         return (I18N[lang] && I18N[lang][str])? I18N[lang][str]: str;
     }

@@ -41,11 +41,12 @@
             $('#' + DRID).click();
         },
         submit = function(){
-            smAction({
+            SMAction({
                 scale: $('input[name=scale]').val(),
                 unit: $('input[name=unit]').val(),
                 colorFormat: $('input[name=format]:checked').val()
             });
+            console.log(window.location.hash)
         },
         init = function(data){
             $('body').html([

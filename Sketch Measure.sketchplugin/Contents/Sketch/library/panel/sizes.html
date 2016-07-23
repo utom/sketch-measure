@@ -41,14 +41,14 @@
             if( $('input[name=width-enable]:checked').length > 0 ) options.widthPlacement = $('input[name=width-placement]:checked').val();
             if( $('input[name=height-enable]:checked').length > 0 ) options.heightPlacement = $('input[name=height-placement]:checked').val();
             if( $('input[name=percentage]:checked').length > 0 ) options.byPercentage = 1;
-            smAction({data:JSON.stringify(options)});
+            SMAction(options);
         }
         init = function( options ){
             $('body').html([
                 '<div class="container">',
                     '<div class="options">',
                         '<div class="slidebox">',
-                            '<input id="width" type="checkbox" name="width-enable" checked="checked">',
+                            '<input id="width" type="checkbox" name="width-enable">',
                             '<label for="width"></label>',
                         '</div>',
                         '<label for="width">' + _('Width') + '</label>',
@@ -116,10 +116,10 @@
                 '</div>'
                 ].join(''))
 
-
-            var options = $.extend({
+            var options = ($.isEmptyObject(options))? $.extend({
                     widthPlacement: 'top'
-                }, options);
+                }, options): options;
+
             $('input[name=width-enable]').change(toggleWidth);
             $('input[name=height-enable]').change(toggleHeight);
             $('input[type=checkbox]').change(togggleButton);

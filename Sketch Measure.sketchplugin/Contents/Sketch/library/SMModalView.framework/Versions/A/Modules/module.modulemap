@@ -1,6 +1,0 @@
-framework module SMModalView {
-  umbrella header "SMModalView.h"
-
-  export *
-  module * { export * }
-}

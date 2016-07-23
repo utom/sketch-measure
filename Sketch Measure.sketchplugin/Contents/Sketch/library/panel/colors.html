@@ -120,7 +120,7 @@
                 var text = $(this).val();
                 $(this).parent().hide();
                 $(this).parent().parent().find('.color-name').text(text).show();
-                pullData()
+                pullData();
             },
             keypress: function(event){
                 var eventObj = event || e,
@@ -131,9 +131,7 @@
                 }
                 else if(keyCode == 13){
                     var text = $(this).val();
-                    $(this).parent().hide();
-                    $(this).parent().parent().find('.color-name').text(text).show();
-                    pullData()
+                    $(this).blur();
                     return false;
                 }
                 else{
@@ -149,6 +147,7 @@
         })
 
         $('.button-remove').click(function(event){
+            $('#color-list input').blur();
             $('.selected').remove();
             $('.color-item:first-child').addClass('selected');
             pullData();
@@ -167,6 +166,7 @@
                     if(keyCode == 91) selectMultiple = false;
                 });
 
+
         var pullData = function(){
             var colorNames = [];
             $('input[name=color-name]').each(function(){
@@ -178,7 +178,8 @@
                     color: color
                 });
             });
-            smAction({data:JSON.stringify(colorNames)});
+
+            SMAction(colorNames);
         }
     }
     // $(function(){

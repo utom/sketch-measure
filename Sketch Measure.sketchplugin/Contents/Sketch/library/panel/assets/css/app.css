@@ -10,8 +10,11 @@ body{
 }
 body,
 .footer-bar{
-    background: #222 url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAQAAAAEAQMAAACTPww9AAAABlBMVEU1NTUAAABf5BC0AAAADUlEQVQI12P4AIRAAAALSAHhDpk7LwAAAABJRU5ErkJggg==) repeat-x;
+    background: #212121 url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAQAAAAEAQMAAACTPww9AAAABlBMVEU1NTUAAABf5BC0AAAADUlEQVQI12P4AIRAAAALSAHhDpk7LwAAAABJRU5ErkJggg==) repeat-x;
     background-size: 2px 2px;
+}
+button{
+    outline: 0;
 }
 .pdr4{
     padding-right: 4px;
