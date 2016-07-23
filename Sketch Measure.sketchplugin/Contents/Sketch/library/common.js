@@ -26,7 +26,8 @@ var SM = {
             this.pluginSketch = this.pluginRoot + "/Contents/Sketch/library";
 
             if(NSFileManager.defaultManager().fileExistsAtPath(this.pluginSketch + "/i18n/" + lang + ".json")){
-                language = [NSString stringWithContentsOfFile:this.pluginSketch + "/i18n/" + lang + ".json" encoding:NSUTF8StringEncoding error:nil];
+                language = NSString.stringWithContentsOfFile_encoding_error(this.pluginSketch + "/i18n/" + lang + ".json", NSUTF8StringEncoding, nil);
+
                 I18N[lang] = JSON.parse(language);
                 language = "I18N[\'" + webI18N[lang] + "\'] = " + language;
             }
@@ -470,7 +471,7 @@ SM.extend({
         var container = container || this.symbolsPage,
             command = this.command,
             prefix = this.prefix,
-            configsData = [command valueForKey: prefix onLayer: container];
+            configsData = command.valueForKey_onLayer(prefix, container);
         return JSON.parse(configsData);
     },
     setConfigs: function(newConfigs, container){
@@ -481,14 +482,14 @@ SM.extend({
 
         configs.timestamp = new Date().getTime();
         var configsData = JSON.stringify(configs);
-        [command setValue: configsData forKey: prefix onLayer: container];
+        command.setValue_forKey_onLayer(configsData, prefix, container);
         return configs;
     },
     removeConfigs: function(container){
         var container = container || this.symbolsPage,
             command = this.command,
             prefix = this.prefix;
-        [command setValue: null forKey: prefix onLayer: container];
+        command.setValue_forKey_onLayer(null, prefix, container)
     }
 });
 
@@ -878,7 +879,6 @@ SM.extend({
         titlebarView.setFrameSize(NSMakeSize(options.width, 32));
         titlebarView.setTransparent(true);
         titlebarView.setBackgroundColor(titleBgColor);
-        // log(titlebarContainerView.superview().superview())
         titlebarContainerView.superview().setBackgroundColor(titleBgColor);
 
         NSApp.runModalForWindow(SMWindow);
@@ -1855,10 +1855,9 @@ SM.extend({
                 objectID = ( layerData.type == "symbol" )? this.toJSString(layer.symbolMaster().objectID()): layerData.objectID;
 
                 this.assetsPath = this.savePath + "/assets";
-                [[NSFileManager defaultManager]
-                    createDirectoryAtPath:this.assetsPath
-                    withIntermediateDirectories:true
-                    attributes:nil error:nil];
+                NSFileManager
+                    .defaultManager()
+                    .createDirectoryAtPath_withIntermediateDirectories_attributes_error(this.assetsPath, true, nil, nil);
 
             layerData.exportable = this.exportable(sliceLayer);
             this.sliceCache[objectID] = this.exportable(sliceLayer);
@@ -1968,7 +1967,7 @@ SM.extend({
                 artboardsData = [];
 
             if(savePath){
-                var template = [NSString stringWithContentsOfFile:this.pluginSketch + "/template.html" encoding:NSUTF8StringEncoding error:nil];
+                var template = NSString.stringWithContentsOfFile_encoding_error(this.pluginSketch + "/template.html", NSUTF8StringEncoding, nil);
 
                 this.savePath = savePath;
                 for (var i = 0; i < this.artboardsData.length; i++) {
@@ -2050,7 +2049,9 @@ SM.extend({
             content = NSString.stringWithString(options.content),
             savePathName = [];
 
-        [[NSFileManager defaultManager] createDirectoryAtPath:options.path withIntermediateDirectories:true attributes:nil error:nil];
+        NSFileManager
+            .defaultManager()
+            .createDirectoryAtPath_withIntermediateDirectories_attributes_error(options.path, true, nil, nil);
 
         savePathName.push(
             options.path,
@@ -2059,10 +2060,7 @@ SM.extend({
         );
         savePathName = savePathName.join("");
 
-        [content writeToFile: savePathName
-                  atomically: false
-                    encoding: NSUTF8StringEncoding
-                       error: null];
+        content.writeToFile_atomically_encoding_error(savePathName, false, NSUTF8StringEncoding, null);
     },
     exportImage: function(options) {
         var options = this.extend(options, {
@@ -2090,7 +2088,7 @@ SM.extend({
             );
         savePathName = savePathName.join("");
 
-        [document saveArtboardOrSlice:slice toFile:savePathName];
+        document.saveArtboardOrSlice_toFile(slice, savePathName);
 
         return savePathName;
     },
