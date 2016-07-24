@@ -116,7 +116,7 @@
         ],
         "title" : "👍 Sketch Measure"
     },
-    "identifier": "com.utom.Smarker",
+    "identifier": "com.utom.measure",
     "version": "2.0 beta 3",
     "description" : "Make it a fun to create spec for developers and teammates",
     "authorEmail" : "utombox@gmail.com",
