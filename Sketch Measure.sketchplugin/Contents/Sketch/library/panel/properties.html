@@ -151,6 +151,15 @@
         });
         $('#' + options.placement).attr('checked', true);
 
+        $('input[name=properties]').change(function(){
+            if( $('input[name=properties]:checked').length <= 0 ){
+                $('.submit').attr('disabled', true);
+            }
+            else{
+                $('.submit').attr('disabled', false);
+            }
+        });
+
         $('#submit').click(function(){
             var options = {}
             options.placement = $('input[name=placement]:checked').val();

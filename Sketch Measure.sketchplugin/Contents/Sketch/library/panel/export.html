@@ -72,14 +72,23 @@
                 if(checkedLength && checkedLength < allCheckboxLength){
                     $('.v-checkbox').addClass('v-checked');
                 }
-                else if(checkedLength >= allCheckboxLength){
+                else if(checkedLength && checkedLength >= allCheckboxLength){
                     $('.v-checkbox').addClass('v-full-checked');
                 }
+            $('#submit').attr('disabled', true);
+            if( $('input[name=artboards]:checked').length >0 ){
+                $('#submit').attr('disabled', false);
+            }
         },
         init = function(data) {
             $('body').html([
                     '<div class="container">',
-                        '<div id="artboards-list" class="list"></div>',
+                        '<div id="artboards-list" class="list">',
+                            '<div class="empty" style="padding-top:128px;">',
+                                '<h3>' + _('No artboards!') + '</h3>',
+                                '<p>' + _('You need add some artboards.') + '</p>',
+                            '</div>',
+                        '</div>',
                         '<div class="options-bar">',
                             '<div class="opts-checkbox" tabindex="0">',
                                 '<div class="v-checkbox v-checked"></div>',
@@ -96,7 +105,7 @@
                             '</div>',
                         '</div>',
                         '<div class="footer">',
-                            '<button id="submit" class="submit">' + _('Export') + '</button>',
+                            '<button id="submit" class="submit" disabled="disabled">' + _('Export') + '</button>',
                         '</div>',
                     '</div>'
                 ].join(''))
@@ -125,7 +134,9 @@
                     artboardsList.push('</div>');
                 }
             });
-            $('#artboards-list').html(artboardsList.join(''));
+            if(artboardsList.length > 0){
+                $('#artboards-list').html(artboardsList.join(''));
+            }
 
             checkVCheckbox();
 
