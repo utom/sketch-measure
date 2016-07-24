@@ -2008,7 +2008,7 @@ SM.extend({
                 this.exporting = false;
                 
                 coscript.shouldKeepAround = true
-                coscript.scheduleWithRepeatingInterval_jsFunction( 0.1, function( interval ){
+                coscript.scheduleWithRepeatingInterval_jsFunction( 0.2, function( interval ){
                     if(!self.exporting){
                         self.exporting = true;
                         var artboard = self.selectionArtboards[idx],
