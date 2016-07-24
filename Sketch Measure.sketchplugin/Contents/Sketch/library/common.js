@@ -881,7 +881,7 @@ SM.extend({
             SMWindow.orderOut(nil);
             NSApp.stopModal();
         });
-        closeButton.setAction("callAction:")
+        closeButton.setAction("callAction:");
 
         var titlebarView = contentView.superview().titlebarViewController().view(),
             titlebarContainerView = titlebarView.superview();
@@ -1021,13 +1021,12 @@ SM.extend({
                 this.message(_("Select 1 or 2 layers to make marks!"));
                 return false;
             }
-            
+            if(!this.spacingsWindow()) return false;
             var target = (selection.count() == 1)? selection[0]: selection[1],
                 layer = (selection.count() == 1)? this.current: selection[0],
                 placements = ["top", "right", "bottom", "left"];
 
             if( this.isIntersect(this.getRect(target), this.getRect(layer)) ){
-                if(!this.spacingsWindow()) return false;
                 placements = this.configs.spacings.placements;
             }
 
