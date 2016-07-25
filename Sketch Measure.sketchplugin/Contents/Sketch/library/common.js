@@ -2051,7 +2051,7 @@ SM.extend({
                         objectID = self.toJSString( artboard.objectID() );
 
                     if(data[objectID]){
-                        self.allCount += artboard.children().count() + 1;
+                        self.allCount += artboard.children().count();
                         self.selectionArtboards.push(artboard);
                     }
                 }
@@ -2071,7 +2071,7 @@ SM.extend({
                 var template = NSString.stringWithContentsOfFile_encoding_error(this.pluginSketch + "/template.html", NSUTF8StringEncoding, nil);
 
                 this.savePath = savePath;
-                var idx = 0,
+                var idx = 1,
                     artboardIndex = 0,
                     layerIndex = 0,
                     wantsStop = false,
@@ -2088,6 +2088,9 @@ SM.extend({
 
                 coscript.shouldKeepAround = true
                 coscript.scheduleWithRepeatingInterval_jsFunction( 0, function( interval ){
+                    self.message('Processing ' + idx + ' of ' + self.allCount);
+                    idx++;
+
                     if(!data.artboards[artboardIndex]){
                         data.artboards.push({layers: [], notes: []});
                         self.maskCache = [];
@@ -2165,6 +2168,8 @@ SM.extend({
                         coscript.shouldKeepAround = false;
                         return interval.cancel();
                     }
+
+
                 });
             }
         }
