@@ -346,12 +346,16 @@ SM.extend({
     },
     getStyleName: function(layer){
         var styles = (this.is(layer, MSTextLayer))? this.document.documentData().layerTextStyles(): this.document.documentData().layerStyles(),
-            style = layer.style(),
-            sharedObjectID = style.sharedObjectID();
+            layerStyle = layer.style(),
+            sharedObjectID = layerStyle.sharedObjectID(),
+            style;
 
         styles = styles.objectsSortedByName();
-        style = this.find({key: "(objectID != NULL) && (objectID == %@)", match: sharedObjectID}, styles);
 
+        if(styles.count() > 0){
+            style = this.find({key: "(objectID != NULL) && (objectID == %@)", match: sharedObjectID}, styles);
+        }
+        
         if(!style) return "";
         return this.toJSString(style.name());
     }
@@ -2017,7 +2021,6 @@ SM.extend({
             }
             data.pages.push(pageData);
         }
-
         return this.SMWindow({
             url: this.pluginSketch + "/panel/export.html",
             width: 320,
