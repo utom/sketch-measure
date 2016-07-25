@@ -1816,7 +1816,6 @@ SM.extend({
         }
     },
     checkMask: function(group, layer, layerData, layerStates){
-
         if(layer.hasClippingMask()){
             if(layerStates.isMaskChildLayer){
                 this.maskCache.push({
@@ -1948,7 +1947,7 @@ SM.extend({
             layerData.exportable = this.sliceCache[ layer.symbolMaster().objectID() ];
         }
     },
-    checkSymbol: function(layer, layerData, layersData, artboard){
+    checkSymbol: function(artboard, layer, layerData, data){
         if( layerData.type == "symbol" ){
             var self = this,
                 symbolObjectID = this.toJSString(layer.symbolMaster().objectID());
@@ -1956,11 +1955,29 @@ SM.extend({
             layerData.objectID = symbolObjectID;
 
             if( !self.hasExportSizes(layer.symbolMaster()) ){
-                var tempSymbol = layer.duplicate(),
+                var symbolRect = this.getRect(layer),
+                    symbolChildren = layer.symbolMaster().children(),
+                    tempSymbol = layer.duplicate(),
                     tempGroup = tempSymbol.detachByReplacingWithGroup(),
-                    tempGroupRect = this.getRect(tempGroup);
+                    tempGroupRect = this.getRect(tempGroup),
+                    tempSymbolLayers = tempGroup.children().objectEnumerator(),
+                    idx = 0;
 
-                this.getLayers(tempGroup, artboard, layer.symbolMaster().children(), layersData);
+                tempGroup.resizeToFitChildrenWithOption(0);
+                tempGroupRect.setX(symbolRect.x);
+                tempGroupRect.setY(symbolRect.y);
+                tempGroupRect.setWidth(symbolRect.width);
+                tempGroupRect.setHeight(symbolRect.height);
+
+                while(tempSymbolLayer = tempSymbolLayers.nextObject()){
+                    self.getLayer(
+                        artboard,
+                        tempSymbolLayer,
+                        data,
+                        symbolChildren[idx]
+                    );
+                    idx++
+                }
                 this.removeLayer(tempGroup);
             }
         }
@@ -2047,10 +2064,7 @@ SM.extend({
                 return false;
             }
             var self = this,
-                savePath = this.getSavePath(),
-                single = false;
-                data = {},
-                artboardsData = [];
+                savePath = this.getSavePath();
 
             if(savePath){
                 self.message(_("Exporting..."));
@@ -2058,76 +2072,93 @@ SM.extend({
 
                 this.savePath = savePath;
                 var idx = 0,
-                    wantsStop = false;
-                this.exporting = false;
-                
-                coscript.shouldKeepAround = true
-                coscript.scheduleWithRepeatingInterval_jsFunction( 0.2, function( interval ){
-                    if(!self.exporting){
-                        self.exporting = true;
-                        var artboard = self.selectionArtboards[idx],
-                            objectID = artboard.objectID(),
-                            artboardRect = self.getRect(artboard),
-                            page = artboard.parentGroup(),
-                            artboardData = {};
+                    artboardIndex = 0,
+                    layerIndex = 0,
+                    wantsStop = false,
+                    exporting = false;
 
+                var data = {
+                        scale: self.configs.scale,
+                        unit: self.configs.unit,
+                        colorFormat: self.configs.colorFormat,
+                        artboards: [],
+                        slices: [],
+                        colors: []
+                    };
+
+                coscript.shouldKeepAround = true
+                coscript.scheduleWithRepeatingInterval_jsFunction( 0, function( interval ){
+                    if(!data.artboards[artboardIndex]){
+                        data.artboards.push({layers: [], notes: []});
                         self.maskCache = [];
                         self.maskObjectID = undefined;
                         self.maskRect = undefined;
-
-                        var layersData = self.getLayers(artboard);
-
-                        artboardData.imagePath = "preview/" + objectID + ".png";
-                        artboardData.pageName = self.toHTMLEncode(page.name());
-                        artboardData.pageObjectID = self.toJSString(page.objectID());
-                        artboardData.name = self.toHTMLEncode(artboard.name());
-                        artboardData.objectID = self.toJSString(artboard.objectID());
-                        artboardData.width = artboardRect.width;
-                        artboardData.height = artboardRect.height;
-                        artboardData.layers = layersData.layers;
-                        artboardData.notes = layersData.notes;
-
-                        self.exportImage({
-                                layer: artboard,
-                                path: self.toJSString(savePath) + "/preview",
-                                scale: 2,
-                                name: objectID,
-                            });
-
-                        artboardsData.push(artboardData);
-                        self.allCount--;
-                        idx++;
                     }
+                    
+                    if(!exporting) {
+                        exporting = true;
+                        var artboard = self.selectionArtboards[artboardIndex],
+                            layer = artboard.children()[layerIndex];
 
-                    if( !self.exporting && idx >= self.selectionArtboards.length ){
-                        data.artboards = artboardsData;
-                        data.scale = self.configs.scale;
-                        data.unit = self.configs.unit;
-                        data.colorFormat = self.configs.colorFormat;
+                        self.getLayer(
+                            artboard, // Sketch artboard element
+                            layer, // Sketch layer element
+                            data.artboards[artboardIndex] // Save to data
+                        );
+                        
 
-                        if(self.slices.length > 0){
-                            data.slices = self.slices;
+                        layerIndex++;
+                        exporting = false;
+
+                        if( self.is(layer, MSArtboardGroup) ){
+                            var objectID = artboard.objectID(),
+                                artboardRect = self.getRect(artboard),
+                                page = artboard.parentGroup();
+
+                            data.artboards[artboardIndex].imagePath = "preview/" + objectID + ".png";
+                            data.artboards[artboardIndex].pageName = self.toHTMLEncode(page.name());
+                            data.artboards[artboardIndex].pageObjectID = self.toJSString(page.objectID());
+                            data.artboards[artboardIndex].name = self.toHTMLEncode(artboard.name());
+                            data.artboards[artboardIndex].objectID = self.toJSString(artboard.objectID());
+                            data.artboards[artboardIndex].width = artboardRect.width;
+                            data.artboards[artboardIndex].height = artboardRect.height;
+
+                            self.exportImage({
+                                    layer: artboard,
+                                    path: self.toJSString(savePath) + "/preview",
+                                    scale: 2,
+                                    name: objectID,
+                                });
+
+                            layerIndex = 0;
+                            artboardIndex++;
                         }
 
-                        if(self.configs.colors && self.configs.colors.length > 0){
-                            data.colors = self.configs.colors;
+                        if(artboardIndex >= self.selectionArtboards.length){
+                            if(self.slices.length > 0){
+                                data.slices = self.slices;
+                            }
+
+                            if(self.configs.colors && self.configs.colors.length > 0){
+                                data.colors = self.configs.colors;
+                                self.writeFile({
+                                    content: JSON.stringify(self.configs.colors),
+                                    path: self.toJSString(savePath),
+                                    fileName: "colors.json"
+                                });
+                            }
+
                             self.writeFile({
-                                content: JSON.stringify(self.configs.colors),
-                                path: self.toJSString(savePath),
-                                fileName: "colors.json"
-                            });
+                                    content: self.template(template, {lang: language, data: JSON.stringify(data).replace(/\u2028/g,'\\u2028').replace(/\u2029/g,'\\u2029')}),
+                                    path: self.toJSString(savePath),
+                                    fileName: "index.html"
+                                });
+
+                            self.message(_("Export complete!"));
+
+                            NSWorkspace.sharedWorkspace().activateFileViewerSelectingURLs(NSArray.arrayWithObjects(NSURL.fileURLWithPath(savePath + "/index.html")));
+                            wantsStop = true;
                         }
-
-                        self.writeFile({
-                                content: self.template(template, {lang: language, data: JSON.stringify(data).replace(/\u2028/g,'\\u2028').replace(/\u2029/g,'\\u2029')}),
-                                path: self.toJSString(savePath),
-                                fileName: "index.html"
-                            });
-
-                        self.message(_("Export complete!"));
-
-                        NSWorkspace.sharedWorkspace().activateFileViewerSelectingURLs(NSArray.arrayWithObjects(NSURL.fileURLWithPath(savePath + "/index.html")));
-                        wantsStop = true;
                     }
 
                     if( wantsStop === true ){
@@ -2190,106 +2221,79 @@ SM.extend({
 
         return savePathName;
     },
-    getLayers: function( container, artboard, symbolMaster, allLayersData ){
-        var self = this,
-            artboard = (artboard)? artboard: container,
-            containerRect = artboard.absoluteRect(),
-            layersData = allLayersData || [],
-            notesData = [],
-            layers = container.children().objectEnumerator();
+    getLayer: function(artboard, layer, data, symbolLayer){
+        var artboardRect = artboard.absoluteRect(),
+            group = layer.parentGroup(),
+            layerStates = this.getStates(layer);
 
-        if(symbolMaster) var s = 0;
+        if(layer && this.is(layer, MSLayerGroup) && /NOTE\#/.exec(layer.name())){
+            var textLayer = layer.children()[2];
 
-        while( layer = layers.nextObject() ) {
-            var group = layer.parentGroup(),
-                layerStates = this.getStates(layer);
+            data.notes.push({
+                rect: this.rectToJSON(textLayer.absoluteRect(), artboardRect),
+                note: this.toHTMLEncode(textLayer.stringValue()).replace(/\n/g, "<br>")
+            });
 
-            if(!symbolMaster) this.allCount--;
-
-            if(layer && this.is(layer, MSLayerGroup) && /NOTE\#/.exec(layer.name())){
-                var textLayer = layer.children()[2];
-
-                notesData.push({
-                    rect: this.rectToJSON(textLayer.absoluteRect(), containerRect),
-                    note: this.toHTMLEncode(textLayer.stringValue()).replace(/\n/g, "<br>")
-                });
-
-                layer.setIsVisible(false);
-            }
-
-            if (
-                !this.isExportable(layer) ||
-                !layerStates.isVisible ||
-                layerStates.isLocked && !this.is(layer, MSSliceLayer) ||
-                layerStates.hasSlice ||
-                layerStates.isMeasure
-            )
-            {
-                continue;
-            }
-
-            var layerType = this.is(layer, MSTextLayer) ? "text" :
-                       this.is(layer, MSSymbolInstance) ? "symbol" :
-                       this.is(layer, MSSliceLayer) || this.hasExportSizes(layer)? "slice":
-                       "shape",
-                layerData = {};
-
-
-            layerData.objectID = this.toJSString(layer.objectID());
-            if(symbolMaster){
-                layerData.objectID = this.toJSString(symbolMaster[s].objectID());
-            }
-
-            layerData.type = layerType;
-            layerData.name = this.toHTMLEncode(layer.name());
-            layerData.rect = this.rectToJSON(layer.absoluteRect(), containerRect);
-
-            if ( ! ( layerType == "slice" || layerType == "symbol" ) ) {
-                var layerStyle = layer.style();
-                layerData.rotation = layer.rotation();
-                layerData.radius = this.getRadius(layer);
-                layerData.borders = this.getBorders(layerStyle);
-                layerData.fills = this.getFills(layerStyle);
-                layerData.shadows = this.getShadows(layerStyle);
-                layerData.opacity = this.getOpacity(layerStyle);
-                layerData.styleName = this.getStyleName(layer);
-            }
-
-            if ( layerType == "text" ) {
-                layerData.content = this.toHTMLEncode(layer.storage().string());
-                layerData.color = this.colorToJSON(layer.textColor());
-                layerData.fontSize = layer.fontSize();
-                layerData.fontFace = this.toJSString(layer.fontPostscriptName());
-                layerData.textAlign = TextAligns[layer.textAlignment()];
-                layerData.letterSpacing = self.toJSNumber(layer.characterSpacing());
-                layerData.lineHeight = layer.lineHeight();
-            }
-
-            var layerCSSAttributes = layer.CSSAttributes(),
-                css = [];
-
-            for(var i = 0; i < layerCSSAttributes.count(); i++) {
-                var c = layerCSSAttributes[i]
-                if(! /\/\*/.exec(c) ) css.push(self.toJSString(c));
-            }
-            if(css.length > 0) layerData.css = css
-
-            this.checkMask(group, layer, layerData, layerStates);
-            this.checkSlice(layer, layerData);
-            layersData.push(layerData);
-            this.checkSymbol(layer, layerData, layersData, artboard);
-
-            if(symbolMaster) s++;
-            
+            layer.setIsVisible(false);
         }
 
-
-        if(symbolMaster) return layersData;
-        this.exporting = false;
-        return {
-            layers: layersData,
-            notes: notesData
+        if (
+            !this.isExportable(layer) ||
+            !layerStates.isVisible ||
+            ( layerStates.isLocked && !this.is(layer, MSSliceLayer) ) ||
+            layerStates.hasSlice ||
+            layerStates.isMeasure
+        ){
+            return this;
         }
+
+        var layerType = this.is(layer, MSTextLayer) ? "text" :
+               this.is(layer, MSSymbolInstance) ? "symbol" :
+               this.is(layer, MSSliceLayer) || this.hasExportSizes(layer)? "slice":
+               "shape",
+            layerData = {
+                    objectID: this.toJSString( layer.objectID() ),
+                    type: layerType,
+                    name: this.toHTMLEncode(layer.name()),
+                    rect: this.rectToJSON(layer.absoluteRect(), artboardRect)
+                };
+
+        if(symbolLayer) layerData.objectID = this.toJSString( symbolLayer.objectID() )
+
+        if ( ! ( layerType == "slice" || layerType == "symbol" ) ) {
+            var layerStyle = layer.style();
+            layerData.rotation = layer.rotation();
+            layerData.radius = this.getRadius(layer);
+            layerData.borders = this.getBorders(layerStyle);
+            layerData.fills = this.getFills(layerStyle);
+            layerData.shadows = this.getShadows(layerStyle);
+            layerData.opacity = this.getOpacity(layerStyle);
+            layerData.styleName = this.getStyleName(layer);
+        }
+
+        if ( layerType == "text" ) {
+            layerData.content = this.toHTMLEncode(layer.storage().string());
+            layerData.color = this.colorToJSON(layer.textColor());
+            layerData.fontSize = layer.fontSize();
+            layerData.fontFace = this.toJSString(layer.fontPostscriptName());
+            layerData.textAlign = TextAligns[layer.textAlignment()];
+            layerData.letterSpacing = this.toJSNumber(layer.characterSpacing());
+            layerData.lineHeight = layer.lineHeight();
+        }
+
+        var layerCSSAttributes = layer.CSSAttributes(),
+            css = [];
+
+        for(var i = 0; i < layerCSSAttributes.count(); i++) {
+            var c = layerCSSAttributes[i]
+            if(! /\/\*/.exec(c) ) css.push(this.toJSString(c));
+        }
+        if(css.length > 0) layerData.css = css;
+
+        this.checkMask(group, layer, layerData, layerStates);
+        this.checkSlice(layer, layerData);
+        data.layers.push(layerData);
+        this.checkSymbol(artboard, layer, layerData, data);
     },
     template: function(content, data) {
         var content = content.replace(new RegExp("\\<\\!\\-\\-\\s([^\\s\\-\\-\\>]+)\\s\\-\\-\\>", "gi"), function($0, $1) {
