@@ -459,10 +459,15 @@ button{
     background: rgba(255,255,255,0.10);
 }
 .page-list .artboard-item{
-    display: block;
+    display: flex;
     padding: 16px;
     box-sizing: border-box;
     height: 48px;
+    
+}
+.page-list .artboard-item .text{
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 
 .page-list .artboard-item .checkbox{
@@ -627,6 +632,7 @@ button{
 }
 .opts-filter{
     flex: 1;
+    box-sizing: border-box;
 }
 .opts-filter input{
     box-sizing: border-box;

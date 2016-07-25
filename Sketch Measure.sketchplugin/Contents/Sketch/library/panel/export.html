@@ -118,13 +118,15 @@
                     artboardsList.push('<ul>');
                     $.each(page.artboards, function(index, artboard){
                         artboardsList.push(
-                                '<li>',
+                                '<li title="' + artboard.name + '">',
                                     '<label class="artboard-item">',
                                     '<div class="checkbox">',
                                         '<input id="artboard-' + artboard.objectID + '" type="checkbox" name="artboards" value="' + artboard.objectID + '">',
                                         '<label for="artboard-' + artboard.objectID + '"></label>',
                                     '</div>',
+                                    '<div class="text">',
                                     artboard.name,
+                                    '</div>',
                                     '<span style="display:none;">' + page.name + '</span>',
                                     '</label>',
                                 '</li>'
