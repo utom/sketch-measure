@@ -1948,7 +1948,7 @@ SM.extend({
             layerData.exportable = this.sliceCache[ layer.symbolMaster().objectID() ];
         }
     },
-    checkSymbol: function(layer, layerData, layersData, container){
+    checkSymbol: function(layer, layerData, layersData, artboard){
         if( layerData.type == "symbol" ){
             var self = this,
                 symbolObjectID = this.toJSString(layer.symbolMaster().objectID());
@@ -1960,7 +1960,7 @@ SM.extend({
                     tempGroup = tempSymbol.detachByReplacingWithGroup(),
                     tempGroupRect = this.getRect(tempGroup);
 
-                this.getLayers(tempGroup, container, layer.symbolMaster().children(), layersData);
+                this.getLayers(tempGroup, artboard, layer.symbolMaster().children(), layersData);
                 this.removeLayer(tempGroup);
             }
         }
@@ -2192,7 +2192,8 @@ SM.extend({
     },
     getLayers: function( container, artboard, symbolMaster, allLayersData ){
         var self = this,
-            containerRect = (artboard)? artboard.absoluteRect(): container.absoluteRect(),
+            artboard = (artboard)? artboard: container,
+            containerRect = artboard.absoluteRect(),
             layersData = allLayersData || [],
             notesData = [],
             layers = container.children().objectEnumerator();
@@ -2276,7 +2277,7 @@ SM.extend({
             this.checkMask(group, layer, layerData, layerStates);
             this.checkSlice(layer, layerData);
             layersData.push(layerData);
-            this.checkSymbol(layer, layerData, layersData, container);
+            this.checkSymbol(layer, layerData, layersData, artboard);
 
             if(symbolMaster) s++;
             
