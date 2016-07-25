@@ -2088,7 +2088,7 @@ SM.extend({
 
                 coscript.shouldKeepAround = true
                 coscript.scheduleWithRepeatingInterval_jsFunction( 0, function( interval ){
-                    self.message('Processing ' + idx + ' of ' + self.allCount);
+                    self.message('Processing layer ' + idx + ' of ' + self.allCount);
                     idx++;
 
                     if(!data.artboards[artboardIndex]){
