@@ -76,5 +76,9 @@
     "Inner Shadow": "内阴影",
     "Outer Shadow": "外阴影",
     "No artboards!": "没有画布",
-    "You need add some artboards.": "您需要添加一些画布"
+    "You need add some artboards.": "您需要添加一些画布",
+    "Import": "导入",
+    "Choose a &quot;colors.json&quot;": "选择一个 &quot;colors.json&quot;",
+    "Choose": "选择",
+    "Import complete!": "导入完成!"
 };

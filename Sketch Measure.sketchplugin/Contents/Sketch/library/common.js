@@ -789,7 +789,7 @@ SM.extend({
 // window.js
 SM.extend({
     SMWindow: function(options){
-        var self,
+        var self = this,
             options = this.extend(options, {
                 url: this.pluginSketch + "/panel/settings.html",
                 width: 240,
@@ -829,6 +829,10 @@ SM.extend({
                                         "window.SMData = encodeURI(JSON.stringify(data));",
                                         "window.location.hash = 'submit';",
                                         // "console.log(SMData)",
+                                    "}",
+                                    "function SMImportAction(data){",
+                                        "window.location.hash = 'import';",
+                                        // "console.log(SMData)",
                                     "}"
                                 ].join(""),
                             DOMReady = [
@@ -845,16 +849,24 @@ SM.extend({
                         COScript.currentCOScript().setShouldKeepAround_(false);
                     }),
                 "webView:didChangeLocationWithinPageForFrame:": (function(webView, webFrame){
-                        var data = JSON.parse(decodeURI(windowObject.valueForKey("SMData"))),
-                            request = NSURL.URLWithString(webView.mainFrameURL()).fragment();
+                        var request = NSURL.URLWithString(webView.mainFrameURL()).fragment();
 
-                        if(options.state){
+                        if( options.state ){
+                            SMWindow.orderOut(nil);
+                            NSApp.stopModal();
                             if(request == "submit"){
+                                var data = JSON.parse(decodeURI(windowObject.valueForKey("SMData")));
                                 options.callback(data);
                                 result = true;
                             }
-                            SMWindow.orderOut(nil);
-                            NSApp.stopModal();
+                        }
+                        else if(request == "import"){
+                            if( options.importCallback(SMWindow, NSApp) ){
+                                 self.message(_("Import complete!"));
+                            }
+                            else{
+                                windowObject.evaluateWebScript("window.location.hash = '';");
+                            }
                         }
                         COScript.currentCOScript().setShouldKeepAround_(false);
                     })
@@ -1688,8 +1700,51 @@ SM.extend({
                     colorNames: self.colorNames(colors)
                 });
                 
+            },
+            importCallback: function(SMWindow, NSApp){
+                var colors = self.importColors();
+                if( colors ){
+                    self.configs = self.setConfigs({
+                        colors: colors,
+                        colorNames: self.colorNames(colors)
+                    });
+                    SMWindow.orderOut(nil);
+                    NSApp.stopModal();
+                    self.manageColors();
+                    return true;
+                }
+                else{
+                    return false;
+                }
             }
         });
+    },
+    importColors: function(SMWindow){
+        var openPanel = NSOpenPanel.openPanel();
+        openPanel.setCanChooseDirectories(false);
+        openPanel.setCanCreateDirectories(false);
+        openPanel.setDirectoryURL(NSURL.fileURLWithPath("~/Documents/"));
+        openPanel.setTitle(_("Choose a &quot;colors.json&quot;"));
+        openPanel.setPrompt(_("Choose"));
+        openPanel.setAllowedFileTypes(NSArray.arrayWithObjects("json"))
+
+        if (openPanel.runModal() != NSOKButton) {
+            return false;
+        }
+        var colors = JSON.parse(NSString.stringWithContentsOfFile_encoding_error(openPanel.URL().path(), NSUTF8StringEncoding, nil)),
+            colorsData = [];
+
+        colors.forEach(function(color){
+            if(color.name && ( color.color && color.color.a && color.color.r && color.color.g && color.color.b && color.color["argb-hex"] && color.color["color-hex"] && color.color["css-rgba"] && color.color["ui-color"]) ){
+                colorsData.push(color);
+            }
+        });
+
+        if(colorsData.length <= 0){
+            return false;
+        }
+        return colorsData;
+
     }
 })
 
@@ -1992,11 +2047,7 @@ SM.extend({
                 savePath = this.getSavePath(),
                 single = false;
                 data = {},
-                artboardsData = [],
-                eachArtboard = function(artboard){
-                    
-                    return artboardData;
-                }
+                artboardsData = [];
 
             if(savePath){
                 self.message(_("Exporting..."));

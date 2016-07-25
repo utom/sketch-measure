@@ -34,10 +34,7 @@
                     '<div class="empty">',
                         '<h3>' + _('No slices added!') + '</h3>',
                         '<p>' + _('Select shape layer and run "Color Names" again.') + '</p>',
-                        // '<div class="file-import">',
-                        //     '<span>Import</span>',
-                        //     '<input type="file" class="import" />',
-                        // '</div>',
+                        '<button class="file-import">' + _('Import') + '</button>',
                     '</div>',
                 '</div>',
                 '<div class="options-bar"><button class="button-remove"></button></div>',
@@ -140,7 +137,11 @@
             }
         }, 'input');
 
-        $('.edit input:first-child').select()
+        $('.edit input:first-child').select();
+
+        $('.file-import').click(function(){
+            SMImportAction();
+        });
 
         $('body').click(function(){
             $('.selected').removeClass('selected');
@@ -151,6 +152,9 @@
             $('.selected').remove();
             $('.color-item:first-child').addClass('selected');
             pullData();
+            if($('input[name=color-name]').length <= 0){
+                init({list:[],add:[]});
+            }
             event.stopPropagation();
         });
 
