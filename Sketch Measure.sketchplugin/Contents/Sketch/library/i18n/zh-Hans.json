@@ -84,7 +84,7 @@
     "Import": "导入",
     "Choose a &quot;colors.json&quot;": "选择一个 &quot;colors.json&quot;",
     "Choose": "选择",
-    "Select a layer to add exportable!": "请选中 1 个图层!"
+    "Select a layer to add exportable!": "请选中 1 个图层!",
     "Import complete!": "导入完成!",
     "Processing layer %@ of %@": "画布处理中... %@ \/ %@"
 };
