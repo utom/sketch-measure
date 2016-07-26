@@ -86,8 +86,8 @@ var SM = {
                 case "color":
                     this.manageColors();
                     break;
-                case "exportables":
-                    this.makeExportables();
+                case "exportable":
+                    this.makeExportable();
                     break;
                 case "setting":
                     this.settingsPanel();
@@ -1777,7 +1777,7 @@ SM.extend({
 
 // exportable.js
 SM.extend({
-    makeExportables: function(){
+    makeExportable: function(){
         if( this.selection.count() <= 0 ){
             this.message(_("Select a layer to add exportable!"));
             return false;
