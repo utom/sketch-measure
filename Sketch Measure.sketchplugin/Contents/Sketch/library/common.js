@@ -1371,8 +1371,10 @@ SM.extend({
                 case "color":
                     var fill, color;
                     if( self.is(target, MSTextLayer) ){
-                        var color = self.colorToJSON( target.textColor() );
-                        content.push("color: " + color[self.configs.colorFormat] )
+                        var color = self.colorToJSON( target.textColor() ),
+                            colorID = color["argb-hex"];
+                        color = ( self.configs.colorNames && self.configs.colorNames[colorID] )? self.configs.colorNames[colorID]: color[self.configs.colorFormat];
+                        content.push("color: " + color);
                     }
                     else if( self.is(target, MSShapeGroup) ){
                         var fillsJSON = self.getFills(targetStyle),
