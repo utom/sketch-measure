@@ -873,6 +873,9 @@ SM.extend({
                                 windowObject.evaluateWebScript("window.location.hash = '';");
                             }
                         }
+                        else if(request == "complete"){
+
+                        }
                         COScript.currentCOScript().setShouldKeepAround_(false);
                     })
             });
@@ -895,7 +898,7 @@ SM.extend({
                 data = JSON.parse(decodeURI(windowObject.valueForKey("SMData")));
                 options.callback(data);
             }
-
+            self.wantsStop = true;
             Panel.orderOut(nil);
             NSApp.stopModal();
         });
@@ -914,6 +917,7 @@ SM.extend({
             Panel.setLevel(NSFloatingWindowLevel);
             Panel.center();
             Panel.orderFront(NSApp.mainWindow());
+            return webView;
         }
         else{
             NSApp.runModalForWindow(Panel);
@@ -2075,17 +2079,22 @@ SM.extend({
                 savePath = this.getSavePath();
 
             if(savePath){
-                self.message(_("Exporting..."));
-                var template = NSString.stringWithContentsOfFile_encoding_error(this.pluginSketch + "/template.html", NSUTF8StringEncoding, nil);
+                // self.message(_("Exporting..."));
+                var processingPanel = this.SMPanel({
+                        url: this.pluginSketch + "/panel/processing.html",
+                        width: 304,
+                        height: 104,
+                        floatWindow: true
+                    }),
+                    processing = processingPanel.windowScriptObject(),
+                    template = NSString.stringWithContentsOfFile_encoding_error(this.pluginSketch + "/template.html", NSUTF8StringEncoding, nil);
 
                 this.savePath = savePath;
                 var idx = 1,
                     artboardIndex = 0,
                     layerIndex = 0,
-                    wantsStop = false,
-                    exporting = false;
-
-                var data = {
+                    exporting = false,
+                    data = {
                         scale: self.configs.scale,
                         unit: self.configs.unit,
                         colorFormat: self.configs.colorFormat,
@@ -2094,9 +2103,12 @@ SM.extend({
                         colors: []
                     };
 
+                self.wantsStop = false;
+
                 coscript.shouldKeepAround = true
                 coscript.scheduleWithRepeatingInterval_jsFunction( 0, function( interval ){
-                    self.message('Processing layer ' + idx + ' of ' + self.allCount);
+                    // self.message('Processing layer ' + idx + ' of ' + self.allCount);
+                    processing.evaluateWebScript("processing('"  + Math.round( idx / self.allCount * 100 ) +  "%', 'Processing layer " + idx + " of " + self.allCount + "')");
                     idx++;
 
                     if(!data.artboards[artboardIndex]){
@@ -2125,7 +2137,7 @@ SM.extend({
                             var objectID = artboard.objectID(),
                                 artboardRect = self.getRect(artboard),
                                 page = artboard.parentGroup();
-
+                            log( page.name() + ' - ' + artboard.name() );
                             data.artboards[artboardIndex].imagePath = "preview/" + objectID + ".png";
                             data.artboards[artboardIndex].pageName = self.toHTMLEncode(page.name());
                             data.artboards[artboardIndex].pageObjectID = self.toJSString(page.objectID());
@@ -2168,11 +2180,12 @@ SM.extend({
                             self.message(_("Export complete!"));
 
                             NSWorkspace.sharedWorkspace().activateFileViewerSelectingURLs(NSArray.arrayWithObjects(NSURL.fileURLWithPath(savePath + "/index.html")));
-                            wantsStop = true;
+                            self.wantsStop = true;
                         }
                     }
 
-                    if( wantsStop === true ){
+                    if( self.wantsStop === true ){
+                        log('self.wantsStop');
                         coscript.shouldKeepAround = false;
                         return interval.cancel();
                     }
