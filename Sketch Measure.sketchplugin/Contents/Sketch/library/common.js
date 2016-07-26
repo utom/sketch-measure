@@ -43,7 +43,7 @@ var SM = {
             this.configs = this.getConfigs();
 
             if(!this.configs){
-                if(!this.settingsWindow()) return false;
+                if(!this.settingsPanel()) return false;
             }
 
             switch (command) {
@@ -81,7 +81,7 @@ var SM = {
                     this.manageColors();
                     break;
                 case "setting":
-                    this.settingsWindow();
+                    this.settingsPanel();
                     break;
                 case "export":
                     this.export();
@@ -790,15 +790,16 @@ SM.extend({
     }
 });
 
-// window.js
+// Panel.js
 SM.extend({
-    SMWindow: function(options){
+    SMPanel: function(options){
         var self = this,
             options = this.extend(options, {
                 url: this.pluginSketch + "/panel/settings.html",
                 width: 240,
                 height: 316,
                 state: 1,
+                floatWindow: false,
                 data: {
                     density: 2,
                     unit: "dp/sp"
@@ -814,16 +815,16 @@ SM.extend({
             titleBgColor = NSColor.colorWithRed_green_blue_alpha(0.1, 0.1, 0.1, 1),
             contentBgColor = NSColor.colorWithRed_green_blue_alpha(0.13, 0.13, 0.13, 1);
 
-        var SMWindow = NSPanel.alloc().init();
-        SMWindow.setTitleVisibility(NSWindowTitleHidden);
-        SMWindow.setTitlebarAppearsTransparent(true);
-        SMWindow.standardWindowButton(NSWindowCloseButton).setHidden(false);
-        SMWindow.standardWindowButton(NSWindowMiniaturizeButton).setHidden(true);
-        SMWindow.standardWindowButton(NSWindowZoomButton).setHidden(true);
-        SMWindow.setFrame_display(frame, false);
-        SMWindow.setBackgroundColor(contentBgColor);
+        var Panel = NSPanel.alloc().init();
+        Panel.setTitleVisibility(NSWindowTitleHidden);
+        Panel.setTitlebarAppearsTransparent(true);
+        Panel.standardWindowButton(NSWindowCloseButton).setHidden(false);
+        Panel.standardWindowButton(NSWindowMiniaturizeButton).setHidden(true);
+        Panel.standardWindowButton(NSWindowZoomButton).setHidden(true);
+        Panel.setFrame_display(frame, false);
+        Panel.setBackgroundColor(contentBgColor);
 
-        var contentView = SMWindow.contentView(),
+        var contentView = Panel.contentView(),
             webView = WebView.alloc().initWithFrame(NSMakeRect(0, 0, options.width, options.height)),
             windowObject = webView.windowScriptObject(),
             delegate = new MochaJSDelegate({
@@ -856,7 +857,7 @@ SM.extend({
                         var request = NSURL.URLWithString(webView.mainFrameURL()).fragment();
 
                         if( options.state ){
-                            SMWindow.orderOut(nil);
+                            Panel.orderOut(nil);
                             NSApp.stopModal();
                             if(request == "submit"){
                                 var data = JSON.parse(decodeURI(windowObject.valueForKey("SMData")));
@@ -865,7 +866,7 @@ SM.extend({
                             }
                         }
                         else if(request == "import"){
-                            if( options.importCallback(SMWindow, NSApp) ){
+                            if( options.importCallback(Panel, NSApp) ){
                                  self.message(_("Import complete!"));
                             }
                             else{
@@ -887,7 +888,7 @@ SM.extend({
 
         contentView.addSubview(webView);
 
-        var closeButton = SMWindow.standardWindowButton(NSWindowCloseButton);
+        var closeButton = Panel.standardWindowButton(NSWindowCloseButton);
         closeButton.setCOSJSTargetFunction(function(sender) {
             var request = NSURL.URLWithString(webView.mainFrameURL()).fragment();
             if(options.state == 0 && request == "submit"){
@@ -895,7 +896,7 @@ SM.extend({
                 options.callback(data);
             }
 
-            SMWindow.orderOut(nil);
+            Panel.orderOut(nil);
             NSApp.stopModal();
         });
         closeButton.setAction("callAction:");
@@ -909,11 +910,18 @@ SM.extend({
         titlebarView.setBackgroundColor(titleBgColor);
         titlebarContainerView.superview().setBackgroundColor(titleBgColor);
 
-        NSApp.runModalForWindow(SMWindow);
+        if(options.floatWindow){
+            Panel.setLevel(NSFloatingWindowLevel);
+            Panel.center();
+            Panel.orderFront(NSApp.mainWindow());
+        }
+        else{
+            NSApp.runModalForWindow(Panel);
+        }
 
         return result;
     },
-    settingsWindow: function(){
+    settingsPanel: function(){
         var self = this,
             data = {};
 
@@ -923,7 +931,7 @@ SM.extend({
             data.colorFormat = this.configs.colorFormat;
         }
 
-        return this.SMWindow({
+        return this.SMPanel({
             width: 240,
             height: 316,
             data: data,
@@ -933,7 +941,7 @@ SM.extend({
         });
     
     },
-    sizesWindow: function(){
+    sizesPanel: function(){
         var self = this,
             data = {};
 
@@ -941,7 +949,7 @@ SM.extend({
         if(this.configs.sizes && this.configs.sizes.heightPlacement) data.heightPlacement = this.configs.sizes.heightPlacement;
         if(this.configs.sizes && this.configs.sizes.byPercentage) data.byPercentage = this.configs.sizes.byPercentage;
 
-        return this.SMWindow({
+        return this.SMPanel({
             url: this.pluginSketch + "/panel/sizes.html",
             width: 240,
             height: 358,
@@ -953,14 +961,14 @@ SM.extend({
             }
         });
     },
-    spacingsWindow: function(){
+    spacingsPanel: function(){
         var self = this,
             data = {};
 
             data.placements = (this.configs.spacings && this.configs.spacings.placements)? this.configs.spacings.placements: ["top", "left"];
             if(this.configs.spacings && this.configs.spacings.byPercentage) data.byPercentage = this.configs.spacings.byPercentage;
 
-        return this.SMWindow({
+        return this.SMPanel({
             url: this.pluginSketch + "/panel/spacings.html",
             width: 240,
             height: 314,
@@ -972,13 +980,13 @@ SM.extend({
             }
         });
     },
-    propertiesWindow: function(){
+    propertiesPanel: function(){
         var self = this,
             data = (this.configs.properties)? this.configs.properties: {
                         placement: "top",
                         properties: ["color", "border"]
                     };
-        return this.SMWindow({
+        return this.SMPanel({
             url: this.pluginSketch + "/panel/properties.html",
             width: 280,
             height: 324,
@@ -1003,7 +1011,7 @@ SM.extend({
                 this.message(_("Select a layer to make marks!"));
                 return false;
             }
-            if(!this.sizesWindow()) return false;
+            if(!this.sizesPanel()) return false;
             var target = selection[0],
                 objectID = target.objectID(),
                 sizeStyles = {
@@ -1038,7 +1046,7 @@ SM.extend({
                 this.message(_("Select 1 or 2 layers to make marks!"));
                 return false;
             }
-            if(!this.spacingsWindow()) return false;
+            if(!this.spacingsPanel()) return false;
             var target = (selection.count() == 1)? selection[0]: selection[1],
                 layer = (selection.count() == 1)? this.current: selection[0],
                 placements = ["top", "right", "bottom", "left"];
@@ -1072,7 +1080,7 @@ SM.extend({
                 this.resizeProperties(target.parentGroup());
             }
             else{
-                if(!this.propertiesWindow()) return false;
+                if(!this.propertiesPanel()) return false;
 
                 this.properties({
                     target: target,
@@ -1691,7 +1699,7 @@ SM.extend({
 
         data.add = this.getSelectionColor();
 
-        return this.SMWindow({
+        return this.SMPanel({
             url: this.pluginSketch + "/panel/colors.html",
             width: 240,
             height: 323,
@@ -1705,14 +1713,14 @@ SM.extend({
                 });
                 
             },
-            importCallback: function(SMWindow, NSApp){
+            importCallback: function(SMPanel, NSApp){
                 var colors = self.importColors();
                 if( colors ){
                     self.configs = self.setConfigs({
                         colors: colors,
                         colorNames: self.colorNames(colors)
                     });
-                    SMWindow.orderOut(nil);
+                    SMPanel.orderOut(nil);
                     NSApp.stopModal();
                     self.manageColors();
                     return true;
@@ -1723,7 +1731,7 @@ SM.extend({
             }
         });
     },
-    importColors: function(SMWindow){
+    importColors: function(SMPanel){
         var openPanel = NSOpenPanel.openPanel();
         openPanel.setCanChooseDirectories(false);
         openPanel.setCanCreateDirectories(false);
@@ -1999,7 +2007,7 @@ SM.extend({
 
         return savePanel.URL().path();
     },
-    exportWindow: function(){
+    exportPanel: function(){
         var self = this;
         this.artboardsData = [];
         this.selectionArtboards = {};
@@ -2038,7 +2046,7 @@ SM.extend({
             }
             data.pages.push(pageData);
         }
-        return this.SMWindow({
+        return this.SMPanel({
             url: this.pluginSketch + "/panel/export.html",
             width: 320,
             height: 521,
@@ -2059,7 +2067,7 @@ SM.extend({
         });
     },
     export: function(){
-        if(this.exportWindow()){
+        if(this.exportPanel()){
             if(this.selectionArtboards.length <= 0){
                 return false;
             }
