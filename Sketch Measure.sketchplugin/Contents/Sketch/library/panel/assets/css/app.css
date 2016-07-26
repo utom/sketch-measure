@@ -466,12 +466,14 @@ button{
     
 }
 .page-list .artboard-item .text{
+    flex: 1;
+    padding: 0 0 0 16px;
     overflow: hidden;
     text-overflow: ellipsis;
 }
 
 .page-list .artboard-item .checkbox{
-    margin-right: 16px;
+    margin-right: 0;
 }
 .page-list .artboard-item .checkbox label{
     top: 2px;
