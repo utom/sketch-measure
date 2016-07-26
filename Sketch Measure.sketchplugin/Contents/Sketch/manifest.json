@@ -93,7 +93,7 @@
             "script": "mark.sketchscript"
         },
         {
-            "name": "Device exportable",
+            "name": "Device exportables",
             "identifier": "commandExportables",
             "shortcut": "ctrl shift s",
             "handler": "commandExportables",
