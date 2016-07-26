@@ -923,6 +923,7 @@ SM.extend({
         titlebarContainerView.superview().setBackgroundColor(titleBgColor);
 
         if(options.floatWindow){
+            Panel.becomeKeyWindow();
             Panel.setLevel(NSFloatingWindowLevel);
             Panel.center();
             Panel.orderFront(NSApp.mainWindow());
