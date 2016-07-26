@@ -5,8 +5,14 @@ var I18N = {},
     lang = NSUserDefaults.standardUserDefaults().objectForKey("AppleLanguages").objectAtIndex(0),
     language = "";
  
-function _(str){
-    return (I18N[lang] && I18N[lang][str])? I18N[lang][str]: str;
+function _(str, data){
+    var str = (I18N[lang] && I18N[lang][str])? I18N[lang][str]: str;
+
+    var idx = -1;
+    return str.replace(/\%\@/gi, function(){
+        idx++;
+        return data[idx];
+    });
 }
 
 var SM = {
@@ -79,6 +85,9 @@ var SM = {
                     break;
                 case "color":
                     this.manageColors();
+                    break;
+                case "exportable":
+                    this.makeExportable();
                     break;
                 case "setting":
                     this.settingsPanel();
@@ -1766,6 +1775,49 @@ SM.extend({
     }
 })
 
+// exportable.js
+SM.extend({
+    makeExportable: function(){
+        if( this.selection.count() <= 0 ){
+            this.message(_("Select a layer to add exportable!"));
+            return false;
+        }
+
+        var layer = this.selection[0];
+        layer.exportOptions().removeAllExportFormats();
+
+        var formats = [
+            {
+                scale: 1 / this.configs.scale,
+                suffix: ""
+            },
+            {
+                scale: 2 / this.configs.scale,
+                suffix: "@2x"
+            },
+            {
+                scale: 3 / this.configs.scale,
+                suffix: "@3x"
+            },
+            {
+                scale: 4 / this.configs.scale,
+                suffix: "@4x"
+            }
+        ];
+
+        for(format of formats) {
+            var size = layer.exportOptions().addExportFormat();
+            size.setName(format.suffix);
+            size.setScale(format.scale);
+        };
+
+        layer.exportOptions().addExportFormat();
+        layer.exportOptions().removeExportFormatAtIndex(layer.exportOptions().exportFormats().count() - 1);
+        layer.setIsSelected(0);
+        layer.setIsSelected(1);
+    }
+});
+
 // export.js
 SM.extend({
     slices: [],
@@ -1878,7 +1930,7 @@ SM.extend({
 
         }
     },
-    exportable: function(layer, savePath){
+    getExportable: function(layer, savePath){
         var self = this,
             exportable = [],
             size, sizes = layer.exportOptions().exportFormats(),
@@ -1948,8 +2000,7 @@ SM.extend({
                     .defaultManager()
                     .createDirectoryAtPath_withIntermediateDirectories_attributes_error(this.assetsPath, true, nil, nil);
 
-            layerData.exportable = this.exportable(sliceLayer);
-            this.sliceCache[objectID] = this.exportable(sliceLayer);
+            this.sliceCache[objectID] = layerData.exportable = this.getExportable(sliceLayer);
             this.slices.push({
                 name: layerData.name,
                 objectID: objectID,
@@ -2110,7 +2161,7 @@ SM.extend({
                 coscript.shouldKeepAround = true
                 coscript.scheduleWithRepeatingInterval_jsFunction( 0, function( interval ){
                     // self.message('Processing layer ' + idx + ' of ' + self.allCount);
-                    processing.evaluateWebScript("processing('"  + Math.round( idx / self.allCount * 100 ) +  "%', 'Processing layer " + idx + " of " + self.allCount + "')");
+                    processing.evaluateWebScript("processing('"  + Math.round( idx / self.allCount * 100 ) +  "%', '" + _("Processing layer %@ of %@", [idx, self.allCount]) + "')");
                     idx++;
 
                     if(!data.artboards[artboardIndex]){

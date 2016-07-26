@@ -91,6 +91,13 @@
             "shortcut": "ctrl shift c",
             "handler": "commandColor",
             "script": "mark.sketchscript"
+        },
+        {
+            "name": "Device exportable",
+            "identifier": "commandExportable",
+            "shortcut": "ctrl shift s",
+            "handler": "commandExportable",
+            "script": "mark.sketchscript"
         }
     ],
     "menu" : {
@@ -105,6 +112,7 @@
             "commandWidth",
             "commandHeight",
             "-",
+            "commandExportable",
             "commandColor",
             "commandExport",
             "-",

@@ -48,7 +48,8 @@
     "Percentage of artboard": "基于画布百分比单位",
     "Mark": "标注",
     "All": "全选",
-    "None": "不选",
+    "None": "不全选",
+    "Select filtered": "选中过滤的",
     "Selection of Sketch": "Sketch 选中的画布",
     "Current of Sketch": "Sketch 当前的画布",
     "Filter": " 过滤",
@@ -83,5 +84,7 @@
     "Import": "导入",
     "Choose a &quot;colors.json&quot;": "选择一个 &quot;colors.json&quot;",
     "Choose": "选择",
-    "Import complete!": "导入完成!"
+    "Select a layer to add exportable!": "请选中 1 个图层!"
+    "Import complete!": "导入完成!",
+    "Processing layer %@ of %@": "画布处理中... %@ \/ %@"
 };

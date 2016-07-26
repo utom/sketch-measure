@@ -45,6 +45,10 @@ function commandColor(context) {
     SM.init(context, 'color');
 }
 
+function commandExportable(context) {
+    SM.init(context, 'exportable');
+}
+
 function commandSetting(context) {
     SM.init(context, 'setting');
 }
