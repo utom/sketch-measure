@@ -1026,33 +1026,36 @@ SM.extend({
                 return false;
             }
             if(!this.sizesPanel()) return false;
-            var target = selection[0],
-                objectID = target.objectID(),
-                sizeStyles = {
+            var sizeStyles = {
                     layer: this.sharedLayerStyle("@Size / Layer", this.colors.size.layer),
                     text: this.sharedTextStyle("@Size / Text", this.colors.size.text, 2)
                 };
 
-            if(this.configs.sizes.widthPlacement){
-                this.sizes({
-                    name: "WIDTH#" + objectID,
-                    type: "width",
-                    target: target,
-                    placement: this.configs.sizes.widthPlacement,
-                    styles: sizeStyles,
-                    byPercentage: this.configs.sizes.byPercentage
-                });
-            }
+            for (var i = 0; i < selection.count(); i++) {
+                var target = selection[i],
+                    objectID = target.objectID();
 
-            if(this.configs.sizes.heightPlacement){
-                this.sizes({
-                    name: "HEIGHT#" + objectID,
-                    type: "height",
-                    target: target,
-                    placement: this.configs.sizes.heightPlacement,
-                    styles: sizeStyles,
-                    byPercentage: this.configs.sizes.byPercentage
-                });
+                if(this.configs.sizes.widthPlacement){
+                    this.sizes({
+                        name: "WIDTH#" + objectID,
+                        type: "width",
+                        target: target,
+                        placement: this.configs.sizes.widthPlacement,
+                        styles: sizeStyles,
+                        byPercentage: this.configs.sizes.byPercentage
+                    });
+                }
+
+                if(this.configs.sizes.heightPlacement){
+                    this.sizes({
+                        name: "HEIGHT#" + objectID,
+                        type: "height",
+                        target: target,
+                        placement: this.configs.sizes.heightPlacement,
+                        styles: sizeStyles,
+                        byPercentage: this.configs.sizes.byPercentage
+                    });
+                }
             }
         }
         else if(type == "spacings"){
@@ -1084,7 +1087,7 @@ SM.extend({
             });
         }
         else if(type == "properties"){
-            if( selection.count() != 1 ){
+            if( selection.count() <= 1 ){
                 this.message(_("Select a layer to make marks!"));
                 return false;
             }
@@ -1096,32 +1099,42 @@ SM.extend({
             else{
                 if(!this.propertiesPanel()) return false;
 
-                this.properties({
-                    target: target,
-                    placement: this.configs.properties.placement,
-                    properties: this.configs.properties.properties
-                });
+                for (var i = 0; i < selection.count(); i++) {
+                    var target = selection[i];
+                    this.properties({
+                        target: target,
+                        placement: this.configs.properties.placement,
+                        properties: this.configs.properties.properties
+                    });
+                }
             }
         }
-        else if( type == "overlay" && selection.count() == 1 ){
-            if( selection.count() != 1 ){
+        else if( type == "overlay"){
+            if( selection.count() <= 0 ){
                 this.message(_("Select a layer to make marks!"));
                 return false;
             }
-            this.overlay();
+            for (var i = 0; i < selection.count(); i++) {
+                this.overlay(selection[i]);
+            }
         }
         else if( type == "note"){
-            if( !(selection.count() == 1 && this.is(selection[0], MSTextLayer)) ){
+            if( selection.count() <= 0 ){
                 this.message(_("Select a text layer to make marks!"));
                 return false;
             }
             var target = selection[0];
 
-            if( /NOTE\#/.exec(target.parentGroup().name()) ){
+            if( /NOTE\#/.exec(target.parentGroup().name()) && this.is(target, MSTextLayer) ){
                 this.resizeNote(target.parentGroup());
             }
             else{
-                this.note();
+                for (var i = 0; i < selection.count(); i++) {
+                    var target = selection[i];
+                    if(this.is(target, MSTextLayer)){
+                        this.note(target);
+                    }
+                }
             }
         }
 
@@ -1300,9 +1313,8 @@ SM.extend({
 
 
 SM.extend({
-    overlay: function(){
-        var target = this.selection[0],
-            targetRect = this.getRect(target),
+    overlay: function(target){
+        var targetRect = this.getRect(target),
             name = "OVERLAY#" + target.objectID(),
             container = this.find({key: "(name != NULL) && (name == %@)", match: name}),
             overlayStyle = this.sharedLayerStyle("@Overlay / Layer", this.colors.overlay.layer);
@@ -1507,9 +1519,8 @@ SM.extend({
             this.removeLayer(target);
         }
     },
-    note: function(){
-        var target = this.selection[0],
-            targetRect = this.getRect(target),
+    note: function(target){
+        var targetRect = this.getRect(target),
             objectID = target.objectID(),
             noteStyle = {
                 layer: this.sharedLayerStyle("@Note / Layer", this.colors.note.layer, this.colors.note.border),
