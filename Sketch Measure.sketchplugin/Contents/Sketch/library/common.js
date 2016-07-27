@@ -1793,16 +1793,16 @@ SM.extend({
                 suffix: ""
             },
             {
+                scale: 1.5 / this.configs.scale,
+                suffix: "@1.5x"
+            },
+            {
                 scale: 2 / this.configs.scale,
                 suffix: "@2x"
             },
             {
                 scale: 3 / this.configs.scale,
                 suffix: "@3x"
-            },
-            {
-                scale: 4 / this.configs.scale,
-                suffix: "@4x"
             }
         ];
 
