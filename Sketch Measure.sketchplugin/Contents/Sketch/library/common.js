@@ -1087,10 +1087,11 @@ SM.extend({
             });
         }
         else if(type == "properties"){
-            if( selection.count() <= 1 ){
+            if( selection.count() <= 0 ){
                 this.message(_("Select a layer to make marks!"));
                 return false;
             }
+
             var target = selection[0];
 
             if( /PROPERTY\#/.exec(target.parentGroup().name()) ){
