@@ -39,7 +39,7 @@ var SM = {
             }
 
             this.symbolsPage = this.find({key: "(name != NULL) && (name == %@)", match: "Symbols"}, this.document);
-
+            this.symbolsPage = (this.symbolsPage.count)? this.symbolsPage[0]: this.symbolsPage;
             if(!this.symbolsPage){
                 this.symbolsPage = this.document.addBlankPage();
                 this.symbolsPage.setName("Symbols");
