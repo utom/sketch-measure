@@ -192,8 +192,8 @@ return j.call(r(a),c)})),b))for(;i>h;h++)b(a[h],c,g?d:d.call(a[h],h,b(a[h],c)));
 
 
 var I18N = {},
-	lang = navigator.language.toLocaleLowerCase(),
-	timestamp = new Date().getTime();
+    lang = navigator.language.toLocaleLowerCase(),
+    timestamp = new Date().getTime();
 
 <!-- lang -->
 
@@ -286,7 +286,7 @@ var I18N = {},
             }
             else{
                 var objHash = {},
-                    hash = window.location.hash.replace(/[\#|\-]([a-z]+)([\d]+)/ig, function(match, key, value){
+                    hash = window.location.hash.replace(/[\#\-]([a-z]+)([\d]+)/ig, function(match, key, value){
                         objHash[key] = parseInt(value);
                     });
                 return objHash;
@@ -585,7 +585,9 @@ var I18N = {},
                     '</li>');
             });
             sliceListHTML.push('</ul>');
-            $('#slices').html(sliceListHTML.join(''));
+            if(this.project.slices.length > 0){
+                $('#slices').html(sliceListHTML.join(''));
+            }
 
             return this;
         },
@@ -611,7 +613,9 @@ var I18N = {},
                     '</li>');
             });
             colorListHTML.push('</ul>');
-            $('#colors').html(colorListHTML.join(''));
+            if(this.project.colors.length > 0){
+                $('#colors').html(colorListHTML.join(''));
+            }
 
             return this;
         },

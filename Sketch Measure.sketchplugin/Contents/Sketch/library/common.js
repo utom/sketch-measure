@@ -184,8 +184,18 @@ SM.extend({
             setHeight: function(height){ rect.setHeight(height); this.height = height; this.maxY = this.y + this.height; }
         };
     },
+    toNopPath: function(str){
+        return this.toJSString(str).replace(/[\/\\\?]/g, " - ");
+    },
     toHTMLEncode: function(str){
-        return this.toJSString(str).replace(/\&/g, "&amp;").replace(/\</g, "&lt;").replace(/\>/g, '&gt;').replace(/\'/g, "&#39;").replace(/\"/g, "&quot;");
+        return this.toJSString(str)
+                    .replace(/\&/g, "&amp;")
+                    .replace(/\</g, "&lt;")
+                    .replace(/\>/g, '&gt;')
+                    .replace(/\'/g, "&#39;")
+                    .replace(/\"/g, "&quot;")
+                    .replace(/\u2028/g,"\\u2028")
+                    .replace(/\u2029/g,"\\u2029");
         // return str.replace(/\&/g, "&amp;").replace(/\"/g, "&quot;").replace(/\'/g, "&#39;").replace(/\</g, "&lt;").replace(/\>/g, '&gt;');
     },
     toJSString: function(str){
@@ -2215,7 +2225,7 @@ SM.extend({
                             var objectID = artboard.objectID(),
                                 artboardRect = self.getRect(artboard),
                                 page = artboard.parentGroup(),
-                                name = (self.toHTMLEncode(page.name()) + ' - ' + self.toHTMLEncode(artboard.name())).replace("\/", " - ").replace("\?", " - ");
+                                name = self.toNopPath(self.toHTMLEncode(page.name()) + ' - ' + self.toHTMLEncode(artboard.name()));
                             // log( page.name() + ' - ' + artboard.name() );
                             data.artboards[artboardIndex].pageName = self.toHTMLEncode(page.name());
                             data.artboards[artboardIndex].pageObjectID = self.toJSString(page.objectID());
