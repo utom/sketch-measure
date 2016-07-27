@@ -268,8 +268,31 @@ var I18N = {},
             }
         },
         message: function(msg){
-        	var $message = $('#message').text(msg);
-        	$message.hide().fadeIn().delay( 1000 ).fadeOut('fast');
+            var $message = $('#message').text(msg);
+            $message.hide().fadeIn().delay( 1000 ).fadeOut('fast');
+        },
+        locationHash: function(options){
+            if(options){
+                var objHash = {},
+                    arrHash = [];
+                $.each(options, function(key, value){
+                    if( /[a-z]+/.test(key) && !isNaN(value) ){
+                        objHash[key] = parseInt(value);
+                        arrHash.push(key + value);
+                    } 
+                });
+                window.history.replaceState(undefined, undefined, '#' + arrHash.join('-'));
+                return objHash;
+            }
+            else{
+                var objHash = {},
+                    hash = window.location.hash.replace(/[\#|\-]([a-z]+)([\d]+)/ig, function(match, key, value){
+                        objHash[key] = parseInt(value);
+                    });
+                return objHash;
+
+            }
+
         },
         render: function() {
             $('#app').html([
@@ -494,7 +517,7 @@ var I18N = {},
                 var classNames = (self.artboardIndex == index && !artboard.fileName)? ' active': '',
                     fileName = (artboard.fileName)? ' data-file="' + artboard.fileName + '"': '';
                 artboardListHTML.push(
-                        '<li id="artboard-' + artboard.objectID + '"' + fileName + ' class="artboard' + classNames + '" data-page-id="' + artboard.pageObjectID + '" data-id="' + artboard.objectID + '" data-index="' + index + '" >',
+                        '<li id="artboard-' + index + '"' + fileName + ' class="artboard' + classNames + '" data-page-id="' + artboard.pageObjectID + '" data-id="' + artboard.objectID + '" data-index="' + index + '" >',
                             '<picture class="preview-img" data-name="' + artboard.name + '">',
                                 '<img alt="' + artboard.name + '" src="' + artboard.imagePath + '?' + timestamp + '">',
                             '</picture>',
@@ -512,8 +535,9 @@ var I18N = {},
             })
             pagesSelect.push('</ul>');
             pagesSelect.push('</div>');
-            $('#artboards').html([pagesSelect.join(''), artboardListHTML.join('')].join(''));
-
+            
+            $('#artboards')
+                .html([pagesSelect.join(''), artboardListHTML.join('')].join(''));
             return this;
         },
         layers: function() {
@@ -1237,6 +1261,10 @@ var I18N = {},
                     self.notes();
                     $('.active').removeClass('active');
                     $(this).addClass('active');
+
+                    self.locationHash({
+                        artboard: self.artboardIndex
+                    });
                 })
                 .on('click', '.pages-select', function( event ){
                     event.stopPropagation();
@@ -1268,10 +1296,10 @@ var I18N = {},
                 .on('click', 'li', function(){
                     var id = $(this).attr('data-objectid');
                     if($('.layer-' + id).length > 0){
-                    	$('.layer-' + id).click();
+                        $('.layer-' + id).click();
                     }
                     else{
-                    	self.message(_('The slice not in current artboard.'));
+                        self.message(_('The slice not in current artboard.'));
                     }
                     
                 });
@@ -1311,7 +1339,7 @@ var I18N = {},
     }
 
     var init = SMApp.fn.init = function(project) {
-
+        var path = this.locationHash();
         this.project = project;
 
         this.configs = {
@@ -1320,7 +1348,8 @@ var I18N = {},
                 colorFormat: this.project.colorFormat
             };
 
-        this.artboardIndex = 0;
+        this.artboardIndex = (!isNaN(path.artboard))? path.artboard: 0;
+
         this.current = this.project.artboards[this.artboardIndex];
 
         var proportion = $(document).height() / this.current.height;
@@ -1333,7 +1362,10 @@ var I18N = {},
         }
 
         this.render();
-
+        if(!isNaN(path.artboard)){
+            $('.current').removeClass('current');
+            $('.navbar').removeClass('on');
+        }
         return this;
     };
     init.prototype = SMApp.fn;

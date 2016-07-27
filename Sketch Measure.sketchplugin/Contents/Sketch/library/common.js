@@ -2163,7 +2163,8 @@ SM.extend({
                         floatWindow: true
                     }),
                     processing = processingPanel.windowScriptObject(),
-                    template = NSString.stringWithContentsOfFile_encoding_error(this.pluginSketch + "/template.html", NSUTF8StringEncoding, nil);
+                    template = NSString.stringWithContentsOfFile_encoding_error(this.pluginSketch + "/template.html", NSUTF8StringEncoding, nil),
+                    webloc = NSString.stringWithContentsOfFile_encoding_error(this.pluginSketch + "/template.webloc", NSUTF8StringEncoding, nil)
 
                 this.savePath = savePath;
                 var idx = 1,
@@ -2216,20 +2217,28 @@ SM.extend({
                                 artboardRect = self.getRect(artboard),
                                 page = artboard.parentGroup();
                             // log( page.name() + ' - ' + artboard.name() );
-                            data.artboards[artboardIndex].imagePath = "preview/" + objectID + ".png";
+                            // data.artboards[artboardIndex].imagePath = "preview/" + objectID + ".png";
                             data.artboards[artboardIndex].pageName = self.toHTMLEncode(page.name());
                             data.artboards[artboardIndex].pageObjectID = self.toJSString(page.objectID());
                             data.artboards[artboardIndex].name = self.toHTMLEncode(artboard.name());
                             data.artboards[artboardIndex].objectID = self.toJSString(artboard.objectID());
                             data.artboards[artboardIndex].width = artboardRect.width;
                             data.artboards[artboardIndex].height = artboardRect.height;
+                            data.artboards[artboardIndex].imagePath = "preview/" + encodeURI(data.artboards[artboardIndex].pageName + '/' + data.artboards[artboardIndex].name) + ".png";
 
                             self.exportImage({
                                     layer: artboard,
                                     path: self.toJSString(savePath) + "/preview",
                                     scale: 2,
-                                    name: objectID,
+                                    // name: objectID,
+                                    name: data.artboards[artboardIndex].pageName + '/' + data.artboards[artboardIndex].name
                                 });
+
+                            // self.writeFile({
+                            //         content: self.template(webloc, {hash: "artboard" + artboardIndex}),
+                            //         path: self.toJSString(savePath) + '/links',
+                            //         fileName: data.artboards[artboardIndex].pageName + ' - ' + data.artboards[artboardIndex].name + ".webloc"
+                            //     });
 
                             layerIndex = 0;
                             artboardIndex++;
