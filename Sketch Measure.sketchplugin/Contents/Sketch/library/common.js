@@ -2038,7 +2038,7 @@ SM.extend({
 
             layerData.objectID = symbolObjectID;
 
-            if( !self.hasExportSizes(layer.symbolMaster()) ){
+            if( !self.hasExportSizes(layer.symbolMaster()) && layer.symbolMaster().children().count() > 1 ){
                 var symbolRect = this.getRect(layer),
                     symbolChildren = layer.symbolMaster().children(),
                     tempSymbol = layer.duplicate(),
@@ -2193,8 +2193,10 @@ SM.extend({
                     if(!exporting) {
                         exporting = true;
                         var artboard = self.selectionArtboards[artboardIndex],
+                            // page = artboard.parentGroup(),
                             layer = artboard.children()[layerIndex];
 
+                        // log( page.name() + ' - ' + artboard.name() + ' - ' + layer.name());
                         self.getLayer(
                             artboard, // Sketch artboard element
                             layer, // Sketch layer element
