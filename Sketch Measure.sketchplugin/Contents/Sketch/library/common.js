@@ -1784,38 +1784,44 @@ SM.extend({
             return false;
         }
 
-        var layer = this.selection[0];
-        layer.exportOptions().removeAllExportFormats();
 
-        var formats = [
-            {
-                scale: 1 / this.configs.scale,
-                suffix: ""
-            },
-            {
-                scale: 1.5 / this.configs.scale,
-                suffix: "@1.5x"
-            },
-            {
-                scale: 2 / this.configs.scale,
-                suffix: "@2x"
-            },
-            {
-                scale: 3 / this.configs.scale,
-                suffix: "@3x"
-            }
-        ];
+        for (var i = 0; i < this.selection.count(); i++) {
+            var layer = this.selection[i];
+            layer.exportOptions().removeAllExportFormats();
 
-        for(format of formats) {
-            var size = layer.exportOptions().addExportFormat();
-            size.setName(format.suffix);
-            size.setScale(format.scale);
+            var formats = [
+                {
+                    scale: 1 / this.configs.scale,
+                    suffix: ""
+                },
+                {
+                    scale: 1.5 / this.configs.scale,
+                    suffix: "@1.5x"
+                },
+                {
+                    scale: 2 / this.configs.scale,
+                    suffix: "@2x"
+                },
+                {
+                    scale: 3 / this.configs.scale,
+                    suffix: "@3x"
+                }
+            ];
+
+            for(format of formats) {
+                var size = layer.exportOptions().addExportFormat();
+                size.setName(format.suffix);
+                size.setScale(format.scale);
+            };
+
+            layer.exportOptions().addExportFormat();
+            layer.exportOptions().removeExportFormatAtIndex(layer.exportOptions().exportFormats().count() - 1);
+            layer.setIsSelected(0);
+            layer.setIsSelected(1);
+
         };
 
-        layer.exportOptions().addExportFormat();
-        layer.exportOptions().removeExportFormatAtIndex(layer.exportOptions().exportFormats().count() - 1);
-        layer.setIsSelected(0);
-        layer.setIsSelected(1);
+        
     }
 });
 
