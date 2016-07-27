@@ -2009,15 +2009,19 @@ SM.extend({
 
         return exportable;
     },
-    checkSlice: function(layer, layerData){
+    checkSlice: function(layer, layerData, symbolLayer){
         if(layerData.type == "slice" || ( layerData.type == "symbol" && this.hasExportSizes(layer.symbolMaster()) && !this.sliceCache[layer.symbolMaster().objectID()] ) ){
             var sliceLayer = ( layerData.type == "symbol" )? layer.symbolMaster(): layer,
                 objectID = ( layerData.type == "symbol" )? this.toJSString(layer.symbolMaster().objectID()): layerData.objectID;
 
-                this.assetsPath = this.savePath + "/assets";
-                NSFileManager
-                    .defaultManager()
-                    .createDirectoryAtPath_withIntermediateDirectories_attributes_error(this.assetsPath, true, nil, nil);
+            if(symbolLayer && this.is(symbolLayer.parentGroup(), MSSymbolMaster)){
+                layer.exportOptions().setLayerOptions(2);
+            }
+
+            this.assetsPath = this.savePath + "/assets";
+            NSFileManager
+                .defaultManager()
+                .createDirectoryAtPath_withIntermediateDirectories_attributes_error(this.assetsPath, true, nil, nil);
 
             this.sliceCache[objectID] = layerData.exportable = this.getExportable(sliceLayer);
             this.slices.push({
@@ -2211,7 +2215,7 @@ SM.extend({
                             var objectID = artboard.objectID(),
                                 artboardRect = self.getRect(artboard),
                                 page = artboard.parentGroup();
-                            log( page.name() + ' - ' + artboard.name() );
+                            // log( page.name() + ' - ' + artboard.name() );
                             data.artboards[artboardIndex].imagePath = "preview/" + objectID + ".png";
                             data.artboards[artboardIndex].pageName = self.toHTMLEncode(page.name());
                             data.artboards[artboardIndex].pageObjectID = self.toJSString(page.objectID());
@@ -2391,7 +2395,7 @@ SM.extend({
         if(css.length > 0) layerData.css = css;
 
         this.checkMask(group, layer, layerData, layerStates);
-        this.checkSlice(layer, layerData);
+        this.checkSlice(layer, layerData, symbolLayer);
         data.layers.push(layerData);
         this.checkSymbol(artboard, layer, layerData, data);
     },
