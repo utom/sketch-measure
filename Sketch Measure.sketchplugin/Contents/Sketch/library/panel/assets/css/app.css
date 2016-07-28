@@ -567,7 +567,8 @@ button{
 }
 
 .options-bar button{
-    position: relative;
+    position: absolute;
+    margin-left: -50px;
     padding: 0;
     border: 0;
     width: 32px;
