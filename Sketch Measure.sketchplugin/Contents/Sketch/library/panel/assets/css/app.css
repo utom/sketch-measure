@@ -88,6 +88,7 @@ button{
 .checkbox{
     margin: 0 8px 0 0;
     position: relative;
+    box-sizing: border-box;
     display: inline-block;
 }
 .checkbox input{
@@ -105,6 +106,7 @@ button{
     height: 12px;
     /*background: #3484F5;*/
     background: #000;
+    border: 1px solid rgba(255,255,255,0.10);
     border-radius: 1px;
     overflow: hidden;
     cursor: pointer;
@@ -455,34 +457,37 @@ button{
     list-style: none;
     padding: 0;
 }
-.page-list li:hover{
-    background: rgba(255,255,255,0.10);
-}
+
 .page-list .artboard-item{
-    display: flex;
-    padding: 16px;
+    position: relative;
+    display: block;
+    padding: 16px 16px 16px 44px;
     box-sizing: border-box;
     height: 48px;
-    
 }
 .page-list .artboard-item .text{
-    flex: 1;
-    padding: 0 0 0 16px;
+    width: 100%;
     overflow: hidden;
     text-overflow: ellipsis;
 }
 
 .page-list .artboard-item .checkbox{
-    margin-right: 0;
+    position: absolute;
+    top: 16px;
+    margin-left: -28px;
 }
 .page-list .artboard-item .checkbox label{
     top: 2px;
+
 }
 .color-item:nth-child(2n),
 .page-list li:nth-child(2n){
     background: rgba(255,255,255,0.03);
 }
 
+.page-list li:hover{
+    background: rgba(255,255,255,0.05);
+}
 
 .color-item{
     margin: 0 0 1px;
@@ -551,13 +556,14 @@ button{
 .edit .color-name-edit{display: block;}
 
 .options-bar{
+    position: relative;
     margin: 0 24px 24px;
+    padding: 0 0 0 50px;
     height: 32px;
     border: 1px solid #555;
     border-top: 0;
     background: #1C1C1C;
     border-radius: 0 0 2px 2px;
-    display: flex;
 }
 
 .options-bar button{
@@ -583,7 +589,9 @@ button{
 }
 
 .options-bar .opts-checkbox{
-    position: relative;
+    position: absolute;
+    top:0;
+    margin-left: -50px;
     padding: 10px;
     height: 32px;
     box-sizing: border-box;
@@ -633,7 +641,6 @@ button{
     white-space:nowrap;
 }
 .opts-filter{
-    flex: 1;
     box-sizing: border-box;
 }
 .opts-filter input{

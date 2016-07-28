@@ -40,7 +40,7 @@ Menu Titles:
 
 ##Contributors
 * Author [utom](http://utom.design)
-* [SketchI18N](https://github.com/cute/SketchI18N), [cute](https://github.com/cute),
+* [SketchI18N](https://github.com/cute/SketchI18N), [cute](http://liguangming.com),
 
 ##Contact
 

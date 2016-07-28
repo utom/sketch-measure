@@ -93,10 +93,16 @@
             "script": "mark.sketchscript"
         },
         {
-            "name": "Device exportable",
+            "name": "Make exportable",
             "identifier": "commandExportable",
             "shortcut": "ctrl shift s",
             "handler": "commandExportable",
+            "script": "mark.sketchscript"
+        },
+        {
+            "name": "☕️ Buy me a coffee",
+            "identifier": "commandDonate",
+            "handler": "commandDonate",
             "script": "mark.sketchscript"
         }
     ],
@@ -120,7 +126,8 @@
             "commandLocked",
             "commandClear",
             "-",
-            "commandSetting"
+            "commandSetting",
+            "commandDonate"
         ],
         "title" : "👍 Sketch Measure"
     },

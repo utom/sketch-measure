@@ -61,7 +61,7 @@
     //             ]
     //         }
     //     ]
-    // }
+    // };
     var checkVCheckbox = function(){
             var allCheckboxLength = $('input[name=artboards]').length,
                     checkedLength = $('input[name=artboards]:checked').length;
@@ -215,6 +215,8 @@
             $.each(data.selection, function(index, id){
                 $('#artboard-' + id).click();
             });
+
+            $('#artboards-list').scrollTop($('input[name=artboards]:checked').parent().parent().position().top);
         }
     // $(function(){
     //     init(data)
