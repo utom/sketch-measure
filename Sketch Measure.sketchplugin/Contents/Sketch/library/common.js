@@ -2020,9 +2020,20 @@ SM.extend({
         return exportable;
     },
     checkSlice: function(layer, layerData, symbolLayer){
-        if(layerData.type == "slice" || ( layerData.type == "symbol" && this.hasExportSizes(layer.symbolMaster()) && !this.sliceCache[layer.symbolMaster().objectID()] ) ){
-            var sliceLayer = ( layerData.type == "symbol" )? layer.symbolMaster(): layer,
-                objectID = ( layerData.type == "symbol" )? this.toJSString(layer.symbolMaster().objectID()): layerData.objectID;
+        var objectID = ( layerData.type == "symbol" )? this.toJSString(layer.symbolMaster().objectID()):
+                        ( symbolLayer )? this.toJSString(symbolLayer.objectID()):
+                        layerData.objectID;
+        if( 
+            (
+                layerData.type == "slice" ||
+                (
+                    layerData.type == "symbol" &&
+                    this.hasExportSizes(layer.symbolMaster())
+                )
+            ) &&
+            !this.sliceCache[objectID]
+        ){
+            var sliceLayer = ( layerData.type == "symbol" )? layer.symbolMaster(): layer;
 
             if(symbolLayer && this.is(symbolLayer.parentGroup(), MSSymbolMaster)){
                 layer.exportOptions().setLayerOptions(2);

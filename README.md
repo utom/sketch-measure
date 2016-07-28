@@ -24,23 +24,9 @@ To create your own custom shortcuts, go to Keyboard in your System Preferences a
 
 ![Settings](http://sketchshortcuts.com/images/mac@2x.png)
 
-Menu Titles:
-
-* `Overlay`
-* `Size`
-* `Spacing`
-* `Property`
-* `Note`
-* `Lite width`
-* `Lite height`
-* `Color names`
-* `💎 Spec Export`
-* `Hide marks`
-* `Locke marks`
-
 ##Contributors
 * Author [utom](http://utom.design)
-* [SketchI18N](https://github.com/cute/SketchI18N), [cute](http://liguangming.com),
+* [SketchI18N](https://github.com/cute/SketchI18N), [cute](http://liguangming.com)
 
 ##Contact
 
