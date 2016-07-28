@@ -5,7 +5,18 @@ var I18N = {},
     }
 
 $(function() {
-    $(document).on('contextmenu', function(event){
-        return false;
-    })
+    $(document)
+        .on('contextmenu', function(event){
+                return false;
+            })
+        .keypress(function(event){
+                var eventObj = event || e,
+                    keyCode = eventObj.keyCode || eventObj.which;
+
+                if(keyCode == 13){
+                    event.stopPropagation();
+                    $('#submit').click();
+                    return false;
+                }
+            });
 });
