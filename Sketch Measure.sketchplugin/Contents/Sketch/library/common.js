@@ -2041,7 +2041,7 @@ SM.extend({
             !this.sliceCache[objectID]
         ){
             var sliceLayer = ( layerData.type == "symbol" )? layer.symbolMaster(): layer;
-
+            log(layerData.type);
             if(symbolLayer && this.is(symbolLayer.parentGroup(), MSSymbolMaster)){
                 layer.exportOptions().setLayerOptions(2);
             }
@@ -2059,8 +2059,8 @@ SM.extend({
                 exportable: layerData.exportable
             })
         }
-        else if( layerData.type == "symbol" && this.sliceCache[ layer.symbolMaster().objectID() ] ){
-            layerData.exportable = this.sliceCache[ layer.symbolMaster().objectID() ];
+        else if( this.sliceCache[objectID] ){
+            layerData.exportable = this.sliceCache[objectID];
         }
     },
     checkSymbol: function(artboard, layer, layerData, data){
