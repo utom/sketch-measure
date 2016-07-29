@@ -1559,6 +1559,13 @@ SM.extend({
         var noteRect = this.getRect(note),
             textRect = this.getRect(text);
 
+        if(textRect.width > 160){
+            text.setTextBehaviour(1);
+            textRect.setWidth(160);
+            text.finishEditing();
+            textRect = this.getRect(text);
+        }
+
         textRect.setX(targetRect.x);
         textRect.setY(targetRect.y);
         noteRect.setX(textRect.x - 6);
