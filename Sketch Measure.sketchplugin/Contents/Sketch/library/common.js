@@ -823,7 +823,7 @@ SM.extend({
                     density: 2,
                     unit: "dp/sp"
                 },
-                callback: function( data ){ log(data) }
+                callback: function( data ){ return data; }
             }),
             result = false;
         options.url = encodeURI("file://" + options.url);
@@ -2253,7 +2253,7 @@ SM.extend({
                                 artboardRect = self.getRect(artboard),
                                 page = artboard.parentGroup(),
                                 name = self.toNopPath(self.toHTMLEncode(page.name()) + ' - ' + self.toHTMLEncode(artboard.name()));
-                            // log( page.name() + ' - ' + artboard.name() );
+
                             data.artboards[artboardIndex].pageName = self.toHTMLEncode(page.name());
                             data.artboards[artboardIndex].pageObjectID = self.toJSString(page.objectID());
                             data.artboards[artboardIndex].name = self.toHTMLEncode(artboard.name());
