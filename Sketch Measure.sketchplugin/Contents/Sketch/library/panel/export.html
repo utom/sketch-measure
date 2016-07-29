@@ -12,57 +12,57 @@
     <script type="text/javascript" src="assets/js/common.js"></script>
     <script type="text/javascript">
     <!--
-    var data = {
-        exportOption: 1,
-        current: [0],
-        selection: [1,2,3],
-        pages: [
-            {
-                name: 'Page 1',
-                objectID: '0',
-                artboards: [
-                    {
-                        name: 'Index',
-                        objectID: '0'
-                    },
-                    {
-                        name: 'Video',
-                        objectID: '1'
-                    },
-                    {
-                        name: 'Explore',
-                        objectID: '2'
-                    },
-                    {
-                        name: 'Profile',
-                        objectID: '3'
-                    }
-                ]
-            },
-            {
-                name: 'Page 2',
-                objectID: '1',
-                artboards: [
-                    {
-                        name: 'Single content',
-                        objectID: '4'
-                    },
-                    {
-                        name: 'Single Video',
-                        objectID: '5'
-                    },
-                    {
-                        name: 'Search page',
-                        objectID: '6'
-                    },
-                    {
-                        name: 'Settings',
-                        objectID: '7'
-                    }
-                ]
-            }
-        ]
-    };
+    // var data = {
+    //     exportOption: 1,
+    //     current: [0],
+    //     selection: [1,2,3],
+    //     pages: [
+    //         {
+    //             name: 'Page 1',
+    //             objectID: '0',
+    //             artboards: [
+    //                 {
+    //                     name: 'Index',
+    //                     objectID: '0'
+    //                 },
+    //                 {
+    //                     name: 'Video',
+    //                     objectID: '1'
+    //                 },
+    //                 {
+    //                     name: 'Explore',
+    //                     objectID: '2'
+    //                 },
+    //                 {
+    //                     name: 'Profile',
+    //                     objectID: '3'
+    //                 }
+    //             ]
+    //         },
+    //         {
+    //             name: 'Page 2',
+    //             objectID: '1',
+    //             artboards: [
+    //                 {
+    //                     name: 'Single content',
+    //                     objectID: '4'
+    //                 },
+    //                 {
+    //                     name: 'Single Video',
+    //                     objectID: '5'
+    //                 },
+    //                 {
+    //                     name: 'Search page',
+    //                     objectID: '6'
+    //                 },
+    //                 {
+    //                     name: 'Settings',
+    //                     objectID: '7'
+    //                 }
+    //             ]
+    //         }
+    //     ]
+    // };
     var checkVCheckbox = function(){
             var allCheckboxLength = $('input[name=artboards]').length,
                     checkedLength = $('input[name=artboards]:checked').length;
@@ -217,9 +217,7 @@
                 if($(this).is(':checked')){
                     $('.' + id + '[name=artboards]').prop('checked', true);
                 }
-                else{
-
-                }
+                checkVCheckbox();
             });
 
             $('#filter').keyup(function(){
@@ -263,9 +261,9 @@
             checkPCheckbox();
             $('#artboards-list').scrollTop($('input[name=artboards]:checked').parent().parent().position().top);
         }
-    $(function(){
-        init(data)
-    });
+    // $(function(){
+    //     init(data)
+    // });
     -->
     </script>
   </head>
