@@ -11,6 +11,8 @@
 *{box-sizing:border-box;}
 ::-webkit-scrollbar{width:8px;height:8px;background:#202123;border-radius:4px;}
 ::-webkit-scrollbar-thumb{border:1px solid rgba(255,255,255,.16);background-color:rgba(0,0,0,.64);border-radius:4px;}
+::-webkit-scrollbar-corner,
+::-webkit-resizer{background:#202123;}
 html{width:100vw;height:100vh;overflow:hidden;}
 body{-webkit-user-select:none;width:100vw;height:100vh;min-width:1024px;font-family:HelveticaNeue,Helvetica,Arial,sans-serif;font-size:12px;color:#989A9C;background:#333;letter-spacing:1px;overflow:hidden;}
 header{position:relative;height:60px;display:flex;align-items:center;z-index:215;background:#000;}
@@ -164,7 +166,7 @@ main{position:relative;height:calc(100vh - 60px);}
 .pages-select .page-list label,.pages-select .page-list span{display:block;}
 .page-list span:before{position:absolute;right:8px;}
 .exportable{margin:0;padding:0;list-style:none;background:#191A1E;border:1px solid #2D2F31;border-radius:4px;}
-.exportable li{position:relative;padding:0 8px;height:32px;line-height:32px;border-bottom:1px solid #222;white-space:nowrap;}
+.exportable li{position:relative;padding:0 8px;height:32px;line-height:32px;border-bottom:1px solid #222;white-space:nowrap;text-overflow:ellipsis;}
 .exportable li a{color:#FFF;text-decoration:none;outline:0;}
 .exportable li:last-child{border:0;}
 .exportable img{position:absolute;top:0;left:0;width:100%;height:100%;opacity:0;}
@@ -177,7 +179,7 @@ main{position:relative;height:calc(100vh - 60px);}
 .asset-list li picture:before{content:"";display:inline-block;height:100%;vertical-align:middle;}
 .asset-list li picture img{vertical-align:middle;max-width:28px;max-height:28px;}
 .asset-list li picture:after{content:"";position:absolute;top:0;left:0;right:0;bottom:0;}
-.asset-list h3,.color-list h3{margin:0 0 4px;padding:0;color:#FFF;font-size:12px;font-weight:400;}
+.asset-list h3,.color-list h3{margin:0 0 4px;padding:0;color:#FFF;font-size:12px;font-weight:400;overflow:hidden;text-overflow:ellipsis;}
 .asset-list small,.color-list small{font-size:10px;}
 .empty{position:absolute;top:30%;left:0;right:0;transform:translateY(-50%);vertical-align:middle;text-align:center;}
 .message{position:absolute;top:50%;left:50%;padding:10px 20px;max-width:320px;transform:translateX(-50%) translateY(-50%);text-align:center;border-radius:4px;background:rgba(0,0,0,.96);border: 1px solid rgba(255,255,255,.16);color:#FFF;box-shadow:0 2px 10px rgba(0,0,0,.32);z-index:9;display:none;}
@@ -572,16 +574,18 @@ var I18N = {},
                 sliceListHTML = [];
             sliceListHTML.push('<ul class="asset-list">');
             $.each(this.project.slices, function( index, sliceLayer ){
-                var asset = JSON.parse( JSON.stringify( sliceLayer.exportable ) ).pop();
+                if(sliceLayer.exportable.length > 0){
+                    var asset = JSON.parse( JSON.stringify( sliceLayer.exportable ) ).pop();
 
-                sliceListHTML.push(
-                    '<li id="slice-' + sliceLayer.objectID + '" class="slice-layer" data-objectId="' + sliceLayer.objectID + '">',
-                        '<picture><img src="' +  'assets/' + asset.path + '?' + timestamp + '" alt=""></picture>',
-                        '<div>',
-                            '<h3>' + sliceLayer.name + '</h3>',
-                            '<small>' + self.unitSize(sliceLayer.rect.width) + ' × ' + self.unitSize(sliceLayer.rect.height) + '</small>',
-                        '</div>',
-                    '</li>');
+                    sliceListHTML.push(
+                        '<li id="slice-' + sliceLayer.objectID + '" class="slice-layer" data-objectId="' + sliceLayer.objectID + '">',
+                            '<picture><img src="' +  'assets/' + asset.path + '?' + timestamp + '" alt=""></picture>',
+                            '<div>',
+                                '<h3>' + sliceLayer.name + '</h3>',
+                                '<small>' + self.unitSize(sliceLayer.rect.width) + ' × ' + self.unitSize(sliceLayer.rect.height) + '</small>',
+                            '</div>',
+                        '</li>');
+                }
             });
             sliceListHTML.push('</ul>');
             if(this.project.slices.length > 0){
@@ -600,7 +604,6 @@ var I18N = {},
             this.project.colorNames = {};
             colorListHTML.push('<ul class="color-list">');
             $.each(this.project.colors, function( index, color ){
-                // var asset = JSON.parse( JSON.stringify( sliceLayer.exportable ) ).pop();
                 self.project.colorNames[color.color['argb-hex']] = color.name;
                 colorListHTML.push(
                     '<li id="color-' + index + '" data-color="' + encodeURI(JSON.stringify(color.color)) + '">',
