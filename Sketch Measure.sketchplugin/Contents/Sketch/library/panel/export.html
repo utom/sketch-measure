@@ -81,19 +81,20 @@
                 $('#submit').attr('disabled', false);
             }
         },
-        checkPCheckbox = function(){
+        checkPCheckbox = function(id){
             $('.page-list').each(function(index){
 
                 var allCheckboxLength = $(this).find('input[name=artboards]').length,
                         checkedLength = $(this).find('input[name=artboards]:checked').length;
                 $(this).find('input[name=pages]').parent().removeClass('half-checked');
-                $(this).find('input[name=pages]:checked').click();
+                $(this).find('input[name=pages]').prop('checked', false);
 
                 if(checkedLength && checkedLength < allCheckboxLength){
                     $(this).find('input[name=pages]').parent().addClass('half-checked');
                 }
                 else if(checkedLength && checkedLength >= allCheckboxLength){
-                    $(this).find('input[name=pages]').click();
+                    // $(this).find('input[name=pages]').click();
+                    $(this).find('input[name=pages]').prop('checked', true);
                 }
 
             });
@@ -139,21 +140,21 @@
             $.each(data.pages, function(index, page){
                 var pageIndex = index;
                 if(page.artboards.length > 0){
-                    artboardsList.push('<div class="page-list">');
-                    artboardsList.push('<label id="page-' + pageIndex + '" class="page-item">',
+                    artboardsList.push('<div id="page-' + pageIndex + '" class="page-list">');
+                    artboardsList.push('<label class="page-item">',
                                             '<div class="checkbox">',
-                                                '<input id="p-' + pageIndex + '" type="checkbox" name="pages" value="' + pageIndex + '">',
+                                                '<input id="p-' + pageIndex + '" type="checkbox" class="page-' + pageIndex + '" name="pages" value="' + pageIndex + '">',
                                                 '<label for="p-' + pageIndex + '"></label>',
                                             '</div>',
                                             page.name,
                                             '</label>');
-                    artboardsList.push('<ul class="page-' + index + '">');
+                    artboardsList.push('<ul class="p-' + index + '">');
                     $.each(page.artboards, function(index, artboard){
                         artboardsList.push(
                                 '<li title="' + artboard.name + '">',
                                     '<label class="artboard-item">',
                                     '<div class="checkbox">',
-                                        '<input id="artboard-' + artboard.objectID + '" class="p-' + pageIndex + '" type="checkbox" name="artboards" value="' + artboard.objectID + '">',
+                                        '<input id="artboard-' + artboard.objectID + '" type="checkbox" class="page-' + pageIndex + '" name="artboards" value="' + artboard.objectID + '">',
                                         '<label for="artboard-' + artboard.objectID + '"></label>',
                                     '</div>',
                                     '<div class="text">',
@@ -173,6 +174,7 @@
             }
 
             $('input[name=artboards]').change(function(){
+                var id = $(this).attr('class');
                 checkVCheckbox();
                 checkPCheckbox();
             });
@@ -183,46 +185,42 @@
 
             $('.checkbutton')
                 .on('click', '.c-all', function(){
-                    $('input[name=artboards]:not(:checked)').click();
+                    $('input[name=artboards]').prop("checked", true);
                     $('.opts-checkbox').blur();
+                    checkVCheckbox();
                 })
                 .on('click', '.c-none', function(){
-                    $('input[name=artboards]:checked').click();
+                    $('input[name=artboards]').prop("checked", false);
                     $('.opts-checkbox').blur();
-                })
-                .on('click', '.c-showing', function(){
-                    $('input[name=artboards]:checked').click();
-                    $('#artboards-list li').each(function(){
-                        if($(this).css('display') != 'none'){
-                            $(this).find('input[name=artboards]').click();
-                        }
-                    });
-                    $('.opts-checkbox').blur();
+                    checkVCheckbox();
                 })
                 .on('click', '.c-selection', function(){
-                    $('input[name=artboards]:checked').click();
+                    $('input[name=artboards]').prop("checked", false);
                     $.each(data.selection, function(index, id){
-                        $('#artboard-' + id).click();
+                        $('#artboard-' + id).prop("checked", true);
                     });
                     $('.opts-checkbox').blur();
+                    checkVCheckbox();
                 })
                 .on('click', '.c-current', function(){
-                    $('input[name=artboards]:checked').click();
+                    $('input[name=artboards]').prop("checked", false);
                     $.each(data.current, function(index, id){
-                        $('#artboard-' + id).click();
+                        $('#artboard-' + id).prop("checked", true);
                     });
                     $('.opts-checkbox').blur();
+                    checkVCheckbox();
                 });
 
-                $('input[name=pages]').change(function(){
-                    var id = $(this).attr('id');
-                    console.log(id);
-                    $(this).parent().removeClass('half-checked');
-                    $(this).parent().parent().parent().find('input[name=artboards]:checked').click();
-                    if( $(this).parent().find('input[name=pages]:checked').length > 0 ){
-                        $(this).parent().parent().parent().find('input[name=artboards]').click();
-                    }
-                });
+            $('input[name=pages]').change(function(){
+                var id = $(this).attr('class');
+                $('.' + id + '[name=artboards]').prop('checked', false);
+                if($(this).is(':checked')){
+                    $('.' + id + '[name=artboards]').prop('checked', true);
+                }
+                else{
+
+                }
+            });
 
             $('#filter').keyup(function(){
                 var $this = $(this),
@@ -252,11 +250,12 @@
 
             if(!data.selection){
                 $.each(data.current, function(index, id){
-                    $('#artboard-' + id).click();
+                    $('#artboard-' + id).prop("checked", true);
                 });
             }
+
             $.each(data.selection, function(index, id){
-                $('#artboard-' + id).click();
+                $('#artboard-' + id).prop("checked", true);
             });
 
 
@@ -264,9 +263,9 @@
             checkPCheckbox();
             $('#artboards-list').scrollTop($('input[name=artboards]:checked').parent().parent().position().top);
         }
-    // $(function(){
-    //     init(data)
-    // });
+    $(function(){
+        init(data)
+    });
     -->
     </script>
   </head>
