@@ -105,19 +105,24 @@ button{
     left: 0;
     width: 12px;
     height: 12px;
-    box-sizing: border-box;
+    /*box-sizing: border-box;*/
     /*background: #3484F5;*/
     background: #000;
-    border: 1px solid rgba(255,255,255,0.10);
+    /*border: 1px solid rgba(255,255,255,0.10);*/
     border-radius: 1px;
     overflow: hidden;
     cursor: pointer;
 }
+
+#artboards-list .checkbox label{
+    border: 1px solid rgba(255,255,255,0.10);
+}
+
 .checkbox input[type=checkbox]:checked + label,
 .v-checkbox.v-full-checked{
     background: #3484F5;
 }
-
+.checkbox.half-checked label:before,
 .v-checkbox.v-checked:before{
     content: " ";
     position: absolute;
@@ -438,20 +443,24 @@ button{
     height: 368px;
 }
 
-
-.page-list h3{
+.page-list{
+    margin:0 0 2px;
+}
+.page-list .page-item{
+    position: relative;
+    display: block;
     height: 32px;
     font-size: 12px;
     margin: 0;
     font-weight: normal;
-    padding: 0 0 0 16px;
+    padding: 0 0 0 44px;
     line-height: 32px;
     color: #555;
     background: #000;
     border: 1px solid #353535;
     border-width: 1px 0;
 }
-.page-list:first-child h3{
+.page-list:first-child .page-item{
     border-top: 0;
 }
 .page-list ul{
@@ -472,11 +481,14 @@ button{
     overflow: hidden;
     text-overflow: ellipsis;
 }
-
+.page-list .page-item .checkbox,
 .page-list .artboard-item .checkbox{
     position: absolute;
     top: 16px;
     margin-left: -28px;
+}
+.page-list .page-item .checkbox{
+    top: 5px;
 }
 .page-list .artboard-item .checkbox label{
     top: 2px;
@@ -623,7 +635,7 @@ button{
 }
 .checkbutton{
     position: absolute;
-    top: -146px;
+    top: -118px;
     left: 3px;
     padding: 0;
     margin: 0;

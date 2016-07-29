@@ -12,57 +12,57 @@
     <script type="text/javascript" src="assets/js/common.js"></script>
     <script type="text/javascript">
     <!--
-    // var data = {
-    //     exportOption: 1,
-    //     current: [0],
-    //     selection: [1,2,3],
-    //     pages: [
-    //         {
-    //             name: 'Page 1',
-    //             objectID: '0',
-    //             artboards: [
-    //                 {
-    //                     name: 'Index',
-    //                     objectID: '0'
-    //                 },
-    //                 {
-    //                     name: 'Video',
-    //                     objectID: '1'
-    //                 },
-    //                 {
-    //                     name: 'Explore',
-    //                     objectID: '2'
-    //                 },
-    //                 {
-    //                     name: 'Profile',
-    //                     objectID: '3'
-    //                 }
-    //             ]
-    //         },
-    //         {
-    //             name: 'Page 2',
-    //             objectID: '1',
-    //             artboards: [
-    //                 {
-    //                     name: 'Single content',
-    //                     objectID: '4'
-    //                 },
-    //                 {
-    //                     name: 'Single Video',
-    //                     objectID: '5'
-    //                 },
-    //                 {
-    //                     name: 'Search page',
-    //                     objectID: '6'
-    //                 },
-    //                 {
-    //                     name: 'Settings',
-    //                     objectID: '7'
-    //                 }
-    //             ]
-    //         }
-    //     ]
-    // };
+    var data = {
+        exportOption: 1,
+        current: [0],
+        selection: [1,2,3],
+        pages: [
+            {
+                name: 'Page 1',
+                objectID: '0',
+                artboards: [
+                    {
+                        name: 'Index',
+                        objectID: '0'
+                    },
+                    {
+                        name: 'Video',
+                        objectID: '1'
+                    },
+                    {
+                        name: 'Explore',
+                        objectID: '2'
+                    },
+                    {
+                        name: 'Profile',
+                        objectID: '3'
+                    }
+                ]
+            },
+            {
+                name: 'Page 2',
+                objectID: '1',
+                artboards: [
+                    {
+                        name: 'Single content',
+                        objectID: '4'
+                    },
+                    {
+                        name: 'Single Video',
+                        objectID: '5'
+                    },
+                    {
+                        name: 'Search page',
+                        objectID: '6'
+                    },
+                    {
+                        name: 'Settings',
+                        objectID: '7'
+                    }
+                ]
+            }
+        ]
+    };
     var checkVCheckbox = function(){
             var allCheckboxLength = $('input[name=artboards]').length,
                     checkedLength = $('input[name=artboards]:checked').length;
@@ -81,6 +81,23 @@
                 $('#submit').attr('disabled', false);
             }
         },
+        checkPCheckbox = function(){
+            $('.page-list').each(function(index){
+
+                var allCheckboxLength = $(this).find('input[name=artboards]').length,
+                        checkedLength = $(this).find('input[name=artboards]:checked').length;
+                $(this).find('input[name=pages]').parent().removeClass('half-checked');
+                $(this).find('input[name=pages]:checked').click();
+
+                if(checkedLength && checkedLength < allCheckboxLength){
+                    $(this).find('input[name=pages]').parent().addClass('half-checked');
+                }
+                else if(checkedLength && checkedLength >= allCheckboxLength){
+                    $(this).find('input[name=pages]').click();
+                }
+
+            });
+        },
         init = function(data) {
             $('body').html([
                     '<div class="container">',
@@ -96,7 +113,6 @@
                                 '<ul class="checkbutton">',
                                     '<li class="c-all">' + _('All') + '</li>',
                                     '<li class="c-none">' + _('None') + '</li>',
-                                    '<li class="c-showing">' + _('Select filtered') + '</li>',
                                     '<li class="c-selection">' + _('Selection of Sketch') + '</li>',
                                     '<li class="c-current">' + _('Current of Sketch') + '</li>',
                                 '</ul>',
@@ -111,7 +127,7 @@
                                     '<input id="export-option" type="checkbox" name="export-option" value="1">',
                                     '<label for="export-option"></label>',
                                 '</div>',
-                                _('Single mode'),
+                                _('Export only one file'),
                             '</label>',
                         '</div>',
                         '<div class="footer">',
@@ -124,14 +140,20 @@
                 var pageIndex = index;
                 if(page.artboards.length > 0){
                     artboardsList.push('<div class="page-list">');
-                    artboardsList.push('<h3>' + page.name + '</h3>');
-                    artboardsList.push('<ul>');
+                    artboardsList.push('<label id="page-' + pageIndex + '" class="page-item">',
+                                            '<div class="checkbox">',
+                                                '<input id="p-' + pageIndex + '" type="checkbox" name="pages" value="' + pageIndex + '">',
+                                                '<label for="p-' + pageIndex + '"></label>',
+                                            '</div>',
+                                            page.name,
+                                            '</label>');
+                    artboardsList.push('<ul class="page-' + index + '">');
                     $.each(page.artboards, function(index, artboard){
                         artboardsList.push(
                                 '<li title="' + artboard.name + '">',
                                     '<label class="artboard-item">',
                                     '<div class="checkbox">',
-                                        '<input id="artboard-' + artboard.objectID + '" type="checkbox" name="artboards" value="' + artboard.objectID + '">',
+                                        '<input id="artboard-' + artboard.objectID + '" class="p-' + pageIndex + '" type="checkbox" name="artboards" value="' + artboard.objectID + '">',
                                         '<label for="artboard-' + artboard.objectID + '"></label>',
                                     '</div>',
                                     '<div class="text">',
@@ -150,10 +172,9 @@
                 $('#artboards-list').html(artboardsList.join(''));
             }
 
-            checkVCheckbox();
-
             $('input[name=artboards]').change(function(){
                 checkVCheckbox();
+                checkPCheckbox();
             });
 
             if(data.exportOption){
@@ -193,13 +214,19 @@
                     $('.opts-checkbox').blur();
                 });
 
+                $('input[name=pages]').change(function(){
+                    var id = $(this).attr('id');
+                    console.log(id);
+                    $(this).parent().removeClass('half-checked');
+                    $(this).parent().parent().parent().find('input[name=artboards]:checked').click();
+                    if( $(this).parent().find('input[name=pages]:checked').length > 0 ){
+                        $(this).parent().parent().parent().find('input[name=artboards]').click();
+                    }
+                });
+
             $('#filter').keyup(function(){
                 var $this = $(this),
                     filterText = $this.val().toLowerCase();
-                $('#artboards-list h3').show();
-                if(filterText.length > 0){
-                    $('#artboards-list h3').hide();
-                }
                 $('#artboards-list li')
                     .show()
                     .filter(
@@ -232,6 +259,9 @@
                 $('#artboard-' + id).click();
             });
 
+
+            checkVCheckbox();
+            checkPCheckbox();
             $('#artboards-list').scrollTop($('input[name=artboards]:checked').parent().parent().position().top);
         }
     // $(function(){
