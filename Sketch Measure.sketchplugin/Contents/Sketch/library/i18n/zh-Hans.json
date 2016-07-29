@@ -87,5 +87,5 @@
     "Select a layer to add exportable!": "请选中 1 个图层!",
     "Import complete!": "导入完成!",
     "Processing layer %@ of %@": "画板处理中... %@ \/ %@",
-    "Export only one file": "只导出一个文件"
+    "Advanced mode": "高级模式"
 };
