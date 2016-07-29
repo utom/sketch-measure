@@ -44,14 +44,14 @@
             "script": "mark.sketchscript"
         },
         {
-            "name": "Hide marks",
+            "name": "Toggle hidden",
             "identifier": "commandHidden",
             "shortcut": "ctrl shift h",
             "handler": "commandHidden",
             "script": "mark.sketchscript"
         },
         {
-            "name": "Lock marks",
+            "name": "Toggle locked",
             "identifier": "commandLocked",
             "shortcut": "ctrl shift l",
             "handler": "commandLocked",
