@@ -100,12 +100,11 @@ main{position:relative;height:calc(100vh - 60px);}
 .distance.h:after,.distance.h:before{content:"";top:-2px;left:0;width:1px;height:5px;background:#EE6723;}
 .distance.v:after{top:auto;bottom:0;}
 .distance.h:after{left:auto;right:0;}
-.note{position:absolute;margin:-12px 0 0 -12px;width:24px;height:24px;background:#50E3C2;border-radius:50%;border:2px solid #FFF;box-shadow:0 0 3px rgba(0,0,0,.24);}
-.note:before{content:attr(data-index);font-size:12px;display:block;color:#FFF;text-align:center;width:20px;line-height:20px;}
+.note{position:absolute;margin:-12px 0 0 -12px;width:24px;height:24px;background:#F5A623;border-radius:50%;border:2px solid #FFF;box-shadow:0 0 3px rgba(0,0,0,.24);}
+.note:before{content:attr(data-index);font-size:12px;display:block;color:#FFF;text-align:center;width:100%;height:100%;line-height:20px;}
 .note:hover{box-shadow:0 0 3px rgba(0,0,0,.64);}
-.note div{position:absolute;top:50%;left:30px;min-width:160px;border-radius:4px;padding:8px;background:#FFF;box-shadow:0 0 3px rgba(0,0,0,.5);-webkit-user-select:text;color:#222;display:none;transform:translateY(-50%);z-index:666;}
+.note div{position:absolute;top:50%;left:30px;border-radius:4px;padding:8px;background:#FFF;box-shadow:0 0 3px rgba(0,0,0,.5);-webkit-user-select:text;color:#222;transform:translateY(-50%);z-index:666;}
 .note div:before{content:"";position:absolute;left:-7px;top:50%;width:8px;height:14px;background:url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAcCAMAAABf788oAAAANlBMVEUAAAAAAAAAAAAAAAAAAAAAAADR0dEAAAAAAAAAAAAAAAAAAADNzc0AAAAAAADa2trk5OT////5auFFAAAAEXRSTlMAAgYKEhydNCkYDiOfLieWjz4MUj4AAABrSURBVBjTZZFbDoAgEANVFHmIOve/rERjWGj/psnCbjv1gg7nGTpcFmtUdA4Mu7QmMLzGGMHwlvMNhs9yAY3D7qkamcYHr/75ys1IMRePNbbwsRo6oo/qt7rY6Ohxer4GpBFqyFqDFtWqfAD4dQrlWDmShAAAAABJRU5ErkJggg==) no-repeat;background-size:8px 14px;transform:translateY(-50%);}
-.note:hover div{display:block;}
 .slidebox{position:relative;width:40px;height:20px;display:inline-block;}
 .slidebox input{visibility:hidden;}
 .slidebox label{position:absolute;top:0;left:0;width:40px;height:20px;background:#898989;box-shadow:inset 0 1px 3px 0 rgba(0,0,0,.3);border-radius:10px;cursor:pointer;transition:all .2s ease;}
@@ -623,7 +622,7 @@ var I18N = {},
             var self = this,
                 notesHTML = [];
             $.each(this.current.notes, function(index, note){
-                notesHTML.push('<div class="note" data-index="' + (index + 1) +'" style="left: ' + self.zoomSize(note.rect.x) + 'px; top: ' + self.zoomSize(note.rect.y) + 'px;"><div>' + note.note + '</div></div>');
+                notesHTML.push('<div class="note" data-index="' + (index + 1) +'" style="left: ' + self.zoomSize(note.rect.x) + 'px; top: ' + self.zoomSize(note.rect.y) + 'px;"><div style="white-space:nowrap;display:none;">' + note.note + '</div></div>');
             })
             $('#notes').html(notesHTML.join(''));
         },
@@ -1340,6 +1339,20 @@ var I18N = {},
                     
                 });
 
+            $('.note')
+                .mouseover(function(){
+                    $(this).find('div').show();
+                    var width = $(this).find('div').outerWidth();
+                    if(width > 160){
+                        $(this).find('div').css({
+                            width: 160,
+                            'white-space': 'normal'
+                        })
+                    }
+                })
+                .mouseout(function(){
+                    $(this).find('div').hide();
+                });
         }
     }
 
