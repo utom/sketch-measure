@@ -87,6 +87,7 @@ button{
 }
 .checkbox{
     margin: 0 8px 0 0;
+    width: 12px;
     position: relative;
     box-sizing: border-box;
     display: inline-block;
@@ -104,6 +105,7 @@ button{
     left: 0;
     width: 12px;
     height: 12px;
+    box-sizing: border-box;
     /*background: #3484F5;*/
     background: #000;
     border: 1px solid rgba(255,255,255,0.10);

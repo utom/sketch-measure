@@ -13,6 +13,7 @@
     <script type="text/javascript">
     <!--
     // var data = {
+    //     exportOption: 1,
     //     current: [0],
     //     selection: [1,2,3],
     //     pages: [
@@ -89,7 +90,7 @@
                                 '<p>' + _('You need add some artboards.') + '</p>',
                             '</div>',
                         '</div>',
-                        '<div class="options-bar">',
+                        '<div class="options-bar" style="margin-bottom:0;">',
                             '<div class="opts-checkbox" tabindex="0">',
                                 '<div class="v-checkbox v-checked"></div>',
                                 '<ul class="checkbutton">',
@@ -103,6 +104,15 @@
                             '<div class="opts-filter">',
                                 '<input id="filter" type="text" placeholder="' + _('Filter') + '">',
                             '</div>',
+                        '</div>',
+                        '<div class="options">',
+                            '<label class="item mrb10">',
+                                '<div class="checkbox">',
+                                    '<input id="export-option" type="checkbox" name="export-option" value="1">',
+                                    '<label for="export-option"></label>',
+                                '</div>',
+                                _('Single mode'),
+                            '</label>',
                         '</div>',
                         '<div class="footer">',
                             '<button id="submit" class="submit" disabled="disabled">' + _('Export') + '</button>',
@@ -145,6 +155,10 @@
             $('input[name=artboards]').change(function(){
                 checkVCheckbox();
             });
+
+            if(data.exportOption){
+                $('#export-option').attr('checked', true);
+            }
 
             $('.checkbutton')
                 .on('click', '.c-all', function(){
@@ -203,6 +217,8 @@
                     var objectID = $(this).val();
                     data[objectID] = true;
                 });
+                data.exportOption = false;
+                if( $('input[name=export-option]:checked').length > 0 ) data.exportOption = true;
 
                 SMAction(data);
             });

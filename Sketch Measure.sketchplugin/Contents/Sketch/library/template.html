@@ -358,10 +358,11 @@ var I18N = {},
             this.events();
         },
         screen: function() {
+            var imageData = (this.current.imageBase64)? this.current.imageBase64: this.current.imagePath + '?' + timestamp;
             $('#screen').css({
                 width: this.zoomSize( this.current.width ),
                 height: this.zoomSize( this.current.height ),
-                background: '#FFF url(' + this.current.imagePath + '?' + timestamp + ') no-repeat',
+                background: '#FFF url(' + imageData + ') no-repeat',
                 backgroundSize: this.zoomSize( this.current.width ) + 'px ' + this.zoomSize( this.current.height ) + 'px'
             });
             $('#screen').parent().css({
@@ -516,11 +517,12 @@ var I18N = {},
                 pagesData[artboard.pageObjectID].count++;
 
                 var classNames = (self.artboardIndex == index && !artboard.fileName)? ' active': '',
-                    fileName = (artboard.fileName)? ' data-file="' + artboard.fileName + '"': '';
+                    fileName = (artboard.fileName)? ' data-file="' + artboard.fileName + '"': '',
+                    imageData = (artboard.imageBase64)? artboard.imageBase64: artboard.imagePath + '?' + timestamp;
                 artboardListHTML.push(
                         '<li id="artboard-' + index + '"' + fileName + ' class="artboard' + classNames + '" data-page-id="' + artboard.pageObjectID + '" data-id="' + artboard.objectID + '" data-index="' + index + '" >',
                             '<picture class="preview-img" data-name="' + artboard.name + '">',
-                                '<img alt="' + artboard.name + '" src="' + artboard.imagePath + '?' + timestamp + '">',
+                                '<img alt="' + artboard.name + '" src="' + imageData + '">',
                             '</picture>',
                         '</li>'
                     );
@@ -1383,10 +1385,17 @@ var I18N = {},
         }
 
         this.render();
+
         if(!isNaN(path.artboard)){
             $('.current').removeClass('current');
             $('.navbar').removeClass('on');
         }
+
+        if(this.current.imageBase64){
+            $('.tab').remove();
+            $('.navbar').remove();
+        }
+
         return this;
     };
     init.prototype = SMApp.fn;

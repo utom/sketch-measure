@@ -2041,7 +2041,6 @@ SM.extend({
             !this.sliceCache[objectID]
         ){
             var sliceLayer = ( layerData.type == "symbol" )? layer.symbolMaster(): layer;
-            log(layerData.type);
             if(symbolLayer && this.is(symbolLayer.parentGroup(), MSSymbolMaster)){
                 layer.exportOptions().setLayerOptions(2);
             }
@@ -2124,6 +2123,11 @@ SM.extend({
         data.current = [];
         data.pages = [];
 
+        data.exportOption = self.configs.exportOption;
+        if(data.exportOption == undefined){
+            data.exportOption = true;
+        }
+
         if(this.selection.count() > 0){
             var selectionArtboards = this.find({key: "(class != NULL) && (class == %@)", match: MSArtboardGroup}, this.selection, true);
             if(selectionArtboards.count() > 0){
@@ -2157,7 +2161,7 @@ SM.extend({
         return this.SMPanel({
             url: this.pluginSketch + "/panel/export.html",
             width: 320,
-            height: 521,
+            height: 567,
             data: data,
             callback: function( data ){
                 self.selectionArtboards = [];
@@ -2171,6 +2175,10 @@ SM.extend({
                         self.selectionArtboards.push(artboard);
                     }
                 }
+
+                self.configs = self.setConfigs({
+                    exportOption: data.exportOption
+                });
             }
         });
     },
@@ -2207,6 +2215,7 @@ SM.extend({
                         colors: []
                     };
 
+                self.single = false;
                 self.wantsStop = false;
 
                 coscript.shouldKeepAround = true
@@ -2251,22 +2260,42 @@ SM.extend({
                             data.artboards[artboardIndex].objectID = self.toJSString(artboard.objectID());
                             data.artboards[artboardIndex].width = artboardRect.width;
                             data.artboards[artboardIndex].height = artboardRect.height;
-                            data.artboards[artboardIndex].imagePath = "preview/" + encodeURI(name) + ".png";
-                            // data.artboards[artboardIndex].imagePath = "preview/" + objectID + ".png";
+                            
 
-                            self.exportImage({
-                                    layer: artboard,
-                                    path: self.toJSString(savePath) + "/preview",
-                                    scale: 2,
-                                    // name: objectID,
-                                    name: name
-                                });
+                            if(!self.configs.exportOption){
+                                var imageURL = NSURL.fileURLWithPath(self.exportImage({
+                                        layer: artboard,
+                                        scale: 2,
+                                        name: objectID
+                                    })),
+                                    imageData = NSData.dataWithContentsOfURL(imageURL),
+                                    imageBase64 = imageData.base64EncodedStringWithOptions(0);
+                                data.artboards[artboardIndex].imageBase64 = 'data:image/png;base64,' + imageBase64;
+                                self.writeFile({
+                                        content: self.template(template, {lang: language, data: JSON.stringify(data).replace(/\u2028/g,'\\u2028').replace(/\u2029/g,'\\u2029')}),
+                                        path: self.toJSString(savePath),
+                                        fileName: name + ".html"
+                                    });
+                            }
+                            else{
+                                // data.artboards[artboardIndex].imagePath = "preview/" + objectID + ".png";
+                                data.artboards[artboardIndex].imagePath = "preview/" + encodeURI(name) + ".png";
 
-                            self.writeFile({
-                                    content: "<meta http-equiv=\"refresh\" content=\"0;url=../index.html#artboard" + artboardIndex + "\">",
-                                    path: self.toJSString(savePath) + "/links",
-                                    fileName: name + ".html"
-                                });
+                                self.exportImage({
+                                        layer: artboard,
+                                        path: self.toJSString(savePath) + "/preview",
+                                        scale: 2,
+                                        // name: objectID,
+                                        name: name
+                                    });
+
+                                self.writeFile({
+                                        content: "<meta http-equiv=\"refresh\" content=\"0;url=../index.html#artboard" + artboardIndex + "\">",
+                                        path: self.toJSString(savePath) + "/links",
+                                        fileName: name + ".html"
+                                    });
+                            }
+                            
 
                             layerIndex = 0;
                             artboardIndex++;
@@ -2280,27 +2309,29 @@ SM.extend({
                             if(self.configs.colors && self.configs.colors.length > 0){
                                 data.colors = self.configs.colors;
                                 self.writeFile({
-                                    content: JSON.stringify(self.configs.colors),
-                                    path: self.toJSString(savePath),
-                                    fileName: "colors.json"
-                                });
+                                        content: JSON.stringify(self.configs.colors),
+                                        path: self.toJSString(savePath),
+                                        fileName: "colors.json"
+                                    });
                             }
 
-                            self.writeFile({
-                                    content: self.template(template, {lang: language, data: JSON.stringify(data).replace(/\u2028/g,'\\u2028').replace(/\u2029/g,'\\u2029')}),
-                                    path: self.toJSString(savePath),
-                                    fileName: "index.html"
-                                });
+                            var selectingPath = savePath;
+                            if(self.configs.exportOption){
+                                self.writeFile({
+                                        content: self.template(template, {lang: language, data: JSON.stringify(data).replace(/\u2028/g,'\\u2028').replace(/\u2029/g,'\\u2029')}),
+                                        path: self.toJSString(savePath),
+                                        fileName: "index.html"
+                                    });
+                                selectingPath = savePath + "/index.html";
+                            }
+                            NSWorkspace.sharedWorkspace().activateFileViewerSelectingURLs(NSArray.arrayWithObjects(NSURL.fileURLWithPath(selectingPath)));
 
                             self.message(_("Export complete!"));
-
-                            NSWorkspace.sharedWorkspace().activateFileViewerSelectingURLs(NSArray.arrayWithObjects(NSURL.fileURLWithPath(savePath + "/index.html")));
                             self.wantsStop = true;
                         }
                     }
 
                     if( self.wantsStop === true ){
-                        log('self.wantsStop');
                         coscript.shouldKeepAround = false;
                         return interval.cancel();
                     }
