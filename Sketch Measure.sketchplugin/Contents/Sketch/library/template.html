@@ -1339,8 +1339,8 @@ var I18N = {},
                     
                 });
 
-            $('.note')
-                .mouseover(function(){
+            $('#notes')
+                .on('mouseover', '.note', function(){
                     $(this).find('div').show();
                     var width = $(this).find('div').outerWidth();
                     if(width > 160){
@@ -1350,7 +1350,7 @@ var I18N = {},
                         })
                     }
                 })
-                .mouseout(function(){
+                .on('mouseout', '.note', function(){
                     $(this).find('div').hide();
                 });
         }
