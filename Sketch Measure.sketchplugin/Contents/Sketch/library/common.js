@@ -2078,11 +2078,22 @@ SM.extend({
                     tempSymbolLayers = tempGroup.children().objectEnumerator(),
                     idx = 0;
 
+                var tempArtboard = this.addShape();
+                tempGroup.addLayers([tempArtboard]);
+                var tempArtboardRect = this.getRect(tempArtboard),
+                    symbolMasterFrame = layer.symbolMaster().frame();
+
+                tempArtboardRect.setX(symbolRect.x);
+                tempArtboardRect.setY(symbolRect.y);
+                tempArtboardRect.setWidth(symbolMasterFrame.width());
+                tempArtboardRect.setHeight(symbolMasterFrame.height());
+
                 tempGroup.resizeToFitChildrenWithOption(0);
                 tempGroupRect.setX(symbolRect.x);
                 tempGroupRect.setY(symbolRect.y);
                 tempGroupRect.setWidth(symbolRect.width);
                 tempGroupRect.setHeight(symbolRect.height);
+                this.removeLayer(tempArtboard);
 
                 while(tempSymbolLayer = tempSymbolLayers.nextObject()){
                     self.getLayer(
