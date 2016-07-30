@@ -188,11 +188,13 @@
                     $('input[name=artboards]').prop("checked", true);
                     $('.opts-checkbox').blur();
                     checkVCheckbox();
+                    checkPCheckbox();
                 })
                 .on('click', '.c-none', function(){
                     $('input[name=artboards]').prop("checked", false);
                     $('.opts-checkbox').blur();
                     checkVCheckbox();
+                    checkPCheckbox();
                 })
                 .on('click', '.c-selection', function(){
                     $('input[name=artboards]').prop("checked", false);
@@ -201,6 +203,7 @@
                     });
                     $('.opts-checkbox').blur();
                     checkVCheckbox();
+                    checkPCheckbox();
                 })
                 .on('click', '.c-current', function(){
                     $('input[name=artboards]').prop("checked", false);
@@ -209,6 +212,7 @@
                     });
                     $('.opts-checkbox').blur();
                     checkVCheckbox();
+                    checkPCheckbox();
                 });
 
             $('input[name=pages]').change(function(){
