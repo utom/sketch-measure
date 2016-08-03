@@ -185,7 +185,7 @@ SM.extend({
         };
     },
     toNopPath: function(str){
-        return this.toJSString(str).replace(/[\/\\\?]/g, " - ");
+        return this.toJSString(str).replace(/[\/\\\?]/g, " ");
     },
     toHTMLEncode: function(str){
         return this.toJSString(str)
@@ -195,8 +195,16 @@ SM.extend({
                     .replace(/\'/g, "&#39;")
                     .replace(/\"/g, "&quot;")
                     .replace(/\u2028/g,"\\u2028")
-                    .replace(/\u2029/g,"\\u2029");
+                    .replace(/\u2029/g,"\\u2029")
+                ;
         // return str.replace(/\&/g, "&amp;").replace(/\"/g, "&quot;").replace(/\'/g, "&#39;").replace(/\</g, "&lt;").replace(/\>/g, '&gt;');
+    },
+    toSlug: function(str){
+        return this.toJSString(str)
+                .toLowerCase()
+                .replace(/[^\w ]+/g,'')
+                .replace(/ +/g,'-')
+                ;
     },
     toJSString: function(str){
         return new String(str).toString();
@@ -2263,7 +2271,7 @@ SM.extend({
                             var objectID = artboard.objectID(),
                                 artboardRect = self.getRect(artboard),
                                 page = artboard.parentGroup(),
-                                name = self.toNopPath(self.toHTMLEncode(page.name()) + ' - ' + self.toHTMLEncode(artboard.name()));
+                                name = self.toSlug(self.toNopPath(self.toHTMLEncode(page.name()) + ' ' + self.toHTMLEncode(artboard.name())));
 
                             data.artboards[artboardIndex].pageName = self.toHTMLEncode(page.name());
                             data.artboards[artboardIndex].pageObjectID = self.toJSString(page.objectID());
