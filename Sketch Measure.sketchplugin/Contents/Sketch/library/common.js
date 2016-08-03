@@ -1885,6 +1885,7 @@ SM.extend({
         var isVisible = true,
             isLocked = false,
             hasSlice = false,
+            isEmpty = false,
             isMaskChildLayer = false,
             isMeasure = false;
 
@@ -1915,6 +1916,13 @@ SM.extend({
                 isMaskChildLayer = true
             }
 
+            if (
+                this.is(layer, MSTextLayer) &&
+                layer.isEmpty()
+            ) {
+                isEmpty = true
+            }
+
             layer = group;
         }
         return {
@@ -1922,7 +1930,8 @@ SM.extend({
             isLocked: isLocked,
             hasSlice: hasSlice,
             isMaskChildLayer: isMaskChildLayer,
-            isMeasure: isMeasure
+            isMeasure: isMeasure,
+            isEmpty: isEmpty
         }
     },
     checkMask: function(group, layer, layerData, layerStates){
@@ -2432,6 +2441,7 @@ SM.extend({
             !this.isExportable(layer) ||
             !layerStates.isVisible ||
             ( layerStates.isLocked && !this.is(layer, MSSliceLayer) ) ||
+            layerStates.isEmpty ||
             layerStates.hasSlice ||
             layerStates.isMeasure
         ){
@@ -2463,7 +2473,7 @@ SM.extend({
         }
 
         if ( layerType == "text" ) {
-            layerData.content = this.toHTMLEncode(layer.storage().string());
+            layerData.content = this.toHTMLEncode(layer.stringValue());
             layerData.color = this.colorToJSON(layer.textColor());
             layerData.fontSize = layer.fontSize();
             layerData.fontFace = this.toJSString(layer.fontPostscriptName());
