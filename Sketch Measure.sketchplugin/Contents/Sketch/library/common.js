@@ -1,10 +1,11 @@
 var I18N = {},
     webI18N = {
-        "zh-Hans": 'zh-cn'
+        "zh-Hans": "zh-cn",
+        "zh-Hant": "zh-tw"
     },
     lang = NSUserDefaults.standardUserDefaults().objectForKey("AppleLanguages").objectAtIndex(0),
     language = "";
- 
+
 function _(str, data){
     var str = (I18N[lang] && I18N[lang][str])? I18N[lang][str]: str;
 
@@ -202,8 +203,10 @@ SM.extend({
     toSlug: function(str){
         return this.toJSString(str)
                 .toLowerCase()
-                .replace(/[^\w ]+/g,'')
-                .replace(/ +/g,'-')
+                .replace(/(<([^>]+)>)/ig, "")
+                .replace(/[\/\+\|]/g, " ")
+                .replace(new RegExp("[\\!@#$%^&\\*\\(\\)\\?=\\{\\}\\[\\]\\\\\\\,\\.\\:\\;\\']", "gi"),'')
+                .replace(/\s+/g,'-')
                 ;
     },
     toJSString: function(str){
@@ -1231,7 +1234,7 @@ SM.extend({
             targetObjectID = target.objectID(),
             layerObjectID = layer.objectID(),
             objectID = targetObjectID + "#" + layerObjectID,
-            slug = placement.toUpperCase() + "#",
+            prefix = placement.toUpperCase() + "#",
             sizeType = (placement == "top" || placement == "bottom")? "height": "width",
             targetRect = this.getRect(target),
             layerRect = this.getRect(layer),
@@ -1274,7 +1277,7 @@ SM.extend({
         else{
             switch(placement){
                 case "left" || "right":
-                    slug = "HORIZONTAL#";
+                    prefix = "HORIZONTAL#";
                     if(targetRect.maxX <  layerRect.x ){
                         tempX = targetRect.maxX;
                         tempWidth = layerRect.x - targetRect.maxX;
@@ -1288,7 +1291,7 @@ SM.extend({
                     }
                     break;
                 case "top" || "bottom":
-                    slug = "VERTICAL#";
+                    prefix = "VERTICAL#";
                     if(targetRect.maxY <  layerRect.y ){
                         tempY = targetRect.maxY;
                         tempHeight = layerRect.y - targetRect.maxY;
@@ -1318,7 +1321,7 @@ SM.extend({
             tempRect.setHeight(tempHeight);
 
             this.sizes({
-                name: slug + objectID,
+                name: prefix + objectID,
                 type: sizeType,
                 target: temp,
                 styles: styles,
@@ -2280,7 +2283,8 @@ SM.extend({
                             var objectID = artboard.objectID(),
                                 artboardRect = self.getRect(artboard),
                                 page = artboard.parentGroup(),
-                                name = self.toSlug(self.toNopPath(self.toHTMLEncode(page.name()) + ' ' + self.toHTMLEncode(artboard.name())));
+                                // name = self.toSlug(self.toHTMLEncode(page.name()) + ' ' + self.toHTMLEncode(artboard.name()));
+                                name = self.toSlug(page.name() + ' ' + artboard.name());
 
                             data.artboards[artboardIndex].pageName = self.toHTMLEncode(page.name());
                             data.artboards[artboardIndex].pageObjectID = self.toJSString(page.objectID());

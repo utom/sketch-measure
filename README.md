@@ -16,7 +16,11 @@ Friendly user interface offers you a more intuitive way of making marks.
 
 ## Spec Export
 Automatically generating html page with one click, inspect all the design details including CSS Styles on it offline.
-http://utom.design/news/
+
+**if you want to create one artboard by one HTML file, please uncheck "Advanced mode".**
+
+Demo: http://utom.design/news/
+
 ![SPEC EXPORT](http://utom.design/export@2x.png)
 
 ## Change Shortcuts
@@ -28,6 +32,7 @@ To create your own custom shortcuts, go to Keyboard in your System Preferences a
 * Author [utom](http://utom.design)
 * [SketchI18N](https://github.com/cute/SketchI18N), [cute](http://liguangming.com)
 * [esseak](https://github.com/esseak)
+* 繁體中文（台灣） by Kai
 * And [Other](https://github.com/utom/sketch-measure/contributors)
 
 ##Contact
