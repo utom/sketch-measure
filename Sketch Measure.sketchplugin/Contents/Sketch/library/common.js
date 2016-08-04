@@ -1,10 +1,11 @@
 var I18N = {},
     webI18N = {
-        "zh-Hans": 'zh-cn'
+        "zh-Hans": "zh-cn",
+        "zh-Hant": "zh-tw"
     },
     lang = NSUserDefaults.standardUserDefaults().objectForKey("AppleLanguages").objectAtIndex(0),
     language = "";
- 
+
 function _(str, data){
     var str = (I18N[lang] && I18N[lang][str])? I18N[lang][str]: str;
 
@@ -202,8 +203,10 @@ SM.extend({
     toSlug: function(str){
         return this.toJSString(str)
                 .toLowerCase()
-                .replace(/[^\w ]+/g,'')
-                .replace(/ +/g,'-')
+                .replace(/(<([^>]+)>)/ig, "")
+                .replace(/[\/\+\|]/g, " ")
+                .replace(new RegExp("[\\!@#$%^&\\*\\(\\)\\?=\\{\\}\\[\\]\\\\\\\,\\.\\:\\;\\']", "gi"),'')
+                .replace(/\s+/g,'-')
                 ;
     },
     toJSString: function(str){
@@ -2280,7 +2283,8 @@ SM.extend({
                             var objectID = artboard.objectID(),
                                 artboardRect = self.getRect(artboard),
                                 page = artboard.parentGroup(),
-                                name = self.toSlug(encodeURI(self.toNopPath(self.toHTMLEncode(page.name()) + ' ' + self.toHTMLEncode(artboard.name()))));
+                                // name = self.toSlug(self.toHTMLEncode(page.name()) + ' ' + self.toHTMLEncode(artboard.name()));
+                                name = self.toSlug(page.name() + ' ' + artboard.name());
 
                             data.artboards[artboardIndex].pageName = self.toHTMLEncode(page.name());
                             data.artboards[artboardIndex].pageObjectID = self.toJSString(page.objectID());
@@ -2306,15 +2310,15 @@ SM.extend({
                                     });
                             }
                             else{
-                                data.artboards[artboardIndex].imagePath = "preview/" + objectID + ".png";
-                                // data.artboards[artboardIndex].imagePath = "preview/" + encodeURI(name) + ".png";
+                                // data.artboards[artboardIndex].imagePath = "preview/" + objectID + ".png";
+                                data.artboards[artboardIndex].imagePath = "preview/" + encodeURI(name) + ".png";
 
                                 self.exportImage({
                                         layer: artboard,
                                         path: self.toJSString(savePath) + "/preview",
                                         scale: 2,
-                                        name: objectID,
-                                        // name: name
+                                        // name: objectID,
+                                        name: name
                                     });
 
                                 self.writeFile({
