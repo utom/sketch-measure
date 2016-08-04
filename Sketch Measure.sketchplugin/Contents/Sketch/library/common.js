@@ -1231,7 +1231,7 @@ SM.extend({
             targetObjectID = target.objectID(),
             layerObjectID = layer.objectID(),
             objectID = targetObjectID + "#" + layerObjectID,
-            slug = placement.toUpperCase() + "#",
+            prefix = placement.toUpperCase() + "#",
             sizeType = (placement == "top" || placement == "bottom")? "height": "width",
             targetRect = this.getRect(target),
             layerRect = this.getRect(layer),
@@ -1274,7 +1274,7 @@ SM.extend({
         else{
             switch(placement){
                 case "left" || "right":
-                    slug = "HORIZONTAL#";
+                    prefix = "HORIZONTAL#";
                     if(targetRect.maxX <  layerRect.x ){
                         tempX = targetRect.maxX;
                         tempWidth = layerRect.x - targetRect.maxX;
@@ -1288,7 +1288,7 @@ SM.extend({
                     }
                     break;
                 case "top" || "bottom":
-                    slug = "VERTICAL#";
+                    prefix = "VERTICAL#";
                     if(targetRect.maxY <  layerRect.y ){
                         tempY = targetRect.maxY;
                         tempHeight = layerRect.y - targetRect.maxY;
@@ -1318,7 +1318,7 @@ SM.extend({
             tempRect.setHeight(tempHeight);
 
             this.sizes({
-                name: slug + objectID,
+                name: prefix + objectID,
                 type: sizeType,
                 target: temp,
                 styles: styles,
