@@ -2265,7 +2265,7 @@ SM.extend({
                     if(!exporting) {
                         exporting = true;
                         var artboard = self.selectionArtboards[artboardIndex],
-                            // page = artboard.parentGroup(),
+                            page = artboard.parentGroup(),
                             layer = artboard.children()[layerIndex];
 
                         // log( page.name() + ' - ' + artboard.name() + ' - ' + layer.name());
@@ -2303,8 +2303,10 @@ SM.extend({
                                     imageData = NSData.dataWithContentsOfURL(imageURL),
                                     imageBase64 = imageData.base64EncodedStringWithOptions(0);
                                 data.artboards[artboardIndex].imageBase64 = 'data:image/png;base64,' + imageBase64;
+                                var newData =  JSON.parse(JSON.stringify(data));
+                                newData.artboards = [data.artboards[artboardIndex]];
                                 self.writeFile({
-                                        content: self.template(template, {lang: language, data: JSON.stringify(data).replace(/\u2028/g,'\\u2028').replace(/\u2029/g,'\\u2029')}),
+                                        content: self.template(template, {lang: language, data: JSON.stringify(newData).replace(/\u2028/g,'\\u2028').replace(/\u2029/g,'\\u2029')}),
                                         path: self.toJSString(savePath),
                                         fileName: name + ".html"
                                     });
