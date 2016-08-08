@@ -147,14 +147,12 @@ main{position:relative;height:calc(100vh - 60px);}
 .gradient .color:last-child label:before{display:none;}
 .navbar section{position:relative;overflow:auto;}
 .artboard-list,.asset-list,.color-list{margin:0;padding:0;list-style:none;}
-.artboard-list li{padding:16px;cursor:pointer;}
+.artboard-list li{padding:16px;display:flex;cursor:pointer;}
 .artboard-list li:hover,.asset-list li:hover,.color-list li:hover{background:#191A1E;}
-.artboard-list li.active h3:before{content:"";display:inline-block;margin:0 4px 0 0;width:8px;height:8px;border-radius:50%;background:#3484F5;}
-.artboard-list h3{margin:8px 0 0;text-align:center;color:#FFF;font-weight:400;font-size:12px;}
-.preview-img{display:block;margin:0 auto;width:128px;height:160px;text-align:center;}
-.preview-img img{display:block;margin:0 auto;max-width:128px;max-height:128px;box-shadow:0 2px 10px 0 rgba(0,0,0,.8);background:#FFF;}
-.preview-img:after{content:attr(data-name);display:inline-block;margin:8px 0 0;padding:6px 10px;line-height:12px;border-radius:12px;}
-.artboard-list li.active .preview-img:after{background:#3484F5;color:#FFF;}
+.artboard-list li.active{background:#454748;}
+.preview-img{display:block;width:44px;height:44px;text-align:center;background:rgba(0,0,0,.32);}
+.preview-img:before{content:' ';display:inline-block;vertical-align:middle;height:100%;}
+.preview-img img{max-width:44px;max-height:44px;background:#FFF;vertical-align:middle;}
 .pages-select{padding:24px;position:relative;}
 .pages-select h3{margin:0;text-align:center;font-size:12px;font-weight:400;color:#FFF;cursor:pointer;}
 .page-list em,.pages-select h3 em{font-style:normal;font-size:10px;color:#989A9C;}
@@ -175,12 +173,14 @@ main{position:relative;height:calc(100vh - 60px);}
 .asset-list li picture,.color-list li em{position:relative;display:block;text-align:center;width:32px;height:32px;background-color:#4A4A4A;background-image:linear-gradient(45deg,#000 25%,transparent 25%,transparent 75%,#000 75%,#000),linear-gradient(45deg,#000 25%,transparent 25%,transparent 75%,#000 75%,#000);background-size:8px 8px;background-position:0 0,4px 4px;border-radius:2px;}
 .color-list li em{background-color:#fff;background-image:linear-gradient(45deg,#dddadc 25%,transparent 25%,transparent 75%,#dddadc 75%,#dddadc),linear-gradient(45deg,#dddadc 25%,transparent 25%,transparent 75%,#dddadc 75%,#dddadc);border-radius:50%;overflow:hidden;}
 .color-list li em i{position:absolute;top:0;left:0;right:0;bottom:0;}
-.asset-list li div,.color-list li div{padding:0 0 0 16px;flex:1;}
+.artboard-list li div,.asset-list li div,.color-list li div{padding:0 0 0 16px;flex:1;}
+.artboard-list li div{padding:6px 0 4px 16px;}
 .asset-list li picture:before{content:"";display:inline-block;height:100%;vertical-align:middle;}
 .asset-list li picture img{vertical-align:middle;max-width:28px;max-height:28px;}
 .asset-list li picture:after{content:"";position:absolute;top:0;left:0;right:0;bottom:0;}
-.asset-list h3,.color-list h3{margin:0 0 4px;padding:0;color:#FFF;font-size:12px;font-weight:400;overflow:hidden;text-overflow:ellipsis;}
-.asset-list small,.color-list small{font-size:10px;}
+.artboard-list h3, .asset-list h3,.color-list h3{margin:0 0 4px;padding:0;color:#FFF;font-size:12px;font-weight:400;overflow:hidden;text-overflow:ellipsis;}
+.artboard-list small, .asset-list small,.color-list small{font-size:10px;}
+.artboard-list li.active small{color:#FFF;}
 .empty{position:absolute;top:30%;left:0;right:0;transform:translateY(-50%);vertical-align:middle;text-align:center;}
 .message{position:absolute;top:50%;left:50%;padding:10px 20px;max-width:320px;transform:translateX(-50%) translateY(-50%);text-align:center;border-radius:4px;background:rgba(0,0,0,.96);border: 1px solid rgba(255,255,255,.16);color:#FFF;box-shadow:0 2px 10px rgba(0,0,0,.32);z-index:9;display:none;}
     </style>
@@ -524,6 +524,10 @@ var I18N = {},
                             '<picture class="preview-img" data-name="' + artboard.name + '">',
                                 '<img alt="' + artboard.name + '" src="' + imageData + '">',
                             '</picture>',
+                            '<div>',
+                            '<h3>' + artboard.name + '</h3>',
+                            '<small>' + artboard.pageName + '</small>',
+                            '</div>',
                         '</li>'
                     );
             });

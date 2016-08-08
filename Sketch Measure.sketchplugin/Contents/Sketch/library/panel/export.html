@@ -114,6 +114,7 @@
                                 '<ul class="checkbutton">',
                                     '<li class="c-all">' + _('All') + '</li>',
                                     '<li class="c-none">' + _('None') + '</li>',
+                                    '<li class="c-showing">' + _('Select only filtered') + '</li>',
                                     '<li class="c-selection">' + _('Selection of Sketch') + '</li>',
                                     '<li class="c-current">' + _('Current of Sketch') + '</li>',
                                 '</ul>',
@@ -192,6 +193,17 @@
                 })
                 .on('click', '.c-none', function(){
                     $('input[name=artboards]').prop("checked", false);
+                    $('.opts-checkbox').blur();
+                    checkVCheckbox();
+                    checkPCheckbox();
+                })
+                .on('click', '.c-showing', function(){
+                    $('input[name=artboards]').prop("checked", false);
+                    $('#artboards-list li').each(function(){
+                        if($(this).css('display') != 'none'){
+                            $(this).find('input[name=artboards]').prop("checked", true);
+                        }
+                    });
                     $('.opts-checkbox').blur();
                     checkVCheckbox();
                     checkPCheckbox();

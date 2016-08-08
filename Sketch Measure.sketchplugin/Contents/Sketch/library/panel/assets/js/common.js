@@ -15,7 +15,7 @@ $(function() {
 
                 if(keyCode == 13){
                     event.stopPropagation();
-                    $('#submit').click();
+                    $('#submit:not(:disabled)').click();
                     return false;
                 }
             });
