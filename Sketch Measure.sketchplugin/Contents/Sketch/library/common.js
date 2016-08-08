@@ -560,6 +560,7 @@ SM.extend({
 
                 border.color = borderColor;
                 border.thickness = 1;
+                border.position = 1;
             }
 
             sharedStyles.addSharedStyleWithName_firstInstance(name, style);
