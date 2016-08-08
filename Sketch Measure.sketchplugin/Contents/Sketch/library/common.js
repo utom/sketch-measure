@@ -1569,21 +1569,23 @@ SM.extend({
         text.setStyle(noteStyle.text);
 
         var noteRect = this.getRect(note),
-            textRect = this.getRect(text);
+            textRect = this.getRect(text),
+            fontSize = text.fontSize(),
+            scale = fontSize / 12;
 
-        if(textRect.width > 160){
+        if(textRect.width > 160 * scale){
             text.setTextBehaviour(1);
-            textRect.setWidth(160);
+            textRect.setWidth(160 * scale);
             text.finishEditing();
             textRect = this.getRect(text);
         }
 
         textRect.setX(targetRect.x);
         textRect.setY(targetRect.y);
-        noteRect.setX(textRect.x - 6);
-        noteRect.setY(textRect.y - 6);
-        noteRect.setWidth(textRect.width + 12);
-        noteRect.setHeight(textRect.height + 12);
+        noteRect.setX(textRect.x - 6 * scale);
+        noteRect.setY(textRect.y - 6 * scale);
+        noteRect.setWidth(textRect.width + 12 * scale);
+        noteRect.setHeight(textRect.height + 12 * scale);
 
         container.resizeToFitChildrenWithOption(0);
         this.removeLayer(target);
