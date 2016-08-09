@@ -474,7 +474,7 @@ button{
     display: block;
     padding: 16px 16px 16px 44px;
     box-sizing: border-box;
-    min-height: 48px;
+    height: 48px;
 }
 .page-list .artboard-item .text{
     width: 100%;
