@@ -2,6 +2,13 @@
     "author": "utom",
     "commands" : [
         {
+            "name": "ToolBar",
+            "identifier": "commandToolBar",
+            "shortcut": "ctrl shift b",
+            "handler" : "commandToolBar",
+            "script": "mark.sketchscript"
+        },
+        {
             "name": "1. Overlay",
             "identifier": "commandOverlay",
             "shortcut": "ctrl shift 1",
@@ -110,6 +117,7 @@
         "isRoot" : false,
         "shortcut" : "",
         "items" : [
+            "commandToolBar",
             "commandOverlay",
             "commandSize",
             "commandSpacing",

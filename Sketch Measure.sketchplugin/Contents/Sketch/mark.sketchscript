@@ -57,6 +57,10 @@ function commandExport(context) {
     SM.init(context, "export");
 }
 
+function commandToolBar(context) {
+    SM.init(context, "toolbar");
+}
+
 function commandDonate(){
     NSWorkspace.sharedWorkspace().openURL(NSURL.URLWithString("http://utom.design/measure/donate.html"));
 }

@@ -32,6 +32,11 @@ var SM = {
                     .stringByDeletingLastPathComponent();
             this.pluginSketch = this.pluginRoot + "/Contents/Sketch/library";
 
+            if(command == "toolbar"){
+                this.ToolBar();
+                return false;
+            }
+
             if(NSFileManager.defaultManager().fileExistsAtPath(this.pluginSketch + "/i18n/" + lang + ".json")){
                 language = NSString.stringWithContentsOfFile_encoding_error(this.pluginSketch + "/i18n/" + lang + ".json", NSUTF8StringEncoding, nil);
 
@@ -47,8 +52,6 @@ var SM = {
                 this.document.setCurrentPage(this.page);
             }
 
-            // this.ToolBar();
-            // return false;
 
             this.configs = this.getConfigs();
 
@@ -845,13 +848,11 @@ SM.extend({
 
         var contentView = ToolBar.contentView(),
             getImage = function(size, name){
-                var isRetinaDisplay = (NSScreen.mainScreen().backingScaleFactor() > 1)? true: false,
+                var isRetinaDisplay = (NSScreen.mainScreen().backingScaleFactor() > 1)? true: false;
                     suffix = (isRetinaDisplay)? "@2x": "",
                     imageURL = NSURL.fileURLWithPath(self.pluginSketch + "/toolbar/" + name + suffix + ".png"),
-                    imageData = NSData.dataWithContentsOfURL(imageURL),
-                    rep = NSBitmapImageRep.alloc().initWithData(imageData),
-                    image = NSImage.alloc().initWithSize(size);
-                image.addRepresentation(rep);
+                    image = NSImage.alloc().initWithContentsOfURL(imageURL);
+
                 return image
             },
             addButton = function(rect, name, callAction){
@@ -869,17 +870,14 @@ SM.extend({
             addImage = function(rect, name){
                 var view = NSImageView.alloc().initWithFrame(rect),
                     image = getImage(rect.size, name);
-                // view.setImage(image);
-                // view.imageFrameStyle = NSImageFrameButton;
+                view.setImage(image);
                 return view;
-            };
-
+            },
             closeButton = addButton( NSMakeRect(14, 14, 20, 20), "icon-close",
                     function(sender){
                             COScript.currentCOScript().setShouldKeepAround_(false);
                             ToolBar.orderOut(nil);
                             NSApp.stopModal();
-                            // NSApp.endSheet(ToolBar);
                     }),
             overlayButton = addButton( NSMakeRect(64, 14, 20, 20), "icon-overlay",
                     function(sender){
@@ -920,6 +918,7 @@ SM.extend({
             settingsButton = addButton( NSMakeRect(500, 14, 20, 20), "icon-settings",
                     function(sender){
                             log("settings");
+                            self.SMPanel();
                     }),
             divider1 = addImage( NSMakeRect(48, 8, 2, 32), "divider"),
             divider2 = addImage( NSMakeRect(242, 8, 2, 32), "divider"),
@@ -967,7 +966,7 @@ SM.extend({
             result = false;
         options.url = encodeURI("file://" + options.url);
 
-        COScript.currentCOScript().setShouldKeepAround_(true);
+        // COScript.currentCOScript().setShouldKeepAround_(true);
 
         var frame = NSMakeRect(0, 0, options.width, (options.height + 32)),
             titleBgColor = NSColor.colorWithRed_green_blue_alpha(0.1, 0.1, 0.1, 1),
@@ -1009,7 +1008,7 @@ SM.extend({
                         windowObject.evaluateWebScript(SMAction);
                         windowObject.evaluateWebScript(language);
                         windowObject.evaluateWebScript(DOMReady);
-                        COScript.currentCOScript().setShouldKeepAround_(false);
+                        // COScript.currentCOScript().setShouldKeepAround_(false);
                     }),
                 "webView:didChangeLocationWithinPageForFrame:": (function(webView, webFrame){
                         var request = NSURL.URLWithString(webView.mainFrameURL()).fragment();
@@ -1034,7 +1033,7 @@ SM.extend({
                         else if(request == "complete"){
 
                         }
-                        COScript.currentCOScript().setShouldKeepAround_(false);
+                        // COScript.currentCOScript().setShouldKeepAround_(false);
                     })
             });
 
@@ -1059,6 +1058,7 @@ SM.extend({
             self.wantsStop = true;
             Panel.orderOut(nil);
             NSApp.stopModal();
+            // NSApp.endSheet(sender.window());
         });
         closeButton.setAction("callAction:");
 
