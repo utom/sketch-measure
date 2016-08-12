@@ -2409,6 +2409,17 @@ SM.extend({
                     self.artboardsData.push(artboard);
                 }
             }
+            pageData.artboards.sort(function(a, b) {
+                    var nameA = a.name.toUpperCase(),
+                        nameB = b.name.toUpperCase();
+                    if (nameA < nameB) {
+                        return -1;
+                    }
+                    if (nameA > nameB) {
+                        return 1;
+                    }
+                    return 0;
+                });
             data.pages.push(pageData);
         }
         return this.SMPanel({
@@ -2506,11 +2517,12 @@ SM.extend({
                                 artboardRect = self.getRect(artboard),
                                 page = artboard.parentGroup(),
                                 // name = self.toSlug(self.toHTMLEncode(page.name()) + ' ' + self.toHTMLEncode(artboard.name()));
-                                name = self.toSlug(page.name() + ' ' + artboard.name());
+                                slug = self.toSlug(page.name() + ' ' + artboard.name());
 
                             data.artboards[artboardIndex].pageName = self.toHTMLEncode(page.name());
                             data.artboards[artboardIndex].pageObjectID = self.toJSString(page.objectID());
                             data.artboards[artboardIndex].name = self.toHTMLEncode(artboard.name());
+                            data.artboards[artboardIndex].slug = slug;
                             data.artboards[artboardIndex].objectID = self.toJSString(artboard.objectID());
                             data.artboards[artboardIndex].width = artboardRect.width;
                             data.artboards[artboardIndex].height = artboardRect.height;
@@ -2530,25 +2542,25 @@ SM.extend({
                                 self.writeFile({
                                         content: self.template(template, {lang: language, data: JSON.stringify(newData).replace(/\u2028/g,'\\u2028').replace(/\u2029/g,'\\u2029')}),
                                         path: self.toJSString(savePath),
-                                        fileName: name + ".html"
+                                        fileName: slug + ".html"
                                     });
                             }
                             else{
                                 // data.artboards[artboardIndex].imagePath = "preview/" + objectID + ".png";
-                                data.artboards[artboardIndex].imagePath = "preview/" + encodeURI(name) + ".png";
+                                data.artboards[artboardIndex].imagePath = "preview/" + encodeURI(slug) + ".png";
 
                                 self.exportImage({
                                         layer: artboard,
                                         path: self.toJSString(savePath) + "/preview",
                                         scale: 2,
                                         // name: objectID,
-                                        name: name
+                                        name: slug
                                     });
 
                                 self.writeFile({
                                         content: "<meta http-equiv=\"refresh\" content=\"0;url=../index.html#artboard" + artboardIndex + "\">",
                                         path: self.toJSString(savePath) + "/links",
-                                        fileName: name + ".html"
+                                        fileName: slug + ".html"
                                     });
                             }
                             
@@ -2573,6 +2585,18 @@ SM.extend({
 
                             var selectingPath = savePath;
                             if(self.configs.exportOption){
+                                data.artboards.sort(function(a, b) {
+                                    var slugA = a.slug.toUpperCase(),
+                                        slugB = b.slug.toUpperCase();
+                                    if (slugA < slugB) {
+                                        return -1;
+                                    }
+                                    if (slugA > slugB) {
+                                        return 1;
+                                    }
+                                    return 0;
+                                });
+
                                 self.writeFile({
                                         content: self.template(template, {lang: language, data: JSON.stringify(data).replace(/\u2028/g,'\\u2028').replace(/\u2029/g,'\\u2029')}),
                                         path: self.toJSString(savePath),

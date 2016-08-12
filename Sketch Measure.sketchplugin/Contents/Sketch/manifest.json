@@ -93,7 +93,7 @@
             "script": "mark.sketchscript"
         },
         {
-            "name": "☕️ Buy me a coffee~",
+            "name": "🍺 Buy me a beer~",
             "identifier": "commandDonate",
             "handler": "commandDonate",
             "script": "mark.sketchscript"
