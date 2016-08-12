@@ -17,7 +17,6 @@ function _(str, data){
 
 var SM = {
         init: function(context, command){
-            // COScript.currentCOScript().setShouldKeepAround_(false);
             this.context = context;
             this.extend(context);
             this.document = context.document;
@@ -395,6 +394,12 @@ SM.extend({
         
         if(!style) return "";
         return this.toJSString(style.name());
+    },
+    updateContext: function(){
+        this.context.document = NSDocumentController.sharedDocumentController().currentDocument();
+        this.context.selection = this.context.document.selectedLayers();
+
+        return this.context;
     }
 });
 
@@ -831,7 +836,6 @@ SM.extend({
 
 SM.extend({
     ToolBar: function(){
-        // COScript.currentCOScript().setShouldKeepAround_(true);
         var identifier = "com.utom.measure",
             threadDictionary = NSThread.mainThread().threadDictionary(),
             self = this,
@@ -883,47 +887,57 @@ SM.extend({
                         }),
                 overlayButton = addButton( NSMakeRect(64, 14, 20, 20), "icon-overlay",
                         function(sender){
-                            log(self.document)
-                            // self.init(self.context, "overlay");
+                            self.updateContext();
+                            self.init(self.context, "overlay");
                         }),
                 sizesButton = addButton( NSMakeRect(112, 14, 20, 20), "icon-sizes",
                         function(sender){
+                            self.updateContext();
                             self.init(self.context, "size");
                         }),
                 spacingsButton = addButton( NSMakeRect(160, 14, 20, 20), "icon-spacings",
                         function(sender){
+                            self.updateContext();
                             self.init(self.context, "spacing");
                         }),
                 propertiesButton = addButton( NSMakeRect(208, 14, 20, 20), "icon-properties",
                         function(sender){
+                            self.updateContext();
                             self.init(self.context, "property");
                         }),
                 notesButton = addButton( NSMakeRect(258, 14, 20, 20), "icon-notes",
                         function(sender){
+                            self.updateContext();
                             self.init(self.context, "note");
                         }),
                 exportableButton = addButton( NSMakeRect(306, 14, 20, 20), "icon-slice",
                         function(sender){
+                            self.updateContext();
                             self.init(self.context, "exportable");
                         }),
                 colorsButton = addButton( NSMakeRect(354, 14, 20, 20), "icon-colors",
                         function(sender){
+                            self.updateContext();
                             self.init(self.context, "color");
                         }),
                 exportButton = addButton( NSMakeRect(402, 14, 20, 20), "icon-export",
                         function(sender){
+                            self.updateContext();
                             self.init(self.context, "export");
                         }),
                 hiddenButton = addButton( NSMakeRect(452, 14, 20, 20), "icon-hidden",
                         function(sender){
+                            self.updateContext();
                             self.init(self.context, "hidden");
                         }),
                 lockedButton = addButton( NSMakeRect(500, 14, 20, 20), "icon-locked",
                         function(sender){
+                            self.updateContext();
                             self.init(self.context, "locked");
                         }),
                 settingsButton = addButton( NSMakeRect(548, 14, 20, 20), "icon-settings",
                         function(sender){
+                            self.updateContext();
                             self.init(self.context, "setting");
                         }),
                 divider1 = addImage( NSMakeRect(48, 8, 2, 32), "divider"),
