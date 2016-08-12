@@ -892,6 +892,7 @@ SM.extend({
                         }),
                 sizesButton = addButton( NSMakeRect(112, 14, 20, 20), "icon-sizes",
                         function(sender){
+                            log(NSEvent.modifierFlags() == NSAlternateKeyMask)
                             self.updateContext();
                             self.init(self.context, "size");
                         }),
