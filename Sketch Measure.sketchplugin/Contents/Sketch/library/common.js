@@ -5,7 +5,6 @@ var I18N = {},
     },
     lang = NSUserDefaults.standardUserDefaults().objectForKey("AppleLanguages").objectAtIndex(0),
     language = "";
-
 function _(str, data){
     var str = (I18N[lang] && I18N[lang][str])? I18N[lang][str]: str;
 
@@ -18,6 +17,8 @@ function _(str, data){
 
 var SM = {
         init: function(context, command){
+            // COScript.currentCOScript().setShouldKeepAround_(false);
+            this.context = context;
             this.extend(context);
             this.document = context.document;
             this.documentData = this.document.documentData();
@@ -830,120 +831,130 @@ SM.extend({
 
 SM.extend({
     ToolBar: function(){
-        var self = this;
+        // COScript.currentCOScript().setShouldKeepAround_(true);
+        var identifier = "com.utom.measure",
+            threadDictionary = NSThread.mainThread().threadDictionary(),
+            self = this,
+            ToolBar = threadDictionary[identifier];
 
-        COScript.currentCOScript().setShouldKeepAround_(true);
+        if(!ToolBar){
+            ToolBar = NSPanel.alloc().init();
+            ToolBar.setStyleMask(NSTitledWindowMask + NSFullSizeContentViewWindowMask);
+            ToolBar.setBackgroundColor(NSColor.colorWithRed_green_blue_alpha(0.10, 0.10, 0.10, 1));
+            ToolBar.setTitleVisibility(NSWindowTitleHidden);
+            ToolBar.setTitlebarAppearsTransparent(true);
 
-        var ToolBar = NSPanel.alloc().init();
-        ToolBar.setStyleMask(NSTitledWindowMask + NSFullSizeContentViewWindowMask);
-        ToolBar.setBackgroundColor(NSColor.colorWithRed_green_blue_alpha(0.10, 0.10, 0.10, 1));
-        ToolBar.setTitleVisibility(NSWindowTitleHidden);
-        ToolBar.setTitlebarAppearsTransparent(true);
+            ToolBar.setFrame_display(NSMakeRect(0, 0, 584, 48), false);
+            ToolBar.setMovableByWindowBackground(true);
+            ToolBar.becomeKeyWindow();
+            ToolBar.setLevel(NSFloatingWindowLevel);
 
-        ToolBar.setFrame_display(NSMakeRect(0, 0, 536, 48), false);
-        ToolBar.setMovableByWindowBackground(true);
-        ToolBar.becomeKeyWindow();
-        ToolBar.setLevel(NSFloatingWindowLevel);
+            var contentView = ToolBar.contentView(),
+                getImage = function(size, name){
+                    var isRetinaDisplay = (NSScreen.mainScreen().backingScaleFactor() > 1)? true: false;
+                        suffix = (isRetinaDisplay)? "@2x": "",
+                        imageURL = NSURL.fileURLWithPath(self.pluginSketch + "/toolbar/" + name + suffix + ".png"),
+                        image = NSImage.alloc().initWithContentsOfURL(imageURL);
+
+                    return image
+                },
+                addButton = function(rect, name, callAction){
+                    var button = NSButton.alloc().initWithFrame(rect),
+                        image = getImage(rect.size, name);
+
+                    button.setImage(image);
+                    button.setBordered(false);
+                    button.sizeToFit();
+                    button.setButtonType(NSMomentaryChangeButton)
+                    button.setCOSJSTargetFunction(callAction);
+                    button.setAction("callAction:");
+                    return button;
+                },
+                addImage = function(rect, name){
+                    var view = NSImageView.alloc().initWithFrame(rect),
+                        image = getImage(rect.size, name);
+                    view.setImage(image);
+                    return view;
+                },
+                closeButton = addButton( NSMakeRect(14, 14, 20, 20), "icon-close",
+                        function(sender){
+                            COScript.currentCOScript().setShouldKeepAround(false);
+                            ToolBar.close();
+                        }),
+                overlayButton = addButton( NSMakeRect(64, 14, 20, 20), "icon-overlay",
+                        function(sender){
+                            log(self.document)
+                            // self.init(self.context, "overlay");
+                        }),
+                sizesButton = addButton( NSMakeRect(112, 14, 20, 20), "icon-sizes",
+                        function(sender){
+                            self.init(self.context, "size");
+                        }),
+                spacingsButton = addButton( NSMakeRect(160, 14, 20, 20), "icon-spacings",
+                        function(sender){
+                            self.init(self.context, "spacing");
+                        }),
+                propertiesButton = addButton( NSMakeRect(208, 14, 20, 20), "icon-properties",
+                        function(sender){
+                            self.init(self.context, "property");
+                        }),
+                notesButton = addButton( NSMakeRect(258, 14, 20, 20), "icon-notes",
+                        function(sender){
+                            self.init(self.context, "note");
+                        }),
+                exportableButton = addButton( NSMakeRect(306, 14, 20, 20), "icon-slice",
+                        function(sender){
+                            self.init(self.context, "exportable");
+                        }),
+                colorsButton = addButton( NSMakeRect(354, 14, 20, 20), "icon-colors",
+                        function(sender){
+                            self.init(self.context, "color");
+                        }),
+                exportButton = addButton( NSMakeRect(402, 14, 20, 20), "icon-export",
+                        function(sender){
+                            self.init(self.context, "export");
+                        }),
+                hiddenButton = addButton( NSMakeRect(452, 14, 20, 20), "icon-hidden",
+                        function(sender){
+                            self.init(self.context, "hidden");
+                        }),
+                lockedButton = addButton( NSMakeRect(500, 14, 20, 20), "icon-locked",
+                        function(sender){
+                            self.init(self.context, "locked");
+                        }),
+                settingsButton = addButton( NSMakeRect(548, 14, 20, 20), "icon-settings",
+                        function(sender){
+                            self.init(self.context, "setting");
+                        }),
+                divider1 = addImage( NSMakeRect(48, 8, 2, 32), "divider"),
+                divider2 = addImage( NSMakeRect(242, 8, 2, 32), "divider"),
+                divider3 = addImage( NSMakeRect(436, 8, 2, 32), "divider");
+
+            contentView.addSubview(closeButton);
+            contentView.addSubview(overlayButton);
+            contentView.addSubview(sizesButton);
+            contentView.addSubview(spacingsButton);
+            contentView.addSubview(propertiesButton);
+
+            contentView.addSubview(notesButton);
+            contentView.addSubview(exportableButton);
+            contentView.addSubview(colorsButton);
+            contentView.addSubview(exportButton);
+
+            contentView.addSubview(hiddenButton);
+            contentView.addSubview(lockedButton);
+            contentView.addSubview(settingsButton);
+
+            contentView.addSubview(divider1);
+            contentView.addSubview(divider2);
+            contentView.addSubview(divider3);
+
+            threadDictionary[identifier] = ToolBar;
+        }
+
+        COScript.currentCOScript().setShouldKeepAround(true);
         ToolBar.center();
-
-        var contentView = ToolBar.contentView(),
-            getImage = function(size, name){
-                var isRetinaDisplay = (NSScreen.mainScreen().backingScaleFactor() > 1)? true: false;
-                    suffix = (isRetinaDisplay)? "@2x": "",
-                    imageURL = NSURL.fileURLWithPath(self.pluginSketch + "/toolbar/" + name + suffix + ".png"),
-                    image = NSImage.alloc().initWithContentsOfURL(imageURL);
-
-                return image
-            },
-            addButton = function(rect, name, callAction){
-                var button = NSButton.alloc().initWithFrame(rect),
-                    image = getImage(rect.size, name);
-
-                button.setImage(image);
-                button.setBordered(false);
-                button.sizeToFit();
-                button.setButtonType(NSMomentaryChangeButton)
-                button.setCOSJSTargetFunction(callAction);
-                button.setAction("callAction:");
-                return button;
-            },
-            addImage = function(rect, name){
-                var view = NSImageView.alloc().initWithFrame(rect),
-                    image = getImage(rect.size, name);
-                view.setImage(image);
-                return view;
-            },
-            closeButton = addButton( NSMakeRect(14, 14, 20, 20), "icon-close",
-                    function(sender){
-                            COScript.currentCOScript().setShouldKeepAround_(false);
-                            ToolBar.orderOut(nil);
-                            NSApp.stopModal();
-                    }),
-            overlayButton = addButton( NSMakeRect(64, 14, 20, 20), "icon-overlay",
-                    function(sender){
-                            log("overlay");
-                    }),
-            sizesButton = addButton( NSMakeRect(112, 14, 20, 20), "icon-sizes",
-                    function(sender){
-                            log("sizes");
-                    }),
-            spacingsButton = addButton( NSMakeRect(160, 14, 20, 20), "icon-spacings",
-                    function(sender){
-                            log("spacings");
-                    }),
-            propertiesButton = addButton( NSMakeRect(208, 14, 20, 20), "icon-properties",
-                    function(sender){
-                            log("properties");
-                    }),
-            notesButton = addButton( NSMakeRect(258, 14, 20, 20), "icon-notes",
-                    function(sender){
-                            log("notes");
-                    }),
-            colorsButton = addButton( NSMakeRect(306, 14, 20, 20), "icon-colors",
-                    function(sender){
-                            log("colors");
-                    }),
-            exportButton = addButton( NSMakeRect(354, 14, 20, 20), "icon-export",
-                    function(sender){
-                            log("export");
-                    }),
-            hiddenButton = addButton( NSMakeRect(404, 14, 20, 20), "icon-hidden",
-                    function(sender){
-                            log("hidden");
-                    }),
-            lockedButton = addButton( NSMakeRect(452, 14, 20, 20), "icon-locked",
-                    function(sender){
-                            log("locked");
-                    }),
-            settingsButton = addButton( NSMakeRect(500, 14, 20, 20), "icon-settings",
-                    function(sender){
-                            log("settings");
-                            self.SMPanel();
-                    }),
-            divider1 = addImage( NSMakeRect(48, 8, 2, 32), "divider"),
-            divider2 = addImage( NSMakeRect(242, 8, 2, 32), "divider"),
-            divider3 = addImage( NSMakeRect(388, 8, 2, 32), "divider");
-
-        contentView.addSubview(closeButton);
-        contentView.addSubview(overlayButton);
-        contentView.addSubview(sizesButton);
-        contentView.addSubview(spacingsButton);
-        contentView.addSubview(propertiesButton);
-
-        contentView.addSubview(notesButton);
-        contentView.addSubview(colorsButton);
-        contentView.addSubview(exportButton);
-
-        contentView.addSubview(hiddenButton);
-        contentView.addSubview(lockedButton);
-        contentView.addSubview(settingsButton);
-
-        contentView.addSubview(divider1);
-        contentView.addSubview(divider2);
-        contentView.addSubview(divider3);
-
-        ToolBar.orderFront(NSApp.mainWindow());
-
+        ToolBar.makeKeyAndOrderFront(nil);
     }
 })
 
@@ -965,8 +976,6 @@ SM.extend({
             }),
             result = false;
         options.url = encodeURI("file://" + options.url);
-
-        // COScript.currentCOScript().setShouldKeepAround_(true);
 
         var frame = NSMakeRect(0, 0, options.width, (options.height + 32)),
             titleBgColor = NSColor.colorWithRed_green_blue_alpha(0.1, 0.1, 0.1, 1),
@@ -1008,7 +1017,6 @@ SM.extend({
                         windowObject.evaluateWebScript(SMAction);
                         windowObject.evaluateWebScript(language);
                         windowObject.evaluateWebScript(DOMReady);
-                        // COScript.currentCOScript().setShouldKeepAround_(false);
                     }),
                 "webView:didChangeLocationWithinPageForFrame:": (function(webView, webFrame){
                         var request = NSURL.URLWithString(webView.mainFrameURL()).fragment();
@@ -1033,7 +1041,6 @@ SM.extend({
                         else if(request == "complete"){
 
                         }
-                        // COScript.currentCOScript().setShouldKeepAround_(false);
                     })
             });
 
