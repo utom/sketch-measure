@@ -5,6 +5,7 @@ var I18N = {},
     },
     lang = NSUserDefaults.standardUserDefaults().objectForKey("AppleLanguages").objectAtIndex(0),
     language = "";
+
 function _(str, data){
     var str = (I18N[lang] && I18N[lang][str])? I18N[lang][str]: str;
 
@@ -60,26 +61,26 @@ var SM = {
             }
 
             switch (command) {
-                case "overlay":
-                    this.mark("overlay");
+                case "mark-overlays":
+                    this.markOverlays();
                     break;
-                case "size":
-                    this.mark("sizes");
+                case "lite-sizes":
+                    this.liteSizes();
                     break;
-                case "spacing":
-                    this.mark("spacings");
+                case "lite-spacings":
+                    this.liteSpacings();
                     break;
-                case "property":
-                    this.mark("properties");
+                case "mark-sizes":
+                    this.markSizes();
                     break;
-                case "note":
-                    this.mark("note");
+                case "mark-spacings":
+                    this.markSpacings();
                     break;
-                case "width":
-                    this.lite("width");
+                case "mark-properties":
+                    this.markProperties();
                     break;
-                case "height":
-                    this.lite("height");
+                case "mark-note":
+                    this.markNote();
                     break;
                 case "locked":
                     this.toggleLocked();
@@ -890,29 +891,37 @@ SM.extend({
                 overlayButton = addButton( NSMakeRect(64, 14, 20, 20), "icon-overlay",
                         function(sender){
                             self.updateContext();
-                            self.init(self.context, "overlay");
+                            self.init(self.context, "mark-overlays");
                         }),
                 sizesButton = addButton( NSMakeRect(112, 14, 20, 20), "icon-sizes",
                         function(sender){
-                            log(NSEvent.modifierFlags() == NSAlternateKeyMask)
                             self.updateContext();
-                            log(self.context);
-                            self.init(self.context, "size");
+                            if(NSEvent.modifierFlags() == NSAlternateKeyMask){
+                                self.init(self.context, "mark-sizes");
+                            }
+                            else{
+                                self.init(self.context, "lite-sizes");
+                            }
                         }),
                 spacingsButton = addButton( NSMakeRect(160, 14, 20, 20), "icon-spacings",
                         function(sender){
                             self.updateContext();
-                            self.init(self.context, "spacing");
+                            if(NSEvent.modifierFlags() == NSAlternateKeyMask){
+                                self.init(self.context, "mark-spacings");
+                            }
+                            else{
+                                self.init(self.context, "lite-spacings");
+                            }
                         }),
                 propertiesButton = addButton( NSMakeRect(208, 14, 20, 20), "icon-properties",
                         function(sender){
                             self.updateContext();
-                            self.init(self.context, "property");
+                            self.init(self.context, "mark-properties");
                         }),
                 notesButton = addButton( NSMakeRect(258, 14, 20, 20), "icon-notes",
                         function(sender){
                             self.updateContext();
-                            self.init(self.context, "note");
+                            self.init(self.context, "mark-note");
                         }),
                 exportableButton = addButton( NSMakeRect(306, 14, 20, 20), "icon-slice",
                         function(sender){
@@ -1189,132 +1198,8 @@ SM.extend({
     }
 });
 
-// mark.js
+// mark-base.js
 SM.extend({
-    mark: function(type){
-        var self = this,
-            selection = this.selection;
-
-        if(type == "sizes"){
-            if( selection.count() <= 0 ){
-                this.message(_("Select a layer to make marks!"));
-                return false;
-            }
-            if(!this.sizesPanel()) return false;
-            var sizeStyles = {
-                    layer: this.sharedLayerStyle("@Size / Layer", this.colors.size.layer),
-                    text: this.sharedTextStyle("@Size / Text", this.colors.size.text, 2)
-                };
-
-            for (var i = 0; i < selection.count(); i++) {
-                var target = selection[i],
-                    objectID = target.objectID();
-
-                if(this.configs.sizes.widthPlacement){
-                    this.sizes({
-                        name: "WIDTH#" + objectID,
-                        type: "width",
-                        target: target,
-                        placement: this.configs.sizes.widthPlacement,
-                        styles: sizeStyles,
-                        byPercentage: this.configs.sizes.byPercentage
-                    });
-                }
-
-                if(this.configs.sizes.heightPlacement){
-                    this.sizes({
-                        name: "HEIGHT#" + objectID,
-                        type: "height",
-                        target: target,
-                        placement: this.configs.sizes.heightPlacement,
-                        styles: sizeStyles,
-                        byPercentage: this.configs.sizes.byPercentage
-                    });
-                }
-            }
-        }
-        else if(type == "spacings"){
-            if( !(selection.count() > 0 && selection.count() < 3) ){
-                this.message(_("Select 1 or 2 layers to make marks!"));
-                return false;
-            }
-            if(!this.spacingsPanel()) return false;
-            var target = (selection.count() == 1)? selection[0]: selection[1],
-                layer = (selection.count() == 1)? this.current: selection[0],
-                placements = ["top", "right", "bottom", "left"];
-
-            if( this.isIntersect(this.getRect(target), this.getRect(layer)) ){
-                placements = this.configs.spacings.placements;
-            }
-
-            var spacingStyles = {
-                    layer: this.sharedLayerStyle("@Spacing / Layer", this.colors.spacing.layer),
-                    text: this.sharedTextStyle("@Spacing / Text", this.colors.spacing.text, 2)
-                };
-            placements.forEach(function(placement) {
-                self.spacings({
-                    target: target,
-                    layer: layer,
-                    placement: placement,
-                    styles: spacingStyles,
-                    byPercentage: self.configs.spacings.byPercentage
-                });
-            });
-        }
-        else if(type == "properties"){
-            if( selection.count() <= 0 ){
-                this.message(_("Select a layer to make marks!"));
-                return false;
-            }
-
-            var target = selection[0];
-
-            if( /PROPERTY\#/.exec(target.parentGroup().name()) ){
-                this.resizeProperties(target.parentGroup());
-            }
-            else{
-                if(!this.propertiesPanel()) return false;
-
-                for (var i = 0; i < selection.count(); i++) {
-                    var target = selection[i];
-                    this.properties({
-                        target: target,
-                        placement: this.configs.properties.placement,
-                        properties: this.configs.properties.properties
-                    });
-                }
-            }
-        }
-        else if( type == "overlay"){
-            if( selection.count() <= 0 ){
-                this.message(_("Select a layer to make marks!"));
-                return false;
-            }
-            for (var i = 0; i < selection.count(); i++) {
-                this.overlay(selection[i]);
-            }
-        }
-        else if( type == "note"){
-            if( selection.count() <= 0 ){
-                this.message(_("Select a text layer to make marks!"));
-                return false;
-            }
-            var target = selection[0];
-
-            if( /NOTE\#/.exec(target.parentGroup().name()) && this.is(target, MSTextLayer) ){
-                this.resizeNote(target.parentGroup());
-            }
-            else{
-                for (var i = 0; i < selection.count(); i++) {
-                    var target = selection[i];
-                    if(this.is(target, MSTextLayer)){
-                        this.note(target);
-                    }
-                }
-            }
-        }
-
-    },
     sizes: function( options ){
         var options = this.extend(options, {}),
             name = options.name,
@@ -1506,7 +1391,7 @@ SM.extend({
         container.addLayers([overlay]);
 
         overlay.setStyle(overlayStyle);
-        overlay.setName("overlayer");
+        overlay.setName("overlay");
         overlayRect.setX(targetRect.x);
         overlayRect.setY(targetRect.y);
         overlayRect.setWidth(targetRect.width);
@@ -1660,39 +1545,220 @@ SM.extend({
     }
 });
 
-// lite.js
+// marks.js
 SM.extend({
-    lite: function( type ){
-        if( this.selection.count() <= 0 ){
+    markOverlays: function(){
+        var self = this,
+            selection = this.selection;
+
+        if( selection.count() <= 0 ){
             this.message(_("Select a layer to make marks!"));
             return false;
         }
-        var target = this.selection[0],
-            objectID = target.objectID(),
-            liteStyle = {
-                layer: this.sharedLayerStyle("@Lite / Layer", this.colors.lite.layer),
-                text: this.sharedTextStyle("@Lite / Text", this.colors.lite.text, 2)
+        for (var i = 0; i < selection.count(); i++) {
+            this.overlay(selection[i]);
+        }
+    },
+    markSizes: function(){
+        var self = this,
+            selection = this.selection;
+
+
+        if( selection.count() <= 0 ){
+            this.message(_("Select a layer to make marks!"));
+            return false;
+        }
+
+        if(this.sizesPanel()){
+            var sizeStyles = {
+                    layer: this.sharedLayerStyle("@Size / Layer", this.colors.size.layer),
+                    text: this.sharedTextStyle("@Size / Text", this.colors.size.text, 2)
+                };
+
+            for (var i = 0; i < selection.count(); i++) {
+                var target = selection[i],
+                    objectID = target.objectID();
+
+                if(this.configs.sizes.widthPlacement){
+                    this.sizes({
+                        name: "WIDTH#" + objectID,
+                        type: "width",
+                        target: target,
+                        placement: this.configs.sizes.widthPlacement,
+                        styles: sizeStyles,
+                        byPercentage: this.configs.sizes.byPercentage
+                    });
+                }
+
+                if(this.configs.sizes.heightPlacement){
+                    this.sizes({
+                        name: "HEIGHT#" + objectID,
+                        type: "height",
+                        target: target,
+                        placement: this.configs.sizes.heightPlacement,
+                        styles: sizeStyles,
+                        byPercentage: this.configs.sizes.byPercentage
+                    });
+                }
+            }
+        }
+    },
+    markSpacings: function(){
+        var self = this,
+            selection = this.selection;
+
+        if( !(selection.count() > 0 && selection.count() < 3) ){
+            this.message(_("Select 1 or 2 layers to make marks!"));
+            return false;
+        }
+
+        if(this.spacingsPanel()){
+            var target = (selection.count() == 1)? selection[0]: selection[1],
+                layer = (selection.count() == 1)? this.current: selection[0],
+                placements = ["top", "right", "bottom", "left"],
+                spacingStyles = {
+                        layer: this.sharedLayerStyle("@Spacing / Layer", this.colors.spacing.layer),
+                        text: this.sharedTextStyle("@Spacing / Text", this.colors.spacing.text, 2)
+                    };
+
+            if( this.isIntersect(this.getRect(target), this.getRect(layer)) ){
+                placements = this.configs.spacings.placements;
+            }
+
+            placements.forEach(function(placement) {
+                self.spacings({
+                    target: target,
+                    layer: layer,
+                    placement: placement,
+                    styles: spacingStyles,
+                    byPercentage: self.configs.spacings.byPercentage
+                });
+            });
+        }
+    },
+    markProperties: function(){
+        var self = this,
+            selection = this.selection;
+
+        if( selection.count() <= 0 ){
+            this.message(_("Select a layer to make marks!"));
+            return false;
+        }
+
+        var target = selection[0];
+
+        if( /PROPERTY\#/.exec(target.parentGroup().name()) ){
+            this.resizeProperties(target.parentGroup());
+        }
+        else{
+            if(!this.propertiesPanel()) return false;
+
+            for (var i = 0; i < selection.count(); i++) {
+                var target = selection[i];
+                this.properties({
+                    target: target,
+                    placement: this.configs.properties.placement,
+                    properties: this.configs.properties.properties
+                });
+            }
+        }
+    },
+    liteSizes: function(){
+        var self = this,
+            selection = this.selection;
+
+        if( selection.count() <= 0 ){
+            this.message(_("Select a layer to make marks!"));
+            return false;
+        }
+
+        var sizeStyles = {
+                layer: this.sharedLayerStyle("@Size / Layer", this.colors.size.layer),
+                text: this.sharedTextStyle("@Size / Text", this.colors.size.text, 2)
             };
 
-        if(type == "width"){
-            this.sizes({
-                name: "LITE#" + objectID,
-                type: "width",
-                target: target,
-                placement: "middle",
-                styles: liteStyle
-            });
-            this.removeLayer(target);
+            for (var i = 0; i < selection.count(); i++) {
+                var target = selection[i],
+                    targetRect = self.getRect(target),
+                    objectID = target.objectID(),
+                    distance = self.getDistance(targetRect),
+                    widthPlacement =
+                        distance.top < distance.bottom? "bottom":
+                        distance.top == distance.bottom? "middle":
+                        "top",
+                    heightPlacement =
+                        distance.left > distance.right? "left":
+                        distance.left == distance.right? "center":
+                        "right";
+
+                    this.sizes({
+                        name: "WIDTH#" + objectID,
+                        type: "width",
+                        target: target,
+                        placement: widthPlacement,
+                        styles: sizeStyles,
+                        byPercentage: false
+                    });
+
+                    this.sizes({
+                        name: "HEIGHT#" + objectID,
+                        type: "height",
+                        target: target,
+                        placement: heightPlacement,
+                        styles: sizeStyles,
+                        byPercentage: false
+                    });
+
+            }
+    },
+    liteSpacings: function(){
+        var self = this,
+            selection = this.selection;
+
+        if( !(selection.count() > 0 && selection.count() < 3) ){
+            this.message(_("Select 1 or 2 layers to make marks!"));
+            return false;
         }
-        else if(type == "height"){
-            this.sizes({
-                name: "LITE#" + objectID,
-                type: "height",
-                target: target,
-                placement: "center",
-                styles: liteStyle
+
+        var target = (selection.count() == 1)? selection[0]: selection[1],
+            layer = (selection.count() == 1)? this.current: selection[0],
+            spacingStyles = {
+                    layer: this.sharedLayerStyle("@Spacing / Layer", this.colors.spacing.layer),
+                    text: this.sharedTextStyle("@Spacing / Text", this.colors.spacing.text, 2)
+                },
+            placements = ["top", "right", "bottom", "left"];
+
+            placements.forEach(function(placement) {
+                self.spacings({
+                    target: target,
+                    layer: layer,
+                    placement: placement,
+                    styles: spacingStyles,
+                    byPercentage: false
+                });
             });
-            this.removeLayer(target);
+    },
+    markNote: function(){
+        var self = this,
+            selection = this.selection;
+
+        if( selection.count() <= 0 ){
+            this.message(_("Select a text layer to make marks!"));
+            return false;
+        }
+
+        var target = selection[0];
+
+        if( /NOTE\#/.exec(target.parentGroup().name()) && this.is(target, MSTextLayer) ){
+            this.resizeNote(target.parentGroup());
+        }
+        else{
+            for (var i = 0; i < selection.count(); i++) {
+                var target = selection[i];
+                if(this.is(target, MSTextLayer)){
+                    this.note(target);
+                }
+            }
         }
     },
     note: function(target){
