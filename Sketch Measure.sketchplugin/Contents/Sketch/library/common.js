@@ -837,11 +837,11 @@ SM.extend({
 SM.extend({
     ToolBar: function(){
         COScript.currentCOScript().setShouldKeepAround(true);
-        var identifier = "com.utom.measure",
+        var self = this,
+            identifier = "com.utom.measure",
             threadDictionary = NSThread.mainThread().threadDictionary(),
-            self = this,
             ToolBar = threadDictionary[identifier];
-
+        log(ToolBar)
         if(!ToolBar){
             ToolBar = NSPanel.alloc().init();
             ToolBar.setStyleMask(NSTitledWindowMask + NSFullSizeContentViewWindowMask);
@@ -883,8 +883,9 @@ SM.extend({
                 },
                 closeButton = addButton( NSMakeRect(14, 14, 20, 20), "icon-close",
                         function(sender){
-                            ToolBar.close();
                             COScript.currentCOScript().setShouldKeepAround(false);
+                            ToolBar.close();
+                            
                         }),
                 overlayButton = addButton( NSMakeRect(64, 14, 20, 20), "icon-overlay",
                         function(sender){
