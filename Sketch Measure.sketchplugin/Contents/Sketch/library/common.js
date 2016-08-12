@@ -884,7 +884,7 @@ SM.extend({
                 closeButton = addButton( NSMakeRect(14, 14, 20, 20), "icon-close",
                         function(sender){
                             COScript.currentCOScript().setShouldKeepAround(false);
-                            threadDictionary.removeForKey(identifier);
+                            // NSThread.mainThread().removeForKey(identifier);
                             ToolBar.close();
                         }),
                 overlayButton = addButton( NSMakeRect(64, 14, 20, 20), "icon-overlay",
