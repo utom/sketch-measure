@@ -73,9 +73,9 @@
         },
         {
             "name": "Settings",
-            "identifier": "commandSetting",
+            "identifier": "commandSettings",
             "shortcut": "",
-            "handler": "commandSetting",
+            "handler": "commandSettings",
             "script": "mark.sketchscript"
         },
         {

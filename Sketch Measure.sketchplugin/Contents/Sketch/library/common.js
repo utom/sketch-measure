@@ -56,7 +56,7 @@ var SM = {
 
             this.configs = this.getConfigs();
 
-            if(!this.configs){
+            if(!this.configs && command != "settings"){
                 if(!this.settingsPanel()) return false;
             }
 
@@ -97,7 +97,7 @@ var SM = {
                 case "exportable":
                     this.makeExportable();
                     break;
-                case "setting":
+                case "settings":
                     this.settingsPanel();
                     break;
                 case "export":
@@ -951,7 +951,7 @@ SM.extend({
                 settingsButton = addButton( NSMakeRect(548, 14, 20, 20), "icon-settings",
                         function(sender){
                             self.updateContext();
-                            self.init(self.context, "setting");
+                            self.init(self.context, "settings");
                         }),
                 divider1 = addImage( NSMakeRect(48, 8, 2, 32), "divider"),
                 divider2 = addImage( NSMakeRect(242, 8, 2, 32), "divider"),

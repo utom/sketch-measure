@@ -51,8 +51,8 @@ function commandExportable(context) {
     SM.init(context, "exportable");
 }
 
-function commandSetting(context) {
-    SM.init(context, "setting");
+function commandSettings(context) {
+    SM.init(context, "settings");
 }
 
 function commandExport(context) {
