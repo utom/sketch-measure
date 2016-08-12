@@ -836,6 +836,7 @@ SM.extend({
 
 SM.extend({
     ToolBar: function(){
+        COScript.currentCOScript().setShouldKeepAround(true);
         var identifier = "com.utom.measure",
             threadDictionary = NSThread.mainThread().threadDictionary(),
             self = this,
@@ -967,7 +968,6 @@ SM.extend({
             threadDictionary[identifier] = ToolBar;
         }
 
-        COScript.currentCOScript().setShouldKeepAround(true);
         ToolBar.center();
         ToolBar.makeKeyAndOrderFront(nil);
     }
