@@ -104,6 +104,7 @@
         "shortcut" : "",
         "items" : [
             "commandToolBar",
+            "-",
             "commandOverlays",
             "commandSizes",
             "commandSpacings",
