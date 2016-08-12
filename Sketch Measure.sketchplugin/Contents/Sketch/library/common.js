@@ -883,8 +883,8 @@ SM.extend({
                 },
                 closeButton = addButton( NSMakeRect(14, 14, 20, 20), "icon-close",
                         function(sender){
-                            COScript.currentCOScript().setShouldKeepAround(false);
                             ToolBar.close();
+                            COScript.currentCOScript().setShouldKeepAround(false);
                         }),
                 overlayButton = addButton( NSMakeRect(64, 14, 20, 20), "icon-overlay",
                         function(sender){
@@ -895,6 +895,7 @@ SM.extend({
                         function(sender){
                             log(NSEvent.modifierFlags() == NSAlternateKeyMask)
                             self.updateContext();
+                            log(self.context);
                             self.init(self.context, "size");
                         }),
                 spacingsButton = addButton( NSMakeRect(160, 14, 20, 20), "icon-spacings",
