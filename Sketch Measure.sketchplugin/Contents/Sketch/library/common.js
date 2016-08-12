@@ -841,7 +841,7 @@ SM.extend({
             identifier = "com.utom.measure",
             threadDictionary = NSThread.mainThread().threadDictionary(),
             ToolBar = threadDictionary[identifier];
-        log(ToolBar)
+
         if(!ToolBar){
             ToolBar = NSPanel.alloc().init();
             ToolBar.setStyleMask(NSTitledWindowMask + NSFullSizeContentViewWindowMask);
@@ -884,7 +884,7 @@ SM.extend({
                 closeButton = addButton( NSMakeRect(14, 14, 20, 20), "icon-close",
                         function(sender){
                             COScript.currentCOScript().setShouldKeepAround(false);
-                            // NSThread.mainThread().removeForKey(identifier);
+                            threadDictionary.removeObjectForKey(identifier);
                             ToolBar.close();
                         }),
                 overlayButton = addButton( NSMakeRect(64, 14, 20, 20), "icon-overlay",
