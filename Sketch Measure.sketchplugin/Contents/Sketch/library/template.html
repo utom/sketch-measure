@@ -360,7 +360,7 @@ var I18N = {},
         zoom: function(){
             var zoomText = this.configs.zoom * 100 + '%',
                 inDisabled = (this.configs.zoom <= .25)? ' disabled="disabled"': '',
-                outDisabled = (this.configs.zoom >= 2)? ' disabled="disabled"': '';
+                outDisabled = (this.configs.zoom >= 4)? ' disabled="disabled"': '';
             $('#zoom').html([
                 '<button class="zoom-in"' + inDisabled + '></button>',
                 '<label class="zoom-text">' + zoomText + '</label>',

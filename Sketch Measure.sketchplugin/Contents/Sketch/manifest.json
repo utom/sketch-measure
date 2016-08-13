@@ -4,7 +4,7 @@
         {
             "name": "ToolBar",
             "identifier": "commandToolBar",
-            "shortcut": "cmd `",
+            "shortcut": "ctrl shift b",
             "handler" : "commandToolBar",
             "script": "mark.sketchscript"
         },
