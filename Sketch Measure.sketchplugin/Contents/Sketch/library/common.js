@@ -70,6 +70,9 @@ var SM = {
                 case "lite-spacings":
                     this.liteSpacings();
                     break;
+                case "lite-properties":
+                    this.liteProperties();
+                    break;
                 case "mark-sizes":
                     this.markSizes();
                     break;
@@ -916,7 +919,13 @@ SM.extend({
                 propertiesButton = addButton( NSMakeRect(208, 14, 20, 20), "icon-properties",
                         function(sender){
                             self.updateContext();
-                            self.init(self.context, "mark-properties");
+                            if(NSEvent.modifierFlags() == NSAlternateKeyMask){
+                                self.init(self.context, "mark-properties");
+                            }
+                            else{
+                                self.init(self.context, "lite-properties");
+                            }
+                            
                         }),
                 notesButton = addButton( NSMakeRect(258, 14, 20, 20), "icon-notes",
                         function(sender){
@@ -1647,20 +1656,15 @@ SM.extend({
 
         var target = selection[0];
 
-        if( /PROPERTY\#/.exec(target.parentGroup().name()) ){
-            this.resizeProperties(target.parentGroup());
-        }
-        else{
-            if(!this.propertiesPanel()) return false;
+        if(!this.propertiesPanel()) return false;
 
-            for (var i = 0; i < selection.count(); i++) {
-                var target = selection[i];
-                this.properties({
-                    target: target,
-                    placement: this.configs.properties.placement,
-                    properties: this.configs.properties.properties
-                });
-            }
+        for (var i = 0; i < selection.count(); i++) {
+            var target = selection[i];
+            this.properties({
+                target: target,
+                placement: this.configs.properties.placement,
+                properties: this.configs.properties.properties
+            });
         }
     },
     liteSizes: function(){
@@ -1737,6 +1741,41 @@ SM.extend({
                     byPercentage: false
                 });
             });
+    },
+    liteProperties: function(){
+        log(333);
+        var self = this,
+            selection = this.selection;
+
+        if( selection.count() <= 0 ){
+            this.message(_("Select a layer to make marks!"));
+            return false;
+        }
+
+        var target = selection[0];
+
+        if( /PROPERTY\#/.exec(target.parentGroup().name()) ){
+            this.resizeProperties(target.parentGroup());
+        }
+        else{
+            for (var i = 0; i < selection.count(); i++) {
+                var target = selection[i],
+                    targetRect = this.getRect(target),
+                    distance = this.getDistance(targetRect),
+                    placement = {};
+
+                placement[distance.right] = "right";
+                placement[distance.bottom] = "bottom";
+                placement[distance.left] = "left";
+                placement[distance.top] = "top";
+
+                this.properties({
+                    target: target,
+                    placement: placement[ Math.max(distance.top, distance.right, distance.bottom, distance.left) ],
+                    properties: ["color", "border", "opacity", "radius", "shadow", "font-size", "font-face", "character", "line-height"]
+                });
+            }
+        }
     },
     markNote: function(){
         var self = this,

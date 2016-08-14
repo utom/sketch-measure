@@ -24,7 +24,13 @@ function commandSpacings(context) {
 }
 
 function commandProperties(context) {
-    SM.init(context, "mark-properties");
+    
+    if(NSEvent.modifierFlags() == 917504){
+        SM.init(context, "mark-properties");
+    }
+    else{
+        SM.init(context, "lite-properties");
+    }
 }
 
 function commandNote(context) {
