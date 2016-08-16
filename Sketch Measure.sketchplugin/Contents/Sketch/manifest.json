@@ -119,7 +119,7 @@
             "commandLocked",
             "commandClear",
             "-",
-            "commandSetting",
+            "commandSettings",
             "commandDonate"
         ],
         "title" : "👍 Sketch Measure"
