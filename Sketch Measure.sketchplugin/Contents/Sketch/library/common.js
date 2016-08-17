@@ -18,6 +18,7 @@ function _(str, data){
 
 var SM = {
         init: function(context, command){
+            coscript.setShouldKeepAround(true);
             this.context = context;
             this.extend(context);
             this.document = context.document;
@@ -840,7 +841,6 @@ SM.extend({
 
 SM.extend({
     ToolBar: function(){
-        COScript.currentCOScript().setShouldKeepAround(true);
         var self = this,
             identifier = "com.utom.measure",
             threadDictionary = NSThread.mainThread().threadDictionary(),
@@ -887,7 +887,6 @@ SM.extend({
                 },
                 closeButton = addButton( NSMakeRect(14, 14, 20, 20), "icon-close",
                         function(sender){
-                            COScript.currentCOScript().setShouldKeepAround(false);
                             threadDictionary.removeObjectForKey(identifier);
                             ToolBar.close();
                         }),
@@ -2521,7 +2520,6 @@ SM.extend({
                 self.single = false;
                 self.wantsStop = false;
 
-                coscript.shouldKeepAround = true
                 coscript.scheduleWithRepeatingInterval_jsFunction( 0, function( interval ){
                     // self.message('Processing layer ' + idx + ' of ' + self.allCount);
                     processing.evaluateWebScript("processing('"  + Math.round( idx / self.allCount * 100 ) +  "%', '" + _("Processing layer %@ of %@", [idx, self.allCount]) + "')");
@@ -2651,7 +2649,6 @@ SM.extend({
                     }
 
                     if( self.wantsStop === true ){
-                        coscript.shouldKeepAround = false;
                         return interval.cancel();
                     }
 
