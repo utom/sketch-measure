@@ -887,6 +887,7 @@ SM.extend({
                 },
                 closeButton = addButton( NSMakeRect(14, 14, 20, 20), "icon-close",
                         function(sender){
+                            coscript.setShouldKeepAround(false);
                             threadDictionary.removeObjectForKey(identifier);
                             ToolBar.close();
                         }),
@@ -1742,7 +1743,6 @@ SM.extend({
             });
     },
     liteProperties: function(){
-        log(333);
         var self = this,
             selection = this.selection;
 
@@ -2649,6 +2649,7 @@ SM.extend({
                     }
 
                     if( self.wantsStop === true ){
+                        coscript.setShouldKeepAround(false);
                         return interval.cancel();
                     }
 

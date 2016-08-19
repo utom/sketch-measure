@@ -1260,7 +1260,10 @@ var I18N = {},
                     
                 });
             $('#notes')
-                .on('mouseover', '.note', function(){
+                .on('mousemove', '.note', function(event){
+                    event.stopPropagation();
+                    self.mouseoutLayer();
+                    self.hideDistance();
                     $(this).find('div').show();
                     var width = $(this).find('div').outerWidth();
                     if(width > 160){
