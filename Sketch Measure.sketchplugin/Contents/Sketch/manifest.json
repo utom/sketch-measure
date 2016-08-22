@@ -2,105 +2,98 @@
     "author": "utom",
     "commands" : [
         {
-            "name": "1. Overlay",
-            "identifier": "commandOverlay",
+            "name": "ToolBar",
+            "identifier": "commandToolBar",
+            "shortcut": "ctrl shift b",
+            "handler" : "commandToolBar",
+            "script": "mark.sketchscript"
+        },
+        {
+            "name": "1. Mark Overlay",
+            "identifier": "commandOverlays",
             "shortcut": "ctrl shift 1",
-            "handler" : "commandOverlay",
+            "handler" : "commandOverlays",
             "script": "mark.sketchscript"
         },
         {
-            "name": "2. Size",
-            "identifier": "commandSize",
+            "name": "2. Mark Sizes",
+            "identifier": "commandSizes",
             "shortcut": "ctrl shift 2",
-            "handler" : "commandSize",
+            "handler" : "commandSizes",
             "script": "mark.sketchscript"
         },
         {
-            "name": "3. Spacing",
-            "identifier": "commandSpacing",
+            "name": "3. Mark Spacings",
+            "identifier": "commandSpacings",
             "shortcut": "ctrl shift 3",
-            "handler" : "commandSpacing",
+            "handler" : "commandSpacings",
             "script": "mark.sketchscript"
         },
         {
-            "name": "4. Property",
-            "identifier": "commandProperty",
+            "name": "4. Mark Properties",
+            "identifier": "commandProperties",
             "shortcut": "ctrl shift 4",
-            "handler" : "commandProperty",
+            "handler" : "commandProperties",
             "script": "mark.sketchscript"
         },
         {
-            "name": "5. Note",
+            "name": "5. Mark Note",
             "identifier": "commandNote",
             "shortcut": "ctrl shift 5",
             "handler" : "commandNote",
             "script": "mark.sketchscript"
         },
         {
-            "name": "💎 Spec Export",
+            "name": "Spec Export",
             "identifier": "commandExport",
             "shortcut": "ctrl shift e",
             "handler" : "commandExport",
             "script": "mark.sketchscript"
         },
         {
-            "name": "Toggle hidden",
+            "name": "Toggle Hidden",
             "identifier": "commandHidden",
             "shortcut": "ctrl shift h",
             "handler": "commandHidden",
             "script": "mark.sketchscript"
         },
         {
-            "name": "Toggle locked",
+            "name": "Toggle Locked",
             "identifier": "commandLocked",
             "shortcut": "ctrl shift l",
             "handler": "commandLocked",
             "script": "mark.sketchscript"
         },
         {
-            "name": "Clear marks",
+            "name": "Clear Marks",
             "identifier": "commandClear",
             "shortcut": "",
             "handler": "commandClear",
             "script": "mark.sketchscript"
         },
         {
-            "name": "Lite width",
-            "identifier": "commandWidth",
-            "shortcut": "ctrl shift [",
-            "handler": "commandWidth",
-            "script": "mark.sketchscript"
-        },
-        {
-            "name": "Lite height",
-            "identifier": "commandHeight",
-            "shortcut": "ctrl shift ]",
-            "handler": "commandHeight",
-            "script": "mark.sketchscript"
-        },
-        {
             "name": "Settings",
-            "identifier": "commandSetting",
+            "identifier": "commandSettings",
             "shortcut": "",
-            "handler": "commandSetting",
+            "handler": "commandSettings",
             "script": "mark.sketchscript"
         },
         {
-            "name": "Color names",
+            "name": "Color Names",
             "identifier": "commandColor",
             "shortcut": "ctrl shift c",
             "handler": "commandColor",
             "script": "mark.sketchscript"
         },
         {
-            "name": "Make exportable",
+            "name": "Make Exportable",
             "identifier": "commandExportable",
             "shortcut": "ctrl shift s",
             "handler": "commandExportable",
             "script": "mark.sketchscript"
         },
         {
-            "name": "☕️ Buy me a coffee~",
+            "name": "Buy me 🍺",
             "identifier": "commandDonate",
             "handler": "commandDonate",
             "script": "mark.sketchscript"
@@ -110,13 +103,13 @@
         "isRoot" : false,
         "shortcut" : "",
         "items" : [
-            "commandOverlay",
-            "commandSize",
-            "commandSpacing",
-            "commandProperty",
+            "commandToolBar",
+            "-",
+            "commandOverlays",
+            "commandSizes",
+            "commandSpacings",
+            "commandProperties",
             "commandNote",
-            "commandWidth",
-            "commandHeight",
             "-",
             "commandExportable",
             "commandColor",
@@ -126,13 +119,13 @@
             "commandLocked",
             "commandClear",
             "-",
-            "commandSetting",
+            "commandSettings",
             "commandDonate"
         ],
-        "title" : "👍 Sketch Measure"
+        "title" : "Sketch Measure"
     },
     "identifier": "com.utom.measure",
-    "version": "2.0.3",
+    "version": "2.1 beta",
     "description" : "Make it a fun to create spec for developers and teammates",
     "authorEmail" : "utombox@gmail.com",
     "name" : "Sketch Measure"
