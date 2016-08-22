@@ -93,7 +93,7 @@
             "script": "mark.sketchscript"
         },
         {
-            "name": "🍺 Buy me a beer~",
+            "name": "Buy me 🍺",
             "identifier": "commandDonate",
             "handler": "commandDonate",
             "script": "mark.sketchscript"
@@ -122,7 +122,7 @@
             "commandSettings",
             "commandDonate"
         ],
-        "title" : "👍 Sketch Measure"
+        "title" : "Sketch Measure"
     },
     "identifier": "com.utom.measure",
     "version": "2.1 α",
