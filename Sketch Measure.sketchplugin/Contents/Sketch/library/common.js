@@ -1469,9 +1469,9 @@ SM.extend({
                         content.push("color: " + color);
                     }
                     else if( self.is(target, MSShapeGroup) ){
-                        var fillsJSON = self.getFills(targetStyle),
-                            fillJSON = fillsJSON.pop();
-
+                        var fillsJSON = self.getFills(targetStyle);
+                        if(fillsJSON.length <= 0) return false;
+                        var fillJSON = fillsJSON.pop();
                         content.push("fill: " + self.fillTypeContent(fillJSON))
                     }
 
@@ -1479,7 +1479,7 @@ SM.extend({
                 case "border":
                     var bordersJSON = self.getBorders(targetStyle);
                     if(bordersJSON.length <= 0) return false;
-                        borderJSON = bordersJSON.pop();
+                    var borderJSON = bordersJSON.pop();
                     content.push("border: " + self.convertUnit(borderJSON.thickness) + " " + borderJSON.position + "\r\n * " + self.fillTypeContent(borderJSON) );
                     break;
                 case "opacity":
