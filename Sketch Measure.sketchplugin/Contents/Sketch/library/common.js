@@ -7,9 +7,8 @@ var I18N = {},
     language = "";
 
 function _(str, data){
-    var str = (I18N[lang] && I18N[lang][str])? I18N[lang][str]: str;
-
-    var idx = -1;
+    var str = (I18N[lang] && I18N[lang][str])? I18N[lang][str]: str,
+        idx = -1;
     return str.replace(/\%\@/gi, function(){
         idx++;
         return data[idx];
