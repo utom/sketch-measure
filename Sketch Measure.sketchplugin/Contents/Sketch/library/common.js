@@ -34,7 +34,7 @@ var SM = {
             this.pluginSketch = this.pluginRoot + "/Contents/Sketch/library";
 
             if(command == "toolbar"){
-                this.ToolBar();
+                this.Toolbar();
                 return false;
             }
 
@@ -836,28 +836,28 @@ SM.extend({
         };
     }
 });
-// ToolBar.js
+// Toolbar.js
 
 SM.extend({
-    ToolBar: function(){
+    Toolbar: function(){
         var self = this,
             identifier = "com.utom.measure",
             threadDictionary = NSThread.mainThread().threadDictionary(),
-            ToolBar = threadDictionary[identifier];
+            Toolbar = threadDictionary[identifier];
 
-        if(!ToolBar){
-            ToolBar = NSPanel.alloc().init();
-            ToolBar.setStyleMask(NSTitledWindowMask + NSFullSizeContentViewWindowMask);
-            ToolBar.setBackgroundColor(NSColor.colorWithRed_green_blue_alpha(0.10, 0.10, 0.10, 1));
-            ToolBar.setTitleVisibility(NSWindowTitleHidden);
-            ToolBar.setTitlebarAppearsTransparent(true);
+        if(!Toolbar){
+            Toolbar = NSPanel.alloc().init();
+            Toolbar.setStyleMask(NSTitledWindowMask + NSFullSizeContentViewWindowMask);
+            Toolbar.setBackgroundColor(NSColor.colorWithRed_green_blue_alpha(0.10, 0.10, 0.10, 1));
+            Toolbar.setTitleVisibility(NSWindowTitleHidden);
+            Toolbar.setTitlebarAppearsTransparent(true);
 
-            ToolBar.setFrame_display(NSMakeRect(0, 0, 584, 48), false);
-            ToolBar.setMovableByWindowBackground(true);
-            ToolBar.becomeKeyWindow();
-            ToolBar.setLevel(NSFloatingWindowLevel);
+            Toolbar.setFrame_display(NSMakeRect(0, 0, 584, 48), false);
+            Toolbar.setMovableByWindowBackground(true);
+            Toolbar.becomeKeyWindow();
+            Toolbar.setLevel(NSFloatingWindowLevel);
 
-            var contentView = ToolBar.contentView(),
+            var contentView = Toolbar.contentView(),
                 getImage = function(size, name){
                     var isRetinaDisplay = (NSScreen.mainScreen().backingScaleFactor() > 1)? true: false;
                         suffix = (isRetinaDisplay)? "@2x": "",
@@ -888,7 +888,7 @@ SM.extend({
                         function(sender){
                             coscript.setShouldKeepAround(false);
                             threadDictionary.removeObjectForKey(identifier);
-                            ToolBar.close();
+                            Toolbar.close();
                         }),
                 overlayButton = addButton( NSMakeRect(64, 14, 20, 20), "icon-overlay",
                         function(sender){
@@ -984,10 +984,10 @@ SM.extend({
             contentView.addSubview(divider2);
             contentView.addSubview(divider3);
 
-            threadDictionary[identifier] = ToolBar;
+            threadDictionary[identifier] = Toolbar;
 
-            ToolBar.center();
-            ToolBar.makeKeyAndOrderFront(nil);
+            Toolbar.center();
+            Toolbar.makeKeyAndOrderFront(nil);
         }
 
         

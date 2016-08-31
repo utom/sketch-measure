@@ -2,10 +2,10 @@
     "author": "utom",
     "commands" : [
         {
-            "name": "ToolBar",
-            "identifier": "commandToolBar",
+            "name": "Toolsbar",
+            "identifier": "commandToolbar",
             "shortcut": "ctrl shift b",
-            "handler" : "commandToolBar",
+            "handler" : "commandToolbar",
             "script": "mark.sketchscript"
         },
         {
@@ -103,7 +103,7 @@
         "isRoot" : false,
         "shortcut" : "",
         "items" : [
-            "commandToolBar",
+            "commandToolbar",
             "-",
             "commandOverlays",
             "commandSizes",

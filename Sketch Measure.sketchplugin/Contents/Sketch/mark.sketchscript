@@ -65,7 +65,7 @@ function commandExport(context) {
     SM.init(context, "export");
 }
 
-function commandToolBar(context) {
+function commandToolbar(context) {
     SM.init(context, "toolbar");
 }
 
