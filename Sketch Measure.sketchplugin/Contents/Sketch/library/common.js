@@ -1126,8 +1126,13 @@ SM.extend({
                 options.callback(data);
             }
             self.wantsStop = true;
-            Panel.orderOut(nil);
-            NSApp.stopModal();
+            if(options.floatWindow){
+                Panel.close();
+            }
+            else{
+                Panel.orderOut(nil);
+                NSApp.stopModal();
+            }  
             // NSApp.endSheet(sender.window());
         });
         closeButton.setAction("callAction:");
@@ -1145,7 +1150,7 @@ SM.extend({
             Panel.becomeKeyWindow();
             Panel.setLevel(NSFloatingWindowLevel);
             Panel.center();
-            Panel.orderFront(NSApp.mainWindow());
+            Panel.makeKeyAndOrderFront(nil);
             return webView;
         }
         else{
@@ -2675,7 +2680,6 @@ SM.extend({
                     }
 
                     if( self.wantsStop === true ){
-                        coscript.setShouldKeepAround(false);
                         return interval.cancel();
                     }
 
