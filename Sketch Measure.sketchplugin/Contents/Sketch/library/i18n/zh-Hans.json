@@ -1,6 +1,6 @@
 {
     "Design resolution": "设计分辨率",
-    "NOTES": "笔记",
+    "NOTES": "备注",
     "PROPERTIES": "属性",
     "FILLS": "填充",
     "TYPEFACE": "字体",
@@ -60,7 +60,7 @@
     "Spacing": "空间",
     "Content": "内容",
     "All artboards": "全部画板",
-    "No slices added!": "未添加切片",
+    "No slices added!": "未添加切图",
     "No color names added!": "未添加颜色名称",
     "Select 1 or 2 layers to make marks!": "请选中 1 至 2 个图层!",
     "Select a text layer to make marks!": "请选中 1 个文本图层!",
@@ -70,7 +70,7 @@
     "Export": "导出",
     "Exporting...": "导出中...",
     "Export complete!": "导出完成!",
-    "The slice not in current artboard.": "切片不在当前画板",
+    "The slice not in current artboard.": "切图不在当前画板",
     "Inside Border": "内边框",
     "Outside Border": "外边框",
     "Center Border": "中心边框",
@@ -91,16 +91,16 @@
 
     "Plugins": "插件",
     "Toolbar": "工具栏",
-    "1. Mark Overlay": "标注区域",
-    "2. Mark Sizes": "标注尺寸",
-    "3. Mark Spacings": "标注间距",
-    "4. Mark Properties": "标注属性",
-    "5. Mark Note": "标注笔记",
+    "1. Mark Overlay": "1. 标注区域",
+    "2. Mark Sizes": "2. 标注尺寸",
+    "3. Mark Spacings": "3. 标注间隔",
+    "4. Mark Properties": "4. 标注属性",
+    "5. Mark Note": "5. 标注备注",
     "Spec Export": "规范导出",
     "Toggle Hidden": "切换隐藏标注",
     "Toggle Locked": "切换锁定标注",
     "Clear Marks": "清除标注",
     "Settings": "设置",
     "Color Names": "颜色命名",
-    "Make Exportable": "设置切片"
+    "Make Exportable": "设置切图"
 };
