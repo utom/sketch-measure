@@ -170,7 +170,6 @@ SM.extend({
 
         for (var i = 0; i < itemArray.count(); i++) {
             var menuItem = itemArray[i];
-            log(I18N[lang]);
             menuItem.setTitle(_(menuItem.title()));
         }
         
