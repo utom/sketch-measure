@@ -72,3 +72,7 @@ function commandToolbar(context) {
 function commandDonate(){
     NSWorkspace.sharedWorkspace().openURL(NSURL.URLWithString("http://utom.design/measure/donate.html"));
 }
+
+function commandMenu(context){
+    SM.init(context, "menu");
+}

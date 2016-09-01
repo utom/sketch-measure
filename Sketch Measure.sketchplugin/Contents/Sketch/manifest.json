@@ -2,7 +2,7 @@
     "author": "utom",
     "commands" : [
         {
-            "name": "Toolsbar",
+            "name": "Toolbar",
             "identifier": "commandToolbar",
             "shortcut": "ctrl shift b",
             "handler" : "commandToolbar",
@@ -96,6 +96,16 @@
             "name": "Buy me 🍺",
             "identifier": "commandDonate",
             "handler": "commandDonate",
+            "script": "mark.sketchscript"
+        },
+        {
+            "name": "Menu",
+            "identifier": "commandMenu",
+            "handlers": {
+                    "actions": {
+                        "OpenDocument": "commandMenu",
+                    }
+                },
             "script": "mark.sketchscript"
         }
     ],

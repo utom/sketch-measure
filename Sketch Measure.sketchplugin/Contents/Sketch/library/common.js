@@ -17,9 +17,26 @@ function _(str, data){
 
 var SM = {
         init: function(context, command){
-            coscript.setShouldKeepAround(true);
             this.context = context;
             this.extend(context);
+            this.pluginRoot = this.scriptPath
+                    .stringByDeletingLastPathComponent()
+                    .stringByDeletingLastPathComponent()
+                    .stringByDeletingLastPathComponent();
+            this.pluginSketch = this.pluginRoot + "/Contents/Sketch/library";
+
+            if(NSFileManager.defaultManager().fileExistsAtPath(this.pluginSketch + "/i18n/" + lang + ".json")){
+                language = NSString.stringWithContentsOfFile_encoding_error(this.pluginSketch + "/i18n/" + lang + ".json", NSUTF8StringEncoding, nil);
+
+                I18N[lang] = JSON.parse(language);
+                language = "I18N[\'" + webI18N[lang] + "\'] = " + language;
+            }
+
+            if(command == "menu"){
+                this.menu();
+                return false;
+            }
+
             this.document = context.document;
             this.documentData = this.document.documentData();
             this.window = this.document.window();
@@ -27,22 +44,10 @@ var SM = {
             this.page = this.document.currentPage();
             this.artboard = this.page.currentArtboard();
             this.current = this.artboard || this.page;
-            this.pluginRoot = this.scriptPath
-                    .stringByDeletingLastPathComponent()
-                    .stringByDeletingLastPathComponent()
-                    .stringByDeletingLastPathComponent();
-            this.pluginSketch = this.pluginRoot + "/Contents/Sketch/library";
-
+            coscript.setShouldKeepAround(true);
             if(command == "toolbar"){
                 this.Toolbar();
                 return false;
-            }
-
-            if(NSFileManager.defaultManager().fileExistsAtPath(this.pluginSketch + "/i18n/" + lang + ".json")){
-                language = NSString.stringWithContentsOfFile_encoding_error(this.pluginSketch + "/i18n/" + lang + ".json", NSUTF8StringEncoding, nil);
-
-                I18N[lang] = JSON.parse(language);
-                language = "I18N[\'" + webI18N[lang] + "\'] = " + language;
             }
 
             this.symbolsPage = this.find({key: "(name != NULL) && (name == %@)", match: "Symbols"}, this.document);
@@ -156,6 +161,29 @@ SM.extend({
         }
     }
 });
+
+SM.extend({
+    menu: function(){
+        var itemArray = NSApplication.sharedApplication().mainMenu().itemArray();
+        itemArray = this.getMenu(itemArray, "Plugins");
+        itemArray = this.getMenu(itemArray, "Sketch Measure");
+
+        for (var i = 0; i < itemArray.count(); i++) {
+            var menuItem = itemArray[i];
+            log(I18N[lang]);
+            menuItem.setTitle(_(menuItem.title()));
+        }
+        
+    },
+    getMenu: function(itemArray, title){
+        for (var i = 0; i < itemArray.count(); i++) {
+            var menuItem = itemArray[i];
+            if (menuItem.title() == title) {
+                return menuItem.submenu().itemArray();
+            }
+        }
+    }
+})
 
 // api.js
 SM.extend({

@@ -87,5 +87,19 @@
     "Select a layer to add exportable!": "请选中 1 个图层!",
     "Import complete!": "导入完成!",
     "Processing layer %@ of %@": "图层处理中... %@ \/ %@",
-    "Advanced mode": "高级模式"
+    "Advanced mode": "高级模式",
+    "Plugins": "插件",
+    "Toolbar": "工具栏",
+    "1. Mark Overlay": "标注区域",
+    "2. Mark Sizes": "标注尺寸",
+    "3. Mark Spacings": "标注间距",
+    "4. Mark Properties": "标注属性",
+    "5. Mark Note": "标注笔记",
+    "Spec Export": "规范导出",
+    "Toggle Hidden": "切换隐藏标注",
+    "Toggle Locked": "切换锁定标注",
+    "Clear Marks": "清除标注",
+    "Settings": "设置",
+    "Color Names": "颜色命名",
+    "Make Exportable": "设置切片"
 };
