@@ -67,7 +67,6 @@ main{position:relative;height:calc(100vh - 60px);}
 .tab li.icon-slices:before{background-position-y:-50px;}
 .tab li.icon-colors:before{background-position-y:-100px;}
 .screen-viewer{position:absolute;width:100vw;height:calc(100vh - 60px);background:#191919 url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgAQMAAABJtOi3AAAABlBMVEUAAAAAAAClZ7nPAAAAAnRSTlMAUvP2/eAAAAARSURBVAjXY6ASYD6ATlAHAADy5gMN0fCqFwAAAABJRU5ErkJggg==);background-size:16px 16px;overflow:auto;}
-.moving-screen{cursor:url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAARCAMAAADjcdz2AAAA6lBMVEUAAAAoKCgAAAAAAAAAAAAAAAAAAAALCwugoKAFBQVfX18/Pz9PT08UFBQXFxcjIyMeHh4PDw8AAAAAAAAHBwcAAAAAAAC6urqioqKZmZkAAACUlJQCAgKFhYUsLCx+fn5iYmIZGRlzc3NKSkoPDw8hISE0NDQeHh4SEhIzMzMkJCQoKCghISEiIiISEhIiIiIODg4XFxcXFxcREREAAAD///8AAADx8fHq6ur8/Pw/Pz/29vbQ0NCnp6fa2trExMSurq6AgIB4eHhMTExISEjz8/Pt7e3s7Ozi4uLg4ODMzMzLy8u1tbWwsLBBfK2UAAAANXRSTlMA2DMrJBME/vrs5ePi1MHAp6NJQzkuDv7+/vv59e/v7uzs6+np5dva2tnQv7+vrZ2ShHlbGxjc3akAAADBSURBVBgZNcEFQsNAAATAjdZdcHfX3btYHYf/f4e0kBnkQiBoN30U/MZ2UNnIGrdysVL5WW8dG2rnq4WVuzGrZ4ZKedrb7APoHvJbhnrngTIHQOi8GVnKUlt0MGi278ssjVhKXmQ/rnA+ybTLwuQR1yOOZbn0Su510a8Z5qacMSbrPvC0H5Gcc8GYiRMCuFkjOeeCMcsPyHkXKTnljPHn5RBLrlLmEnvk4k9PESMpOkFB9Wqt05GG+Bd4AxfwngH8ApYJIq4Mw2IOAAAAAElFTkSuQmCC'),auto;}
 .screen-viewer.moving-screen:after{content:" ";position:absolute;display:block;top:0;bottom:0;right:0;left:0;}
 .screen-viewer-inner{margin:0 auto;padding:32px 282px;box-sizing:content-box;transition:all .15s ease;}
 .screen{margin:0 auto;position:relative;background:#FFF;box-shadow:0 2px 10px 0 rgba(0,0,0,.2);transition:all .15s ease;}
@@ -185,6 +184,9 @@ main{position:relative;height:calc(100vh - 60px);}
 .artboard-list li.active small{color:#FFF;}
 .empty{position:absolute;top:30%;left:0;right:0;transform:translateY(-50%);vertical-align:middle;text-align:center;}
 .message{position:absolute;top:50%;left:50%;padding:10px 20px;max-width:320px;transform:translateX(-50%) translateY(-50%);text-align:center;border-radius:4px;background:rgba(0,0,0,.96);border: 1px solid rgba(255,255,255,.16);color:#FFF;box-shadow:0 2px 10px rgba(0,0,0,.32);z-index:9;display:none;}
+.cursor{position:absolute;display:none;width:16px;height:17px;background-size:16px 17px;background-image: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAiCAMAAAAJbCvNAAABVlBMVEUAAAAGBgYBAQEBAQEAAAAAAAAAAAAnJycAAAA3NzcDAwMNDQ0AAAAAAAAAAAAhISEbGxsYGBgPDw8CAgIDAwMBAQEAAAAAAAAAAAAAAAAAAAAvLy8UFBQCAgIBAQEAAAAAAAAAAAAAAAAAAAA+Pj5BQUE/Pz8zMzMCAgIDAwMDAwMCAgIBAQEAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA7OzsAAAAAAAAAAAAAAAD///8AAABhYWEdHR36+vpVVVX9/f329vbz8/Pb29uBgYF0dHRjY2MsLCz39/ft7e3r6+vR0dFxcXFSUlJNTU3X19fKysq4uLh3d3dXV1dJSUlGRkZERETv7+/o6Ojj4+O8vLy1tbW0tLSnp6empqaTk5OKioqGhoZtbW1nZ2dcXFxPT0/Dw8PCwsKwsLCurq6pqamhoaGZmZmNjY16enpeXl5JnG7xAAAAPHRSTlMA/fj9B1EC/jf+/vw8Ew7+/fz85t26mpRoYyX9/OLMoHlKMiL+/f398enY0cC1tLGojouGVh4Z/qpyQy7UG/vLAAACHUlEQVQ4T33QVVdbURBA4bk3QjwQIIa7u9T2QDwQxx2K1+X/v/QhlzRpWN2v51tnZo1IS4ERx4b8J4epaht+5cHpiKzGRfzmxH55R0ftseERZwuIqGGY6xLTLKSNoTlV7W0WY7Z8qjRhflgxADrUOMjcarQJjGgZiqHecBfAuB4Cfb1NwKcHwJ0OdgKc6jWw1S0y5rLXgd18AIqGdtVBGdjpti+r9sTrYqkrBSS1H+BEz4GjnojmvnutQQ79AnxTL8CxFoCkqXnYmakD58AkkPEYADUPQFVDGajOWmsOaxboU4DnEEBN80Dfgoj4og7/pu0QeNQ08NxZ32QPEp41cS6rqvluqT8FX4MJIPcEkHQDn9Qh65rP7le1W/dpKVEAcraArHpTQE71nvZO50TWjAxARU9eAaGwiEtvARJTnQCpNKTPIFEEuNCoiCwYnwGKWYCKG7bGobILcK0+EfHPevcafz4FoboLW9sA9xoQEdmY6Si8gN9BSDZArad+xvf66wVsbTeBMyNiHXrIs9cMOixwp6MW8E9PWmBnG44scOFdlJdi+tMCXQ2QcE/HG8D5Vj8CkO+Axymo7HKoDvmbfd5zA5AoQeYcCqWsLSzNBeZtP2guZ/O3ALEvWlMoveksQ7JH/sk56K6DmjkQTHM8+C+Qof6rg8vLqweNumzHN+7uNhDWeisiMVN1oA3YR10un8+1KSISiI/Z28Dr/QHPa6Em8DfwfAAAAABJRU5ErkJggg==');background-repeat:no-repeat;
+}
+.cursor.dragging{background-image: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAiCAMAAAAJbCvNAAABMlBMVEUAAAAAAAA2NjYsLCwCAgIAAAAAAAAMDAwBAQECAgIBAQECAgIBAQEBAQEAAAAAAAAAAAA5OTkgICAICAgAAAAcHBwCAgIAAAAAAAAAAAAAAAAAAABDQ0M8PDwxMTE0NDQVFRUCAgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAPDw8DAwMAAAAAAAAAAAAAAAAAAAAAAAAAAAD///8AAABhYWEcHBz6+vr39/dMTEzs7Oy8vLy4uLhWVlYqKiooKCj09PTw8PC1tbWnp6d2dnZZWVn8/Pzp6enj4+Pd3d3a2trNzc2tra2pqammpqaKioqAgIBzc3NwcHBmZmZdXV1TU1NHR0c+Pj7W1tbR0dHGxsbAwMCampqSkpKPj4+GhoZycnJsbGwkJCTy91wiAAAANnRSTlMAPP7+/ZcN/Pnr487Kv7QlEv7+/fz71jk2GAcE/v7+/fzzpaCUkGZZQTEsIAn826uEg3JtXFGryOxIAAABkElEQVR4AeXS1XLbQBjF8RXIDHbNdiBpOCnDOa4kg2Oww9w2KUPf/xW6s8q2sTXT6X1+t99/NJozK+6lR8ZmRPzDZpxc3sg9y2Sez3aNl+mUsx23TjpzxbJtmnaqMR08ZO8mGuNn4JA8AU75YiXl5ISW5SXwgTwAUGIfcAuM3thpoRnsAJhnC8DcY0gWj3HBmg5qPAdw1nMBfJ9Aai4AQ1aFllzENNcD2jSEsuOkEvyIEB1k44XrEicI6bCigtXoIbzFN5D2PMAbAG4L0im3VVD2AQyOIF3lgeY88MOC9JXBEEkf2rsHwHtLRup749jtikvTQU8Hflkor/hJB00ZdHUwKKwKJRLP70FRh+7ubXDOLRHY4GU4wEE0I7Q1foPyVh4mQeCay1nxx1OeqWC8K6MF4MrCmK/FX/W0PQKCgfr7gLd/ZDvirkiaX3DXRTE381wzHEFp5UvHQPeJmNFImlD8WOJXH35SzFpZGnba7eFPrleK1yMzEQocBtaEWI+R4aC+Va0YRrWm/jm7Uxf/5zeExWvZghlTSgAAAABJRU5ErkJggg==');}
     </style>
     <script type="text/javascript">
     <!--
@@ -334,7 +336,8 @@ var I18N = {},
                     '</section>',
                     '<aside id="inspector" class="inspector"></aside>',
                 '</main>',
-                '<div id="message" class="message"></div>'
+                '<div id="message" class="message"></div>',
+                '<div id="cursor" class="cursor"></div>'
             ].join(''));
             this.zoom();
             this.unit();
@@ -1134,7 +1137,7 @@ var I18N = {},
                     self.zoomRender();
                     event.stopPropagation();
                 });
-            $(document)
+            $(window)
                 .keydown(function(event){
                     if((event.ctrlKey || event.metaKey) && (event.which == 187 || event.which == 189 || event.which == 48)) {
                         if(event.which == 187 && self.configs.zoom < 1.5){
@@ -1153,18 +1156,29 @@ var I18N = {},
                     else if(event.which == 32){
                         self.movingScreen = true;
                         $('.screen-viewer').addClass('moving-screen');
+                        $('#cursor').show();
                         event.preventDefault();
                         event.stopPropagation();
+                        return false;
                     }
                 })
                 .keyup(function(event){
                     if(event.which == 32){
                         self.movingScreen = false;
+                        self.draggingScreen = false;
                         $('.screen-viewer').removeClass('moving-screen');
+                        $('#cursor').hide();
+                        $('#cursor').removeClass('dragging');
                         event.preventDefault();
                         event.stopPropagation();
                     }
                 })
+                .mousemove(function(event){
+                    $('#cursor').css({
+                        left: event.clientX,
+                        top: event.clientY
+                    });
+                });
             // unit
             $('#unit')
                 .on('change', 'input[name=resolution]', function(){
@@ -1313,17 +1327,20 @@ var I18N = {},
                 .mousemove(function( event ) {
                     if(self.movingScreen && self.draggingScreen){
                         event.stopPropagation();
-                        var $this = $(this);
-                        var dDistance = {
-                            x: self.dData.x - event.screenX,
-                            y: self.dData.y - event.screenY,
-                        }
+
+                        var $this = $(this),
+                            dDistance = {
+                                x: self.dData.x - event.screenX,
+                                y: self.dData.y - event.screenY,
+                            }
                         $this.scrollTop(self.dData.scrollTop + dDistance.y);
                         $this.scrollLeft(self.dData.scrollLeft + dDistance.x);
+                        $('#cursor').addClass('dragging');
                     }
                  })
                 .mouseup(function( event ) {
                     if(self.movingScreen && self.draggingScreen){
+                        $('#cursor').removeClass('dragging');
                         var $this = $(this);
                         self.draggingScreen = false;
                     }
