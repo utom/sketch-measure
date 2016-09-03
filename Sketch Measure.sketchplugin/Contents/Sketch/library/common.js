@@ -2780,7 +2780,7 @@ SM.extend({
 
         if(symbolLayer) layerData.objectID = this.toJSString( symbolLayer.objectID() )
 
-        if ( ! ( layerType == "slice" || layerType == "symbol" ) ) {
+        if ( layerType != "slice" ) {
             var layerStyle = layer.style();
             layerData.rotation = layer.rotation();
             layerData.radius = this.getRadius(layer);
