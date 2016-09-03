@@ -67,8 +67,6 @@ main{position:relative;height:calc(100vh - 60px);}
 .tab li.icon-slices:before{background-position-y:-50px;}
 .tab li.icon-colors:before{background-position-y:-100px;}
 .screen-viewer{position:absolute;width:100vw;height:calc(100vh - 60px);background:#191919 url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgAQMAAABJtOi3AAAABlBMVEUAAAAAAAClZ7nPAAAAAnRSTlMAUvP2/eAAAAARSURBVAjXY6ASYD6ATlAHAADy5gMN0fCqFwAAAABJRU5ErkJggg==);background-size:16px 16px;overflow:auto;}
-.moving-screen{cursor:url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAARCAMAAADjcdz2AAAA6lBMVEUAAAAoKCgAAAAAAAAAAAAAAAAAAAALCwugoKAFBQVfX18/Pz9PT08UFBQXFxcjIyMeHh4PDw8AAAAAAAAHBwcAAAAAAAC6urqioqKZmZkAAACUlJQCAgKFhYUsLCx+fn5iYmIZGRlzc3NKSkoPDw8hISE0NDQeHh4SEhIzMzMkJCQoKCghISEiIiISEhIiIiIODg4XFxcXFxcREREAAAD///8AAADx8fHq6ur8/Pw/Pz/29vbQ0NCnp6fa2trExMSurq6AgIB4eHhMTExISEjz8/Pt7e3s7Ozi4uLg4ODMzMzLy8u1tbWwsLBBfK2UAAAANXRSTlMA2DMrJBME/vrs5ePi1MHAp6NJQzkuDv7+/vv59e/v7uzs6+np5dva2tnQv7+vrZ2ShHlbGxjc3akAAADBSURBVBgZNcEFQsNAAATAjdZdcHfX3btYHYf/f4e0kBnkQiBoN30U/MZ2UNnIGrdysVL5WW8dG2rnq4WVuzGrZ4ZKedrb7APoHvJbhnrngTIHQOi8GVnKUlt0MGi278ssjVhKXmQ/rnA+ybTLwuQR1yOOZbn0Su510a8Z5qacMSbrPvC0H5Gcc8GYiRMCuFkjOeeCMcsPyHkXKTnljPHn5RBLrlLmEnvk4k9PESMpOkFB9Wqt05GG+Bd4AxfwngH8ApYJIq4Mw2IOAAAAAElFTkSuQmCC'),auto;}
-.screen-viewer.moving-screen:after{content:" ";position:absolute;display:block;top:0;bottom:0;right:0;left:0;}
 .screen-viewer-inner{margin:0 auto;padding:32px 282px;box-sizing:content-box;transition:all .15s ease;}
 .screen{margin:0 auto;position:relative;background:#FFF;box-shadow:0 2px 10px 0 rgba(0,0,0,.2);transition:all .15s ease;}
 .layer{position:absolute;cursor:pointer;}
@@ -1070,8 +1068,7 @@ var I18N = {},
             $('body')
                 .on({
                         click: function( event ){
-                            if( self.movingScreen ){ return false; }
-                            if( $(event.target).hasClass('layer') || $(event.target).hasClass('slice-layer')){
+                            if($(event.target).hasClass('layer') || $(event.target).hasClass('slice-layer')){
                                 var selected = (!$(event.target).hasClass('slice-layer'))? event.target: $('.layer-' + $(event.target).attr('data-objectid')).first();
                                 self.selectedIndex = self.getIndex(selected);
                                 self.hideDistance();
@@ -1089,7 +1086,6 @@ var I18N = {},
                             }
                         },
                         mousemove: function( event ){
-                            if( self.movingScreen ){ return false; }
                             self.mouseoutLayer();
                             self.hideDistance();
                             if( $(event.target).hasClass('screen-viewer') || $(event.target).hasClass('screen-viewer-inner') ){
@@ -1150,21 +1146,7 @@ var I18N = {},
                         event.preventDefault();
                         return false;
                     }
-                    else if(event.which == 32){
-                        self.movingScreen = true;
-                        $('.screen-viewer').addClass('moving-screen');
-                        event.preventDefault();
-                        event.stopPropagation();
-                    }
-                })
-                .keyup(function(event){
-                    if(event.which == 32){
-                        self.movingScreen = false;
-                        $('.screen-viewer').removeClass('moving-screen');
-                        event.preventDefault();
-                        event.stopPropagation();
-                    }
-                })
+                });
             // unit
             $('#unit')
                 .on('change', 'input[name=resolution]', function(){
@@ -1293,40 +1275,6 @@ var I18N = {},
                 })
                 .on('mouseout', '.note', function(){
                     $(this).find('div').hide();
-                });
-
-            this.movingScreen = false;
-            this.draggingScreen = false;
-            $('.screen-viewer')
-                .mousedown(function( event ) {
-                    if(self.movingScreen && !self.draggingScreen){
-                        var $this = $(this);
-                        self.draggingScreen = true;
-                        self.dData = {
-                            x: event.screenX,
-                            y: event.screenY,
-                            scrollTop: $this.scrollTop(),
-                            scrollLeft: $this.scrollLeft()
-                        };
-                    }
-                })
-                .mousemove(function( event ) {
-                    if(self.movingScreen && self.draggingScreen){
-                        event.stopPropagation();
-                        var $this = $(this);
-                        var dDistance = {
-                            x: self.dData.x - event.screenX,
-                            y: self.dData.y - event.screenY,
-                        }
-                        $this.scrollTop(self.dData.scrollTop + dDistance.y);
-                        $this.scrollLeft(self.dData.scrollLeft + dDistance.x);
-                    }
-                 })
-                .mouseup(function( event ) {
-                    if(self.movingScreen && self.draggingScreen){
-                        var $this = $(this);
-                        self.draggingScreen = false;
-                    }
                 });
         }
     }
