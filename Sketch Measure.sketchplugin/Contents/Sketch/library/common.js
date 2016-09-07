@@ -2158,9 +2158,6 @@ SM.extend({
 
 // export.js
 SM.extend({
-    slices: [],
-    sliceCache: {},
-    maskCache: [],
     hasExportSizes: function(layer){
         return layer.exportOptions().exportFormats().count() > 0;
     },
@@ -2548,6 +2545,9 @@ SM.extend({
                         colors: []
                     };
 
+                self.slices = [];
+                self.sliceCache = {};
+                self.maskCache = [];
                 self.single = false;
                 self.wantsStop = false;
 
