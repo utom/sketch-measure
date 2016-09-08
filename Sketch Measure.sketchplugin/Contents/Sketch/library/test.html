@@ -67,10 +67,11 @@ main{position:relative;height:calc(100vh - 60px);}
 .tab li.icon-slices:before{background-position-y:-50px;}
 .tab li.icon-colors:before{background-position-y:-100px;}
 .screen-viewer{position:absolute;width:100vw;height:calc(100vh - 60px);background:#191919 url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgAQMAAABJtOi3AAAABlBMVEUAAAAAAAClZ7nPAAAAAnRSTlMAUvP2/eAAAAARSURBVAjXY6ASYD6ATlAHAADy5gMN0fCqFwAAAABJRU5ErkJggg==);background-size:16px 16px;overflow:auto;}
-.screen-viewer .overlay{display:none;}
-.screen-viewer.moving-screen .overlay{content:" ";position:absolute;top:0;right:0;bottom:0;left:0;display:block;cursor:none;z-index:2;}
+.screen-viewer,.screen-viewer .overlay{position:absolute;width:100vw;height:calc(100vh - 60px);background:#191919 url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgAQMAAABJtOi3AAAABlBMVEUAAAAAAAClZ7nPAAAAAnRSTlMAUvP2/eAAAAARSURBVAjXY6ASYD6ATlAHAADy5gMN0fCqFwAAAABJRU5ErkJggg==);background-size:16px 16px;overflow:auto;}
+.screen-viewer .overlay{display:none;position:fixed;top:60px;left:0;background:transparent;overflow:hidden;z-index:2;cursor:none;}
+.screen-viewer.moving-screen .overlay{display:block;}
 .screen-viewer-inner{position:relative;margin:0 auto;}
-.screen{margin:0 auto;position:absolute;left:50%;top:50%;background:#FFF;box-shadow:0 2px 10px 0 rgba(0,0,0,.2);transition:all .15s ease;}
+.screen{margin:0 auto;position:absolute;left:50%;top:50%;background:#FFF;box-shadow:0 2px 10px 0 rgba(0,0,0,.2);/* transition:all .15s ease; */}
 .layer{position:absolute;cursor:pointer;}
 .hover,.selected{border:1px solid #EE6723;}
 .has-slice{border:1px dashed #EE6723;background:rgba(255,85,0,.32);}
@@ -354,7 +355,32 @@ var I18N = {},
         },
         screen: function() {
             var imageData = (this.current.imageBase64)? this.current.imageBase64: this.current.imagePath + '?' + timestamp,
-                scrollLeft, scrollTop;
+                screenSize = (this.current.width > this.current.height)? this.current.width: this.current.height,
+                artboardSize = ($('.screen-viewer').outerWidth() > $('.screen-viewer').outerHeight())? $('.screen-viewer').outerWidth(): $('.screen-viewer').outerHeight(),
+                fixedSize = (screenSize > artboardSize)? screenSize * 3: artboardSize * 3,
+                scrollLeft, scrollTop, scrollPercentage;
+
+
+
+
+            if(!self.pScreen || this.zoomSize( fixedSize ) < artboardSize){
+                scrollPercentage = {
+                    left: .5,
+                    top: .5
+                }
+
+                self.pScreen = true;
+            }
+            else{
+                scrollPercentage = {
+                    left: $('.screen-viewer').scrollLeft() / ( $('.screen-viewer-inner').outerWidth() - $('.screen-viewer').outerWidth() ),
+                    top: $('.screen-viewer').scrollTop() / ( $('.screen-viewer-inner').outerHeight() - $('.screen-viewer').outerHeight() )
+                }
+                console.log($('.screen-viewer').scrollLeft())
+            }
+
+
+
             $('#screen').css({
                 width: this.zoomSize( this.current.width ),
                 height: this.zoomSize( this.current.height ),
@@ -363,24 +389,15 @@ var I18N = {},
                 background: '#FFF url(' + imageData + ') no-repeat',
                 backgroundSize: this.zoomSize( this.current.width ) + 'px ' + this.zoomSize( this.current.height ) + 'px'
             });
-            var screenWidth = (this.current.width > $('.screen-viewer').outerWidth())? this.current.width: $('.screen-viewer').outerWidth(),
-                screenHeight = (this.current.height > $('.screen-viewer').outerHeight())? this.current.height: $('.screen-viewer').outerHeight();
+
             $('#screen').parent().css({
-                width: this.zoomSize( screenWidth * 3 ),
-                height: this.zoomSize( screenHeight * 3 )
+                width: this.zoomSize( fixedSize ),
+                height: this.zoomSize( fixedSize )
             });
 
-            if(!self.pScreen){
-                scrollLeft = ( this.zoomSize( screenWidth * 3 ) - $('.screen-viewer').outerWidth() ) / 2;
-                scrollTop = ( this.zoomSize( screenHeight * 3 ) - $('.screen-viewer').outerHeight() ) / 2;
-                self.pScreen = {
-                    scrollLeft: this.zoomSize( screenWidth * 3 ),
-                    scrollTop: this.zoomSize( screenHeight * 3 )
-                };
-            }
-            // else{
-            //     scrollLeft = 
-            // }
+            scrollLeft = scrollPercentage.left * ( $('.screen-viewer-inner').outerWidth() - $('.screen-viewer').outerWidth() );
+            scrollTop = scrollPercentage.top * ( $('.screen-viewer-inner').outerHeight() - $('.screen-viewer').outerHeight() );
+
             $('.screen-viewer').scrollLeft(scrollLeft);
             $('.screen-viewer').scrollTop(scrollTop);
         },

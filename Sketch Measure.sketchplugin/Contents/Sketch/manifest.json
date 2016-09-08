@@ -93,7 +93,7 @@
             "script": "mark.sketchscript"
         },
         {
-            "name": "Buy me 🍺",
+            "name": "Sponsor me to buy new iPhone",
             "identifier": "commandDonate",
             "handler": "commandDonate",
             "script": "mark.sketchscript"
