@@ -66,11 +66,12 @@ main{position:relative;height:calc(100vh - 60px);}
 .tab li.current:before{background-position-x:0;}
 .tab li.icon-slices:before{background-position-y:-50px;}
 .tab li.icon-colors:before{background-position-y:-100px;}
+.screen-viewer{position:absolute;width:100vw;height:calc(100vh - 60px);background:#191919 url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgAQMAAABJtOi3AAAABlBMVEUAAAAAAAClZ7nPAAAAAnRSTlMAUvP2/eAAAAARSURBVAjXY6ASYD6ATlAHAADy5gMN0fCqFwAAAABJRU5ErkJggg==);background-size:16px 16px;overflow:auto;}
 .screen-viewer,.screen-viewer .overlay{position:absolute;width:100vw;height:calc(100vh - 60px);background:#191919 url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgAQMAAABJtOi3AAAABlBMVEUAAAAAAAClZ7nPAAAAAnRSTlMAUvP2/eAAAAARSURBVAjXY6ASYD6ATlAHAADy5gMN0fCqFwAAAABJRU5ErkJggg==);background-size:16px 16px;overflow:auto;}
-.screen-viewer .overlay{display:none;background:transparent;overflow:hidden;z-index:2;}
+.screen-viewer .overlay{display:none;position:fixed;top:60px;left:0;background:transparent;overflow:hidden;z-index:2;cursor:none;}
 .screen-viewer.moving-screen .overlay{display:block;}
-.screen-viewer-inner{margin:0 auto;padding:32px 282px;box-sizing:content-box;transition:all .15s ease;}
-.screen{margin:0 auto;position:relative;background:#FFF;box-shadow:0 2px 10px 0 rgba(0,0,0,.2);transition:all .15s ease;}
+.screen-viewer-inner{position:relative;margin:0 auto;}
+.screen{margin:0 auto;position:absolute;left:50%;top:50%;background:#FFF;box-shadow:0 2px 10px 0 rgba(0,0,0,.2);transform:translate(-50%,-50%);transition:all .15s ease;}
 .layer{position:absolute;cursor:pointer;}
 .hover,.selected{border:1px solid #EE6723;}
 .has-slice{border:1px dashed #EE6723;background:rgba(255,85,0,.32);}
@@ -354,16 +355,35 @@ var I18N = {},
         },
         screen: function() {
             var imageData = (this.current.imageBase64)? this.current.imageBase64: this.current.imagePath + '?' + timestamp;
+
+            if(!this.maxSize){
+                var screenSize = (this.current.width > this.current.height)? this.current.width: this.current.height,
+                    artboardSize = ($('.screen-viewer').outerWidth() > $('.screen-viewer').outerHeight())? $('.screen-viewer').outerWidth(): $('.screen-viewer').outerHeight();
+                this.maxSize = (screenSize > artboardSize)? screenSize * 5: artboardSize * 5;
+
+                $('#screen').parent().css({
+                    width: this.maxSize,
+                    height: this.maxSize
+                });
+
+                var scrollMaxX = this.maxSize - $('.screen-viewer').outerWidth(),
+                    scrollMaxY = this.maxSize - $('.screen-viewer').outerHeight(),
+                    scrollLeft = .5 * scrollMaxX,
+                    scrollTop = .5 * scrollMaxY;
+
+                $('.screen-viewer').scrollLeft(scrollLeft);
+                $('.screen-viewer').scrollTop(scrollTop);
+            }
+
             $('#screen').css({
                 width: this.zoomSize( this.current.width ),
                 height: this.zoomSize( this.current.height ),
                 background: '#FFF url(' + imageData + ') no-repeat',
                 backgroundSize: this.zoomSize( this.current.width ) + 'px ' + this.zoomSize( this.current.height ) + 'px'
             });
-            $('#screen').parent().css({
-                width: this.zoomSize( this.current.width ),
-                height: this.zoomSize( this.current.height )
-            });
+
+            
+
         },
         zoom: function(){
             var zoomText = this.configs.zoom * 100 + '%',
@@ -1144,13 +1164,14 @@ var I18N = {},
             $(window)
                 .keydown(function(event){
                     if((event.ctrlKey || event.metaKey) && (event.which == 187 || event.which == 189 || event.which == 48)) {
-                        if(event.which == 187 && self.configs.zoom < 1.5){
+                        if(event.which == 187 && self.configs.zoom < 4){
                             $('.zoom-out').click();
                         }
                         else if(event.which == 189 && self.configs.zoom > .25){
                             $('.zoom-in').click();
                         }
                         else if(event.which == 48){
+                            self.maxSize = undefined;
                             self.configs.zoom = 1;
                             self.zoomRender();
                         }
@@ -1191,7 +1212,6 @@ var I18N = {},
                 })
                 .mousedown(function(event){
                     var $target = $(event.target);
-                    console.log($target)
                     if(
                         $('.screen-viewer').hasClass('moving-screen') &&
                         (
@@ -1253,6 +1273,7 @@ var I18N = {},
             $('#artboards')
                 .on('click', '.artboard', function( event ){
                     if(self.artboardIndex == self.getIndex(this)) return;
+                    self.maxSize = undefined;
                     self.artboardIndex = self.getIndex(this);
                     self.selectedIndex = undefined;
                     self.current = self.project.artboards[self.artboardIndex];
@@ -1295,6 +1316,23 @@ var I18N = {},
                 .on('click', 'li', function(){
                     var id = $(this).attr('data-objectid');
                     if($('.layer-' + id).length > 0){
+                        var offsets = $('.layer-' + id).offset(),
+                            scrolls = {
+                                left: $('.screen-viewer').scrollLeft(),
+                                top: $('.screen-viewer').scrollTop()
+                            },
+                            sizes = {
+                                width: $('.layer-' + id).outerWidth(),
+                                height: $('.layer-' + id).outerHeight()
+                            },
+                            viewerSizes = {
+                                width: $('.screen-viewer').outerWidth(),
+                                height: $('.screen-viewer').outerHeight()
+                            };
+                            $('.screen-viewer').animate({
+                                scrollLeft: ( offsets.left + scrolls.left) - ( ( viewerSizes.width - sizes.width ) / 2 ),
+                                scrollTop: ( offsets.top + scrolls.top - 60) - ( ( viewerSizes.height - sizes.height ) / 2 )
+                            }, 150);
                         $('.layer-' + id).click();
                     }
                     else{
