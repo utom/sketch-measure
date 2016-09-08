@@ -2,7 +2,7 @@
 
 Make it a fun to create spec for developers and teammates, **Sketch 39.* support**. 
 
-###[☕️ Buy me a coffee~](http://utom.design/measure/donate.html)
+###[Sponsor me to buy new iPhone](http://utom.design/measure/donate.html)
 
 ![Logo](http://utom.design/logo@2x.png)
 
