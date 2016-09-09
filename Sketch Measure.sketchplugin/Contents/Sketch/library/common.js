@@ -1094,7 +1094,7 @@ SM.extend({
                             }
                         }
                         else if(request == "import"){
-                            if( options.importCallback(Panel, NSApp) ){
+                            if( options.importCallback(Panel) ){
                                  self.message(_("Import complete!"));
                             }
                             else{
@@ -2061,21 +2061,19 @@ SM.extend({
                 });
                 
             },
-            importCallback: function(SMPanel, NSApp){
-                var colors = self.importColors();
-                if( colors ){
-                    self.configs = self.setConfigs({
-                        colors: colors,
-                        colorNames: self.colorNames(colors)
-                    });
-                    SMPanel.orderOut(nil);
-                    NSApp.stopModal();
-                    self.manageColors();
-                    return true;
-                }
-                else{
-                    return false;
-                }
+            importCallback: function(SMPanel){
+                // var colors = self.importColors();
+                // if( colors ){
+                //     self.configs = self.setConfigs({
+                //         colors: colors,
+                //         colorNames: self.colorNames(colors)
+                //     });
+                //     SMPanel.close();
+                //     return true;
+                // }
+                // else{
+                //     return false;
+                // }
             }
         });
     },
