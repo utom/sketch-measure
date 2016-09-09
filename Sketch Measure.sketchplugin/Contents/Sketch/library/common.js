@@ -2143,10 +2143,8 @@ SM.extend({
                 var size = layer.exportOptions().addExportFormat();
                 size.setName(format.suffix);
                 size.setScale(format.scale);
-            };
+            }
 
-            layer.exportOptions().addExportFormat();
-            layer.exportOptions().removeExportFormatAtIndex(layer.exportOptions().exportFormats().count() - 1);
             layer.setIsSelected(0);
             layer.setIsSelected(1);
 
