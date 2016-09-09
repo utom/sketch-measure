@@ -2052,6 +2052,7 @@ SM.extend({
             height: 323,
             state: 0,
             data: data,
+            floatWindow: true,
             callback: function( data ){
                 var colors = data;
                 self.configs = self.setConfigs({

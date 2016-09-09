@@ -590,6 +590,12 @@ button{
     border-right: 1px solid #353535;
     background: transparent;
 }
+.options-bar.m0{
+    padding:0;
+}
+.options-bar.m0 button{
+    margin:0;
+}
 .options-bar button:active{
     background-color: #000;
 }
@@ -600,6 +606,19 @@ button{
     content: " ";
     width: 12px;
     height: 2px;
+    background: #FFF;
+}
+
+.options-bar button.button-add{
+    left:33px;
+}
+.options-bar button.button-add:after{
+    position: absolute;
+    left: 14px;
+    top: 10px;
+    content: " ";
+    width: 2px;
+    height: 12px;
     background: #FFF;
 }
 

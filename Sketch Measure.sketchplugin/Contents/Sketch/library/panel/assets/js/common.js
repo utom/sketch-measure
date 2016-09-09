@@ -6,9 +6,9 @@ var I18N = {},
 
 $(function() {
     $(document)
-        .on('contextmenu', function(event){
-                return false;
-            })
+        // .on('contextmenu', function(event){
+        //         return false;
+        //     })
         .keypress(function(event){
                 var eventObj = event || e,
                     keyCode = eventObj.keyCode || eventObj.which;

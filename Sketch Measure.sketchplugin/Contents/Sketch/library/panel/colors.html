@@ -37,7 +37,7 @@
                         '<button class="file-import">' + _('Import') + '</button>',
                     '</div>',
                 '</div>',
-                '<div class="options-bar"><button class="button-remove"></button></div>',
+                '<div class="options-bar m0"><button class="button-remove"></button><button class="button-add"></button></div>',
             '</div>'
             ].join(''));
         var colorsHTML = [],
@@ -186,9 +186,10 @@
             SMAction(colorNames);
         }
     }
-    // $(function(){
-    //     init({list:[],add:[]});
-    // });
+
+    $(function(){
+        init({list:[],add:[]});
+    });
     -->
     </script>
   </head>
