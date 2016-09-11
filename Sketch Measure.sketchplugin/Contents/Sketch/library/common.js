@@ -32,7 +32,7 @@ var SM = {
                 language = "I18N[\'" + webI18N[lang] + "\'] = " + language;
             }
 
-            if(command == "menu"){
+            if(command && command == "menu"){
                 this.menu();
                 return false;
             }
@@ -45,7 +45,7 @@ var SM = {
             this.artboard = this.page.currentArtboard();
             this.current = this.artboard || this.page;
             coscript.setShouldKeepAround(true);
-            if(command == "toolbar"){
+            if(command && command == "toolbar"){
                 this.Toolbar();
                 return false;
             }
@@ -61,58 +61,59 @@ var SM = {
 
             this.configs = this.getConfigs();
 
-            if(!this.configs && command != "settings"){
+            if(!this.configs && command &&  command != "settings"){
                 if(!this.settingsPanel()) return false;
             }
 
-            switch (command) {
-                case "mark-overlays":
-                    this.markOverlays();
-                    break;
-                case "lite-sizes":
-                    this.liteSizes();
-                    break;
-                case "lite-spacings":
-                    this.liteSpacings();
-                    break;
-                case "lite-properties":
-                    this.liteProperties();
-                    break;
-                case "mark-sizes":
-                    this.markSizes();
-                    break;
-                case "mark-spacings":
-                    this.markSpacings();
-                    break;
-                case "mark-properties":
-                    this.markProperties();
-                    break;
-                case "mark-note":
-                    this.markNote();
-                    break;
-                case "locked":
-                    this.toggleLocked();
-                    break;
-                case "hidden":
-                    this.toggleHidden();
-                    break;
-                case "clear":
-                    this.clearAllMarks();
-                    break;
-                case "color":
-                    this.manageColors();
-                    break;
-                case "exportable":
-                    this.makeExportable();
-                    break;
-                case "settings":
-                    this.settingsPanel();
-                    break;
-                case "export":
-                    this.export();
-                    break;
+            if(command){
+                switch (command) {
+                    case "mark-overlays":
+                        this.markOverlays();
+                        break;
+                    case "lite-sizes":
+                        this.liteSizes();
+                        break;
+                    case "lite-spacings":
+                        this.liteSpacings();
+                        break;
+                    case "lite-properties":
+                        this.liteProperties();
+                        break;
+                    case "mark-sizes":
+                        this.markSizes();
+                        break;
+                    case "mark-spacings":
+                        this.markSpacings();
+                        break;
+                    case "mark-properties":
+                        this.markProperties();
+                        break;
+                    case "mark-note":
+                        this.markNote();
+                        break;
+                    case "locked":
+                        this.toggleLocked();
+                        break;
+                    case "hidden":
+                        this.toggleHidden();
+                        break;
+                    case "clear":
+                        this.clearAllMarks();
+                        break;
+                    case "color":
+                        this.manageColors();
+                        break;
+                    case "exportable":
+                        this.makeExportable();
+                        break;
+                    case "settings":
+                        this.settingsPanel();
+                        break;
+                    case "export":
+                        this.export();
+                        break;
+                }
             }
-
         },
         extend: function( options, target ){
             var target = target || this;
@@ -1029,7 +1030,6 @@ SM.extend({
                 url: this.pluginSketch + "/panel/settings.html",
                 width: 240,
                 height: 316,
-                state: 1,
                 floatWindow: false,
                 data: {
                     density: 2,
@@ -1043,6 +1043,13 @@ SM.extend({
         var frame = NSMakeRect(0, 0, options.width, (options.height + 32)),
             titleBgColor = NSColor.colorWithRed_green_blue_alpha(0.1, 0.1, 0.1, 1),
             contentBgColor = NSColor.colorWithRed_green_blue_alpha(0.13, 0.13, 0.13, 1);
+
+        if(options.identifier){
+            var threadDictionary = NSThread.mainThread().threadDictionary();
+            if(threadDictionary[options.identifier]){
+                return false;
+            }
+        }
 
         var Panel = NSPanel.alloc().init();
         Panel.setTitleVisibility(NSWindowTitleHidden);
@@ -1067,6 +1074,14 @@ SM.extend({
                                     "function SMImportAction(data){",
                                         "window.location.hash = 'import';",
                                         // "console.log(SMData)",
+                                    "}",
+                                    "function SMExportAction(data){",
+                                        "window.location.hash = 'import';",
+                                        // "console.log(SMData)",
+                                    "}",
+                                    "function SMAddAction(data){",
+                                        "window.location.hash = 'add';",
+                                        // "console.log(SMData)",
                                     "}"
                                 ].join(""),
                             DOMReady = [
@@ -1084,25 +1099,35 @@ SM.extend({
                 "webView:didChangeLocationWithinPageForFrame:": (function(webView, webFrame){
                         var request = NSURL.URLWithString(webView.mainFrameURL()).fragment();
 
-                        if( options.state ){
-                            Panel.orderOut(nil);
-                            NSApp.stopModal();
-                            if(request == "submit"){
-                                var data = JSON.parse(decodeURI(windowObject.valueForKey("SMData")));
-                                options.callback(data);
-                                result = true;
+                        if(request == "submit"){
+                            var data = JSON.parse(decodeURI(windowObject.valueForKey("SMData")));
+                            options.callback(data);
+                            result = true;
+                            if(!options.floatWindow){
+                                Panel.orderOut(nil);
+                                NSApp.stopModal();
                             }
+                            windowObject.evaluateWebScript("window.location.hash = '';");
                         }
                         else if(request == "import"){
-                            if( options.importCallback(Panel) ){
+                            if( options.importCallback(windowObject) ){
                                  self.message(_("Import complete!"));
                             }
                             else{
                                 windowObject.evaluateWebScript("window.location.hash = '';");
                             }
                         }
-                        else if(request == "complete"){
-
+                        else if(request == "export"){
+                            if( options.exportCallback(windowObject) ){
+                                 self.message(_("Export complete!"));
+                            }
+                            else{
+                                windowObject.evaluateWebScript("window.location.hash = '';");
+                            }
+                        }
+                        else if(request == "add"){
+                            options.addCallback(windowObject);
+                            windowObject.evaluateWebScript("window.location.hash = '';");
                         }
                     })
             });
@@ -1115,16 +1140,22 @@ SM.extend({
         webView.setBackgroundColor(contentBgColor);
         webView.setFrameLoadDelegate_(delegate.getClassInstance());
         webView.setMainFrameURL_(options.url);
+        // webView.acceptsFirstMouse(NSEvent.mouseLocation());
 
         contentView.addSubview(webView);
 
         var closeButton = Panel.standardWindowButton(NSWindowCloseButton);
         closeButton.setCOSJSTargetFunction(function(sender) {
             var request = NSURL.URLWithString(webView.mainFrameURL()).fragment();
-            if(options.state == 0 && request == "submit"){
+            if(options.floatWindow && request == "submit"){
                 data = JSON.parse(decodeURI(windowObject.valueForKey("SMData")));
                 options.callback(data);
             }
+
+            if(options.identifier){
+                threadDictionary.removeObjectForKey(options.identifier);
+            }
+
             self.wantsStop = true;
             if(options.floatWindow){
                 Panel.close();
@@ -1132,7 +1163,9 @@ SM.extend({
             else{
                 Panel.orderOut(nil);
                 NSApp.stopModal();
-            }  
+            }
+
+
             // NSApp.endSheet(sender.window());
         });
         closeButton.setAction("callAction:");
@@ -1151,9 +1184,15 @@ SM.extend({
             Panel.setLevel(NSFloatingWindowLevel);
             Panel.center();
             Panel.makeKeyAndOrderFront(nil);
+            if(options.identifier){
+                threadDictionary[options.identifier] = Panel;
+            }
             return webView;
         }
         else{
+            if(options.identifier){
+                threadDictionary[options.identifier] = Panel;
+            }
             NSApp.runModalForWindow(Panel);
         }
 
@@ -1986,7 +2025,6 @@ SM.extend({
     getSelectionColor: function(){
         var self = this,
             colors = [];
-
         for (var i = 0; i < this.selection.count(); i++) {
             var layer = this.selection[i];
             if ( !this.is(layer, MSSliceLayer) ) {
@@ -1997,12 +2035,12 @@ SM.extend({
                 for (var n = 0; n < fills.length; n++) {
                     var fill = fills[n];
                     if(fill.fillType != "gradient"){
-                        colors.push(fill.color);
+                        colors.push({name: '', color: fill.color});
                     }
                     else{
                         for (var w = 0; w < fill.gradient.colorStops.length; w++) {
                             var gColor = fill.gradient.colorStops[w];
-                            colors.push(gColor.color);
+                            colors.push({name: '', color: gColor.color});
                         }
                     }
                 }
@@ -2010,20 +2048,19 @@ SM.extend({
                 for (var n = 0; n < borders.length; n++) {
                     var border = borders[n];
                     if(border.fillType != "gradient"){
-                        colors.push(border.color);
+                        colors.push({name: '', color: border.color});
                     }
                     else{
                         for (var w = 0; w < border.gradient.colorStops.length; w++) {
                             var gColor = border.gradient.colorStops[w];
-                            colors.push(gColor.color);
+                            colors.push({name: '', color: gColor.color});
                         }
                     }
                 }
             }
 
             if ( this.is(layer, MSTextLayer) ) {
-                colors.push(this.colorToJSON(layer.textColor()));
-
+                colors.push({name: '', color: this.colorToJSON(layer.textColor())});
             }
         };
 
@@ -2040,19 +2077,15 @@ SM.extend({
     },
     manageColors: function(){
         var self = this,
-            data = {};
-
-        data.list = (this.configs.colors)? this.configs.colors: [];
-
-        data.add = this.getSelectionColor();
+            data = (this.configs.colors)? this.configs.colors: [];
 
         return this.SMPanel({
             url: this.pluginSketch + "/panel/colors.html",
-            width: 240,
-            height: 323,
-            state: 0,
+            width: 320,
+            height: 451,
             data: data,
             floatWindow: true,
+            identifier: "com.utom.measure.colors",
             callback: function( data ){
                 var colors = data;
                 self.configs = self.setConfigs({
@@ -2061,23 +2094,37 @@ SM.extend({
                 });
                 
             },
-            importCallback: function(SMPanel){
-                // var colors = self.importColors();
-                // if( colors ){
-                //     self.configs = self.setConfigs({
-                //         colors: colors,
-                //         colorNames: self.colorNames(colors)
-                //     });
-                //     SMPanel.close();
-                //     return true;
-                // }
-                // else{
-                //     return false;
-                // }
+            addCallback: function(windowObject){
+                self.updateContext();
+                self.init(self.context);
+                var data = self.getSelectionColor();
+                if(data.length > 0){
+                    windowObject.evaluateWebScript("addColors(" + JSON.stringify(data) + ");");
+                }
+            },
+            importCallback: function(windowObject){
+                var data = self.importColors();
+                if(data.length > 0){
+                    windowObject.evaluateWebScript("addColors(" + JSON.stringify(data) + ");");
+                    return true;
+                }
+                else{
+                    return false;
+                }
+            },
+            exportCallback: function(windowObject){
+                var data = self.importColors();
+                if(data.length > 0){
+                    windowObject.evaluateWebScript("addColors(" + JSON.stringify(data) + ");");
+                    return true;
+                }
+                else{
+                    return false;
+                }
             }
         });
     },
-    importColors: function(SMPanel){
+    importColors: function(){
         var openPanel = NSOpenPanel.openPanel();
         openPanel.setCanChooseDirectories(false);
         openPanel.setCanCreateDirectories(false);
@@ -2472,17 +2519,17 @@ SM.extend({
                     self.artboardsData.push(artboard);
                 }
             }
-            pageData.artboards.sort(function(a, b) {
-                    var nameA = a.name.toUpperCase(),
-                        nameB = b.name.toUpperCase();
-                    if (nameA < nameB) {
-                        return -1;
-                    }
-                    if (nameA > nameB) {
-                        return 1;
-                    }
-                    return 0;
-                });
+            // pageData.artboards.sort(function(a, b) {
+            //         var nameA = a.name.toUpperCase(),
+            //             nameB = b.name.toUpperCase();
+            //         if (nameA < nameB) {
+            //             return -1;
+            //         }
+            //         if (nameA > nameB) {
+            //             return 1;
+            //         }
+            //         return 0;
+            //     });
             data.pages.push(pageData);
         }
         return this.SMPanel({
@@ -2650,17 +2697,17 @@ SM.extend({
 
                             var selectingPath = savePath;
                             if(self.configs.exportOption){
-                                data.artboards.sort(function(a, b) {
-                                    var slugA = a.slug.toUpperCase(),
-                                        slugB = b.slug.toUpperCase();
-                                    if (slugA < slugB) {
-                                        return -1;
-                                    }
-                                    if (slugA > slugB) {
-                                        return 1;
-                                    }
-                                    return 0;
-                                });
+                                // data.artboards.sort(function(a, b) {
+                                //     var slugA = a.slug.toUpperCase(),
+                                //         slugB = b.slug.toUpperCase();
+                                //     if (slugA < slugB) {
+                                //         return -1;
+                                //     }
+                                //     if (slugA > slugB) {
+                                //         return 1;
+                                //     }
+                                //     return 0;
+                                // });
 
                                 self.writeFile({
                                         content: self.template(template, {lang: language, data: JSON.stringify(data).replace(/\u2028/g,'\\u2028').replace(/\u2029/g,'\\u2029')}),

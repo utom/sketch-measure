@@ -12,7 +12,8 @@
     <script type="text/javascript" src="assets/js/common.js"></script>
     <script type="text/javascript">
     <!--
-    var init = function(data) {
+    var colorsData = {},
+        init = function(data) {
         $(document).on({ 
             dragleave:function(event){
                 event.preventDefault(); 
@@ -25,7 +26,7 @@
             }, 
             dragover:function(event){
                 event.preventDefault(); 
-            } 
+            }
         });
 
         $('body').html([
@@ -37,86 +38,59 @@
                         '<button class="file-import">' + _('Import') + '</button>',
                     '</div>',
                 '</div>',
-                '<div class="options-bar m0"><button class="button-remove"></button><button class="button-add"></button></div>',
-            '</div>'
+                '<div class="options-bar m0">',
+                    '<div class="button-settings" tabindex="0">',
+                        '<ul class="checkbutton">',
+                            '<li class="c-import">' + _('Import Colors') + '</li>',
+                            '<li class="c-export">' + _('Export Colors') + '</li>',
+                        '</ul>',
+                    '</div>',
+                    '<button class="button-add"></button>',
+                '</div>',
+            '</div>',
+            '<div id="message" class="message"></div>'
             ].join(''));
-        var colorsHTML = [],
-            add = [],
-            hasColors = {},
-            checkColors = {},
-            selectMultiple = false;
 
-        $.each(data.add, function(index, addColor){
-            var colorID = addColor['argb-hex'];
-            if(!hasColors[colorID]){
-                hasColors[colorID] = true;
-                add.push(addColor);
-            }
-        });
-
-        $.each(data.list, function(index, checkColor){
-            var colorID = checkColor.color['argb-hex'];
-            $.each(add, function(index, addColor){
-                if( colorID == addColor['argb-hex'] ) checkColors[colorID] = true;
-            });
-        });
-
-        $.each(add, function(index, addColor){
-            var classEdit = (!index)? ' edit selected': '',
-                colorID = addColor['argb-hex'];
-
-            if( checkColors[colorID] ) return false;
-
-            colorsHTML.push(
-               '<div class="color-item' + classEdit + '">',
-                    '<div class="color"><em style="background: ' + addColor['css-rgba'] + ';"></em></div>',
-                    '<div class="color-name">Untitled' + ( index || '' ) + '</div>',
-                    '<div class="color-name-edit"><input data-colors="' + encodeURI(JSON.stringify(addColor)) + '" type="text" name="color-name" value="Untitled' + ( index || '' ) + '"></div>',
-                '</div>'
-                );
-        });
-
-        $.each(data.list, function(index, color){
-            var colorID = color.color['argb-hex'],
-                classEdit = (checkColors[colorID])? ' edit selected': '';
-
-            colorsHTML.push(
-               '<div class="color-item' + classEdit + '">',
-                    '<div class="color"><em style="background: ' + color.color['css-rgba'] + ';"></em></div>',
-                    '<div class="color-name">' + color.name + '</div>',
-                    '<div class="color-name-edit"><input data-colors="' + encodeURI(JSON.stringify(color.color)) + '" type="text" name="color-name" value="' + color.name + '"></div>',
-                '</div>'
-                );
-        });
-
-        if(add.length > 0 || data.list.length > 0){
-            $('#color-list').html(colorsHTML.join(''));
+        if(data.length > 0){
+            $('#color-list').empty();
         }
 
+        addColors(data, true);
+        
+
+        // $('#color-list').on({
+        //     click: function(event){
+        //         if(!selectMultiple) $('.selected').removeClass('selected');
+        //         if($(this).hasClass('selected')){
+        //             $(this).removeClass('selected');
+        //         }
+        //         else{
+        //             $(this).addClass('selected');
+        //         }
+        //         event.stopPropagation();
+        //     }
+        // }, '.color-item');
         $('#color-list').on({
-            click: function(event){
-                if(!selectMultiple) $('.selected').removeClass('selected');
-                if($(this).hasClass('selected')){
-                    $(this).removeClass('selected');
-                }
-                else{
-                    $(this).addClass('selected');
-                }
-                event.stopPropagation();
+            dblclick: function(){
+                $(this).addClass('edit');
+                $(this).find('.color-name-edit input').select();
             }
         }, '.color-item');
         $('#color-list').on({
-            dblclick: function(){
-                $(this).hide();
-                $(this).parent().find('.color-name-edit').show();
-                $(this).parent().find('.color-name-edit input').select();
+            click: function(){
+                var colorID = $(this).attr('color-id');
+                delete colorsData[colorID];
+                $(this).parent().remove();
+                pullData();
             }
-        }, '.color-name');
+        }, '.remove');
         $('#color-list').on({
             blur: function(){
                 var text = $(this).val();
-                $(this).parent().hide();
-                $(this).parent().parent().find('.color-name').text(text).show();
+                if(text){
+                    $(this).parent().parent().parent().removeClass('edit');
+                    $(this).parent().parent().find('.color-name').text(text);
+                }
                 pullData();
             },
             keypress: function(event){
@@ -137,59 +111,85 @@
             }
         }, 'input');
 
-        $('.edit input:first-child').select();
-
-        $('.file-import').click(function(){
+        $('.file-import,.c-import').click(function(){
             SMImportAction();
+            $('.button-settings').blur();
+        });
+        $('.c-export').click(function(){
+            SMExportAction();
+            $('.button-settings').blur();
+        });
+
+        $('.button-add').click(function(){
+            SMAddAction();
         });
 
         $('body').click(function(){
             $('.selected').removeClass('selected');
         })
 
-        $('.button-remove').click(function(event){
-            $('#color-list input').blur();
-            $('.selected').remove();
-            $('.color-item:first-child').addClass('selected');
-            pullData();
-            if($('input[name=color-name]').length <= 0){
-                init({list:[],add:[]});
+    },
+    pullData = function(){
+        var colorNames = [];
+        $('input[name=color-name]').each(function(){
+            var $this = $(this),
+                name = $this.val(),
+                color = JSON.parse(decodeURI($this.attr('data-colors')));
+            colorNames.push({
+                name: name,
+                color: color
+            });
+        });
+        SMAction(colorNames);
+    },
+    addColors = function(data, option){
+        var colorsHTML = [],
+            already = false;
+        $.each(data, function(index, color){
+            var colorID = color.color['argb-hex'],
+                classEdit = (!color.name)? ' edit': '';
+            if(!colorsData[colorID]){
+                colorsData[colorID] = true;
+                colorsHTML.push(
+                   '<div class="color-item' + classEdit + '">',
+                        '<div class="color"><em style="background: ' + color.color['css-rgba'] + ';"></em></div>',
+                        '<div class="color-text">',
+                            '<div class="color-name">' + color.name + '</div>',
+                            '<div class="color-name-edit"><input data-colors="' + encodeURI(JSON.stringify(color.color)) + '" type="text" name="color-name" value="' + color.name + '" placeholder="' + _('Set Name...') + '"></div>',
+                            '<div class="color-value">' + color.color['color-hex'] + '</div>',
+                        '</div>',
+                        '<div class="remove" color-id="' + color.color['argb-hex'] + '"></div>',
+                    '</div>'
+                    );
             }
-            event.stopPropagation();
+            else{
+                already = true;
+            }
         });
 
-        $(document)
-            .keydown(function(e){
-                    var eventObj = event || e,
-                        keyCode = eventObj.keyCode || eventObj.which;
-                    if(keyCode == 91) selectMultiple = true;
-                })
-            .keyup(function(e){
-                    var eventObj = event || e,
-                        keyCode = eventObj.keyCode || eventObj.which;
-                    if(keyCode == 91) selectMultiple = false;
-                });
-
-
-        var pullData = function(){
-            var colorNames = [];
-            $('input[name=color-name]').each(function(){
-                var $this = $(this),
-                    name = $this.val(),
-                    color = JSON.parse(decodeURI($this.attr('data-colors')));
-                colorNames.push({
-                    name: name,
-                    color: color
-                });
-            });
-
-            SMAction(colorNames);
+        if(already){
+            // message(_('Some colors are already in this list.'));
         }
+
+        if($('.empty').length > 0 && data.length > 0){
+            $('#color-list').empty();
+        }
+
+        $('#color-list').append(colorsHTML.join(''));
+        if(!option){
+            $('#color-list').scrollTop($('.color-item').length * 80);
+            pullData();
+        }
+
+    },
+    message = function(msg){
+        var $message = $('#message').text(msg);
+        $message.hide().fadeIn().delay( 1000 ).fadeOut('fast');
     }
 
-    $(function(){
-        init({list:[],add:[]});
-    });
+    // $(function(){
+    //     init([{"name":"","color":{"r":255,"g":255,"b":255,"a":1,"color-hex":"#FFFFFF 100%","argb-hex":"#FFFFFFFF","css-rgba":"rgba(255,255,255,1)","ui-color":"(r:1.00 g:1.00 b:1.00 a:1.00)"}},{"name":"defaultBlue","color":{"r":15,"g":136,"b":224,"a":1,"color-hex":"#0F88E0 100%","argb-hex":"#FF0F88E0","css-rgba":"rgba(15,136,224,1)","ui-color":"(r:0.06 g:0.53 b:0.88 a:1.00)"}}]);
+    // });
     -->
     </script>
   </head>
