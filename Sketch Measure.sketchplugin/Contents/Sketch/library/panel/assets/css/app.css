@@ -735,7 +735,7 @@ button{
     color: rgba(255,255,255,0.30);
 }
 .empty{
-    padding: 50px 10px;
+    padding: 128px 10px;
     text-align: center;
 }
 .empty h3 {

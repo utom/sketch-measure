@@ -1076,7 +1076,7 @@ SM.extend({
                                         // "console.log(SMData)",
                                     "}",
                                     "function SMExportAction(data){",
-                                        "window.location.hash = 'import';",
+                                        "window.location.hash = 'export';",
                                         // "console.log(SMData)",
                                     "}",
                                     "function SMAddAction(data){",
@@ -2113,14 +2113,7 @@ SM.extend({
                 }
             },
             exportCallback: function(windowObject){
-                var data = self.importColors();
-                if(data.length > 0){
-                    windowObject.evaluateWebScript("addColors(" + JSON.stringify(data) + ");");
-                    return true;
-                }
-                else{
-                    return false;
-                }
+                return self.exportColors();
             }
         });
     },
@@ -2140,7 +2133,7 @@ SM.extend({
             colorsData = [];
 
         colors.forEach(function(color){
-            if(color.name && ( color.color && color.color.a && color.color.r && color.color.g && color.color.b && color.color["argb-hex"] && color.color["color-hex"] && color.color["css-rgba"] && color.color["ui-color"]) ){
+            if( color.color && color.color.a && color.color.r && color.color.g && color.color.b && color.color["argb-hex"] && color.color["color-hex"] && color.color["css-rgba"] && color.color["ui-color"] ){
                 colorsData.push(color);
             }
         });
@@ -2150,6 +2143,34 @@ SM.extend({
         }
         return colorsData;
 
+    },
+    exportColors: function(){
+        var filePath = this.document.fileURL()? this.document.fileURL().path().stringByDeletingLastPathComponent(): "~";
+        var fileName = this.document.displayName().stringByDeletingPathExtension();
+        var savePanel = NSSavePanel.savePanel();
+
+        savePanel.setTitle(_("Export colors"));
+        savePanel.setNameFieldLabel(_("Export to:"));
+        savePanel.setPrompt(_("Export"));
+        savePanel.setCanCreateDirectories(true);
+        savePanel.setShowsTagField(false);
+        savePanel.setAllowedFileTypes(NSArray.arrayWithObject("json"));
+        savePanel.setAllowsOtherFileTypes(false);
+        savePanel.setNameFieldStringValue(fileName + "-colors.json");
+
+        if (savePanel.runModal() != NSOKButton) {
+            return false;
+        }
+        var savePath = savePanel.URL().path().stringByDeletingLastPathComponent(),
+            fileName = savePanel.URL().path().lastPathComponent();
+
+        this.writeFile({
+            content: JSON.stringify(this.configs.colors),
+            path: savePath,
+            fileName: fileName
+        });
+
+        return true;
     }
 })
 
