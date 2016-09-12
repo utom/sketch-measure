@@ -173,7 +173,7 @@ SM.extend({
             var menuItem = itemArray[i];
             menuItem.setTitle(_(menuItem.title()));
         }
-        
+
     },
     getMenu: function(itemArray, title){
         for (var i = 0; i < itemArray.count(); i++) {
@@ -423,7 +423,7 @@ SM.extend({
         if(styles.count() > 0){
             style = this.find({key: "(objectID != NULL) && (objectID == %@)", match: sharedObjectID}, styles);
         }
-        
+
         if(!style) return "";
         return this.toJSString(style.name());
     },
@@ -952,7 +952,7 @@ SM.extend({
                             else{
                                 self.init(self.context, "lite-properties");
                             }
-                            
+
                         }),
                 notesButton = addButton( NSMakeRect(258, 14, 20, 20), "icon-notes",
                         function(sender){
@@ -1018,7 +1018,7 @@ SM.extend({
             Toolbar.makeKeyAndOrderFront(nil);
         }
 
-        
+
     }
 })
 
@@ -1082,6 +1082,10 @@ SM.extend({
                                     "function SMAddAction(data){",
                                         "window.location.hash = 'add';",
                                         // "console.log(SMData)",
+                                    "}",
+                                    "function SMFocusAction(data){",
+                                        "window.location.hash = 'focus';",
+                                        // "console.log(SMData)",
                                     "}"
                                 ].join(""),
                             DOMReady = [
@@ -1127,6 +1131,12 @@ SM.extend({
                         }
                         else if(request == "add"){
                             options.addCallback(windowObject);
+                            windowObject.evaluateWebScript("window.location.hash = '';");
+                        }
+                        else if(request == "focus"){
+                            var point = Panel.currentEvent().locationInWindow(),
+                                y = NSHeight(Panel.frame()) - point.y - 32;
+                            windowObject.evaluateWebScript("lookupItemInput(" + point.x + ", " + y + ")");
                             windowObject.evaluateWebScript("window.location.hash = '';");
                         }
                     })
@@ -1216,7 +1226,7 @@ SM.extend({
                 self.configs = self.setConfigs(data);
             }
         });
-    
+
     },
     sizesPanel: function(){
         var self = this,
@@ -1322,7 +1332,7 @@ SM.extend({
                                 ( placement == "left" )? "left":
                                 ( distance.right >= distance.left )? "right":
                                 "left"
-                            ):  
+                            ):
                             (
                                 ( ruler.rect.width > (tempRect.width + 28) )? "middle":
                                 ( placement == "bottom" )? "bottom":
@@ -1600,7 +1610,7 @@ SM.extend({
                     break;
             }
         });
-        
+
         var objectID = target.objectID(),
             name = "PROPERTY#" + objectID,
             container = this.find({key: "(name != NULL) && (name == %@)", match: name});
@@ -2092,7 +2102,7 @@ SM.extend({
                     colors: colors,
                     colorNames: self.colorNames(colors)
                 });
-                
+
             },
             addCallback: function(windowObject){
                 self.updateContext();
@@ -2217,7 +2227,7 @@ SM.extend({
 
         };
 
-        
+
     }
 });
 
@@ -2403,7 +2413,7 @@ SM.extend({
         var objectID = ( layerData.type == "symbol" )? this.toJSString(layer.symbolMaster().objectID()):
                         ( symbolLayer )? this.toJSString(symbolLayer.objectID()):
                         layerData.objectID;
-        if( 
+        if(
             (
                 layerData.type == "slice" ||
                 (
@@ -2627,7 +2637,7 @@ SM.extend({
                         self.maskObjectID = undefined;
                         self.maskRect = undefined;
                     }
-                    
+
                     if(!exporting) {
                         exporting = true;
                         var artboard = self.selectionArtboards[artboardIndex],
@@ -2640,7 +2650,7 @@ SM.extend({
                             layer, // Sketch layer element
                             data.artboards[artboardIndex] // Save to data
                         );
-                        
+
 
                         layerIndex++;
                         exporting = false;
@@ -2659,7 +2669,7 @@ SM.extend({
                             data.artboards[artboardIndex].objectID = self.toJSString(artboard.objectID());
                             data.artboards[artboardIndex].width = artboardRect.width;
                             data.artboards[artboardIndex].height = artboardRect.height;
-                            
+
 
                             if(!self.configs.exportOption){
                                 var imageURL = NSURL.fileURLWithPath(self.exportImage({
@@ -2696,7 +2706,7 @@ SM.extend({
                                         fileName: slug + ".html"
                                     });
                             }
-                            
+
 
                             layerIndex = 0;
                             artboardIndex++;

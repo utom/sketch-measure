@@ -14,18 +14,18 @@
     <!--
     var colorsData = {},
         init = function(data) {
-        $(document).on({ 
+        $(document).on({
             dragleave:function(event){
-                event.preventDefault(); 
-            }, 
+                event.preventDefault();
+            },
             drop:function(event){
-                event.preventDefault(); 
-            }, 
-            dragenter:function(event){ 
-                event.preventDefault(); 
-            }, 
+                event.preventDefault();
+            },
+            dragenter:function(event){
+                event.preventDefault();
+            },
             dragover:function(event){
-                event.preventDefault(); 
+                event.preventDefault();
             }
         });
 
@@ -55,7 +55,7 @@
         }
 
         addColors(data, true);
-        
+
 
         // $('#color-list').on({
         //     click: function(event){
@@ -190,6 +190,15 @@
     //     init([{"name":"","color":{"r":255,"g":255,"b":255,"a":1,"color-hex":"#FFFFFF 100%","argb-hex":"#FFFFFFFF","css-rgba":"rgba(255,255,255,1)","ui-color":"(r:1.00 g:1.00 b:1.00 a:1.00)"}},{"name":"defaultBlue","color":{"r":15,"g":136,"b":224,"a":1,"color-hex":"#0F88E0 100%","argb-hex":"#FF0F88E0","css-rgba":"rgba(15,136,224,1)","ui-color":"(r:0.06 g:0.53 b:0.88 a:1.00)"}}]);
     // });
     -->
+    window.onfocus = function(){
+        SMFocusAction();
+    };
+    function lookupItemInput(x, y){
+        var elem = document.elementFromPoint(x, y);
+        var $message = $('#message').text($(elem));
+        $message.hide().fadeIn().delay( 1000 ).fadeOut('fast');
+        // $(elem).find('input').focus();
+    }
     </script>
   </head>
   <body>
