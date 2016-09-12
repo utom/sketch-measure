@@ -1071,6 +1071,10 @@ SM.extend({
                                         "window.location.hash = 'submit';",
                                         // "console.log(SMData)",
                                     "}",
+                                    "function SMCloseAction(){",
+                                        "window.location.hash = 'close';",
+                                        // "console.log(SMData)",
+                                    "}",
                                     "function SMImportAction(data){",
                                         "window.location.hash = 'import';",
                                         // "console.log(SMData)",
@@ -1112,6 +1116,15 @@ SM.extend({
                                 NSApp.stopModal();
                             }
                             windowObject.evaluateWebScript("window.location.hash = '';");
+                        }
+                        else if(request == "close"){
+                            if(!options.floatWindow){
+                                Panel.orderOut(nil);
+                                NSApp.stopModal();
+                            }
+                            else{
+                                Panel.close();
+                            }
                         }
                         else if(request == "import"){
                             if( options.importCallback(windowObject) ){
@@ -2546,23 +2559,21 @@ SM.extend({
                     var artboardData = {};
                     artboardData.name = this.toJSString(artboard.name());
                     artboardData.objectID = this.toJSString(artboard.objectID());
+                    artboardData.MSArtboardGroup = artboard;
                     pageData.artboards.push(artboardData);
-                    self.artboardsData.push(artboard);
                 }
             }
-            // pageData.artboards.sort(function(a, b) {
-            //         var nameA = a.name.toUpperCase(),
-            //             nameB = b.name.toUpperCase();
-            //         if (nameA < nameB) {
-            //             return -1;
-            //         }
-            //         if (nameA > nameB) {
-            //             return 1;
-            //         }
-            //         return 0;
-            //     });
+            pageData.artboards.reverse()
             data.pages.push(pageData);
         }
+        for (var p = 0; p < data.pages.length; p++) {
+            var artboards = data.pages[p].artboards;
+            for (var a = 0; a < artboards.length; a++) {
+                self.artboardsData = self.artboardsData.concat(artboards[a].MSArtboardGroup);
+            }
+            
+        }
+
         return this.SMPanel({
             url: this.pluginSketch + "/panel/export.html",
             width: 320,
@@ -2728,18 +2739,6 @@ SM.extend({
 
                             var selectingPath = savePath;
                             if(self.configs.exportOption){
-                                // data.artboards.sort(function(a, b) {
-                                //     var slugA = a.slug.toUpperCase(),
-                                //         slugB = b.slug.toUpperCase();
-                                //     if (slugA < slugB) {
-                                //         return -1;
-                                //     }
-                                //     if (slugA > slugB) {
-                                //         return 1;
-                                //     }
-                                //     return 0;
-                                // });
-
                                 self.writeFile({
                                         content: self.template(template, {lang: language, data: JSON.stringify(data).replace(/\u2028/g,'\\u2028').replace(/\u2029/g,'\\u2029')}),
                                         path: self.toJSString(savePath),
