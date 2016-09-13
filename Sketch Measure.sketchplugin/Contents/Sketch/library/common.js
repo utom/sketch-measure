@@ -2512,8 +2512,9 @@ SM.extend({
         data.selection = [];
         data.current = [];
         data.pages = [];
-        data.exportOption = false;
-        if(self.configs.exportOption == undefined){
+
+        data.exportOption = self.configs.exportOption;
+        if(data.exportOption == undefined){
             data.exportOption = true;
         }
 
