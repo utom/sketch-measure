@@ -111,16 +111,16 @@
         }, 'input');
 
         $('.file-import,.c-import').click(function(){
-            SMImportAction();
+            SMAction('import');
             $('.button-settings').blur();
         });
         $('.c-export').click(function(){
-            SMExportAction();
+            SMAction('export');
             $('.button-settings').blur();
         });
 
         $('.button-add').click(function(){
-            SMAddAction();
+            SMAction('add');
         });
 
         $('body').click(function(){
@@ -139,7 +139,7 @@
                 color: color
             });
         });
-        SMAction(colorNames);
+        SMAction('submit', colorNames);
     },
     addColors = function(data, option){
         var colorsHTML = [],

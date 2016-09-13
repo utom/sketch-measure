@@ -25,7 +25,7 @@
         },
         processing = function(percentage, text){
             if(percentage == '100%'){
-                SMCloseAction();
+                SMAction('close');
             }
             $('#processing').css('width', percentage);
             $('#processing-text').text(text);

@@ -41,7 +41,7 @@
             if( $('input[name=width-enable]:checked').length > 0 ) options.widthPlacement = $('input[name=width-placement]:checked').val();
             if( $('input[name=height-enable]:checked').length > 0 ) options.heightPlacement = $('input[name=height-placement]:checked').val();
             if( $('input[name=percentage]:checked').length > 0 ) options.byPercentage = 1;
-            SMAction(options);
+            SMAction('submit', options);
         }
         init = function( options ){
             $('body').html([

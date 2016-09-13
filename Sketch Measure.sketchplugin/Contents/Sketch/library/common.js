@@ -39,6 +39,7 @@ var SM = {
 
             this.document = context.document;
             this.documentData = this.document.documentData();
+            this.UIMetadata = context.document.mutableUIMetadata();
             this.window = this.document.window();
             this.pages = this.document.pages();
             this.page = this.document.currentPage();
@@ -49,15 +50,6 @@ var SM = {
                 this.Toolbar();
                 return false;
             }
-
-            this.symbolsPage = this.find({key: "(name != NULL) && (name == %@)", match: "Symbols"}, this.document);
-            this.symbolsPage = (this.symbolsPage.count)? this.symbolsPage[0]: this.symbolsPage;
-            if(!this.symbolsPage){
-                this.symbolsPage = this.document.addBlankPage();
-                this.symbolsPage.setName("Symbols");
-                this.document.setCurrentPage(this.page);
-            }
-
 
             this.configs = this.getConfigs();
 
@@ -557,28 +549,37 @@ SM.extend({
 // configs.js
 SM.extend({
     getConfigs: function(container){
-        var container = container || this.symbolsPage,
-            command = this.command,
-            prefix = this.prefix,
-            configsData = command.valueForKey_onLayer(prefix, container);
+        var configsData;
+        if(container){
+            configsData = this.command.valueForKey_onLayer(this.prefix, container);
+        }
+        else{
+            configsData = this.UIMetadata.objectForKey(this.prefix);
+        }
+            
         return JSON.parse(configsData);
     },
-    setConfigs: function(newConfigs, container){
-        var container = container || this.symbolsPage,
-            command = this.command,
-            prefix = this.prefix,
-            configs = this.extend(newConfigs, this.getConfigs(container) || {});
-
-        configs.timestamp = new Date().getTime();
-        var configsData = JSON.stringify(configs);
-        command.setValue_forKey_onLayer(configsData, prefix, container);
-        return configs;
+     setConfigs: function(newConfigs, container){
+        var configsData;
+        newConfigs.timestamp = new Date().getTime();
+        if(container){
+            configsData = this.extend(newConfigs, this.getConfigs(container) || {});
+            command.setValue_forKey_onLayer(JSON.stringify(configsData), this.prefix, container);
+        }
+        else{
+            configsData = this.extend(newConfigs, this.getConfigs() || {});
+            this.UIMetadata.setObject_forKey (JSON.stringify(configsData), this.prefix);
+        }
+        return configsData;
     },
     removeConfigs: function(container){
-        var container = container || this.symbolsPage,
-            command = this.command,
-            prefix = this.prefix;
-        command.setValue_forKey_onLayer(null, prefix, container)
+        if(container){
+            command.setValue_forKey_onLayer(null, prefix, container);
+        }
+        else{
+            configsData = this.UIMetadata.setObject_forKey (null, this.prefix);
+        }
+
     }
 });
 
@@ -1066,29 +1067,11 @@ SM.extend({
             delegate = new MochaJSDelegate({
                 "webView:didFinishLoadForFrame:": (function(webView, webFrame){
                         var SMAction = [
-                                    "function SMAction(data){",
-                                        "window.SMData = encodeURI(JSON.stringify(data));",
-                                        "window.location.hash = 'submit';",
-                                        // "console.log(SMData)",
-                                    "}",
-                                    "function SMCloseAction(){",
-                                        "window.location.hash = 'close';",
-                                        // "console.log(SMData)",
-                                    "}",
-                                    "function SMImportAction(data){",
-                                        "window.location.hash = 'import';",
-                                        // "console.log(SMData)",
-                                    "}",
-                                    "function SMExportAction(data){",
-                                        "window.location.hash = 'export';",
-                                        // "console.log(SMData)",
-                                    "}",
-                                    "function SMAddAction(data){",
-                                        "window.location.hash = 'add';",
-                                        // "console.log(SMData)",
-                                    "}",
-                                    "function SMFocusAction(data){",
-                                        "window.location.hash = 'focus';",
+                                    "function SMAction(hash, data){",
+                                        "if(data){",
+                                            "window.SMData = encodeURI(JSON.stringify(data));",
+                                        "}",
+                                        "window.location.hash = hash;",
                                         // "console.log(SMData)",
                                     "}"
                                 ].join(""),
@@ -2529,9 +2512,8 @@ SM.extend({
         data.selection = [];
         data.current = [];
         data.pages = [];
-
-        data.exportOption = self.configs.exportOption;
-        if(data.exportOption == undefined){
+        data.exportOption = false;
+        if(self.configs.exportOption == undefined){
             data.exportOption = true;
         }
 
@@ -2595,6 +2577,7 @@ SM.extend({
                 self.configs = self.setConfigs({
                     exportOption: data.exportOption
                 });
+
             }
         });
     },
