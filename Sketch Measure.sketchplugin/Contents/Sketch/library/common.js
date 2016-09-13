@@ -1095,10 +1095,8 @@ SM.extend({
                             options.callback(data);
                             result = true;
                             if(!options.floatWindow){
-                                Panel.orderOut(nil);
-                                NSApp.stopModal();
+                                windowObject.evaluateWebScript("window.location.hash = 'close';");
                             }
-                            windowObject.evaluateWebScript("window.location.hash = '';");
                         }
                         else if(request == "close"){
                             if(!options.floatWindow){
@@ -1113,28 +1111,21 @@ SM.extend({
                             if( options.importCallback(windowObject) ){
                                  self.message(_("Import complete!"));
                             }
-                            else{
-                                windowObject.evaluateWebScript("window.location.hash = '';");
-                            }
                         }
                         else if(request == "export"){
                             if( options.exportCallback(windowObject) ){
                                  self.message(_("Export complete!"));
                             }
-                            else{
-                                windowObject.evaluateWebScript("window.location.hash = '';");
-                            }
                         }
                         else if(request == "add"){
                             options.addCallback(windowObject);
-                            windowObject.evaluateWebScript("window.location.hash = '';");
                         }
                         else if(request == "focus"){
                             var point = Panel.currentEvent().locationInWindow(),
                                 y = NSHeight(Panel.frame()) - point.y - 32;
                             windowObject.evaluateWebScript("lookupItemInput(" + point.x + ", " + y + ")");
-                            windowObject.evaluateWebScript("window.location.hash = '';");
                         }
+                        windowObject.evaluateWebScript("window.location.hash = '';");
                     })
             });
 
