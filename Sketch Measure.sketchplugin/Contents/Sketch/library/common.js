@@ -494,19 +494,18 @@ SM.extend({
             container = container || this.current,
             items;
 
-        if( (container.class && container.class() == __NSArrayI) ){
-            items = container;
-        }
-        else if(container.pages){
+        if(container.pages){
             items = container.pages();
         }
         else if( this.is( container, MSSharedStyleContainer ) || this.is( container, MSSharedTextStyleContainer ) ){
             items = container.objectsSortedByName();
         }
-        else{
+        else if( container.children ){
             items = container.children();
         }
-
+        else{
+            items = container;
+        }
         var queryResult = items.filteredArrayUsingPredicate(predicate);
 
         if(returnArray) return queryResult;
