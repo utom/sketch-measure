@@ -98,6 +98,9 @@ var SM = {
                     case "exportable":
                         this.makeExportable();
                         break;
+                    case "slice":
+                        this.makeExportable(true);
+                        break;
                     case "settings":
                         this.settingsPanel();
                         break;
@@ -963,7 +966,12 @@ SM.extend({
                 exportableButton = addButton( NSMakeRect(306, 14, 20, 20), "icon-slice",
                         function(sender){
                             self.updateContext();
-                            self.init(self.context, "exportable");
+                            if(NSEvent.modifierFlags() == NSAlternateKeyMask){
+                                self.init(self.context, "slice");
+                            }
+                            else{
+                                self.init(self.context, "exportable");
+                            }
                         }),
                 colorsButton = addButton( NSMakeRect(354, 14, 20, 20), "icon-colors",
                         function(sender){
@@ -2173,16 +2181,31 @@ SM.extend({
 
 // exportable.js
 SM.extend({
-    makeExportable: function(){
+    makeExportable: function(optionKey){
         if( this.selection.count() <= 0 ){
             this.message(_("Select a layer to add exportable!"));
             return false;
         }
 
-
         for (var i = 0; i < this.selection.count(); i++) {
-            var layer = this.selection[i];
-            layer.exportOptions().removeAllExportFormats();
+            var layer = this.selection[i],
+                slice = layer;
+
+            // if(optionKey){
+            //     var layerRect = this.getRect(layer),
+            //         slice = MSSliceLayer.new(),
+            //         parent = this.is(layer, MSLayerGroup)? layer: layer.parentGroup();
+            //     parent.addLayers([slice]);
+            //     var sliceRect = slice.absoluteRect(),
+            //         sliceFrame = slice.frame();
+            //     slice.setName(layer.name());
+            //     sliceRect.setX(layerRect.x);
+            //     sliceRect.setY(layerRect.y);
+            //     sliceFrame.setWidth(layerRect.width);
+            //     sliceFrame.setHeight(layerRect.height);
+            // }
+
+            slice.exportOptions().removeAllExportFormats();
 
             var formats = [
                 {
@@ -2204,7 +2227,7 @@ SM.extend({
             ];
 
             for(format of formats) {
-                var size = layer.exportOptions().addExportFormat();
+                var size = slice.exportOptions().addExportFormat();
                 size.setName(format.suffix);
                 size.setScale(format.scale);
             }

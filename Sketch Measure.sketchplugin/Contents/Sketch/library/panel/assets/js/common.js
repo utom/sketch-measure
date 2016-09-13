@@ -27,5 +27,5 @@ function lookupItemInput(x, y){
 }
 
 window.onfocus = function(){
-    SMFocusAction();
+    SMAction('focus');
 };
