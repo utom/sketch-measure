@@ -260,7 +260,7 @@
                 data.exportOption = false;
                 if( $('input[name=export-option]:checked').length > 0 ) data.exportOption = true;
 
-                SMAction(data);
+                SMAction('submit', data);
             });
 
             if(!data.selection){

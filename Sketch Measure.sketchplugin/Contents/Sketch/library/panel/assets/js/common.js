@@ -20,3 +20,12 @@ $(function() {
                 }
             });
 });
+
+function lookupItemInput(x, y){
+    var elem = document.elementFromPoint(x, y);
+    $(elem).click();
+}
+
+window.onfocus = function(){
+    SMAction('focus');
+};

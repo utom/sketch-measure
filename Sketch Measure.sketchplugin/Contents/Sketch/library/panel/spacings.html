@@ -22,7 +22,7 @@
 
             options.placements = placements;
             if( $('input[name=percentage]:checked').length > 0 ) options.byPercentage = 1;
-            SMAction(options);
+            SMAction('submit', options);
         },
         togggleButton = function(){
             if( $('input[name=placemen]:checked').length <= 0 ){

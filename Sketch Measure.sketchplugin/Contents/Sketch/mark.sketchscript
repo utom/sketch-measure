@@ -24,7 +24,6 @@ function commandSpacings(context) {
 }
 
 function commandProperties(context) {
-    
     if(NSEvent.modifierFlags() == 917504){
         SM.init(context, "mark-properties");
     }
@@ -54,7 +53,12 @@ function commandColor(context) {
 }
 
 function commandExportable(context) {
-    SM.init(context, "exportable");
+    if(NSEvent.modifierFlags() == 917504){
+        SM.init(context, "slice");
+    }
+    else{
+        SM.init(context, "exportable");
+    }
 }
 
 function commandSettings(context) {

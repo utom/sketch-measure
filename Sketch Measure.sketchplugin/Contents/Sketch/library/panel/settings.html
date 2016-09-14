@@ -41,7 +41,7 @@
             $('#' + DRID).click();
         },
         submit = function(){
-            SMAction({
+            SMAction('submit', {
                 scale: $('input[name=scale]').val(),
                 unit: $('input[name=unit]').val(),
                 colorFormat: $('input[name=format]:checked').val()

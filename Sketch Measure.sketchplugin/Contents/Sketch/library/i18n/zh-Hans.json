@@ -79,8 +79,7 @@
     "No artboards!": "没有画板",
     "You need add some artboards.": "您需要添加一些画板",
     "No slices added!": "没有添加切图",
-    "No colors added!": "没有添加色彩",
-    "Select shape layer and run &quot;Color Names&quot; again.": "选中图形图层, 再次运行.",
+    "No colors added!": "没有添加颜色",
     "Import": "导入",
     "Choose a &quot;colors.json&quot;": "选择一个 &quot;colors.json&quot;",
     "Choose": "选择",
@@ -102,5 +101,10 @@
     "Clear Marks": "清除标注",
     "Settings": "设置",
     "Color Names": "颜色命名",
-    "Make Exportable": "设置切图"
+    "Make Exportable": "设置切图",
+
+    "Set Name...": "设置名称...",
+    "Import Colors": "导入颜色",
+    "Export Colors": "导出颜色",
+    "You can add or import colors": "您可以添加或导入颜色"
 };
