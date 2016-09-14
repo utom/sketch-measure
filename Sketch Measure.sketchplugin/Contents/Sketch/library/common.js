@@ -2216,6 +2216,7 @@ SM.extend({
                     sliceCopyRect.setY(sliceRect.y);
                     this.removeLayer(slice);
                     slice = sliceCopy;
+                    slice.exportOptions().setLayerOptions(2);
                 }
             }
 
