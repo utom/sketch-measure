@@ -2191,19 +2191,33 @@ SM.extend({
             var layer = this.selection[i],
                 slice = layer;
 
-            // if(optionKey){
-            //     var layerRect = this.getRect(layer),
-            //         slice = MSSliceLayer.new(),
-            //         parent = this.is(layer, MSLayerGroup)? layer: layer.parentGroup();
-            //     parent.addLayers([slice]);
-            //     var sliceRect = slice.absoluteRect(),
-            //         sliceFrame = slice.frame();
-            //     slice.setName(layer.name());
-            //     sliceRect.setX(layerRect.x);
-            //     sliceRect.setY(layerRect.y);
-            //     sliceFrame.setWidth(layerRect.width);
-            //     sliceFrame.setHeight(layerRect.height);
-            // }
+            if(optionKey && !this.is(layer, MSSliceLayer)){
+                slice = MSSliceLayer.sliceLayerFromLayer(layer);
+
+                var layerRect = this.getRect(layer),
+                    sliceRect = this.getRect(slice);
+
+                if(layerRect.width > sliceRect.width){
+                    sliceRect.setX(layerRect.x);
+                    sliceRect.setWidth(layerRect.width);
+                }
+
+                if(layerRect.height > sliceRect.height){
+                    sliceRect.setY(layerRect.y);
+                    sliceRect.setHeight(layerRect.height);
+                }
+
+                if(this.is(layer, MSLayerGroup)){
+                    var sliceCopy = slice.copy();
+                    layer.addLayers([sliceCopy]);
+
+                    var sliceCopyRect = this.getRect(sliceCopy);
+                    sliceCopyRect.setX(sliceRect.x);
+                    sliceCopyRect.setY(sliceRect.y);
+                    this.removeLayer(slice);
+                    slice = sliceCopy;
+                }
+            }
 
             slice.exportOptions().removeAllExportFormats();
 
@@ -2232,8 +2246,13 @@ SM.extend({
                 size.setScale(format.scale);
             }
 
-            layer.setIsSelected(0);
-            layer.setIsSelected(1);
+            if(!optionKey || this.is(layer, MSSliceLayer)){
+                layer.setIsSelected(0);
+                layer.setIsSelected(1);
+            }
+            else if(sliceCopy){
+                slice.setIsSelected(1);
+            }
 
         };
 
