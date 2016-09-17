@@ -152,7 +152,7 @@
                     artboardsList.push('<ul class="p-' + index + '">');
                     $.each(page.artboards, function(index, artboard){
                         artboardsList.push(
-                                '<li title="' + artboard.name + '">',
+                                '<li title="' + artboard.name + '" order-index="' + index + '">',
                                     '<label class="artboard-item">',
                                     '<div class="checkbox">',
                                         '<input id="artboard-' + artboard.objectID + '" type="checkbox" class="page-' + pageIndex + '" name="artboards" value="' + artboard.objectID + '">',
