@@ -1121,16 +1121,18 @@ var I18N = {},
                                 if( $(event.target).hasClass('screen-viewer') || $(event.target).hasClass('screen-viewer-inner') ){
                                     self.tempTargetRect = self.getEdgeRect( event );
                                     self.targetIndex = undefined;
+                                    self.distance();
                                 }
                                 else if($(event.target).hasClass('layer')){
                                     self.targetIndex = self.getIndex(event.target);
                                     self.tempTargetRect = undefined;
                                     self.mouseoverLayer();
+                                    self.distance();
                                 }
                                 else{
                                     self.tempTargetRect = undefined;
                                 }
-                                self.distance();
+                                
                             }
                         }
                     })
