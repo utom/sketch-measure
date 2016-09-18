@@ -2552,6 +2552,9 @@ SM.extend({
             data.exportOption = true;
         }
 
+        self.configs.order = (self.configs.order)? self.configs.order: "positive";
+        data.order = self.configs.order;
+
         if(this.selection.count() > 0){
             var selectionArtboards = this.find({key: "(class != NULL) && (class == %@)", match: MSArtboardGroup}, this.selection, true);
             if(selectionArtboards.count() > 0){
@@ -2583,13 +2586,8 @@ SM.extend({
             pageData.artboards.reverse()
             data.pages.push(pageData);
         }
-        for (var p = 0; p < data.pages.length; p++) {
-            var artboards = data.pages[p].artboards;
-            for (var a = 0; a < artboards.length; a++) {
-                self.artboardsData = self.artboardsData.concat(artboards[a].MSArtboardGroup);
-            }
-            
-        }
+
+        self.allData = data;
 
         return this.SMPanel({
             url: this.pluginSketch + "/panel/export.html",
@@ -2597,20 +2595,42 @@ SM.extend({
             height: 567,
             data: data,
             callback: function( data ){
+                var allData = self.allData;
                 self.selectionArtboards = [];
                 self.allCount = 0;
-                for (var i = 0; i < self.artboardsData.length; i++) {
-                    var artboard = self.artboardsData[i],
-                        objectID = self.toJSString( artboard.objectID() );
 
-                    if(data[objectID]){
-                        self.allCount += artboard.children().count();
-                        self.selectionArtboards.push(artboard);
+                for (var p = 0; p < allData.pages.length; p++) {
+                    var artboards = allData.pages[p].artboards;
+                    if(data.order == 'reverse'){
+                        artboards = artboards.reverse();
+                    }
+                    else if(data.order == 'alphabet'){
+                        artboards = artboards.sort(function(a, b) {
+                            var nameA = a.name.toUpperCase(),
+                                nameB = b.name.toUpperCase();
+                            if (nameA < nameB) {
+                                return -1;
+                            }
+                            if (nameA > nameB) {
+                                return 1;
+                            }
+                            return 0;
+                        });
+                    }
+
+                    for (var a = 0; a < artboards.length; a++) {
+                        var artboard = artboards[a].MSArtboardGroup,
+                            objectID = self.toJSString( artboard.objectID() );
+                        if(data[objectID]){
+                            self.allCount += artboard.children().count();
+                            self.selectionArtboards.push(artboard);
+                        }
                     }
                 }
 
                 self.configs = self.setConfigs({
-                    exportOption: data.exportOption
+                    exportOption: data.exportOption,
+                    order: data.order
                 });
 
             }

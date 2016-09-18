@@ -460,11 +460,16 @@ button{
     border-top: 0;
 }
 .page-list ul{
+    position: relative;
     margin: 0;
     list-style: none;
     padding: 0;
 }
-
+.page-list ul li{
+    position: absolute;
+    width: 100%;
+    transition: all .15s ease;
+}
 .page-list .artboard-item{
     position: relative;
     display: block;
@@ -491,7 +496,7 @@ button{
 
 }
 .color-item:nth-child(2n),
-.page-list li:nth-child(2n){
+.page-list li.alt{
     background: rgba(255,255,255,0.03);
 }
 
@@ -820,3 +825,36 @@ button{
 .button-settings .checkbutton{
     top: -62px;
 }
+.orderbox{
+    position: absolute;
+    right: 24px;
+}
+.orderbox .radiobox,
+.orderbox .radiobox label{
+    width: 20px;
+    height: 20px;
+}
+.orderbox .radiobox{
+    margin: 0 0 0 8px;
+}
+.orderbox .radiobox label{
+    background-size: 20px 20px;
+    background-repeat: no-repeat;
+    background-image: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACgAAAAoBAMAAAB+0KVeAAAAHlBMVEUAAAD///////////////////////////////////8kfJuVAAAACXRSTlMA7tm7lWpEJhE46DAfAAAAPElEQVQoz2MYkmDmwAjOHLGCnjNnzpwCo2CAGcgzgFEwwKE5c1IDjIKDwpniMAoB2GYmwCkECIVRQwoAAHUjI92L7AS/AAAAAElFTkSuQmCC');
+    background-position: 0;
+}
+.orderbox .radiobox.reverse-radio label{
+    background-image: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACgAAAAoBAMAAAB+0KVeAAAAHlBMVEUAAAD///////////////////////////////////8kfJuVAAAACXRSTlMA7tm7lWpEJhE46DAfAAAAR0lEQVQoz2MYkiAUixjbzARMwcKZ4hhiHJozJzWgCzLPnDnTAF3QEyg4BdPamdisnYnN2pnYrJ2JzdqZ6NaiCkJ5I1Zw0AMALjgj3XRPFaMAAAAASUVORK5CYII=');
+}
+.orderbox .radiobox.alphabet-radio label{
+    background-image: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACgAAAAoBAMAAAB+0KVeAAAAIVBMVEUAAAD////////////////////////////////////////PIev5AAAACnRSTlMA7tm7lWpEJhEEWF/OUQAAAE1JREFUKM9jGJJgFWHBVauIFFwFREQKAgFWQbLMRAAKBcl2J4RLWBDB8wIasgRdcDJQ0BLdIg6tVYsaMGwvXCWO6Xa2VQlYfBTKMKQAAAJhMNB4a2QUAAAAAElFTkSuQmCC');
+}
+.orderbox .radiobox input[type=radio]:checked + label{
+    background-color: #3484F5;
+}
+.orderbox .radiobox input[type=radio]:disabled + label{
+    background-color: #000;
+    opacity: .16;
+    cursor: default;
+}
+
