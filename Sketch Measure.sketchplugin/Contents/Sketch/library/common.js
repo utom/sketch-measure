@@ -573,6 +573,9 @@ SM.extend({
             configsData = this.extend(newConfigs, this.getConfigs() || {});
             this.UIMetadata.setObject_forKey (JSON.stringify(configsData), this.prefix);
         }
+        var saveDoc = this.addShape();
+        this.page.addLayers([saveDoc]);
+        this.removeLayer(saveDoc);
         return configsData;
     },
     removeConfigs: function(container){
@@ -1122,6 +1125,11 @@ SM.extend({
                         }
                         else if(request == "export"){
                             if( options.exportCallback(windowObject) ){
+                                 self.message(_("Export complete!"));
+                            }
+                        }
+                        else if(request == "export-xml"){
+                            if( options.exportXMLCallback(windowObject) ){
                                  self.message(_("Export complete!"));
                             }
                         }
@@ -2119,6 +2127,9 @@ SM.extend({
             },
             exportCallback: function(windowObject){
                 return self.exportColors();
+            },
+            exportXMLCallback: function(windowObject){
+                return self.exportColorsXML();
             }
         });
     },
@@ -2171,6 +2182,44 @@ SM.extend({
 
         this.writeFile({
             content: JSON.stringify(this.configs.colors),
+            path: savePath,
+            fileName: fileName
+        });
+
+        return true;
+    },
+    exportColorsXML: function(){
+        var filePath = this.document.fileURL()? this.document.fileURL().path().stringByDeletingLastPathComponent(): "~";
+        var fileName = this.document.displayName().stringByDeletingPathExtension();
+        var savePanel = NSSavePanel.savePanel();
+
+        savePanel.setTitle(_("Export colors"));
+        savePanel.setNameFieldLabel(_("Export to:"));
+        savePanel.setPrompt(_("Export"));
+        savePanel.setCanCreateDirectories(true);
+        savePanel.setShowsTagField(false);
+        savePanel.setAllowedFileTypes(NSArray.arrayWithObject("xml"));
+        savePanel.setAllowsOtherFileTypes(false);
+        savePanel.setNameFieldStringValue(fileName + "-colors.xml");
+
+        if (savePanel.runModal() != NSOKButton) {
+            return false;
+        }
+        var savePath = savePanel.URL().path().stringByDeletingLastPathComponent(),
+            fileName = savePanel.URL().path().lastPathComponent(),
+            XMLContent = [];
+
+        XMLContent.push("<?xml version=\"1.0\" encoding=\"utf-8\"?>");
+        XMLContent.push("<resources>");
+        this.configs.colors.forEach(function(color){
+            if(color.name){
+                XMLContent.push("\t<color name=\"" + color.name + "\">" + color.color["argb-hex"] + "</color>");
+            }
+        });
+        XMLContent.push("</resources>");
+
+        this.writeFile({
+            content: XMLContent.join("\r\n"),
             path: savePath,
             fileName: fileName
         });

@@ -40,8 +40,9 @@
                 '<div class="options-bar m0">',
                     '<div class="button-settings" tabindex="0">',
                         '<ul class="checkbutton">',
-                            '<li class="c-import">' + _('Import Colors') + '</li>',
-                            '<li class="c-export">' + _('Export Colors') + '</li>',
+                            '<li class="c-import">' + _('Import Colors from .json') + '</li>',
+                            '<li class="c-export">' + _('Export Colors to .json') + '</li>',
+                            '<li class="c-export-xml">' + _('Export Colors to .xml') + '</li>',
                         '</ul>',
                     '</div>',
                     '<button class="button-add"></button>',
@@ -118,7 +119,10 @@
             SMAction('export');
             $('.button-settings').blur();
         });
-
+        $('.c-export-xml').click(function(){
+            SMAction('export-xml');
+            $('.button-settings').blur();
+        });
         $('.button-add').click(function(){
             SMAction('add');
         });
