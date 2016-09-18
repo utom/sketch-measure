@@ -122,17 +122,71 @@
                             return 0;
                         });
                     }
-                    pagesData.push(artboardsData);
+
+                    pagesData[page.objectID] = artboardsData;
+                    pagesName[page.objectID] = page.name;
                     $.each(artboardsData, function(index, artboard){
                         var $a = $('#aid-' + artboard.objectID);
                         $a.removeClass('alt');
                         if(index%2){
                             $a.addClass('alt');
                         }
-                        $a.css('top', index * 48);
+                        $a
+                            .removeAttr('cache-top')
+                            .css('top', index * 48);
                     });
                 }
             });
+            filter(data);
+        },
+        filter = function(data){
+            var $filter = $('#filter'),
+                filterText = $filter.val().toLowerCase().trim();
+
+            if(filterText){
+                $('#artboards-list li').hide();
+                var i = 0;
+                $.each(pagesData, function(index, artboardData){
+                    var $p = $('.p-' + i),
+                        cacheHeight = $p.attr('cache-height');
+                    if(!cacheHeight){
+                        var h = $p.css('height');
+                        $p.attr('cache-height', h);
+                    }
+
+                    var filtered = artboardData.filter(function(aData){
+                        return (pagesName[index] + ' ' + aData.name).toLowerCase().indexOf( filterText ) >= 0
+                    });
+
+                    $p.css('height', filtered.length * 48);
+
+                    $.each(filtered, function(index, aData){
+                        var $a = $('#aid-' + aData.objectID),
+                            cacheTop = $a.attr('cache-top');
+                        if(!cacheTop){
+                            var t = $a.css('top');
+                            $a.attr('cache-top', t);
+                        }
+
+                        $a
+                            .show()
+                            .css('top', index * 48);
+                    });
+
+                    i++;
+                });
+            }
+            else{
+                $('#artboards-list ul').each(function(){
+                    $(this).css('height', $(this).attr('cache-height'))
+                    $(this).removeAttr('cache-height');
+                });
+                $('#artboards-list li').each(function(){
+                    $(this).css('top', $(this).attr('cache-top')).show();
+                    $(this).removeAttr('cache-top');
+                });
+            }
+
         },
         checkedOption = function(){
             if($('input[name=export-option]:checked').length > 0){
@@ -142,7 +196,8 @@
                 $('input[name=order]').attr('disabled', true);
             }
         },
-        pagesData = [],
+        pagesData = {},
+        pagesName = {},
         init = function(data) {
             $('body').html([
                     '<div class="container">',
@@ -301,54 +356,7 @@
             });
 
             $('#filter').keyup(function(){
-                var $this = $(this),
-                    filterText = $this.val().toLowerCase().trim();
-
-                if(filterText){
-                    $('input[name=order]').attr('disabled', true);
-                    // cache-top
-                    $('#artboards-list li').hide();
-                    $.each(pagesData, function(index, artboardData){
-                        var $p = $('.p-' + index),
-                            cacheHeight = $p.attr('cache-height');
-                        if(!cacheHeight){
-                            var h = $p.css('height');
-                            $p.attr('cache-height', h);
-                        }
-
-                        var filtered = artboardData.filter(function(aData){
-                            return (data.pages[index].name + ' ' + aData.name).toLowerCase().indexOf( filterText ) >= 0
-                        });
-
-                        $p.css('height', filtered.length * 48);
-
-                        $.each(filtered, function(index, aData){
-                            var $a = $('#aid-' + aData.objectID),
-                                cacheTop = $a.attr('cache-top');
-                            if(!cacheTop){
-                                var t = $a.css('top');
-                                $a.attr('cache-top', t);
-                            }
-
-                            $a
-                                .show()
-                                .css('top', index * 48);
-                        });
-
-                    });
-                }
-                else{
-                    $('input[name=order]').attr('disabled', false);
-                    $('#artboards-list ul').each(function(){
-                        $(this).css('height', $(this).attr('cache-height'))
-                        $(this).removeAttr('cache-height');
-                    });
-                    $('#artboards-list li').each(function(){
-                        $(this).css('top', $(this).attr('cache-top')).show();
-                        $(this).removeAttr('cache-top');
-                    });
-                }
-
+                filter(data);
             });
 
             $('#' + data.order).attr('checked', true);

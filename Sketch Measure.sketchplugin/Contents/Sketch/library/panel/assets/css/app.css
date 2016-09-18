@@ -464,6 +464,7 @@ button{
     margin: 0;
     list-style: none;
     padding: 0;
+    transition: all .2s ease;
 }
 .page-list ul li{
     position: absolute;
