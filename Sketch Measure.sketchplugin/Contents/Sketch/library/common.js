@@ -2570,6 +2570,95 @@ SM.extend({
             }
         }
     },
+    getTextAttrs: function(str){
+        var data = {},
+            regExpAttr = new RegExp('([a-z\-]+)\=\"([^\"]+)\"', 'g'),
+            regExpAttr1 = new RegExp('([a-z\-]+)\=\"([^\"]+)\"'),
+            attrs = str.match(regExpAttr);
+        for (var a = 0; a < attrs.length; a++) {
+            var attrData = regExpAttr1.exec(attrs[a]),
+                key = attrData[1],
+                value = attrData[2];
+
+            data[key] = value;
+        }
+        return data;
+    },
+    checkText: function(artboard, layer, layerData, data){
+        if(layerData.type == "text" && layer.attributedString().treeAsDictionary().value.attributes.length > 1){
+            var self = this,
+                svgExporter = SketchSVGExporter.new().exportLayers([layer.immutableModelObject()]),
+                svgStrong = this.toJSString(NSString.alloc().initWithData_encoding(svgExporter, NSUTF8StringEncoding)),
+                regExpTspan = new RegExp('<tspan([^>]+)>([^<]*)</tspan>', 'g'),
+                regExpContent = new RegExp('>([^<]*)<'),
+                offsetX, offsetY, textData = [];
+            svgSpans = svgStrong.match(regExpTspan);
+            
+            for (var a = 0; a < svgSpans.length; a++) {
+                var attrsData = this.getTextAttrs(svgSpans[a]);
+                attrsData.content = svgSpans[a].match(regExpContent)[1];
+                offsetX = (
+                        !offsetX ||
+                        ( offsetX && offsetX > this.toJSNumber(attrsData.x) )
+                    )?
+                    this.toJSNumber(attrsData.x): offsetX;
+
+                offsetY = (
+                        !offsetY ||
+                        ( offsetY && offsetY > this.toJSNumber(attrsData.y) )
+                    )?
+                    this.toJSNumber(attrsData.y): offsetY;
+
+                textData.push(attrsData);
+            }
+
+            var parentGroup = layer.parentGroup(),
+                parentRect = self.getRect(parentGroup),
+                colorHex = layerData.color["color-hex"].split(" ")[0];
+
+            textData.forEach(function(tData){
+
+                if(
+                    tData["content"].trim() &&
+                    (
+                        colorHex != tData.fill ||
+                        Object.getOwnPropertyNames(tData).length > 4
+                    )
+                ){
+                    var textLayer = self.addText(),
+                        color = MSColor.colorWithSVGString(tData.fill);
+                    color.setAlpha(tData["fill-opacity"] || 1);
+
+                    textLayer.setName(tData.content);
+                    textLayer.setStringValue(tData.content);
+                    textLayer.setTextColor(color);
+                    textLayer.setFontSize(tData["font-size"] || layerData.fontSize);
+                    // textLayer.setLineHeight(layerData.lineHeight);
+                    textLayer.setCharacterSpacing(self.toJSNumber(tData["letter-spacing"]) || layer.characterSpacing());
+                    textLayer.setTextAlignment(layer.textAlignment())
+
+                    if(tData["font-family"]){
+                        textLayer.setFontPostscriptName(tData["font-family"].split(",")[0]);
+                    }
+
+                    parentGroup.addLayers([textLayer]);
+
+                    var textLayerRect = self.getRect(textLayer);
+                    textLayerRect.setX(parentRect.x + layerData.rect.x + (self.toJSNumber(tData.x) - offsetX));
+                    textLayerRect.setY(parentRect.y + layerData.rect.y + (self.toJSNumber(tData.y) - offsetY));
+
+                    self.getLayer(
+                        artboard,
+                        textLayer,
+                        data
+                    );
+
+                    self.removeLayer(textLayer);
+                }
+
+            });
+        }
+    },
     getSavePath: function(){
         var filePath = this.document.fileURL()? this.document.fileURL().path().stringByDeletingLastPathComponent(): "~";
         var fileName = this.document.displayName().stringByDeletingPathExtension();
@@ -2721,7 +2810,6 @@ SM.extend({
                 self.slices = [];
                 self.sliceCache = {};
                 self.maskCache = [];
-                self.single = false;
                 self.wantsStop = false;
 
                 coscript.scheduleWithRepeatingInterval_jsFunction( 0, function( interval ){
@@ -2953,7 +3041,7 @@ SM.extend({
             layerData.fontSize = layer.fontSize();
             layerData.fontFace = this.toJSString(layer.fontPostscriptName());
             layerData.textAlign = TextAligns[layer.textAlignment()];
-            layerData.letterSpacing = this.toJSNumber(layer.characterSpacing());
+            layerData.letterSpacing = this.toJSNumber(layer.characterSpacing()) || 0;
             layerData.lineHeight = layer.lineHeight();
         }
 
@@ -2970,6 +3058,7 @@ SM.extend({
         this.checkSlice(layer, layerData, symbolLayer);
         data.layers.push(layerData);
         this.checkSymbol(artboard, layer, layerData, data);
+        this.checkText(artboard, layer, layerData, data);
     },
     template: function(content, data) {
         var content = content.replace(new RegExp("\\<\\!\\-\\-\\s([^\\s\\-\\-\\>]+)\\s\\-\\-\\>", "gi"), function($0, $1) {
