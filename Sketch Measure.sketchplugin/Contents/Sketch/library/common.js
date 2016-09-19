@@ -2633,7 +2633,9 @@ SM.extend({
                     textLayer.setStringValue(tData.content);
                     textLayer.setTextColor(color);
                     textLayer.setFontSize(tData["font-size"] || layerData.fontSize);
-                    // textLayer.setLineHeight(layerData.lineHeight);
+                    if(layer.defaultLineHeight() != layer.lineHeight()){
+                        textLayer.setLineHeight(layer.lineHeight());
+                    }
                     textLayer.setCharacterSpacing(self.toJSNumber(tData["letter-spacing"]) || layer.characterSpacing());
                     textLayer.setTextAlignment(layer.textAlignment())
 
