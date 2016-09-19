@@ -2815,14 +2815,9 @@ SM.extend({
                                 data.slices = self.slices;
                             }
 
-                            // if(self.configs.colors && self.configs.colors.length > 0){
-                            //     data.colors = self.configs.colors;
-                            //     self.writeFile({
-                            //             content: JSON.stringify(self.configs.colors),
-                            //             path: self.toJSString(savePath),
-                            //             fileName: "colors.json"
-                            //         });
-                            // }
+                            if(self.configs.colors && self.configs.colors.length > 0){
+                                data.colors = self.configs.colors;
+                            }
 
                             var selectingPath = savePath;
                             if(self.configs.exportOption){
