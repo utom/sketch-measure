@@ -567,7 +567,7 @@ SM.extend({
         newConfigs.timestamp = new Date().getTime();
         if(container){
             configsData = this.extend(newConfigs, this.getConfigs(container) || {});
-            command.setValue_forKey_onLayer(JSON.stringify(configsData), this.prefix, container);
+            this.command.setValue_forKey_onLayer(JSON.stringify(configsData), this.prefix, container);
         }
         else{
             configsData = this.extend(newConfigs, this.getConfigs() || {});
@@ -580,7 +580,7 @@ SM.extend({
     },
     removeConfigs: function(container){
         if(container){
-            command.setValue_forKey_onLayer(null, prefix, container);
+            this.command.setValue_forKey_onLayer(null, prefix, container);
         }
         else{
             configsData = this.UIMetadata.setObject_forKey (null, this.prefix);
