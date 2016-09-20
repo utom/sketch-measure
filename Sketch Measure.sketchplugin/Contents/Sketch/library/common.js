@@ -1588,7 +1588,7 @@ SM.extend({
                     break;
                 case "line-height":
                     if(!self.is(target, MSTextLayer)) return false;
-                    content.push("line: " + self.convertUnit(target.lineSpacing(), true) + " (" + Math.round(target.lineSpacing() / target.fontSize() * 10) / 10  + ")" );
+                    content.push("line: " + self.convertUnit(target.lineHeight() || target.defaultLineHeight(), true) + " (" + Math.round((target.lineHeight() || target.defaultLineHeight()) / target.fontSize() * 10) / 10  + ")" );
                     break;
                 case "font-face":
                     if(!self.is(target, MSTextLayer)) return false;
@@ -2535,27 +2535,12 @@ SM.extend({
                 var symbolRect = this.getRect(layer),
                     symbolChildren = layer.symbolMaster().children(),
                     tempSymbol = layer.duplicate(),
-                    tempGroup = tempSymbol.detachByReplacingWithGroup(),
-                    tempGroupRect = this.getRect(tempGroup),
-                    tempSymbolLayers = tempGroup.children().objectEnumerator(),
+                    tempGroup = tempSymbol.detachByReplacingWithGroup();
+
+                tempGroup.resizeToFitChildrenWithOption(0)
+
+                var tempSymbolLayers = tempGroup.children().objectEnumerator(),
                     idx = 0;
-
-                var tempArtboard = this.addShape();
-                tempGroup.addLayers([tempArtboard]);
-                var tempArtboardRect = this.getRect(tempArtboard),
-                    symbolMasterFrame = layer.symbolMaster().frame();
-
-                tempArtboardRect.setX(symbolRect.x);
-                tempArtboardRect.setY(symbolRect.y);
-                tempArtboardRect.setWidth(symbolMasterFrame.width());
-                tempArtboardRect.setHeight(symbolMasterFrame.height());
-
-                tempGroup.resizeToFitChildrenWithOption(0);
-                tempGroupRect.setX(symbolRect.x);
-                tempGroupRect.setY(symbolRect.y);
-                tempGroupRect.setWidth(symbolRect.width);
-                tempGroupRect.setHeight(symbolRect.height);
-                this.removeLayer(tempArtboard);
 
                 while(tempSymbolLayer = tempSymbolLayers.nextObject()){
                     self.getLayer(

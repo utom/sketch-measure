@@ -1,6 +1,6 @@
 # Sketch Measure
 
-Make it a fun to create spec for developers and teammates, **Sketch 39.* support**. 
+Make it a fun to create spec for developers and teammates, **Sketch 40.* support**. 
 
 ###[Sponsor me to buy new iPhone](http://utom.design/measure/donate.html)
 
@@ -13,7 +13,7 @@ Make it a fun to create spec for developers and teammates, **Sketch 39.* support
 ## New UI
 Friendly user interface offers you a more intuitive way of making marks.
 ### How to
-* Hold down the `Option` key on keyboard and click mark button on toolbar.
+* Hold down the `Option` key on keyboard and click mark button on the toolbar.
 
 ![SPEC EXPORT](http://utom.design/ui.png)
 
