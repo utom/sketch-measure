@@ -2591,7 +2591,8 @@ SM.extend({
                 svgStrong = this.toJSString(NSString.alloc().initWithData_encoding(svgExporter, NSUTF8StringEncoding)),
                 regExpTspan = new RegExp('<tspan([^>]+)>([^<]*)</tspan>', 'g'),
                 regExpContent = new RegExp('>([^<]*)<'),
-                offsetX, offsetY, textData = [];
+                offsetX, offsetY, textData = [],
+                layerRect = this.getRect(layer);
             svgSpans = svgStrong.match(regExpTspan);
             
             for (var a = 0; a < svgSpans.length; a++) {
@@ -2646,8 +2647,9 @@ SM.extend({
                     parentGroup.addLayers([textLayer]);
 
                     var textLayerRect = self.getRect(textLayer);
-                    textLayerRect.setX(parentRect.x + layerData.rect.x + (self.toJSNumber(tData.x) - offsetX));
-                    textLayerRect.setY(parentRect.y + layerData.rect.y + (self.toJSNumber(tData.y) - offsetY));
+
+                    textLayerRect.setX(layerRect.x + (self.toJSNumber(tData.x) - offsetX));
+                    textLayerRect.setY(layerRect.y + (self.toJSNumber(tData.y) - offsetY));
 
                     self.getLayer(
                         artboard,
@@ -3060,7 +3062,7 @@ SM.extend({
         this.checkSlice(layer, layerData, symbolLayer);
         data.layers.push(layerData);
         this.checkSymbol(artboard, layer, layerData, data);
-        // this.checkText(artboard, layer, layerData, data);
+        this.checkText(artboard, layer, layerData, data);
     },
     template: function(content, data) {
         var content = content.replace(new RegExp("\\<\\!\\-\\-\\s([^\\s\\-\\-\\>]+)\\s\\-\\-\\>", "gi"), function($0, $1) {
