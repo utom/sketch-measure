@@ -13,7 +13,7 @@ Make it a fun to create spec for developers and teammates, **Sketch 40.* support
 ## New UI
 Friendly user interface offers you a more intuitive way of making marks.
 ### How to
-* Hold down the `Option` key on keyboard and click mark button on the toolbar.
+* Hold down the `Option` key on keyboard and click icons on the toolbar will show panels.
 
 ![SPEC EXPORT](http://utom.design/ui.png)
 
