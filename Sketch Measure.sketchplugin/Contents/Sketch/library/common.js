@@ -2628,6 +2628,9 @@ SM.extend({
                     if(tData["font-family"]){
                         textLayer.setFontPostscriptName(tData["font-family"].split(",")[0]);
                     }
+                    else{
+                        textLayer.setFontPostscriptName(layer.fontPostscriptName());
+                    }
 
                     parentGroup.addLayers([textLayer]);
 
