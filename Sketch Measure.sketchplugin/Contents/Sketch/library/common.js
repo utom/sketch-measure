@@ -3060,7 +3060,7 @@ SM.extend({
         this.checkSlice(layer, layerData, symbolLayer);
         data.layers.push(layerData);
         this.checkSymbol(artboard, layer, layerData, data);
-        this.checkText(artboard, layer, layerData, data);
+        // this.checkText(artboard, layer, layerData, data);
     },
     template: function(content, data) {
         var content = content.replace(new RegExp("\\<\\!\\-\\-\\s([^\\s\\-\\-\\>]+)\\s\\-\\-\\>", "gi"), function($0, $1) {
