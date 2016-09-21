@@ -486,11 +486,13 @@ var I18N = {},
                     if(data.name) unitList.push('<li class="sub-title">' + _(data.name) + '</li>');
                     $.each(data.units, function(index, unit){
                         var checked = '';
-                        if( unit.unit == self.configs.unit && unit.scale == self.configs.scale ){
-                            checked = ' checked="checked"';
-                            hasCurrent = _(unit.name);
-                        }
-                        unitList.push('<li><label><input type="radio" name="resolution" data-name="' + _(unit.name) + '" data-unit="' + unit.unit + '" data-scale="' + unit.scale + '"' + checked + '><span>' + _(unit.name) + '</span></label></li>');
+                        // if(unit.scale == self.configs.scale){
+                            if( unit.unit == self.configs.unit && unit.scale == self.configs.scale ){
+                                checked = ' checked="checked"';
+                                hasCurrent = _(unit.name);
+                            }
+                            unitList.push('<li><label><input type="radio" name="resolution" data-name="' + _(unit.name) + '" data-unit="' + unit.unit + '" data-scale="' + unit.scale + '"' + checked + '><span>' + _(unit.name) + '</span></label></li>');
+                        // }
                     });
                 });
                 if(!hasCurrent){
