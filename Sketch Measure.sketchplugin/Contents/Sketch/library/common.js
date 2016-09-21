@@ -799,6 +799,9 @@ SM.extend({
         text.setTextBehaviour(1);
         text.setTextBehaviour(0);
 
+        text.setTextBehaviour(1); // fixed for v40
+        text.setTextBehaviour(0); // fixed for v40
+
         // get rect
         var targetRect = this.getRect(target),
             arrowRect = this.getRect(arrow),
