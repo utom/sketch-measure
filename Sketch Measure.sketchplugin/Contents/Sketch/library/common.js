@@ -7,7 +7,7 @@ var I18N = {},
     lang = NSUserDefaults.standardUserDefaults().objectForKey("AppleLanguages").objectAtIndex(0),
     lang = (macOSVersion >= 10.12)? lang.split("-").slice(0, -1).join("-"): lang,
     language = "";
-log(lang)
+
 function _(str, data){
     var str = (I18N[lang] && I18N[lang][str])? I18N[lang][str]: str,
         idx = -1;
