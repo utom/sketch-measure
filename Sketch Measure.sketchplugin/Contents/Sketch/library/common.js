@@ -3015,15 +3015,22 @@ SM.extend({
         var layerType = this.is(layer, MSTextLayer) ? "text" :
                this.is(layer, MSSymbolInstance) ? "symbol" :
                this.is(layer, MSSliceLayer) || this.hasExportSizes(layer)? "slice":
-               "shape",
-            layerData = {
+               "shape";
+
+        if ( symbolLayer && layerType == "text" && layer.textBehaviour() == 0) { // fixed for v40
+            layer.setTextBehaviour(1); // fixed for v40
+            layer.setTextBehaviour(0); // fixed for v40
+        } // fixed for v40
+        
+        var layerData = {
                     objectID: this.toJSString( layer.objectID() ),
                     type: layerType,
                     name: this.toHTMLEncode(layer.name()),
                     rect: this.rectToJSON(layer.absoluteRect(), artboardRect)
                 };
 
-        if(symbolLayer) layerData.objectID = this.toJSString( symbolLayer.objectID() )
+        if(symbolLayer) layerData.objectID = this.toJSString( symbolLayer.objectID() );
+
 
         if ( layerType != "slice" ) {
             var layerStyle = layer.style();
