@@ -2292,6 +2292,10 @@ SM.extend({
                 {
                     scale: 3 / this.configs.scale,
                     suffix: "@3x"
+                },
+                {
+                    scale: 4 / this.configs.scale,
+                    suffix: "@4x"
                 }
             ];
 
