@@ -10,7 +10,7 @@
 A bunch of accessible features collected and represented with clear icons help you deliver accurate design specs right at your hand.
 
 
-Run `Plugin > Sketch Measure > Toolbar` or use `ctrl + opt + b`.
+Run `Plugin > Sketch Measure > Toolbar` or use `⌃ + ⇧ + B`.
 
 ![Toolbar](http://utom.design/measure/docs/toolbar.png)
 
@@ -21,7 +21,7 @@ Run `Plugin > Sketch Measure > Toolbar` or use `ctrl + opt + b`.
 Sometimes you may need to mark an overlay to highlight a layer, this can be done easily in Sketch Measure.
 
 1. Select one or more any layers in Sketch;
-2. Click the overlay button in the **Toolbar** or use `ctrl + opt + 1`;
+2. Click the overlay button in the **Toolbar** or use `⌃ + ⇧ + 1`;
 
 
 
@@ -31,7 +31,7 @@ Mark width and height label for some layers;
 
 1. Select one or more any layers in sketch;
 
-2. Click the `sizes` button in the **Toolbar** or use `ctrl + opt + 2`;
+2. Click the `sizes` button in the **Toolbar** or use `⌃ + ⇧ + 2`;
 
    > If you want to mark width or height separately.
    >
@@ -47,7 +47,7 @@ Spacing between any layer and the artboard.
 
 1. Select one layer in the artboard or select two any layers;
 
-2. Click the `spacings` button in the **Toolbar** or use `ctrl + opt + 3`; 
+2. Click the `spacings` button in the **Toolbar** or use `⌃ + ⇧ + 3`; 
 
    > If you want to show margin top, right, bottom or left separately.
    >
@@ -63,7 +63,7 @@ Mark shape layer or text layer info, such as, fill color, border color and strok
 
 1. Select one or more any layers in sketch;
 
-2. Click the `properties` button in the **Toolbar** or use `ctrl + opt + 4`;
+2. Click the `properties` button in the **Toolbar** or use `⌃ + ⇧ + 4`;
 
    > If you want to mark any properties separately.
    >
@@ -81,7 +81,7 @@ Mark some notes in artboard, and show in `Spec Export` viewer.
 
 1. Insert text layer, and type something;
 2. Select the text layer;
-3. Click the `note` button in the **Toolbar** or use `ctrl + opt + 5`;
+3. Click the `note` button in the **Toolbar** or use `⌃ + ⇧ + 5`;
 
 
 
@@ -91,7 +91,7 @@ Quickly set export option presets for layer.
 
 1. Select one or more any layers in sketch;
 
-2. Click the `knife` button in the **Toolbar** or use `ctrl + opt + s`;
+2. Click the `knife` button in the **Toolbar** or use `⌃ + ⇧ + s`;
 
    > If you want to creat slice layer.
    >
@@ -106,7 +106,7 @@ Quickly set export option presets for layer.
 
 Set color names and export `.xml`  for developer.
 
-1. Click the `drop` button in the **Toolbar** or use `ctrl + opt + c`;
+1. Click the `drop` button in the **Toolbar** or use `⌃ + ⇧ + c`;
 
 2. Select one or more shape layers or text layers in sketch;
 
@@ -126,7 +126,7 @@ Automatically generating html page with one click, inspect all the design detail
 
 1. Select some artboards in sketch;
 
-2. Click the `export` button in the **Toolbar** or use `ctrl + opt + e`;
+2. Click the `export` button in the **Toolbar** or use `⌃ + ⇧ + e`;
 
    > if you want to create one artboard by one HTML file, please uncheck "Advanced mode".
 
@@ -138,7 +138,7 @@ You can use Safari 9+ and Google Chrome to view it, it's based on HTML 5, CSS 3 
 
 - Select a layer and hover other layer to measure and get margin; 
 - Click color area in the Inspector to change color format;
-- Use `cmd +` and `cmd -` to zoom the canvas;
+- Use `⌘ +` and `⌘ -` to zoom the canvas;
 - Hold down `space` on keyboard, and mouse drag canvas to move canvas;
 - Toggle note switch to show and hide the notes;
 
