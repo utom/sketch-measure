@@ -21,7 +21,7 @@ Run `Plugin > Sketch Measure > Toolbar` or use `ctrl + opt + b`.
 Sometimes you may need to mark an overlay to highlight a layer, this can be done easily in Sketch Measure.
 
 1. Select one or more any layers in Sketch;
-2. Click the overlay button on the **Toolbar** or use `ctrl + opt + 1`;
+2. Click the overlay button in the **Toolbar** or use `ctrl + opt + 1`;
 
 
 
@@ -31,7 +31,7 @@ Mark width and height label for some layers;
 
 1. Select one or more any layers in sketch;
 
-2. Click the `sizes` button on the **Toolbar** or use `ctrl + opt + 2`;
+2. Click the `sizes` button in the **Toolbar** or use `ctrl + opt + 2`;
 
    > If you want to mark width or height separately.
    >
@@ -47,7 +47,7 @@ Spacing between any layer and the artboard.
 
 1. Select one layer in the artboard or select two any layers;
 
-2. Click the `spacings` button on the **Toolbar** or use `ctrl + opt + 3`; 
+2. Click the `spacings` button in the **Toolbar** or use `ctrl + opt + 3`; 
 
    > If you want to show margin top, right, bottom or left separately.
    >
@@ -63,7 +63,7 @@ Mark shape layer or text layer info, such as, fill color, border color and strok
 
 1. Select one or more any layers in sketch;
 
-2. Click the `properties` button on the **Toolbar** or use `ctrl + opt + 4`;
+2. Click the `properties` button in the **Toolbar** or use `ctrl + opt + 4`;
 
    > If you want to mark any properties separately.
    >
@@ -81,7 +81,7 @@ Mark some notes in artboard, and show in `Spec Export` viewer.
 
 1. Insert text layer, and type something;
 2. Select the text layer;
-3. Click the `note` button on the **Toolbar** or use `ctrl + opt + 5`;
+3. Click the `note` button in the **Toolbar** or use `ctrl + opt + 5`;
 
 
 
@@ -91,7 +91,7 @@ Quickly set export option presets for layer.
 
 1. Select one or more any layers in sketch;
 
-2. Click the `knife` button on the **Toolbar** or use `ctrl + opt + s`;
+2. Click the `knife` button in the **Toolbar** or use `ctrl + opt + s`;
 
    > If you want to creat slice layer.
    >
@@ -106,15 +106,15 @@ Quickly set export option presets for layer.
 
 Set color names and export `.xml`  for developer.
 
-1. Click the `drop` button on the **Toolbar** or use `ctrl + opt + c`;
+1. Click the `drop` button in the **Toolbar** or use `ctrl + opt + c`;
 
 2. Select one or more shape layers or text layers in sketch;
 
-3. Click the `add` button on the `Manage colors` UI dialog;
+3. Click the `add` button in the `Manage colors` UI dialog;
 
    > If you want to edit color name.
    >
-   > Double-click the color item of list on UI dialog;
+   > Double-click the color item of list in UI dialog;
 
 ![Color names UI](http://utom.design/measure/docs/color-names.png)
 
@@ -126,7 +126,7 @@ Automatically generating html page with one click, inspect all the design detail
 
 1. Select some artboards in sketch;
 
-2. Click the `export` button on the **Toolbar** or use `ctrl + opt + e`;
+2. Click the `export` button in the **Toolbar** or use `ctrl + opt + e`;
 
    > if you want to create one artboard by one HTML file, please uncheck "Advanced mode".
 
