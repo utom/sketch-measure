@@ -8,6 +8,8 @@
 ##Toolbar
 
 A bunch of accessible features collected and represented with clear icons help you deliver accurate design specs right at your hand.
+
+
 Run `Plugin > Sketch Measure > Toolbar` or use `ctrl + opt + b`.
 
 ![Toolbar](http://utom.design/measure/docs/toolbar.png)
