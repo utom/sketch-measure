@@ -2,7 +2,10 @@
 
 Make it a fun to create spec for developers and teammates, **Sketch 40.* support**. 
 
-###[Sponsor me to buy new iPhone](http://utom.design/measure/donate.html)
+- [How to](https://github.com/utom/sketch-measure/blob/master/HOWTO.md)
+- [中文说明](http://sketch.im/plugins/1)
+
+#####[Sponsor me to buy new iPhone](http://utom.design/measure/donate.html)
 
 ![Logo](http://utom.design/logo@2x.png)
 
