@@ -14,7 +14,11 @@ Run `Plugin > Sketch Measure > Toolbar` or use `⌃ + ⇧ + B`.
 
 ![Toolbar](http://utom.design/measure/docs/toolbar.png)
 
+## Resolution Setup
 
+To set design resolution for each document.
+
+![Setup UI](http://utom.design/measure/docs/setup.png)
 
 ##Mark Overlay
 
@@ -128,7 +132,7 @@ Automatically generating html page with one click, inspect all the design detail
 
 2. Click the `export` button in the **Toolbar** or use `⌃ + ⇧ + e`;
 
-   > if you want to create one artboard by one HTML file, please uncheck "Advanced mode".
+   > if you want to create one artboard by one HTML file, please uncheck the "Advanced mode" option.
 
 ![Spec export UI](http://utom.design/measure/docs/spec-export.png)
 
