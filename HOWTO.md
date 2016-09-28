@@ -85,9 +85,6 @@ Mark some notes in artboard, and show in `Spec Export` viewer.
 
 
 
-![Create slice layer](http://utom.design/measure/docs/create-slice-layer.gif)
-
-
 
 ##Make Exportable
 Quickly set export option presets for layer.
