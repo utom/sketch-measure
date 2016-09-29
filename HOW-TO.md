@@ -91,7 +91,7 @@ Mark some notes in artboard, and show in `Spec Export` viewer.
 
 
 ##Make Exportable
-Quickly set export option presets for layer, and export slices as Android assets by ` Spec Export`.
+Quickly set export option presets for layer, also when you set your design resolution as `dp/sp` unit, can be exporting slices as Android assets by ` Spec Export`.
 
 ![Mark spacings UI](http://utom.design/measure/docs/android-assets.png)
 
