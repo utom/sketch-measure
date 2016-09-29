@@ -91,7 +91,7 @@ Mark some notes in artboard, and show in `Spec Export` viewer.
 
 
 ##Make Exportable
-Quickly set export option presets for layer, also when you set your design resolution as `dp/sp` unit, can be exporting slices as Android assets by ` Spec Export`.
+Quickly set slice presets for the layer you'd like to export. also when you set your design resolution as `dp/sp` unit, can be exporting slices as Android assets by ` Spec Export`.
 
 ![Mark spacings UI](http://utom.design/measure/docs/android-assets.png)
 
@@ -140,12 +140,14 @@ Automatically generating html page with one click, inspect all the design detail
 
 ## Spec Viewer
 
-You can use Safari 9+ and Google Chrome to view it, it's based on HTML 5, CSS 3 and Javascript.
+You can use Safari 9+ and Google Chrome to view it, it's based on HTML 5, CSS 3 and Javascript. 
 
 - Select a layer and hover other layer to measure and get margin; 
 - Click color area in the Inspector to change color format;
 - Use `⌘` + `+` and `⌘` + ` -` to zoom the canvas;
-- Hold down `space` on keyboard, and mouse drag canvas to move canvas;
+- Hold down `spacebar` on keyboard, and mouse drag canvas to scroll canvas;
 - Toggle note switch to show and hide the notes;
+
+[View the demo →](http://utom.design/news/)
 
 ![Spec viewer UI](http://utom.design/measure/docs/spec-viewer.png)
