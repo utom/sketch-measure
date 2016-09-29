@@ -2,7 +2,7 @@
 
 Make it a fun to create spec for developers and teammates, **Sketch 40.* support**. 
 
-- [How to](https://utom.design/measure/how-to.html)
+- [How to](http://utom.design/measure/how-to.html)
 - [中文说明](http://sketch.im/plugins/1)
 
 #### [Sponsor me to buy new iPhone](http://utom.design/measure/donate.html)
