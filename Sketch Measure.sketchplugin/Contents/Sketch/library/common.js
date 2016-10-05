@@ -1534,7 +1534,7 @@ SM.extend({
         var self = this,
             options = this.extend(options, {
                 placement: "top",
-                properties: ["color", "border", "opacity", "radius", "shadow", "font-size", "line-height", "font-face", "character", "paragraph"]
+                properties: ["key-name", "color", "border", "opacity", "radius", "shadow", "font-size", "line-height", "font-face", "character", "paragraph"]
             }),
             properties = options.properties,
             placement = options.placement,
@@ -1613,6 +1613,9 @@ SM.extend({
                         content.push("style-name: " + styleName);
                     }
                     break;
+				case "key-name":
+					content.push("key-name: " + target.name());
+					break;
                 default:
                     render = false;
                     break;
@@ -1859,7 +1862,7 @@ SM.extend({
                 this.properties({
                     target: target,
                     placement: placement[ Math.max(distance.top, distance.right, distance.bottom, distance.left) ],
-                    properties: ["color", "border", "opacity", "radius", "shadow", "font-size", "font-face", "character", "line-height"]
+                    properties: ["key-name", "color", "border", "opacity", "radius", "shadow", "font-size", "font-face", "character", "line-height"]
                 });
             }
         }

@@ -38,6 +38,7 @@ To create your own custom shortcuts, go to Keyboard in your System Preferences a
 * Author [utom](http://utom.design)
 * [SketchI18N](https://github.com/cute/SketchI18N), [cute](http://liguangming.com)
 * [esseak](https://github.com/esseak)
+* [mkl87](https://github.com/mkl87)
 * 繁體中文（台灣） by Kai and [Zih-Hong](http://zihhonglin.com)
 * And [Other](https://github.com/utom/sketch-measure/contributors)
 
