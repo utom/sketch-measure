@@ -2588,7 +2588,7 @@ SM.extend({
                 offsetX, offsetY, textData = [],
                 layerRect = this.getRect(layer);
             svgSpans = svgStrong.match(regExpTspan);
-            
+
             for (var a = 0; a < svgSpans.length; a++) {
                 var attrsData = this.getTextAttrs(svgSpans[a]);
                 attrsData.content = svgSpans[a].match(regExpContent)[1];
@@ -2621,7 +2621,7 @@ SM.extend({
                     )
                 ){
                     var textLayer = self.addText(),
-                        color = MSColor.colorWithSVGString(tData.fill);
+                        color = MSColor.colorWithSVGString(tData.fill || layerData.color["color-hex"]);
                     color.setAlpha(tData["fill-opacity"] || 1);
 
                     textLayer.setName(tData.content);
@@ -2771,7 +2771,6 @@ SM.extend({
                     exportOption: data.exportOption,
                     order: data.order
                 });
-
             }
         });
     },
@@ -2837,8 +2836,6 @@ SM.extend({
                             layer, // Sketch layer element
                             data.artboards[artboardIndex] // Save to data
                         );
-
-
                         layerIndex++;
                         exporting = false;
 
