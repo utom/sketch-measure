@@ -93,7 +93,7 @@
             "script": "mark.sketchscript"
         },
         {
-            "name": "Sponsor me to buy new iPhone",
+            "name": "Donate",
             "identifier": "commandDonate",
             "handler": "commandDonate",
             "script": "mark.sketchscript"
@@ -136,7 +136,7 @@
     },
     "identifier": "com.utom.measure",
     "homepage": "http://utom.design/measure/",
-    "version": "2.2.1",
+    "version": "2.2.2",
     "description" : "Make it a fun to create spec for developers and teammates",
     "authorEmail" : "utombox@gmail.com",
     "name" : "Sketch Measure"

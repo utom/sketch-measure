@@ -3,9 +3,9 @@ var I18N = {},
         "zh-Hans": "zh-cn",
         "zh-Hant": "zh-tw"
     },
-    macOSVersion = Number(NSDictionary.dictionaryWithContentsOfFile("/System/Library/CoreServices/SystemVersion.plist").objectForKey("ProductVersion")),
+    macOSVersion = NSDictionary.dictionaryWithContentsOfFile("/System/Library/CoreServices/SystemVersion.plist").objectForKey("ProductVersion") + "",
     lang = NSUserDefaults.standardUserDefaults().objectForKey("AppleLanguages").objectAtIndex(0),
-    lang = (macOSVersion >= 10.12)? lang.split("-").slice(0, -1).join("-"): lang,
+    lang = (macOSVersion >= "10.12")? lang.split("-").slice(0, -1).join("-"): lang,
     language = "";
 
 function _(str, data){
