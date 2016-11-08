@@ -79,20 +79,16 @@ main{position:relative;height:calc(100vh - 60px);}
 .layer b{width:3px;height:3px;background:#EE6723;}
 .selected i{display:block;}
 .distance.h div[data-width]:before,.distance.v div[data-height]:before,.selected:after,.selected:before{position:absolute;display:block;left:50%;top:-23px;transform:translateX(-50%);content:attr(data-width);font-size:12px;color:#FFF;height:12px;line-height:12px;padding:4px;background:#EE6723;border-radius:2px;z-index:1;}
+.percentage-mode .distance.h div[data-width]:before,.percentage-mode .distance.v div[data-height]:before,.percentage-mode .selected:after,.percentage-mode .selected:before{content:attr(percentage-width);}
 .selected.hidden:after,.selected.hidden:before{display:none;}
 .distance.v div[data-height]:before,.selected:after{content:attr(data-height);left:auto;right:0;top:50%;transform:translateX(calc(100% + 3px)) translateY(-50%);}
+.percentage-mode .distance.v div[data-height]:before,.percentage-mode .selected:after{content:attr(percentage-height);}
 .layer .tl{top:-3px;left:-3px;}
 .layer .tr{top:-3px;right:-3px;}
 .layer .bl{bottom:-3px;left:-3px;}
 .layer .br{bottom:-3px;right:-3px;}
 .hover{border:1px solid #419bf9;}
 .selected{border:1px solid #EE6723;}
-.layer .et{top:-2px;left:calc(50% - 2px);}
-.layer .er{top:calc(50% - 2px);right:-2px;}
-.layer .eb{bottom:-2px;left:calc(50% - 2px);}
-.layer .el{top:calc(50% - 2px);left:-2px;}
-.selected.wide .h{display:block;}
-.selected.long .v{display:block;}
 .ruler{position:absolute;width:100%;height:100%;border:1px dashed #419bf9;}
 .ruler.h{border-left:0;border-right:0;}
 .ruler.v{border-top:0;border-bottom:0;}
@@ -221,6 +217,9 @@ var I18N = {},
         targetID: undefined,
         zoomSize: function(size) {
             return (size * this.configs.zoom);
+        },
+        percentageSize: function(size, size2){
+            return (Math.round( size / size2 * 1000 ) / 10) + "%";
         },
         unitSize: function(length, isText){
             var length = Math.round( length / this.configs.scale * 10 ) / 10,
@@ -564,12 +563,11 @@ var I18N = {},
                     width = self.zoomSize( layer.rect.width ),
                     height = self.zoomSize( layer.rect.height ),
                     classNames = ['layer'];
+
                 classNames.push('layer-' + layer.objectID);
                 if(self.selectedIndex == index) classNames.push('selected');
-                if(width >= 32) classNames.push('wide');
-                if(height >= 32) classNames.push('long');
                 layersHTML.push([
-                    '<div id="layer-' + index + '" class="' + classNames.join(' ') + '" data-index="' + index + '" data-width="' + self.unitSize(layer.rect.width) + '" data-height="' + self.unitSize(layer.rect.height) + '" style="left: ' + x + 'px; top: ' + y + 'px; width: ' + width + 'px; height: ' + height + 'px;">',
+                    '<div id="layer-' + index + '" class="' + classNames.join(' ') + '" data-index="' + index + '" percentage-width="' + self.percentageSize(layer.rect.width, self.current.width) + '" percentage-height="' + self.percentageSize(layer.rect.height, self.current.height) + '" data-width="' + self.unitSize(layer.rect.width) + '" data-height="' + self.unitSize(layer.rect.height) + '" style="left: ' + x + 'px; top: ' + y + 'px; width: ' + width + 'px; height: ' + height + 'px;">',
                         '<i class="tl"></i><i class="tr"></i><i class="bl"></i><i class="br"></i>',
                         '<b class="et h"></b><b class="er v"></b><b class="eb h"></b><b class="el v"></b>',
                     '</div>'
@@ -716,7 +714,8 @@ var I18N = {},
                             x: x,
                             y: this.zoomSize(targetRect.maxY),
                             h: this.zoomSize(selectedRect.y - targetRect.maxY),
-                            distance: this.unitSize(selectedRect.y - targetRect.maxY)
+                            distance: this.unitSize(selectedRect.y - targetRect.maxY),
+                            percentageDistance: this.percentageSize((selectedRect.y - targetRect.maxY), this.current.height)
                         };
                     }
                     if(selectedRect.maxX < targetRect.x){ //right
@@ -724,7 +723,8 @@ var I18N = {},
                             x: this.zoomSize(selectedRect.maxX),
                             y: y,
                             w: this.zoomSize(targetRect.x - selectedRect.maxX),
-                            distance: this.unitSize(targetRect.x - selectedRect.maxX)
+                            distance: this.unitSize(targetRect.x - selectedRect.maxX),
+                            percentageDistance: this.percentageSize((targetRect.x - selectedRect.maxX), this.current.width)
                         }
                     }
                     if(selectedRect.maxY < targetRect.y){ //bottom
@@ -732,7 +732,8 @@ var I18N = {},
                             x: x,
                             y: this.zoomSize(selectedRect.maxY),
                             h: this.zoomSize(targetRect.y - selectedRect.maxY),
-                            distance: this.unitSize(targetRect.y - selectedRect.maxY)
+                            distance: this.unitSize(targetRect.y - selectedRect.maxY),
+                            percentageDistance: this.percentageSize((targetRect.y - selectedRect.maxY), this.current.height)
                         }
                     }
                     if(selectedRect.x > targetRect.maxX){ //left
@@ -740,70 +741,47 @@ var I18N = {},
                             x: this.zoomSize(targetRect.maxX),
                             y: y,
                             w: this.zoomSize(selectedRect.x - targetRect.maxX),
-                            distance: this.unitSize(selectedRect.x - targetRect.maxX)
+                            distance: this.unitSize(selectedRect.x - targetRect.maxX),
+                            percentageDistance: this.percentageSize((selectedRect.x - targetRect.maxX), this.current.height)
                         }
                     }
                 }
                 else{
                     var distance = this.getDistance(selectedRect, targetRect);
-                    if (distance.top > 0) { //top
+                    if (distance.top != 0) { //top
                         topData = {
                             x: x,
-                            y: this.zoomSize(targetRect.y),
+                            y: (distance.top > 0)? this.zoomSize(targetRect.y): this.zoomSize(selectedRect.y),
                             h: this.zoomSize(this.positive(distance.top)),
-                            distance: this.unitSize(this.positive(distance.top))
-                        };
-                    } else if (distance.top < 0) {
-                        topData = {
-                            x: x,
-                            y: this.zoomSize(selectedRect.y),
-                            h: this.zoomSize(this.positive(distance.top)),
-                            distance: this.unitSize(this.positive(distance.top))
+                            distance: this.unitSize(this.positive(distance.top)),
+                            percentageDistance: this.percentageSize(this.positive(distance.top), this.current.height)
                         };
                     }
-                    if (distance.right > 0) { //right
+                    if (distance.right != 0) { //right
                         rightData = {
-                            x: this.zoomSize(selectedRect.maxX),
+                            x: (distance.right > 0)? this.zoomSize(selectedRect.maxX): this.zoomSize(targetRect.maxX),
                             y: y,
                             w: this.zoomSize(this.positive(distance.right)),
-                            distance: this.unitSize(this.positive(distance.right))
-                        };
-                    } else if (distance.right < 0) {
-                        rightData = {
-                            x: this.zoomSize(targetRect.maxX),
-                            y: y,
-                            w: this.zoomSize(this.positive(distance.right)),
-                            distance: this.unitSize(this.positive(distance.right))
+                            distance: this.unitSize(this.positive(distance.right)),
+                            percentageDistance: this.percentageSize(this.positive(distance.right), this.current.width)
                         };
                     }
-                    if (distance.bottom > 0) { //bottom
+                    if (distance.bottom != 0) { //bottom
                         bottomData = {
                             x: x,
-                            y: this.zoomSize(selectedRect.maxY),
+                            y: (distance.bottom > 0)? this.zoomSize(selectedRect.maxY): this.zoomSize(targetRect.maxY),
                             h: this.zoomSize(this.positive(distance.bottom)),
-                            distance: this.unitSize(this.positive(distance.bottom))
-                        };
-                    } else if (distance.bottom < 0) {
-                        bottomData = {
-                            x: x,
-                            y: this.zoomSize(targetRect.maxY),
-                            h: this.zoomSize(this.positive(distance.bottom)),
-                            distance: this.unitSize(this.positive(distance.bottom))
+                            distance: this.unitSize(this.positive(distance.bottom)),
+                            percentageDistance: this.percentageSize(this.positive(distance.bottom), this.current.height)
                         };
                     }
-                    if (distance.left > 0) { //left
+                    if (distance.left != 0) { //left
                         leftData = {
-                            x: this.zoomSize(targetRect.x),
+                            x: (distance.left > 0)? this.zoomSize(targetRect.x): this.zoomSize(selectedRect.x),
                             y: y,
                             w: this.zoomSize(this.positive(distance.left)),
-                            distance: this.unitSize(this.positive(distance.left))
-                        };
-                    } else if (distance.left < 0) {
-                        leftData = {
-                            x: this.zoomSize(selectedRect.x),
-                            y: y,
-                            w: this.zoomSize(this.positive(distance.left)),
-                            distance: this.unitSize(this.positive(distance.left))
+                            distance: this.unitSize(this.positive(distance.left)),
+                            percentageDistance: this.percentageSize(this.positive(distance.left), this.current.width)
                         };
                     }
                 }
@@ -816,7 +794,8 @@ var I18N = {},
                         })
                         .show();
                     $('#td div')
-                        .attr('data-height', topData.distance);
+                        .attr('data-height', topData.distance)
+                        .attr('percentage-height', topData.percentageDistance);
                 }
                 if (rightData) {
                      $('#rd')
@@ -827,7 +806,8 @@ var I18N = {},
                         })
                         .show();
                     $('#rd div')
-                        .attr('data-width', rightData.distance );
+                        .attr('data-width', rightData.distance )
+                        .attr('percentage-width', rightData.percentageDistance);
                 }
                 if (bottomData) {
                     $('#bd')
@@ -838,7 +818,8 @@ var I18N = {},
                         })
                         .show();
                     $('#bd div')
-                        .attr('data-height', bottomData.distance );
+                        .attr('data-height', bottomData.distance )
+                        .attr('percentage-height', bottomData.percentageDistance);
                 }
                 if (leftData) {
                      $('#ld')
@@ -849,7 +830,8 @@ var I18N = {},
                         })
                         .show();
                     $('#ld div')
-                        .attr('data-width', leftData.distance );
+                        .attr('data-width', leftData.distance )
+                        .attr('percentage-width', leftData.percentageDistance);
                 }
                 $('.selected').addClass('hidden');
             }
@@ -1189,12 +1171,19 @@ var I18N = {},
                         self.hideDistance();
                         event.preventDefault();
                     }
+                    else if(event.which == 18){
+                        $('#screen').addClass('percentage-mode');
+                    }
                 })
                 .keyup(function(event){
                     if(event.which == 32 ){
                         $('#cursor').hide();
                         $('.screen-viewer').removeClass('moving-screen');
                         $('#cursor').removeClass('moving');
+                        event.preventDefault();
+                    }
+                    else if(event.which == 18){
+                        $('#screen').removeClass('percentage-mode');
                         event.preventDefault();
                     }
                 })

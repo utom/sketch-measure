@@ -19,7 +19,19 @@ function _(str, data){
 
 var SM = {
         init: function(context, command){
+            this.prefs = NSUserDefaults.standardUserDefaults();
             this.context = context;
+
+            this.version = this.context.plugin.version() + "";
+            var SMVersion = this.prefs.stringForKey("SMVersion") + "" || 0;
+
+            if(!SMVersion || SMVersion != this.version ){
+                this.prefs.setObject_forKey (this.version, "SMVersion");
+                NSApplication.sharedApplication().delegate().pluginManager().reloadPlugins();
+                SM.init(context, command);
+                return false;
+            }
+            
             this.extend(context);
             this.pluginRoot = this.scriptPath
                     .stringByDeletingLastPathComponent()
@@ -28,14 +40,17 @@ var SM = {
             this.pluginSketch = this.pluginRoot + "/Contents/Sketch/library";
 
             if(NSFileManager.defaultManager().fileExistsAtPath(this.pluginSketch + "/i18n/" + lang + ".json")){
-                language = NSString.stringWithContentsOfFile_encoding_error(this.pluginSketch + "/i18n/" + lang + ".json", NSUTF8StringEncoding, nil);
+                language = NSString.stringWithContentsOfFile_encoding_error(this.pluginSketch + "/i18n/" + lang + ".json", 4, nil);
 
                 I18N[lang] = JSON.parse(language);
                 language = "I18N[\'" + webI18N[lang] + "\'] = " + language;
             }
 
-            if(command && command == "menu"){
+            coscript.setShouldKeepAround(true);
+
+            if(command && command == "init"){
                 this.menu();
+                this.checkUpdate();
                 return false;
             }
 
@@ -47,7 +62,7 @@ var SM = {
             this.page = this.document.currentPage();
             this.artboard = this.page.currentArtboard();
             this.current = this.artboard || this.page;
-            coscript.setShouldKeepAround(true);
+
             if(command && command == "toolbar"){
                 this.Toolbar();
                 return false;
@@ -127,7 +142,44 @@ var SM = {
     ShadowTypes = ["outer", "inner"],
     TextAligns = ["left", "right", "center", "justify", "left"],
     ResizingType = ["stretch", "corner", "resize", "float"];
+SM.extend({
+    checkUpdate: function(){
+        var self = this,
+            webView = WebView.new(),
+            windowObject = webView.windowScriptObject(),
+            timestamp = new Date().getTime(),
+            delegate = new MochaJSDelegate({
+                "webView:didFinishLoadForFrame:": (function(webView, webFrame){
+                    var packageJSON = JSON.parse(self.toJSString(windowObject.evaluateWebScript("document.body.innerText"))),
+                        currentVersion = self.toJSString( self.context.plugin.version() ),
+                        lastestVersion = self.toJSString( packageJSON.version ),
+                        updated = self.prefs.integerForKey("SMUpdated") || 0;
 
+                    if( lastestVersion > currentVersion && timestamp > (updated + 1000 * 60 * 60 * 24) ){
+                        self.prefs.setInteger_forKey(timestamp, "SMUpdated");
+                        self.SMPanel({
+                            url: self.pluginSketch + "/panel/update.html",
+                            width: 480,
+                            height: 229,
+                            hiddenClose: true,
+                            data: {
+                                title: _("New Version!"),
+                                content: _("Just checked Sketch Measure has a new version (%@)", [packageJSON.version]),
+                                donate: _("Donate"),
+                                cancel: _("Cancel"),
+                                download: _("Download")
+                            },
+                            callback: function( data ){
+                                NSWorkspace.sharedWorkspace().openURL(NSURL.URLWithString("http://utom.design/measure/?ref=update"));
+                            }
+                        });
+                    }
+                })
+            });
+        webView.setFrameLoadDelegate_(delegate.getClassInstance());
+        webView.setMainFrameURL_("http://utom.design/measure/package.json?" + timestamp);
+    }
+});
 SM.extend({
     prefix: "SMConfigs2",
     regexNames: /OVERLAY\#|WIDTH\#|HEIGHT\#|TOP\#|RIGHT\#|BOTTOM\#|LEFT\#|VERTICAL\#|HORIZONTAL\#|NOTE\#|PROPERTY\#|LITE\#/,
@@ -280,7 +332,7 @@ SM.extend({
             b: Math.round(color.blue() * 255),
             a: color.alpha(),
             "color-hex": color.immutableModelObject().stringValueWithAlpha(false) + " " + Math.round(color.alpha() * 100) + "%",
-            "argb-hex": "#" + this.toHex(color.alpha() * 255) + color.hexValue(),
+            "argb-hex": "#" + this.toHex(color.alpha() * 255) + color.immutableModelObject().stringValueWithAlpha(false),
             "css-rgba": "rgba(" + [
                             Math.round(color.red() * 255),
                             Math.round(color.green() * 255),
@@ -879,6 +931,32 @@ SM.extend({
 // Toolbar.js
 
 SM.extend({
+    getImage: function(size, name){
+        var isRetinaDisplay = (NSScreen.mainScreen().backingScaleFactor() > 1)? true: false;
+            suffix = (isRetinaDisplay)? "@2x": "",
+            imageURL = NSURL.fileURLWithPath(this.pluginSketch + "/toolbar/" + name + suffix + ".png"),
+            image = NSImage.alloc().initWithContentsOfURL(imageURL);
+
+        return image
+    },
+    addImage: function(rect, name){
+        var view = NSImageView.alloc().initWithFrame(rect),
+            image = this.getImage(rect.size, name);
+        view.setImage(image);
+        return view;
+    },
+    addButton: function(rect, name, callAction){
+        var button = NSButton.alloc().initWithFrame(rect),
+            image = this.getImage(rect.size, name);
+
+        button.setImage(image);
+        button.setBordered(false);
+        button.sizeToFit();
+        button.setButtonType(NSMomentaryChangeButton)
+        button.setCOSJSTargetFunction(callAction);
+        button.setAction("callAction:");
+        return button;
+    },
     Toolbar: function(){
         var self = this,
             identifier = "com.utom.measure",
@@ -898,44 +976,18 @@ SM.extend({
             Toolbar.setLevel(NSFloatingWindowLevel);
 
             var contentView = Toolbar.contentView(),
-                getImage = function(size, name){
-                    var isRetinaDisplay = (NSScreen.mainScreen().backingScaleFactor() > 1)? true: false;
-                        suffix = (isRetinaDisplay)? "@2x": "",
-                        imageURL = NSURL.fileURLWithPath(self.pluginSketch + "/toolbar/" + name + suffix + ".png"),
-                        image = NSImage.alloc().initWithContentsOfURL(imageURL);
-
-                    return image
-                },
-                addButton = function(rect, name, callAction){
-                    var button = NSButton.alloc().initWithFrame(rect),
-                        image = getImage(rect.size, name);
-
-                    button.setImage(image);
-                    button.setBordered(false);
-                    button.sizeToFit();
-                    button.setButtonType(NSMomentaryChangeButton)
-                    button.setCOSJSTargetFunction(callAction);
-                    button.setAction("callAction:");
-                    return button;
-                },
-                addImage = function(rect, name){
-                    var view = NSImageView.alloc().initWithFrame(rect),
-                        image = getImage(rect.size, name);
-                    view.setImage(image);
-                    return view;
-                },
-                closeButton = addButton( NSMakeRect(14, 14, 20, 20), "icon-close",
+                closeButton = self.addButton( NSMakeRect(14, 14, 20, 20), "icon-close",
                         function(sender){
                             coscript.setShouldKeepAround(false);
                             threadDictionary.removeObjectForKey(identifier);
                             Toolbar.close();
                         }),
-                overlayButton = addButton( NSMakeRect(64, 14, 20, 20), "icon-overlay",
+                overlayButton = self.addButton( NSMakeRect(64, 14, 20, 20), "icon-overlay",
                         function(sender){
                             self.updateContext();
                             self.init(self.context, "mark-overlays");
                         }),
-                sizesButton = addButton( NSMakeRect(112, 14, 20, 20), "icon-sizes",
+                sizesButton = self.addButton( NSMakeRect(112, 14, 20, 20), "icon-sizes",
                         function(sender){
                             self.updateContext();
                             if(NSEvent.modifierFlags() == NSAlternateKeyMask){
@@ -945,7 +997,7 @@ SM.extend({
                                 self.init(self.context, "lite-sizes");
                             }
                         }),
-                spacingsButton = addButton( NSMakeRect(160, 14, 20, 20), "icon-spacings",
+                spacingsButton = self.addButton( NSMakeRect(160, 14, 20, 20), "icon-spacings",
                         function(sender){
                             self.updateContext();
                             if(NSEvent.modifierFlags() == NSAlternateKeyMask){
@@ -955,7 +1007,7 @@ SM.extend({
                                 self.init(self.context, "lite-spacings");
                             }
                         }),
-                propertiesButton = addButton( NSMakeRect(208, 14, 20, 20), "icon-properties",
+                propertiesButton = self.addButton( NSMakeRect(208, 14, 20, 20), "icon-properties",
                         function(sender){
                             self.updateContext();
                             if(NSEvent.modifierFlags() == NSAlternateKeyMask){
@@ -966,12 +1018,12 @@ SM.extend({
                             }
 
                         }),
-                notesButton = addButton( NSMakeRect(258, 14, 20, 20), "icon-notes",
+                notesButton = self.addButton( NSMakeRect(258, 14, 20, 20), "icon-notes",
                         function(sender){
                             self.updateContext();
                             self.init(self.context, "mark-note");
                         }),
-                exportableButton = addButton( NSMakeRect(306, 14, 20, 20), "icon-slice",
+                exportableButton = self.addButton( NSMakeRect(306, 14, 20, 20), "icon-slice",
                         function(sender){
                             self.updateContext();
                             if(NSEvent.modifierFlags() == NSAlternateKeyMask){
@@ -981,34 +1033,34 @@ SM.extend({
                                 self.init(self.context, "exportable");
                             }
                         }),
-                colorsButton = addButton( NSMakeRect(354, 14, 20, 20), "icon-colors",
+                colorsButton = self.addButton( NSMakeRect(354, 14, 20, 20), "icon-colors",
                         function(sender){
                             self.updateContext();
                             self.init(self.context, "color");
                         }),
-                exportButton = addButton( NSMakeRect(402, 14, 20, 20), "icon-export",
+                exportButton = self.addButton( NSMakeRect(402, 14, 20, 20), "icon-export",
                         function(sender){
                             self.updateContext();
                             self.init(self.context, "export");
                         }),
-                hiddenButton = addButton( NSMakeRect(452, 14, 20, 20), "icon-hidden",
+                hiddenButton = self.addButton( NSMakeRect(452, 14, 20, 20), "icon-hidden",
                         function(sender){
                             self.updateContext();
                             self.init(self.context, "hidden");
                         }),
-                lockedButton = addButton( NSMakeRect(500, 14, 20, 20), "icon-locked",
+                lockedButton = self.addButton( NSMakeRect(500, 14, 20, 20), "icon-locked",
                         function(sender){
                             self.updateContext();
                             self.init(self.context, "locked");
                         }),
-                settingsButton = addButton( NSMakeRect(548, 14, 20, 20), "icon-settings",
+                settingsButton = self.addButton( NSMakeRect(548, 14, 20, 20), "icon-settings",
                         function(sender){
                             self.updateContext();
                             self.init(self.context, "settings");
                         }),
-                divider1 = addImage( NSMakeRect(48, 8, 2, 32), "divider"),
-                divider2 = addImage( NSMakeRect(242, 8, 2, 32), "divider"),
-                divider3 = addImage( NSMakeRect(436, 8, 2, 32), "divider");
+                divider1 = self.addImage( NSMakeRect(48, 8, 2, 32), "divider"),
+                divider2 = self.addImage( NSMakeRect(242, 8, 2, 32), "divider"),
+                divider3 = self.addImage( NSMakeRect(436, 8, 2, 32), "divider");
 
             contentView.addSubview(closeButton);
             contentView.addSubview(overlayButton);
@@ -1048,6 +1100,7 @@ SM.extend({
                 width: 240,
                 height: 316,
                 floatWindow: false,
+                hiddenClose: false,
                 data: {
                     density: 2,
                     unit: "dp/sp"
@@ -1071,7 +1124,7 @@ SM.extend({
         var Panel = NSPanel.alloc().init();
         Panel.setTitleVisibility(NSWindowTitleHidden);
         Panel.setTitlebarAppearsTransparent(true);
-        Panel.standardWindowButton(NSWindowCloseButton).setHidden(false);
+        Panel.standardWindowButton(NSWindowCloseButton).setHidden(options.hiddenClose);
         Panel.standardWindowButton(NSWindowMiniaturizeButton).setHidden(true);
         Panel.standardWindowButton(NSWindowZoomButton).setHidden(true);
         Panel.setFrame_display(frame, false);
@@ -1088,7 +1141,6 @@ SM.extend({
                                             "window.SMData = encodeURI(JSON.stringify(data));",
                                         "}",
                                         "window.location.hash = hash;",
-                                        // "console.log(SMData)",
                                     "}"
                                 ].join(""),
                             DOMReady = [
@@ -1122,6 +1174,10 @@ SM.extend({
                             else{
                                 Panel.close();
                             }
+                        }
+                        else if(request == "donate"){
+                            NSWorkspace.sharedWorkspace().openURL(NSURL.URLWithString("http://utom.design/measure/donate.html?ref=update"));
+                            // windowObject.evaluateWebScript("window.location.hash = 'close';");
                         }
                         else if(request == "import"){
                             if( options.importCallback(windowObject) ){
@@ -1158,13 +1214,13 @@ SM.extend({
         webView.setBackgroundColor(contentBgColor);
         webView.setFrameLoadDelegate_(delegate.getClassInstance());
         webView.setMainFrameURL_(options.url);
-        // webView.acceptsFirstMouse(NSEvent.mouseLocation());
 
         contentView.addSubview(webView);
 
         var closeButton = Panel.standardWindowButton(NSWindowCloseButton);
         closeButton.setCOSJSTargetFunction(function(sender) {
             var request = NSURL.URLWithString(webView.mainFrameURL()).fragment();
+            log(request)
             if(options.floatWindow && request == "submit"){
                 data = JSON.parse(decodeURI(windowObject.valueForKey("SMData")));
                 options.callback(data);
@@ -1183,8 +1239,6 @@ SM.extend({
                 NSApp.stopModal();
             }
 
-
-            // NSApp.endSheet(sender.window());
         });
         closeButton.setAction("callAction:");
 
@@ -2150,7 +2204,7 @@ SM.extend({
         if (openPanel.runModal() != NSOKButton) {
             return false;
         }
-        var colors = JSON.parse(NSString.stringWithContentsOfFile_encoding_error(openPanel.URL().path(), NSUTF8StringEncoding, nil)),
+        var colors = JSON.parse(NSString.stringWithContentsOfFile_encoding_error(openPanel.URL().path(), 4, nil)),
             colorsData = [];
 
         colors.forEach(function(color){
@@ -2582,7 +2636,7 @@ SM.extend({
         if(layerData.type == "text" && layer.attributedString().treeAsDictionary().value.attributes.length > 1){
             var self = this,
                 svgExporter = SketchSVGExporter.new().exportLayers([layer.immutableModelObject()]),
-                svgStrong = this.toJSString(NSString.alloc().initWithData_encoding(svgExporter, NSUTF8StringEncoding)),
+                svgStrong = this.toJSString(NSString.alloc().initWithData_encoding(svgExporter, 4)),
                 regExpTspan = new RegExp('<tspan([^>]+)>([^<]*)</tspan>', 'g'),
                 regExpContent = new RegExp('>([^<]*)<'),
                 offsetX, offsetY, textData = [],
@@ -2791,7 +2845,7 @@ SM.extend({
                         floatWindow: true
                     }),
                     processing = processingPanel.windowScriptObject(),
-                    template = NSString.stringWithContentsOfFile_encoding_error(this.pluginSketch + "/template.html", NSUTF8StringEncoding, nil);
+                    template = NSString.stringWithContentsOfFile_encoding_error(this.pluginSketch + "/template.html", 4, nil);
 
                 this.savePath = savePath;
                 var idx = 1,
@@ -2950,7 +3004,7 @@ SM.extend({
         );
         savePathName = savePathName.join("");
 
-        content.writeToFile_atomically_encoding_error(savePathName, false, NSUTF8StringEncoding, null);
+        content.writeToFile_atomically_encoding_error(savePathName, false, 4, null);
     },
     exportImage: function(options) {
         var options = this.extend(options, {

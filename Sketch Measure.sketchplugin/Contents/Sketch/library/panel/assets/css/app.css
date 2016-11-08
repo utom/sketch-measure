@@ -864,4 +864,72 @@ button{
     opacity: .32;
     cursor: default;
 }
+.update{
+    padding: 24px;
+}
+.update img{
+    position: absolute;
+    width: 128px;
+}
+.update-inner{
+    padding: 24px 0 0 152px;
+    /*height: 120px;*/
+}
+.update-inner h1{
+    margin: 0 0 8px 0;
+    font-size: 24px;
+    font-weight: normal;
+}
+.update-inner p{
+    line-height: 21px;
+    color: rgba(255,255,255,.64);
+}
+.update-footer{
+    margin-top: 40px;
+    margin-bottom: 0;
+    text-align: right;
+}
+.update button{
+    /*width: 96px;*/
+    font-family: HelveticaNeue-Medium;
+    font-size: 14px;
+    color: #FFF;
+    height: 32px;
+    border: 0;
+    padding: 0 14px;
+    background: #3484F5;
+    border-radius: 4px;
+    cursor: pointer;
+}
 
+.update button:disabled{
+    background: #898989;
+    color: rgba(255,255,255,0.30);
+}
+.update button:hover{
+    background: #2E76DC;
+}
+.update button:active{
+    background: #245CAB;
+}
+.update button:disabled:hover{
+    background: #898989;
+    color: rgba(255,255,255,0.30);
+}
+.update button.cancel,
+.update button.cancel:active{
+    margin: 0 16px 0 0;
+    background: #000;
+}
+.update button.cancel:hover{
+    background: #333;
+}
+.update #donate{
+    float: left;
+    line-height: 32px;
+    outline: 0;
+    color:#FFF;
+}
+.update a:hover{
+    text-decoration: none;
+}
