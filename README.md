@@ -1,6 +1,6 @@
 # Sketch Measure
 
-Make it a fun to create spec for developers and teammates, **Sketch 40.* support**. 
+Make it a fun to create spec for developers and teammates, **Sketch 41.* support**. 
 
 - [How to](http://utom.design/measure/how-to.html)
 - [中文说明](http://sketch.im/plugins/1)
