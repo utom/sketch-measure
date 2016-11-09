@@ -1970,7 +1970,7 @@ SM.extend({
         note.setName("note-box");
         note.layers().firstObject().setCornerRadiusFromComponents("2")
 
-        text.setStringValue(target.storage().string());
+        text.setStringValue(target.stringValue());
         text.setTextBehaviour(1);
         text.setTextBehaviour(0);
         note.setStyle(noteStyle.layer);
