@@ -332,7 +332,7 @@ SM.extend({
             b: Math.round(color.blue() * 255),
             a: color.alpha(),
             "color-hex": color.immutableModelObject().stringValueWithAlpha(false) + " " + Math.round(color.alpha() * 100) + "%",
-            "argb-hex": "#" + this.toHex(color.alpha() * 255) + color.immutableModelObject().stringValueWithAlpha(false),
+            "argb-hex": "#" + this.toHex(color.alpha() * 255) + color.immutableModelObject().stringValueWithAlpha(false).replace("#", ""),
             "css-rgba": "rgba(" + [
                             Math.round(color.red() * 255),
                             Math.round(color.green() * 255),
@@ -514,6 +514,14 @@ SM.extend({
     toHex:function(c) {
         var hex = Math.round(c).toString(16).toUpperCase();
         return hex.length == 1 ? "0" + hex :hex;
+    },
+    hexToRgb:function(hex) {
+        var result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
+        return result ? {
+            r: this.toHex(result[1]),
+            g: this.toHex(result[2]),
+            b: this.toHex(result[3])
+        } : null;
     },
     isIntersect: function(targetRect, layerRect){
         return !(
@@ -1647,7 +1655,8 @@ SM.extend({
                     break;
                 case "line-height":
                     if(!self.is(target, MSTextLayer)) return false;
-                    content.push("line: " + self.convertUnit(target.lineHeight() || target.defaultLineHeight(), true) + " (" + Math.round((target.lineHeight() || target.defaultLineHeight()) / target.fontSize() * 10) / 10  + ")" );
+                    var defaultLineHeight = target.font().defaultLineHeightForFont();
+                    content.push("line: " + self.convertUnit(target.lineHeight() || defaultLineHeight, true) + " (" + Math.round((target.lineHeight() || defaultLineHeight) / target.fontSize() * 10) / 10  + ")" );
                     break;
                 case "font-face":
                     if(!self.is(target, MSTextLayer)) return false;
@@ -2675,14 +2684,16 @@ SM.extend({
                     )
                 ){
                     var textLayer = self.addText(),
-                        color = MSColor.colorWithSVGString(tData.fill || layerData.color["color-hex"]);
-                    color.setAlpha(tData["fill-opacity"] || 1);
+                        colorRGB = self.hexToRgb(tData.fill || layerData.color["color-hex"]),
+                        color = MSColor.colorWithRed_green_blue_alpha(colorRGB.r / 255, colorRGB.g / 255, colorRGB.b / 255, (tData["fill-opacity"] || 1) );
 
                     textLayer.setName(tData.content);
                     textLayer.setStringValue(tData.content);
                     textLayer.setTextColor(color);
                     textLayer.setFontSize(tData["font-size"] || layerData.fontSize);
-                    if(layer.defaultLineHeight() != layer.lineHeight()){
+
+                    var defaultLineHeight = layer.font().defaultLineHeightForFont();
+                    if(defaultLineHeight != layer.lineHeight()){
                         textLayer.setLineHeight(layer.lineHeight());
                     }
                     textLayer.setCharacterSpacing(self.toJSNumber(tData["letter-spacing"]) || layer.characterSpacing());
