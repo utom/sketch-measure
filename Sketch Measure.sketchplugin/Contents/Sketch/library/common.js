@@ -1228,7 +1228,7 @@ SM.extend({
         var closeButton = Panel.standardWindowButton(NSWindowCloseButton);
         closeButton.setCOSJSTargetFunction(function(sender) {
             var request = NSURL.URLWithString(webView.mainFrameURL()).fragment();
-            log(request)
+
             if(options.floatWindow && request == "submit"){
                 data = JSON.parse(decodeURI(windowObject.valueForKey("SMData")));
                 options.callback(data);
