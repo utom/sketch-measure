@@ -516,6 +516,7 @@ SM.extend({
         return hex.length == 1 ? "0" + hex :hex;
     },
     hexToRgb:function(hex) {
+        log(hex)
         var result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
         return result ? {
             r: this.toHex(result[1]),
@@ -2684,7 +2685,7 @@ SM.extend({
                     )
                 ){
                     var textLayer = self.addText(),
-                        colorRGB = self.hexToRgb(tData.fill || layerData.color["color-hex"]),
+                        colorRGB = self.hexToRgb(tData.fill || colorHex),
                         color = MSColor.colorWithRed_green_blue_alpha(colorRGB.r / 255, colorRGB.g / 255, colorRGB.b / 255, (tData["fill-opacity"] || 1) );
 
                     textLayer.setName(tData.content);
