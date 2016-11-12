@@ -516,7 +516,6 @@ SM.extend({
         return hex.length == 1 ? "0" + hex :hex;
     },
     hexToRgb:function(hex) {
-        log(hex)
         var result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
         return result ? {
             r: this.toHex(result[1]),
@@ -2613,9 +2612,19 @@ SM.extend({
                 tempGroup.resizeToFitChildrenWithOption(0)
 
                 var tempSymbolLayers = tempGroup.children().objectEnumerator(),
+                    overrides = layer.overrides(),
                     idx = 0;
 
+                overrides = (overrides)? overrides.objectForKey(0): {};
+
                 while(tempSymbolLayer = tempSymbolLayers.nextObject()){
+                    if( self.is(tempSymbolLayer, MSSymbolInstance) ){
+                        var symbolMasterObjectID = this.toJSString(symbolChildren[idx].objectID());
+                        if(overrides[symbolMasterObjectID]){
+                            var changeSymbol = self.find({key: "(symbolID != NULL) && (symbolID == %@)", match: self.toJSString(overrides[symbolMasterObjectID].symbolID)}, self.document.documentData().allSymbols());
+                            tempSymbolLayer.changeInstanceToSymbol(changeSymbol);
+                        }
+                    }
                     self.getLayer(
                         artboard,
                         tempSymbolLayer,
