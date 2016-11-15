@@ -31,7 +31,7 @@ var SM = {
                 SM.init(context, command);
                 return false;
             }
-            
+
             this.extend(context);
             this.pluginRoot = this.scriptPath
                     .stringByDeletingLastPathComponent()
@@ -622,7 +622,7 @@ SM.extend({
         else{
             configsData = this.UIMetadata.objectForKey(this.prefix);
         }
-            
+
         return JSON.parse(configsData);
     },
      setConfigs: function(newConfigs, container){
@@ -1677,6 +1677,9 @@ SM.extend({
                         content.push("style-name: " + styleName);
                     }
                     break;
+                case "layer-name":
+                    content.push("layer-name: " + target.name());
+                    break;
                 default:
                     render = false;
                     break;
@@ -1723,7 +1726,6 @@ SM.extend({
     markSizes: function(){
         var self = this,
             selection = this.selection;
-
 
         if( selection.count() <= 0 ){
             this.message(_("Select a layer to make marks!"));
@@ -3084,7 +3086,7 @@ SM.extend({
             layer.setTextBehaviour(1); // fixed for v40
             layer.setTextBehaviour(0); // fixed for v40
         } // fixed for v40
-        
+
         var layerData = {
                     objectID: this.toJSString( layer.objectID() ),
                     type: layerType,
