@@ -4,10 +4,10 @@
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Spec Export - Sketch Measure 2.2</title>
+    <title>Spec Export - Sketch Measure 2.3</title>
     <style type="text/css">
     /*! normalize.css v4.1.1 | MIT License | github.com/necolas/normalize.css */html{font-family:sans-serif;-ms-text-size-adjust:100%;-webkit-text-size-adjust:100%}body{margin:0}article,aside,details,figcaption,figure,footer,header,main,menu,nav,section,summary{display:block}audio,canvas,progress,video{display:inline-block}audio:not([controls]){display:none;height:0}progress{vertical-align:baseline}template,[hidden]{display:none}a{background-color:transparent;-webkit-text-decoration-skip:objects}a:active,a:hover{outline-width:0}abbr[title]{border-bottom:0;text-decoration:underline;text-decoration:underline dotted}b,strong{font-weight:inherit}b,strong{font-weight:bolder}dfn{font-style:italic}h1{font-size:2em;margin:.67em 0}mark{background-color:#ff0;color:#000}small{font-size:80%}sub,sup{font-size:75%;line-height:0;position:relative;vertical-align:baseline}sub{bottom:-0.25em}sup{top:-0.5em}img{border-style:none}svg:not(:root){overflow:hidden}code,kbd,pre,samp{font-family:monospace,monospace;font-size:1em}figure{margin:1em 40px}hr{box-sizing:content-box;height:0;overflow:visible}button,input,select,textarea{font:inherit;margin:0}optgroup{font-weight:bold}button,input{overflow:visible}button,select{text-transform:none}button,html [type="button"],[type="reset"],[type="submit"]{-webkit-appearance:button}button::-moz-focus-inner,[type="button"]::-moz-focus-inner,[type="reset"]::-moz-focus-inner,[type="submit"]::-moz-focus-inner{border-style:none;padding:0}button:-moz-focusring,[type="button"]:-moz-focusring,[type="reset"]:-moz-focusring,[type="submit"]:-moz-focusring{outline:1px dotted ButtonText}fieldset{border:1px solid silver;margin:0 2px;padding:.35em .625em .75em}legend{box-sizing:border-box;color:inherit;display:table;max-width:100%;padding:0;white-space:normal}textarea{overflow:auto}[type="checkbox"],[type="radio"]{box-sizing:border-box;padding:0}[type="number"]::-webkit-inner-spin-button,[type="number"]::-webkit-outer-spin-button{height:auto}[type="search"]{-webkit-appearance:textfield;outline-offset:-2px}[type="search"]::-webkit-search-cancel-button,[type="search"]::-webkit-search-decoration{-webkit-appearance:none}::-webkit-input-placeholder{color:inherit;opacity:.54}::-webkit-file-upload-button{-webkit-appearance:button;font:inherit}
-    
+
 *{box-sizing:border-box;}
 ::-webkit-scrollbar{width:8px;height:8px;background:#202123;border-radius:4px;}
 ::-webkit-scrollbar-thumb{border:1px solid rgba(255,255,255,.16);background-color:rgba(0,0,0,.64);border-radius:4px;}
@@ -71,7 +71,7 @@ main{position:relative;height:calc(100vh - 60px);}
 .screen-viewer .overlay{display:none;position:fixed;top:60px;left:0;background:transparent;overflow:hidden;z-index:2;cursor:none;}
 .screen-viewer.moving-screen .overlay{display:block;}
 .screen-viewer-inner{position:relative;margin:0 auto;}
-.screen{margin:0 auto;position:absolute;left:50%;top:50%;background:#FFF;box-shadow:0 2px 10px 0 rgba(0,0,0,.2);transform:translate(-50%,-50%);transition:all .15s ease;}
+.screen{margin:0 auto;position:absolute;left:50%;top:50%;background:#FFF;box-shadow:0 2px 10px 0 rgba(0,0,0,.2);transition:all .15s ease;}
 .layer{position:absolute;cursor:pointer;}
 .hover,.selected{border:1px solid #EE6723;}
 .has-slice{border:1px dashed #EE6723;background:rgba(255,85,0,.32);}
@@ -198,7 +198,7 @@ var I18N = {},
     timestamp = new Date().getTime();
 <!-- lang -->
 (function(window) {
-    
+
     String.prototype.firstUpperCase = function(){
         return this.replace(/\b(\w)(\w*)/g, function($0, $1, $2) {
             return $1.toUpperCase() + $2.toLowerCase();
@@ -278,7 +278,7 @@ var I18N = {},
                     if( /[a-z]+/.test(key) && !isNaN(value) ){
                         objHash[key] = parseInt(value);
                         arrHash.push(key + value);
-                    } 
+                    }
                 });
                 window.history.replaceState(undefined, undefined, '#' + arrHash.join('-'));
                 return objHash;
@@ -381,7 +381,10 @@ var I18N = {},
                 backgroundSize: this.zoomSize( this.current.width ) + 'px ' + this.zoomSize( this.current.height ) + 'px'
             });
 
-            
+            $('.screen').css({
+                marginLeft: -  parseInt( this.zoomSize( this.current.width / 2 ) ),
+                marginTop: - parseInt( this.zoomSize( this.current.height / 2 ) )
+            });
 
         },
         zoom: function(){
@@ -549,7 +552,7 @@ var I18N = {},
             })
             pagesSelect.push('</ul>');
             pagesSelect.push('</div>');
-            
+
             $('#artboards')
                 .html([pagesSelect.join(''), artboardListHTML.join('')].join(''));
             return this;
@@ -702,7 +705,7 @@ var I18N = {},
             }
         },
         distance: function(){
-            if( ( this.selectedIndex && this.targetIndex && this.selectedIndex != this.targetIndex ) || ( this.selectedIndex && this.tempTargetRect ) ){ 
+            if( ( this.selectedIndex && this.targetIndex && this.selectedIndex != this.targetIndex ) || ( this.selectedIndex && this.tempTargetRect ) ){
                 var selectedRect = this.getRect(this.selectedIndex),
                     targetRect = this.tempTargetRect || this.getRect(this.targetIndex),
                     topData, rightData, bottomData, leftData,
@@ -742,7 +745,7 @@ var I18N = {},
                             y: y,
                             w: this.zoomSize(selectedRect.x - targetRect.maxX),
                             distance: this.unitSize(selectedRect.x - targetRect.maxX),
-                            percentageDistance: this.percentageSize((selectedRect.x - targetRect.maxX), this.current.height)
+                            percentageDistance: this.percentageSize((selectedRect.x - targetRect.maxX), this.current.width)
                         }
                     }
                 }
@@ -1116,7 +1119,7 @@ var I18N = {},
                                 else{
                                     self.tempTargetRect = undefined;
                                 }
-                                
+
                             }
                         }
                     })
@@ -1331,7 +1334,7 @@ var I18N = {},
                     else{
                         self.message(_('The slice not in current artboard.'));
                     }
-                    
+
                 });
             // color format
             $('#inspector')
@@ -1348,7 +1351,7 @@ var I18N = {},
                 .on('click', 'li', function(){
                     var $this = $(this),
                         id = $this.attr('data-id');
-                    
+
                     if($this.hasClass('current')){
                         $('.current').removeClass('current');
                         $('.navbar').removeClass('on');
@@ -1360,7 +1363,7 @@ var I18N = {},
                         $('#' + id).show();
                         $('.navbar').addClass('on');
                     }
-                    
+
                 });
             $('#notes')
                 .on('mousemove', '.note', function(event){

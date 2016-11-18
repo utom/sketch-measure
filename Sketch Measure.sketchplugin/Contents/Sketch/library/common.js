@@ -31,7 +31,7 @@ var SM = {
                 SM.init(context, command);
                 return false;
             }
-            
+
             this.extend(context);
             this.pluginRoot = this.scriptPath
                     .stringByDeletingLastPathComponent()
@@ -277,15 +277,32 @@ SM.extend({
     },
     toHTMLEncode: function(str){
         return this.toJSString(str)
-                    .replace(/\&/g, "&amp;")
                     .replace(/\</g, "&lt;")
                     .replace(/\>/g, '&gt;')
                     .replace(/\'/g, "&#39;")
                     .replace(/\"/g, "&quot;")
                     .replace(/\u2028/g,"\\u2028")
                     .replace(/\u2029/g,"\\u2029")
+                    .replace(/\ud83c|\ud83d/g,"")
                 ;
         // return str.replace(/\&/g, "&amp;").replace(/\"/g, "&quot;").replace(/\'/g, "&#39;").replace(/\</g, "&lt;").replace(/\>/g, '&gt;');
+    },
+    emojiToEntities: function(str) {
+      var emojiRanges = [
+            "\ud83c[\udf00-\udfff]", // U+1F300 to U+1F3FF
+            "\ud83d[\udc00-\ude4f]", // U+1F400 to U+1F64F
+            "\ud83d[\ude80-\udeff]"  // U+1F680 to U+1F6FF
+          ];
+        return str.replace(
+              new RegExp(emojiRanges.join("|"), "g"),
+              function(match) {
+                  var c = encodeURIComponent(match).split("%"),
+                      h = ((parseInt(c[1], 16) & 0x0F))
+                        + ((parseInt(c[2], 16) & 0x1F) << 12)
+                        + ((parseInt(c[3], 16) & 0x3F) << 6)
+                        + (parseInt(c[4], 16) & 0x3F);
+                  return "&#" + h.toString() + ";";
+              });
     },
     toSlug: function(str){
         return this.toJSString(str)
@@ -621,7 +638,7 @@ SM.extend({
         else{
             configsData = this.UIMetadata.objectForKey(this.prefix);
         }
-            
+
         return JSON.parse(configsData);
     },
      setConfigs: function(newConfigs, container){
@@ -2339,28 +2356,26 @@ SM.extend({
 
             slice.exportOptions().removeAllExportFormats();
 
-            var formats = [
-                {
-                    scale: 1 / this.configs.scale,
-                    suffix: ""
-                },
-                {
-                    scale: 1.5 / this.configs.scale,
-                    suffix: "@1.5x"
-                },
-                {
-                    scale: 2 / this.configs.scale,
-                    suffix: "@2x"
-                },
-                {
-                    scale: 3 / this.configs.scale,
-                    suffix: "@3x"
-                },
-                {
-                    scale: 4 / this.configs.scale,
-                    suffix: "@4x"
-                }
-            ];
+            var formats =
+                (this.configs.unit == "dp/sp")? [
+                  { scale: 1 / this.configs.scale, suffix: "" },
+                  { scale: 1.5 / this.configs.scale, suffix: "@1.5x" },
+                  { scale: 2 / this.configs.scale, suffix: "@2x" },
+                  { scale: 3 / this.configs.scale, suffix: "@3x" },
+                  { scale: 4 / this.configs.scale, suffix: "@4x" }
+                ]:
+                (this.configs.unit == "pt")? [
+                  { scale: 1 / this.configs.scale, suffix: "" },
+                  { scale: 2 / this.configs.scale, suffix: "@2x" },
+                  { scale: 3 / this.configs.scale, suffix: "@3x" }
+                ]:
+                [
+                  { scale: 1, suffix: "" }
+                ];
+
+            if(this.configs.unit == "pt"){
+
+            }
 
             for(format of formats) {
                 var size = slice.exportOptions().addExportFormat();
@@ -2386,6 +2401,10 @@ SM.extend({
 SM.extend({
     hasExportSizes: function(layer){
         return layer.exportOptions().exportFormats().count() > 0;
+    },
+    hasEmoji: function(layer) {
+      var fonts = layer.attributedString().fontNames().allObjects();
+      return !!/AppleColorEmoji/.exec(fonts);
     },
     isSliceGroup: function(layer) {
         return this.is(layer, MSLayerGroup) && this.hasExportSizes(layer);
@@ -2652,15 +2671,19 @@ SM.extend({
         return data;
     },
     checkText: function(artboard, layer, layerData, data){
+
         if(layerData.type == "text" && layer.attributedString().treeAsDictionary().value.attributes.length > 1){
+            if(this.hasEmoji(layer)){
+                return false;
+            }
             var self = this,
                 svgExporter = SketchSVGExporter.new().exportLayers([layer.immutableModelObject()]),
                 svgStrong = this.toJSString(NSString.alloc().initWithData_encoding(svgExporter, 4)),
                 regExpTspan = new RegExp('<tspan([^>]+)>([^<]*)</tspan>', 'g'),
                 regExpContent = new RegExp('>([^<]*)<'),
                 offsetX, offsetY, textData = [],
-                layerRect = this.getRect(layer);
-            svgSpans = svgStrong.match(regExpTspan);
+                layerRect = this.getRect(layer),
+                svgSpans = svgStrong.match(regExpTspan);
 
             for (var a = 0; a < svgSpans.length; a++) {
                 var attrsData = this.getTextAttrs(svgSpans[a]);
@@ -2789,13 +2812,13 @@ SM.extend({
             pageData.artboards = [];
 
             while(artboard = artboards.nextObject()){
-                if(!this.is(artboard, MSSymbolMaster)){
+                // if(!this.is(artboard, MSSymbolMaster)){
                     var artboardData = {};
                     artboardData.name = this.toJSString(artboard.name());
                     artboardData.objectID = this.toJSString(artboard.objectID());
                     artboardData.MSArtboardGroup = artboard;
                     pageData.artboards.push(artboardData);
-                }
+                // }
             }
             pageData.artboards.reverse()
             data.pages.push(pageData);
@@ -2906,29 +2929,34 @@ SM.extend({
                             layer = artboard.children()[layerIndex];
 
                         // log( page.name() + ' - ' + artboard.name() + ' - ' + layer.name());
-                        self.getLayer(
-                            artboard, // Sketch artboard element
-                            layer, // Sketch layer element
-                            data.artboards[artboardIndex] // Save to data
-                        );
-                        layerIndex++;
-                        exporting = false;
+                        try {
+                          self.getLayer(
+                              artboard, // Sketch artboard element
+                              layer, // Sketch layer element
+                              data.artboards[artboardIndex] // Save to data
+                          );
+                          layerIndex++;
+                          exporting = false;
+                        } catch (e) {
+                          self.wantsStop = true;
+                          processing.evaluateWebScript("$('#processing-text').html('<strong>Error:</strong> <small>" + self.toHTMLEncode(e.message) + "</small>');");
+                        }
 
-                        if( self.is(layer, MSArtboardGroup) ){
+
+                        if( self.is(layer, MSArtboardGroup) || self.is(layer, MSSymbolMaster)){
                             var objectID = artboard.objectID(),
                                 artboardRect = self.getRect(artboard),
                                 page = artboard.parentGroup(),
                                 // name = self.toSlug(self.toHTMLEncode(page.name()) + ' ' + self.toHTMLEncode(artboard.name()));
                                 slug = self.toSlug(page.name() + ' ' + artboard.name());
 
-                            data.artboards[artboardIndex].pageName = self.toHTMLEncode(page.name());
+                            data.artboards[artboardIndex].pageName = self.toHTMLEncode(self.emojiToEntities(page.name()));
                             data.artboards[artboardIndex].pageObjectID = self.toJSString(page.objectID());
-                            data.artboards[artboardIndex].name = self.toHTMLEncode(artboard.name());
+                            data.artboards[artboardIndex].name = self.toHTMLEncode(self.emojiToEntities(artboard.name()));
                             data.artboards[artboardIndex].slug = slug;
                             data.artboards[artboardIndex].objectID = self.toJSString(artboard.objectID());
                             data.artboards[artboardIndex].width = artboardRect.width;
                             data.artboards[artboardIndex].height = artboardRect.height;
-
 
                             if(!self.configs.exportOption){
                                 var imageURL = NSURL.fileURLWithPath(self.exportImage({
@@ -2939,10 +2967,11 @@ SM.extend({
                                     imageData = NSData.dataWithContentsOfURL(imageURL),
                                     imageBase64 = imageData.base64EncodedStringWithOptions(0);
                                 data.artboards[artboardIndex].imageBase64 = 'data:image/png;base64,' + imageBase64;
+
                                 var newData =  JSON.parse(JSON.stringify(data));
                                 newData.artboards = [data.artboards[artboardIndex]];
                                 self.writeFile({
-                                        content: self.template(template, {lang: language, data: JSON.stringify(newData).replace(/\u2028/g,'\\u2028').replace(/\u2029/g,'\\u2029')}),
+                                        content: self.template(template, {lang: language, data: JSON.stringify(newData)}),
                                         path: self.toJSString(savePath),
                                         fileName: slug + ".html"
                                     });
@@ -2983,7 +3012,7 @@ SM.extend({
                             var selectingPath = savePath;
                             if(self.configs.exportOption){
                                 self.writeFile({
-                                        content: self.template(template, {lang: language, data: JSON.stringify(data).replace(/\u2028/g,'\\u2028').replace(/\u2029/g,'\\u2029')}),
+                                        content: self.template(template, {lang: language, data: JSON.stringify(data)}),
                                         path: self.toJSString(savePath),
                                         fileName: "index.html"
                                     });
@@ -3067,7 +3096,7 @@ SM.extend({
 
             data.notes.push({
                 rect: this.rectToJSON(textLayer.absoluteRect(), artboardRect),
-                note: this.toHTMLEncode(textLayer.stringValue()).replace(/\n/g, "<br>")
+                note: this.toHTMLEncode(this.emojiToEntities(textLayer.stringValue()).replace(/\n/g, "<br>"))
             });
 
             layer.setIsVisible(false);
@@ -3093,11 +3122,11 @@ SM.extend({
             layer.setTextBehaviour(1); // fixed for v40
             layer.setTextBehaviour(0); // fixed for v40
         } // fixed for v40
-        
+
         var layerData = {
                     objectID: this.toJSString( layer.objectID() ),
                     type: layerType,
-                    name: this.toHTMLEncode(layer.name()),
+                    name: this.toHTMLEncode(this.emojiToEntities(layer.name())),
                     rect: this.rectToJSON(layer.absoluteRect(), artboardRect)
                 };
 
@@ -3116,7 +3145,7 @@ SM.extend({
         }
 
         if ( layerType == "text" ) {
-            layerData.content = this.toHTMLEncode(layer.stringValue());
+            layerData.content = this.toHTMLEncode(this.emojiToEntities(layer.stringValue()));
             layerData.color = this.colorToJSON(layer.textColor());
             layerData.fontSize = layer.fontSize();
             layerData.fontFace = this.toJSString(layer.fontPostscriptName());
