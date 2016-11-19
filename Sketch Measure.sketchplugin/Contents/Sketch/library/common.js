@@ -1693,6 +1693,9 @@ SM.extend({
                         content.push("style-name: " + styleName);
                     }
                     break;
+                case "layer-name":
+                    content.push("layer-name: " + target.name());
+                    break;
                 default:
                     render = false;
                     break;
@@ -1739,7 +1742,6 @@ SM.extend({
     markSizes: function(){
         var self = this,
             selection = this.selection;
-
 
         if( selection.count() <= 0 ){
             this.message(_("Select a layer to make marks!"));
