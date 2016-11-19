@@ -4,10 +4,10 @@
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Spec Export - Sketch Measure 2.2</title>
+    <title>Spec Export - Sketch Measure 2.3</title>
     <style type="text/css">
     /*! normalize.css v4.1.1 | MIT License | github.com/necolas/normalize.css */html{font-family:sans-serif;-ms-text-size-adjust:100%;-webkit-text-size-adjust:100%}body{margin:0}article,aside,details,figcaption,figure,footer,header,main,menu,nav,section,summary{display:block}audio,canvas,progress,video{display:inline-block}audio:not([controls]){display:none;height:0}progress{vertical-align:baseline}template,[hidden]{display:none}a{background-color:transparent;-webkit-text-decoration-skip:objects}a:active,a:hover{outline-width:0}abbr[title]{border-bottom:0;text-decoration:underline;text-decoration:underline dotted}b,strong{font-weight:inherit}b,strong{font-weight:bolder}dfn{font-style:italic}h1{font-size:2em;margin:.67em 0}mark{background-color:#ff0;color:#000}small{font-size:80%}sub,sup{font-size:75%;line-height:0;position:relative;vertical-align:baseline}sub{bottom:-0.25em}sup{top:-0.5em}img{border-style:none}svg:not(:root){overflow:hidden}code,kbd,pre,samp{font-family:monospace,monospace;font-size:1em}figure{margin:1em 40px}hr{box-sizing:content-box;height:0;overflow:visible}button,input,select,textarea{font:inherit;margin:0}optgroup{font-weight:bold}button,input{overflow:visible}button,select{text-transform:none}button,html [type="button"],[type="reset"],[type="submit"]{-webkit-appearance:button}button::-moz-focus-inner,[type="button"]::-moz-focus-inner,[type="reset"]::-moz-focus-inner,[type="submit"]::-moz-focus-inner{border-style:none;padding:0}button:-moz-focusring,[type="button"]:-moz-focusring,[type="reset"]:-moz-focusring,[type="submit"]:-moz-focusring{outline:1px dotted ButtonText}fieldset{border:1px solid silver;margin:0 2px;padding:.35em .625em .75em}legend{box-sizing:border-box;color:inherit;display:table;max-width:100%;padding:0;white-space:normal}textarea{overflow:auto}[type="checkbox"],[type="radio"]{box-sizing:border-box;padding:0}[type="number"]::-webkit-inner-spin-button,[type="number"]::-webkit-outer-spin-button{height:auto}[type="search"]{-webkit-appearance:textfield;outline-offset:-2px}[type="search"]::-webkit-search-cancel-button,[type="search"]::-webkit-search-decoration{-webkit-appearance:none}::-webkit-input-placeholder{color:inherit;opacity:.54}::-webkit-file-upload-button{-webkit-appearance:button;font:inherit}
-    
+
 *{box-sizing:border-box;}
 ::-webkit-scrollbar{width:8px;height:8px;background:#202123;border-radius:4px;}
 ::-webkit-scrollbar-thumb{border:1px solid rgba(255,255,255,.16);background-color:rgba(0,0,0,.64);border-radius:4px;}
@@ -71,7 +71,7 @@ main{position:relative;height:calc(100vh - 60px);}
 .screen-viewer .overlay{display:none;position:fixed;top:60px;left:0;background:transparent;overflow:hidden;z-index:2;cursor:none;}
 .screen-viewer.moving-screen .overlay{display:block;}
 .screen-viewer-inner{position:relative;margin:0 auto;}
-.screen{margin:0 auto;position:absolute;left:50%;top:50%;background:#FFF;box-shadow:0 2px 10px 0 rgba(0,0,0,.2);transform:translate(-50%,-50%);transition:all .15s ease;}
+.screen{margin:0 auto;position:absolute;left:50%;top:50%;background:#FFF;box-shadow:0 2px 10px 0 rgba(0,0,0,.2);transition:all .15s ease;}
 .layer{position:absolute;cursor:pointer;}
 .hover,.selected{border:1px solid #EE6723;}
 .has-slice{border:1px dashed #EE6723;background:rgba(255,85,0,.32);}
@@ -79,20 +79,16 @@ main{position:relative;height:calc(100vh - 60px);}
 .layer b{width:3px;height:3px;background:#EE6723;}
 .selected i{display:block;}
 .distance.h div[data-width]:before,.distance.v div[data-height]:before,.selected:after,.selected:before{position:absolute;display:block;left:50%;top:-23px;transform:translateX(-50%);content:attr(data-width);font-size:12px;color:#FFF;height:12px;line-height:12px;padding:4px;background:#EE6723;border-radius:2px;z-index:1;}
+.percentage-mode .distance.h div[data-width]:before,.percentage-mode .distance.v div[data-height]:before,.percentage-mode .selected:after,.percentage-mode .selected:before{content:attr(percentage-width);}
 .selected.hidden:after,.selected.hidden:before{display:none;}
 .distance.v div[data-height]:before,.selected:after{content:attr(data-height);left:auto;right:0;top:50%;transform:translateX(calc(100% + 3px)) translateY(-50%);}
+.percentage-mode .distance.v div[data-height]:before,.percentage-mode .selected:after{content:attr(percentage-height);}
 .layer .tl{top:-3px;left:-3px;}
 .layer .tr{top:-3px;right:-3px;}
 .layer .bl{bottom:-3px;left:-3px;}
 .layer .br{bottom:-3px;right:-3px;}
 .hover{border:1px solid #419bf9;}
 .selected{border:1px solid #EE6723;}
-.layer .et{top:-2px;left:calc(50% - 2px);}
-.layer .er{top:calc(50% - 2px);right:-2px;}
-.layer .eb{bottom:-2px;left:calc(50% - 2px);}
-.layer .el{top:calc(50% - 2px);left:-2px;}
-.selected.wide .h{display:block;}
-.selected.long .v{display:block;}
 .ruler{position:absolute;width:100%;height:100%;border:1px dashed #419bf9;}
 .ruler.h{border-left:0;border-right:0;}
 .ruler.v{border-top:0;border-bottom:0;}
@@ -202,7 +198,7 @@ var I18N = {},
     timestamp = new Date().getTime();
 <!-- lang -->
 (function(window) {
-    
+
     String.prototype.firstUpperCase = function(){
         return this.replace(/\b(\w)(\w*)/g, function($0, $1, $2) {
             return $1.toUpperCase() + $2.toLowerCase();
@@ -221,6 +217,9 @@ var I18N = {},
         targetID: undefined,
         zoomSize: function(size) {
             return (size * this.configs.zoom);
+        },
+        percentageSize: function(size, size2){
+            return (Math.round( size / size2 * 1000 ) / 10) + "%";
         },
         unitSize: function(length, isText){
             var length = Math.round( length / this.configs.scale * 10 ) / 10,
@@ -279,7 +278,7 @@ var I18N = {},
                     if( /[a-z]+/.test(key) && !isNaN(value) ){
                         objHash[key] = parseInt(value);
                         arrHash.push(key + value);
-                    } 
+                    }
                 });
                 window.history.replaceState(undefined, undefined, '#' + arrHash.join('-'));
                 return objHash;
@@ -382,7 +381,10 @@ var I18N = {},
                 backgroundSize: this.zoomSize( this.current.width ) + 'px ' + this.zoomSize( this.current.height ) + 'px'
             });
 
-            
+            $('.screen').css({
+                marginLeft: -  parseInt( this.zoomSize( this.current.width / 2 ) ),
+                marginTop: - parseInt( this.zoomSize( this.current.height / 2 ) )
+            });
 
         },
         zoom: function(){
@@ -550,7 +552,7 @@ var I18N = {},
             })
             pagesSelect.push('</ul>');
             pagesSelect.push('</div>');
-            
+
             $('#artboards')
                 .html([pagesSelect.join(''), artboardListHTML.join('')].join(''));
             return this;
@@ -564,12 +566,11 @@ var I18N = {},
                     width = self.zoomSize( layer.rect.width ),
                     height = self.zoomSize( layer.rect.height ),
                     classNames = ['layer'];
+
                 classNames.push('layer-' + layer.objectID);
                 if(self.selectedIndex == index) classNames.push('selected');
-                if(width >= 32) classNames.push('wide');
-                if(height >= 32) classNames.push('long');
                 layersHTML.push([
-                    '<div id="layer-' + index + '" class="' + classNames.join(' ') + '" data-index="' + index + '" data-width="' + self.unitSize(layer.rect.width) + '" data-height="' + self.unitSize(layer.rect.height) + '" style="left: ' + x + 'px; top: ' + y + 'px; width: ' + width + 'px; height: ' + height + 'px;">',
+                    '<div id="layer-' + index + '" class="' + classNames.join(' ') + '" data-index="' + index + '" percentage-width="' + self.percentageSize(layer.rect.width, self.current.width) + '" percentage-height="' + self.percentageSize(layer.rect.height, self.current.height) + '" data-width="' + self.unitSize(layer.rect.width) + '" data-height="' + self.unitSize(layer.rect.height) + '" style="left: ' + x + 'px; top: ' + y + 'px; width: ' + width + 'px; height: ' + height + 'px;">',
                         '<i class="tl"></i><i class="tr"></i><i class="bl"></i><i class="br"></i>',
                         '<b class="et h"></b><b class="er v"></b><b class="eb h"></b><b class="el v"></b>',
                     '</div>'
@@ -704,7 +705,7 @@ var I18N = {},
             }
         },
         distance: function(){
-            if( ( this.selectedIndex && this.targetIndex && this.selectedIndex != this.targetIndex ) || ( this.selectedIndex && this.tempTargetRect ) ){ 
+            if( ( this.selectedIndex && this.targetIndex && this.selectedIndex != this.targetIndex ) || ( this.selectedIndex && this.tempTargetRect ) ){
                 var selectedRect = this.getRect(this.selectedIndex),
                     targetRect = this.tempTargetRect || this.getRect(this.targetIndex),
                     topData, rightData, bottomData, leftData,
@@ -716,7 +717,8 @@ var I18N = {},
                             x: x,
                             y: this.zoomSize(targetRect.maxY),
                             h: this.zoomSize(selectedRect.y - targetRect.maxY),
-                            distance: this.unitSize(selectedRect.y - targetRect.maxY)
+                            distance: this.unitSize(selectedRect.y - targetRect.maxY),
+                            percentageDistance: this.percentageSize((selectedRect.y - targetRect.maxY), this.current.height)
                         };
                     }
                     if(selectedRect.maxX < targetRect.x){ //right
@@ -724,7 +726,8 @@ var I18N = {},
                             x: this.zoomSize(selectedRect.maxX),
                             y: y,
                             w: this.zoomSize(targetRect.x - selectedRect.maxX),
-                            distance: this.unitSize(targetRect.x - selectedRect.maxX)
+                            distance: this.unitSize(targetRect.x - selectedRect.maxX),
+                            percentageDistance: this.percentageSize((targetRect.x - selectedRect.maxX), this.current.width)
                         }
                     }
                     if(selectedRect.maxY < targetRect.y){ //bottom
@@ -732,7 +735,8 @@ var I18N = {},
                             x: x,
                             y: this.zoomSize(selectedRect.maxY),
                             h: this.zoomSize(targetRect.y - selectedRect.maxY),
-                            distance: this.unitSize(targetRect.y - selectedRect.maxY)
+                            distance: this.unitSize(targetRect.y - selectedRect.maxY),
+                            percentageDistance: this.percentageSize((targetRect.y - selectedRect.maxY), this.current.height)
                         }
                     }
                     if(selectedRect.x > targetRect.maxX){ //left
@@ -740,70 +744,47 @@ var I18N = {},
                             x: this.zoomSize(targetRect.maxX),
                             y: y,
                             w: this.zoomSize(selectedRect.x - targetRect.maxX),
-                            distance: this.unitSize(selectedRect.x - targetRect.maxX)
+                            distance: this.unitSize(selectedRect.x - targetRect.maxX),
+                            percentageDistance: this.percentageSize((selectedRect.x - targetRect.maxX), this.current.width)
                         }
                     }
                 }
                 else{
                     var distance = this.getDistance(selectedRect, targetRect);
-                    if (distance.top > 0) { //top
+                    if (distance.top != 0) { //top
                         topData = {
                             x: x,
-                            y: this.zoomSize(targetRect.y),
+                            y: (distance.top > 0)? this.zoomSize(targetRect.y): this.zoomSize(selectedRect.y),
                             h: this.zoomSize(this.positive(distance.top)),
-                            distance: this.unitSize(this.positive(distance.top))
-                        };
-                    } else if (distance.top < 0) {
-                        topData = {
-                            x: x,
-                            y: this.zoomSize(selectedRect.y),
-                            h: this.zoomSize(this.positive(distance.top)),
-                            distance: this.unitSize(this.positive(distance.top))
+                            distance: this.unitSize(this.positive(distance.top)),
+                            percentageDistance: this.percentageSize(this.positive(distance.top), this.current.height)
                         };
                     }
-                    if (distance.right > 0) { //right
+                    if (distance.right != 0) { //right
                         rightData = {
-                            x: this.zoomSize(selectedRect.maxX),
+                            x: (distance.right > 0)? this.zoomSize(selectedRect.maxX): this.zoomSize(targetRect.maxX),
                             y: y,
                             w: this.zoomSize(this.positive(distance.right)),
-                            distance: this.unitSize(this.positive(distance.right))
-                        };
-                    } else if (distance.right < 0) {
-                        rightData = {
-                            x: this.zoomSize(targetRect.maxX),
-                            y: y,
-                            w: this.zoomSize(this.positive(distance.right)),
-                            distance: this.unitSize(this.positive(distance.right))
+                            distance: this.unitSize(this.positive(distance.right)),
+                            percentageDistance: this.percentageSize(this.positive(distance.right), this.current.width)
                         };
                     }
-                    if (distance.bottom > 0) { //bottom
+                    if (distance.bottom != 0) { //bottom
                         bottomData = {
                             x: x,
-                            y: this.zoomSize(selectedRect.maxY),
+                            y: (distance.bottom > 0)? this.zoomSize(selectedRect.maxY): this.zoomSize(targetRect.maxY),
                             h: this.zoomSize(this.positive(distance.bottom)),
-                            distance: this.unitSize(this.positive(distance.bottom))
-                        };
-                    } else if (distance.bottom < 0) {
-                        bottomData = {
-                            x: x,
-                            y: this.zoomSize(targetRect.maxY),
-                            h: this.zoomSize(this.positive(distance.bottom)),
-                            distance: this.unitSize(this.positive(distance.bottom))
+                            distance: this.unitSize(this.positive(distance.bottom)),
+                            percentageDistance: this.percentageSize(this.positive(distance.bottom), this.current.height)
                         };
                     }
-                    if (distance.left > 0) { //left
+                    if (distance.left != 0) { //left
                         leftData = {
-                            x: this.zoomSize(targetRect.x),
+                            x: (distance.left > 0)? this.zoomSize(targetRect.x): this.zoomSize(selectedRect.x),
                             y: y,
                             w: this.zoomSize(this.positive(distance.left)),
-                            distance: this.unitSize(this.positive(distance.left))
-                        };
-                    } else if (distance.left < 0) {
-                        leftData = {
-                            x: this.zoomSize(selectedRect.x),
-                            y: y,
-                            w: this.zoomSize(this.positive(distance.left)),
-                            distance: this.unitSize(this.positive(distance.left))
+                            distance: this.unitSize(this.positive(distance.left)),
+                            percentageDistance: this.percentageSize(this.positive(distance.left), this.current.width)
                         };
                     }
                 }
@@ -816,7 +797,8 @@ var I18N = {},
                         })
                         .show();
                     $('#td div')
-                        .attr('data-height', topData.distance);
+                        .attr('data-height', topData.distance)
+                        .attr('percentage-height', topData.percentageDistance);
                 }
                 if (rightData) {
                      $('#rd')
@@ -827,7 +809,8 @@ var I18N = {},
                         })
                         .show();
                     $('#rd div')
-                        .attr('data-width', rightData.distance );
+                        .attr('data-width', rightData.distance )
+                        .attr('percentage-width', rightData.percentageDistance);
                 }
                 if (bottomData) {
                     $('#bd')
@@ -838,7 +821,8 @@ var I18N = {},
                         })
                         .show();
                     $('#bd div')
-                        .attr('data-height', bottomData.distance );
+                        .attr('data-height', bottomData.distance )
+                        .attr('percentage-height', bottomData.percentageDistance);
                 }
                 if (leftData) {
                      $('#ld')
@@ -849,7 +833,8 @@ var I18N = {},
                         })
                         .show();
                     $('#ld div')
-                        .attr('data-width', leftData.distance );
+                        .attr('data-width', leftData.distance )
+                        .attr('percentage-width', leftData.percentageDistance);
                 }
                 $('.selected').addClass('hidden');
             }
@@ -1134,7 +1119,7 @@ var I18N = {},
                                 else{
                                     self.tempTargetRect = undefined;
                                 }
-                                
+
                             }
                         }
                     })
@@ -1189,12 +1174,19 @@ var I18N = {},
                         self.hideDistance();
                         event.preventDefault();
                     }
+                    else if(event.which == 18){
+                        $('#screen').addClass('percentage-mode');
+                    }
                 })
                 .keyup(function(event){
                     if(event.which == 32 ){
                         $('#cursor').hide();
                         $('.screen-viewer').removeClass('moving-screen');
                         $('#cursor').removeClass('moving');
+                        event.preventDefault();
+                    }
+                    else if(event.which == 18){
+                        $('#screen').removeClass('percentage-mode');
                         event.preventDefault();
                     }
                 })
@@ -1342,7 +1334,7 @@ var I18N = {},
                     else{
                         self.message(_('The slice not in current artboard.'));
                     }
-                    
+
                 });
             // color format
             $('#inspector')
@@ -1359,7 +1351,7 @@ var I18N = {},
                 .on('click', 'li', function(){
                     var $this = $(this),
                         id = $this.attr('data-id');
-                    
+
                     if($this.hasClass('current')){
                         $('.current').removeClass('current');
                         $('.navbar').removeClass('on');
@@ -1371,7 +1363,7 @@ var I18N = {},
                         $('#' + id).show();
                         $('.navbar').addClass('on');
                     }
-                    
+
                 });
             $('#notes')
                 .on('mousemove', '.note', function(event){

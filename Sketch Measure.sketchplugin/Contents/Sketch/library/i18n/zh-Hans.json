@@ -107,5 +107,10 @@
     "Set Name...": "设置名称...",
     "Import Colors": "导入颜色",
     "Export Colors": "导出颜色",
-    "You can select shape layer to add colors or import colors": "您可以选中矢量图层添加颜色或导入颜色"
+    "You can select shape layer to add colors or import colors": "您可以选中矢量图层添加颜色或导入颜色",
+    "New Version!": "新的版本!",
+    "Just checked Sketch Measure has a new version (%@)": "刚刚检测到 Sketch Measure 有新版 (%@)",
+    "Download": "下载",
+    "Cancel": "取消",
+    "Donate": "捐赠"
 };

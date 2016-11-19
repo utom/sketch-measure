@@ -3,9 +3,9 @@ var I18N = {},
         "zh-Hans": "zh-cn",
         "zh-Hant": "zh-tw"
     },
-    macOSVersion = Number(NSDictionary.dictionaryWithContentsOfFile("/System/Library/CoreServices/SystemVersion.plist").objectForKey("ProductVersion")),
+    macOSVersion = NSDictionary.dictionaryWithContentsOfFile("/System/Library/CoreServices/SystemVersion.plist").objectForKey("ProductVersion") + "",
     lang = NSUserDefaults.standardUserDefaults().objectForKey("AppleLanguages").objectAtIndex(0),
-    lang = (macOSVersion >= 10.12)? lang.split("-").slice(0, -1).join("-"): lang,
+    lang = (macOSVersion >= "10.12")? lang.split("-").slice(0, -1).join("-"): lang,
     language = "";
 
 function _(str, data){
@@ -19,7 +19,19 @@ function _(str, data){
 
 var SM = {
         init: function(context, command){
+            this.prefs = NSUserDefaults.standardUserDefaults();
             this.context = context;
+
+            this.version = this.context.plugin.version() + "";
+            var SMVersion = this.prefs.stringForKey("SMVersion") + "" || 0;
+
+            if(!SMVersion || SMVersion != this.version ){
+                this.prefs.setObject_forKey (this.version, "SMVersion");
+                NSApplication.sharedApplication().delegate().pluginManager().reloadPlugins();
+                SM.init(context, command);
+                return false;
+            }
+
             this.extend(context);
             this.pluginRoot = this.scriptPath
                     .stringByDeletingLastPathComponent()
@@ -28,14 +40,17 @@ var SM = {
             this.pluginSketch = this.pluginRoot + "/Contents/Sketch/library";
 
             if(NSFileManager.defaultManager().fileExistsAtPath(this.pluginSketch + "/i18n/" + lang + ".json")){
-                language = NSString.stringWithContentsOfFile_encoding_error(this.pluginSketch + "/i18n/" + lang + ".json", NSUTF8StringEncoding, nil);
+                language = NSString.stringWithContentsOfFile_encoding_error(this.pluginSketch + "/i18n/" + lang + ".json", 4, nil);
 
                 I18N[lang] = JSON.parse(language);
                 language = "I18N[\'" + webI18N[lang] + "\'] = " + language;
             }
 
-            if(command && command == "menu"){
+            coscript.setShouldKeepAround(true);
+
+            if(command && command == "init"){
                 this.menu();
+                this.checkUpdate();
                 return false;
             }
 
@@ -47,7 +62,7 @@ var SM = {
             this.page = this.document.currentPage();
             this.artboard = this.page.currentArtboard();
             this.current = this.artboard || this.page;
-            coscript.setShouldKeepAround(true);
+
             if(command && command == "toolbar"){
                 this.Toolbar();
                 return false;
@@ -127,7 +142,44 @@ var SM = {
     ShadowTypes = ["outer", "inner"],
     TextAligns = ["left", "right", "center", "justify", "left"],
     ResizingType = ["stretch", "corner", "resize", "float"];
+SM.extend({
+    checkUpdate: function(){
+        var self = this,
+            webView = WebView.new(),
+            windowObject = webView.windowScriptObject(),
+            timestamp = new Date().getTime(),
+            delegate = new MochaJSDelegate({
+                "webView:didFinishLoadForFrame:": (function(webView, webFrame){
+                    var packageJSON = JSON.parse(self.toJSString(windowObject.evaluateWebScript("document.body.innerText"))),
+                        currentVersion = self.toJSString( self.context.plugin.version() ),
+                        lastestVersion = self.toJSString( packageJSON.version ),
+                        updated = self.prefs.integerForKey("SMUpdated") || 0;
 
+                    if( lastestVersion > currentVersion && timestamp > (updated + 1000 * 60 * 60 * 24) ){
+                        self.prefs.setInteger_forKey(timestamp, "SMUpdated");
+                        self.SMPanel({
+                            url: self.pluginSketch + "/panel/update.html",
+                            width: 480,
+                            height: 229,
+                            hiddenClose: true,
+                            data: {
+                                title: _("New Version!"),
+                                content: _("Just checked Sketch Measure has a new version (%@)", [packageJSON.version]),
+                                donate: _("Donate"),
+                                cancel: _("Cancel"),
+                                download: _("Download")
+                            },
+                            callback: function( data ){
+                                NSWorkspace.sharedWorkspace().openURL(NSURL.URLWithString("http://utom.design/measure/?ref=update"));
+                            }
+                        });
+                    }
+                })
+            });
+        webView.setFrameLoadDelegate_(delegate.getClassInstance());
+        webView.setMainFrameURL_("http://utom.design/measure/package.json?" + timestamp);
+    }
+});
 SM.extend({
     prefix: "SMConfigs2",
     regexNames: /OVERLAY\#|WIDTH\#|HEIGHT\#|TOP\#|RIGHT\#|BOTTOM\#|LEFT\#|VERTICAL\#|HORIZONTAL\#|NOTE\#|PROPERTY\#|LITE\#/,
@@ -225,15 +277,32 @@ SM.extend({
     },
     toHTMLEncode: function(str){
         return this.toJSString(str)
-                    .replace(/\&/g, "&amp;")
                     .replace(/\</g, "&lt;")
                     .replace(/\>/g, '&gt;')
                     .replace(/\'/g, "&#39;")
                     .replace(/\"/g, "&quot;")
                     .replace(/\u2028/g,"\\u2028")
                     .replace(/\u2029/g,"\\u2029")
+                    .replace(/\ud83c|\ud83d/g,"")
                 ;
         // return str.replace(/\&/g, "&amp;").replace(/\"/g, "&quot;").replace(/\'/g, "&#39;").replace(/\</g, "&lt;").replace(/\>/g, '&gt;');
+    },
+    emojiToEntities: function(str) {
+      var emojiRanges = [
+            "\ud83c[\udf00-\udfff]", // U+1F300 to U+1F3FF
+            "\ud83d[\udc00-\ude4f]", // U+1F400 to U+1F64F
+            "\ud83d[\ude80-\udeff]"  // U+1F680 to U+1F6FF
+          ];
+        return str.replace(
+              new RegExp(emojiRanges.join("|"), "g"),
+              function(match) {
+                  var c = encodeURIComponent(match).split("%"),
+                      h = ((parseInt(c[1], 16) & 0x0F))
+                        + ((parseInt(c[2], 16) & 0x1F) << 12)
+                        + ((parseInt(c[3], 16) & 0x3F) << 6)
+                        + (parseInt(c[4], 16) & 0x3F);
+                  return "&#" + h.toString() + ";";
+              });
     },
     toSlug: function(str){
         return this.toJSString(str)
@@ -280,7 +349,7 @@ SM.extend({
             b: Math.round(color.blue() * 255),
             a: color.alpha(),
             "color-hex": color.immutableModelObject().stringValueWithAlpha(false) + " " + Math.round(color.alpha() * 100) + "%",
-            "argb-hex": "#" + this.toHex(color.alpha() * 255) + color.hexValue(),
+            "argb-hex": "#" + this.toHex(color.alpha() * 255) + color.immutableModelObject().stringValueWithAlpha(false).replace("#", ""),
             "css-rgba": "rgba(" + [
                             Math.round(color.red() * 255),
                             Math.round(color.green() * 255),
@@ -463,6 +532,14 @@ SM.extend({
         var hex = Math.round(c).toString(16).toUpperCase();
         return hex.length == 1 ? "0" + hex :hex;
     },
+    hexToRgb:function(hex) {
+        var result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
+        return result ? {
+            r: this.toHex(result[1]),
+            g: this.toHex(result[2]),
+            b: this.toHex(result[3])
+        } : null;
+    },
     isIntersect: function(targetRect, layerRect){
         return !(
             targetRect.maxX <= layerRect.x ||
@@ -561,7 +638,7 @@ SM.extend({
         else{
             configsData = this.UIMetadata.objectForKey(this.prefix);
         }
-            
+
         return JSON.parse(configsData);
     },
      setConfigs: function(newConfigs, container){
@@ -879,6 +956,32 @@ SM.extend({
 // Toolbar.js
 
 SM.extend({
+    getImage: function(size, name){
+        var isRetinaDisplay = (NSScreen.mainScreen().backingScaleFactor() > 1)? true: false;
+            suffix = (isRetinaDisplay)? "@2x": "",
+            imageURL = NSURL.fileURLWithPath(this.pluginSketch + "/toolbar/" + name + suffix + ".png"),
+            image = NSImage.alloc().initWithContentsOfURL(imageURL);
+
+        return image
+    },
+    addImage: function(rect, name){
+        var view = NSImageView.alloc().initWithFrame(rect),
+            image = this.getImage(rect.size, name);
+        view.setImage(image);
+        return view;
+    },
+    addButton: function(rect, name, callAction){
+        var button = NSButton.alloc().initWithFrame(rect),
+            image = this.getImage(rect.size, name);
+
+        button.setImage(image);
+        button.setBordered(false);
+        button.sizeToFit();
+        button.setButtonType(NSMomentaryChangeButton)
+        button.setCOSJSTargetFunction(callAction);
+        button.setAction("callAction:");
+        return button;
+    },
     Toolbar: function(){
         var self = this,
             identifier = "com.utom.measure",
@@ -898,44 +1001,18 @@ SM.extend({
             Toolbar.setLevel(NSFloatingWindowLevel);
 
             var contentView = Toolbar.contentView(),
-                getImage = function(size, name){
-                    var isRetinaDisplay = (NSScreen.mainScreen().backingScaleFactor() > 1)? true: false;
-                        suffix = (isRetinaDisplay)? "@2x": "",
-                        imageURL = NSURL.fileURLWithPath(self.pluginSketch + "/toolbar/" + name + suffix + ".png"),
-                        image = NSImage.alloc().initWithContentsOfURL(imageURL);
-
-                    return image
-                },
-                addButton = function(rect, name, callAction){
-                    var button = NSButton.alloc().initWithFrame(rect),
-                        image = getImage(rect.size, name);
-
-                    button.setImage(image);
-                    button.setBordered(false);
-                    button.sizeToFit();
-                    button.setButtonType(NSMomentaryChangeButton)
-                    button.setCOSJSTargetFunction(callAction);
-                    button.setAction("callAction:");
-                    return button;
-                },
-                addImage = function(rect, name){
-                    var view = NSImageView.alloc().initWithFrame(rect),
-                        image = getImage(rect.size, name);
-                    view.setImage(image);
-                    return view;
-                },
-                closeButton = addButton( NSMakeRect(14, 14, 20, 20), "icon-close",
+                closeButton = self.addButton( NSMakeRect(14, 14, 20, 20), "icon-close",
                         function(sender){
                             coscript.setShouldKeepAround(false);
                             threadDictionary.removeObjectForKey(identifier);
                             Toolbar.close();
                         }),
-                overlayButton = addButton( NSMakeRect(64, 14, 20, 20), "icon-overlay",
+                overlayButton = self.addButton( NSMakeRect(64, 14, 20, 20), "icon-overlay",
                         function(sender){
                             self.updateContext();
                             self.init(self.context, "mark-overlays");
                         }),
-                sizesButton = addButton( NSMakeRect(112, 14, 20, 20), "icon-sizes",
+                sizesButton = self.addButton( NSMakeRect(112, 14, 20, 20), "icon-sizes",
                         function(sender){
                             self.updateContext();
                             if(NSEvent.modifierFlags() == NSAlternateKeyMask){
@@ -945,7 +1022,7 @@ SM.extend({
                                 self.init(self.context, "lite-sizes");
                             }
                         }),
-                spacingsButton = addButton( NSMakeRect(160, 14, 20, 20), "icon-spacings",
+                spacingsButton = self.addButton( NSMakeRect(160, 14, 20, 20), "icon-spacings",
                         function(sender){
                             self.updateContext();
                             if(NSEvent.modifierFlags() == NSAlternateKeyMask){
@@ -955,7 +1032,7 @@ SM.extend({
                                 self.init(self.context, "lite-spacings");
                             }
                         }),
-                propertiesButton = addButton( NSMakeRect(208, 14, 20, 20), "icon-properties",
+                propertiesButton = self.addButton( NSMakeRect(208, 14, 20, 20), "icon-properties",
                         function(sender){
                             self.updateContext();
                             if(NSEvent.modifierFlags() == NSAlternateKeyMask){
@@ -966,12 +1043,12 @@ SM.extend({
                             }
 
                         }),
-                notesButton = addButton( NSMakeRect(258, 14, 20, 20), "icon-notes",
+                notesButton = self.addButton( NSMakeRect(258, 14, 20, 20), "icon-notes",
                         function(sender){
                             self.updateContext();
                             self.init(self.context, "mark-note");
                         }),
-                exportableButton = addButton( NSMakeRect(306, 14, 20, 20), "icon-slice",
+                exportableButton = self.addButton( NSMakeRect(306, 14, 20, 20), "icon-slice",
                         function(sender){
                             self.updateContext();
                             if(NSEvent.modifierFlags() == NSAlternateKeyMask){
@@ -981,34 +1058,34 @@ SM.extend({
                                 self.init(self.context, "exportable");
                             }
                         }),
-                colorsButton = addButton( NSMakeRect(354, 14, 20, 20), "icon-colors",
+                colorsButton = self.addButton( NSMakeRect(354, 14, 20, 20), "icon-colors",
                         function(sender){
                             self.updateContext();
                             self.init(self.context, "color");
                         }),
-                exportButton = addButton( NSMakeRect(402, 14, 20, 20), "icon-export",
+                exportButton = self.addButton( NSMakeRect(402, 14, 20, 20), "icon-export",
                         function(sender){
                             self.updateContext();
                             self.init(self.context, "export");
                         }),
-                hiddenButton = addButton( NSMakeRect(452, 14, 20, 20), "icon-hidden",
+                hiddenButton = self.addButton( NSMakeRect(452, 14, 20, 20), "icon-hidden",
                         function(sender){
                             self.updateContext();
                             self.init(self.context, "hidden");
                         }),
-                lockedButton = addButton( NSMakeRect(500, 14, 20, 20), "icon-locked",
+                lockedButton = self.addButton( NSMakeRect(500, 14, 20, 20), "icon-locked",
                         function(sender){
                             self.updateContext();
                             self.init(self.context, "locked");
                         }),
-                settingsButton = addButton( NSMakeRect(548, 14, 20, 20), "icon-settings",
+                settingsButton = self.addButton( NSMakeRect(548, 14, 20, 20), "icon-settings",
                         function(sender){
                             self.updateContext();
                             self.init(self.context, "settings");
                         }),
-                divider1 = addImage( NSMakeRect(48, 8, 2, 32), "divider"),
-                divider2 = addImage( NSMakeRect(242, 8, 2, 32), "divider"),
-                divider3 = addImage( NSMakeRect(436, 8, 2, 32), "divider");
+                divider1 = self.addImage( NSMakeRect(48, 8, 2, 32), "divider"),
+                divider2 = self.addImage( NSMakeRect(242, 8, 2, 32), "divider"),
+                divider3 = self.addImage( NSMakeRect(436, 8, 2, 32), "divider");
 
             contentView.addSubview(closeButton);
             contentView.addSubview(overlayButton);
@@ -1048,6 +1125,7 @@ SM.extend({
                 width: 240,
                 height: 316,
                 floatWindow: false,
+                hiddenClose: false,
                 data: {
                     density: 2,
                     unit: "dp/sp"
@@ -1071,7 +1149,7 @@ SM.extend({
         var Panel = NSPanel.alloc().init();
         Panel.setTitleVisibility(NSWindowTitleHidden);
         Panel.setTitlebarAppearsTransparent(true);
-        Panel.standardWindowButton(NSWindowCloseButton).setHidden(false);
+        Panel.standardWindowButton(NSWindowCloseButton).setHidden(options.hiddenClose);
         Panel.standardWindowButton(NSWindowMiniaturizeButton).setHidden(true);
         Panel.standardWindowButton(NSWindowZoomButton).setHidden(true);
         Panel.setFrame_display(frame, false);
@@ -1088,7 +1166,6 @@ SM.extend({
                                             "window.SMData = encodeURI(JSON.stringify(data));",
                                         "}",
                                         "window.location.hash = hash;",
-                                        // "console.log(SMData)",
                                     "}"
                                 ].join(""),
                             DOMReady = [
@@ -1122,6 +1199,10 @@ SM.extend({
                             else{
                                 Panel.close();
                             }
+                        }
+                        else if(request == "donate"){
+                            NSWorkspace.sharedWorkspace().openURL(NSURL.URLWithString("http://utom.design/measure/donate.html?ref=update"));
+                            // windowObject.evaluateWebScript("window.location.hash = 'close';");
                         }
                         else if(request == "import"){
                             if( options.importCallback(windowObject) ){
@@ -1158,13 +1239,13 @@ SM.extend({
         webView.setBackgroundColor(contentBgColor);
         webView.setFrameLoadDelegate_(delegate.getClassInstance());
         webView.setMainFrameURL_(options.url);
-        // webView.acceptsFirstMouse(NSEvent.mouseLocation());
 
         contentView.addSubview(webView);
 
         var closeButton = Panel.standardWindowButton(NSWindowCloseButton);
         closeButton.setCOSJSTargetFunction(function(sender) {
             var request = NSURL.URLWithString(webView.mainFrameURL()).fragment();
+
             if(options.floatWindow && request == "submit"){
                 data = JSON.parse(decodeURI(windowObject.valueForKey("SMData")));
                 options.callback(data);
@@ -1183,8 +1264,6 @@ SM.extend({
                 NSApp.stopModal();
             }
 
-
-            // NSApp.endSheet(sender.window());
         });
         closeButton.setAction("callAction:");
 
@@ -1593,7 +1672,8 @@ SM.extend({
                     break;
                 case "line-height":
                     if(!self.is(target, MSTextLayer)) return false;
-                    content.push("line: " + self.convertUnit(target.lineHeight() || target.defaultLineHeight(), true) + " (" + Math.round((target.lineHeight() || target.defaultLineHeight()) / target.fontSize() * 10) / 10  + ")" );
+                    var defaultLineHeight = target.font().defaultLineHeightForFont();
+                    content.push("line: " + self.convertUnit(target.lineHeight() || defaultLineHeight, true) + " (" + Math.round((target.lineHeight() || defaultLineHeight) / target.fontSize() * 10) / 10  + ")" );
                     break;
                 case "font-face":
                     if(!self.is(target, MSTextLayer)) return false;
@@ -1910,7 +1990,7 @@ SM.extend({
         note.setName("note-box");
         note.layers().firstObject().setCornerRadiusFromComponents("2")
 
-        text.setStringValue(target.storage().string());
+        text.setStringValue(target.stringValue());
         text.setTextBehaviour(1);
         text.setTextBehaviour(0);
         note.setStyle(noteStyle.layer);
@@ -2153,7 +2233,7 @@ SM.extend({
         if (openPanel.runModal() != NSOKButton) {
             return false;
         }
-        var colors = JSON.parse(NSString.stringWithContentsOfFile_encoding_error(openPanel.URL().path(), NSUTF8StringEncoding, nil)),
+        var colors = JSON.parse(NSString.stringWithContentsOfFile_encoding_error(openPanel.URL().path(), 4, nil)),
             colorsData = [];
 
         colors.forEach(function(color){
@@ -2279,28 +2359,26 @@ SM.extend({
 
             slice.exportOptions().removeAllExportFormats();
 
-            var formats = [
-                {
-                    scale: 1 / this.configs.scale,
-                    suffix: ""
-                },
-                {
-                    scale: 1.5 / this.configs.scale,
-                    suffix: "@1.5x"
-                },
-                {
-                    scale: 2 / this.configs.scale,
-                    suffix: "@2x"
-                },
-                {
-                    scale: 3 / this.configs.scale,
-                    suffix: "@3x"
-                },
-                {
-                    scale: 4 / this.configs.scale,
-                    suffix: "@4x"
-                }
-            ];
+            var formats =
+                (this.configs.unit == "dp/sp")? [
+                  { scale: 1 / this.configs.scale, suffix: "" },
+                  { scale: 1.5 / this.configs.scale, suffix: "@1.5x" },
+                  { scale: 2 / this.configs.scale, suffix: "@2x" },
+                  { scale: 3 / this.configs.scale, suffix: "@3x" },
+                  { scale: 4 / this.configs.scale, suffix: "@4x" }
+                ]:
+                (this.configs.unit == "pt")? [
+                  { scale: 1 / this.configs.scale, suffix: "" },
+                  { scale: 2 / this.configs.scale, suffix: "@2x" },
+                  { scale: 3 / this.configs.scale, suffix: "@3x" }
+                ]:
+                [
+                  { scale: 1, suffix: "" }
+                ];
+
+            if(this.configs.unit == "pt"){
+
+            }
 
             for(format of formats) {
                 var size = slice.exportOptions().addExportFormat();
@@ -2326,6 +2404,10 @@ SM.extend({
 SM.extend({
     hasExportSizes: function(layer){
         return layer.exportOptions().exportFormats().count() > 0;
+    },
+    hasEmoji: function(layer) {
+      var fonts = layer.attributedString().fontNames().allObjects();
+      return !!/AppleColorEmoji/.exec(fonts);
     },
     isSliceGroup: function(layer) {
         return this.is(layer, MSLayerGroup) && this.hasExportSizes(layer);
@@ -2552,9 +2634,19 @@ SM.extend({
                 tempGroup.resizeToFitChildrenWithOption(0)
 
                 var tempSymbolLayers = tempGroup.children().objectEnumerator(),
+                    overrides = layer.overrides(),
                     idx = 0;
 
+                overrides = (overrides)? overrides.objectForKey(0): {};
+
                 while(tempSymbolLayer = tempSymbolLayers.nextObject()){
+                    if( self.is(tempSymbolLayer, MSSymbolInstance) ){
+                        var symbolMasterObjectID = self.toJSString(symbolChildren[idx].objectID());
+                        if(overrides[symbolMasterObjectID] && overrides[symbolMasterObjectID].symbolID){
+                            var changeSymbol = self.find({key: "(symbolID != NULL) && (symbolID == %@)", match: self.toJSString(overrides[symbolMasterObjectID].symbolID)}, self.document.documentData().allSymbols());
+                            tempSymbolLayer.changeInstanceToSymbol(changeSymbol);
+                        }
+                    }
                     self.getLayer(
                         artboard,
                         tempSymbolLayer,
@@ -2582,16 +2674,20 @@ SM.extend({
         return data;
     },
     checkText: function(artboard, layer, layerData, data){
+
         if(layerData.type == "text" && layer.attributedString().treeAsDictionary().value.attributes.length > 1){
+            if(this.hasEmoji(layer)){
+                return false;
+            }
             var self = this,
                 svgExporter = SketchSVGExporter.new().exportLayers([layer.immutableModelObject()]),
-                svgStrong = this.toJSString(NSString.alloc().initWithData_encoding(svgExporter, NSUTF8StringEncoding)),
+                svgStrong = this.toJSString(NSString.alloc().initWithData_encoding(svgExporter, 4)),
                 regExpTspan = new RegExp('<tspan([^>]+)>([^<]*)</tspan>', 'g'),
                 regExpContent = new RegExp('>([^<]*)<'),
                 offsetX, offsetY, textData = [],
-                layerRect = this.getRect(layer);
-            svgSpans = svgStrong.match(regExpTspan);
-            
+                layerRect = this.getRect(layer),
+                svgSpans = svgStrong.match(regExpTspan);
+
             for (var a = 0; a < svgSpans.length; a++) {
                 var attrsData = this.getTextAttrs(svgSpans[a]);
                 attrsData.content = svgSpans[a].match(regExpContent)[1];
@@ -2624,14 +2720,16 @@ SM.extend({
                     )
                 ){
                     var textLayer = self.addText(),
-                        color = MSColor.colorWithSVGString(tData.fill);
-                    color.setAlpha(tData["fill-opacity"] || 1);
+                        colorRGB = self.hexToRgb(tData.fill || colorHex),
+                        color = MSColor.colorWithRed_green_blue_alpha(colorRGB.r / 255, colorRGB.g / 255, colorRGB.b / 255, (tData["fill-opacity"] || 1) );
 
                     textLayer.setName(tData.content);
                     textLayer.setStringValue(tData.content);
                     textLayer.setTextColor(color);
                     textLayer.setFontSize(tData["font-size"] || layerData.fontSize);
-                    if(layer.defaultLineHeight() != layer.lineHeight()){
+
+                    var defaultLineHeight = layer.font().defaultLineHeightForFont();
+                    if(defaultLineHeight != layer.lineHeight()){
                         textLayer.setLineHeight(layer.lineHeight());
                     }
                     textLayer.setCharacterSpacing(self.toJSNumber(tData["letter-spacing"]) || layer.characterSpacing());
@@ -2717,13 +2815,13 @@ SM.extend({
             pageData.artboards = [];
 
             while(artboard = artboards.nextObject()){
-                if(!this.is(artboard, MSSymbolMaster)){
+                // if(!this.is(artboard, MSSymbolMaster)){
                     var artboardData = {};
                     artboardData.name = this.toJSString(artboard.name());
                     artboardData.objectID = this.toJSString(artboard.objectID());
                     artboardData.MSArtboardGroup = artboard;
                     pageData.artboards.push(artboardData);
-                }
+                // }
             }
             pageData.artboards.reverse()
             data.pages.push(pageData);
@@ -2774,7 +2872,6 @@ SM.extend({
                     exportOption: data.exportOption,
                     order: data.order
                 });
-
             }
         });
     },
@@ -2795,7 +2892,7 @@ SM.extend({
                         floatWindow: true
                     }),
                     processing = processingPanel.windowScriptObject(),
-                    template = NSString.stringWithContentsOfFile_encoding_error(this.pluginSketch + "/template.html", NSUTF8StringEncoding, nil);
+                    template = NSString.stringWithContentsOfFile_encoding_error(this.pluginSketch + "/template.html", 4, nil);
 
                 this.savePath = savePath;
                 var idx = 1,
@@ -2835,31 +2932,34 @@ SM.extend({
                             layer = artboard.children()[layerIndex];
 
                         // log( page.name() + ' - ' + artboard.name() + ' - ' + layer.name());
-                        self.getLayer(
-                            artboard, // Sketch artboard element
-                            layer, // Sketch layer element
-                            data.artboards[artboardIndex] // Save to data
-                        );
+                        try {
+                          self.getLayer(
+                              artboard, // Sketch artboard element
+                              layer, // Sketch layer element
+                              data.artboards[artboardIndex] // Save to data
+                          );
+                          layerIndex++;
+                          exporting = false;
+                        } catch (e) {
+                          self.wantsStop = true;
+                          processing.evaluateWebScript("$('#processing-text').html('<strong>Error:</strong> <small>" + self.toHTMLEncode(e.message) + "</small>');");
+                        }
 
 
-                        layerIndex++;
-                        exporting = false;
-
-                        if( self.is(layer, MSArtboardGroup) ){
+                        if( self.is(layer, MSArtboardGroup) || self.is(layer, MSSymbolMaster)){
                             var objectID = artboard.objectID(),
                                 artboardRect = self.getRect(artboard),
                                 page = artboard.parentGroup(),
                                 // name = self.toSlug(self.toHTMLEncode(page.name()) + ' ' + self.toHTMLEncode(artboard.name()));
                                 slug = self.toSlug(page.name() + ' ' + artboard.name());
 
-                            data.artboards[artboardIndex].pageName = self.toHTMLEncode(page.name());
+                            data.artboards[artboardIndex].pageName = self.toHTMLEncode(self.emojiToEntities(page.name()));
                             data.artboards[artboardIndex].pageObjectID = self.toJSString(page.objectID());
-                            data.artboards[artboardIndex].name = self.toHTMLEncode(artboard.name());
+                            data.artboards[artboardIndex].name = self.toHTMLEncode(self.emojiToEntities(artboard.name()));
                             data.artboards[artboardIndex].slug = slug;
                             data.artboards[artboardIndex].objectID = self.toJSString(artboard.objectID());
                             data.artboards[artboardIndex].width = artboardRect.width;
                             data.artboards[artboardIndex].height = artboardRect.height;
-
 
                             if(!self.configs.exportOption){
                                 var imageURL = NSURL.fileURLWithPath(self.exportImage({
@@ -2870,10 +2970,11 @@ SM.extend({
                                     imageData = NSData.dataWithContentsOfURL(imageURL),
                                     imageBase64 = imageData.base64EncodedStringWithOptions(0);
                                 data.artboards[artboardIndex].imageBase64 = 'data:image/png;base64,' + imageBase64;
+
                                 var newData =  JSON.parse(JSON.stringify(data));
                                 newData.artboards = [data.artboards[artboardIndex]];
                                 self.writeFile({
-                                        content: self.template(template, {lang: language, data: JSON.stringify(newData).replace(/\u2028/g,'\\u2028').replace(/\u2029/g,'\\u2029')}),
+                                        content: self.template(template, {lang: language, data: JSON.stringify(newData)}),
                                         path: self.toJSString(savePath),
                                         fileName: slug + ".html"
                                     });
@@ -2914,7 +3015,7 @@ SM.extend({
                             var selectingPath = savePath;
                             if(self.configs.exportOption){
                                 self.writeFile({
-                                        content: self.template(template, {lang: language, data: JSON.stringify(data).replace(/\u2028/g,'\\u2028').replace(/\u2029/g,'\\u2029')}),
+                                        content: self.template(template, {lang: language, data: JSON.stringify(data)}),
                                         path: self.toJSString(savePath),
                                         fileName: "index.html"
                                     });
@@ -2956,7 +3057,7 @@ SM.extend({
         );
         savePathName = savePathName.join("");
 
-        content.writeToFile_atomically_encoding_error(savePathName, false, NSUTF8StringEncoding, null);
+        content.writeToFile_atomically_encoding_error(savePathName, false, 4, null);
     },
     exportImage: function(options) {
         var options = this.extend(options, {
@@ -2998,7 +3099,7 @@ SM.extend({
 
             data.notes.push({
                 rect: this.rectToJSON(textLayer.absoluteRect(), artboardRect),
-                note: this.toHTMLEncode(textLayer.stringValue()).replace(/\n/g, "<br>")
+                note: this.toHTMLEncode(this.emojiToEntities(textLayer.stringValue()).replace(/\n/g, "<br>"))
             });
 
             layer.setIsVisible(false);
@@ -3024,11 +3125,11 @@ SM.extend({
             layer.setTextBehaviour(1); // fixed for v40
             layer.setTextBehaviour(0); // fixed for v40
         } // fixed for v40
-        
+
         var layerData = {
                     objectID: this.toJSString( layer.objectID() ),
                     type: layerType,
-                    name: this.toHTMLEncode(layer.name()),
+                    name: this.toHTMLEncode(this.emojiToEntities(layer.name())),
                     rect: this.rectToJSON(layer.absoluteRect(), artboardRect)
                 };
 
@@ -3047,7 +3148,7 @@ SM.extend({
         }
 
         if ( layerType == "text" ) {
-            layerData.content = this.toHTMLEncode(layer.stringValue());
+            layerData.content = this.toHTMLEncode(this.emojiToEntities(layer.stringValue()));
             layerData.color = this.colorToJSON(layer.textColor());
             layerData.fontSize = layer.fontSize();
             layerData.fontFace = this.toJSString(layer.fontPostscriptName());
