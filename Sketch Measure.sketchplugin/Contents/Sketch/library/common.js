@@ -1363,7 +1363,7 @@ SM.extend({
         return this.SMPanel({
             url: this.pluginSketch + "/panel/properties.html",
             width: 280,
-            height: 324,
+            height: 356,
             data: data,
             callback: function( data ){
                 self.configs = self.setConfigs({
@@ -1613,7 +1613,7 @@ SM.extend({
         var self = this,
             options = this.extend(options, {
                 placement: "top",
-                properties: ["key-name", "color", "border", "opacity", "radius", "shadow", "font-size", "line-height", "font-face", "character", "paragraph"]
+                properties: ["layer-name", "color", "border", "opacity", "radius", "shadow", "font-size", "line-height", "font-face", "character", "paragraph"]
             }),
             properties = options.properties,
             placement = options.placement,
@@ -1693,9 +1693,9 @@ SM.extend({
                         content.push("style-name: " + styleName);
                     }
                     break;
-				case "key-name":
-					content.push("key-name: " + target.name());
-					break;
+        				case "layer-name":
+        					   content.push("layer-name: " + target.name());
+                     break;
                 default:
                     render = false;
                     break;
@@ -1942,7 +1942,7 @@ SM.extend({
                 this.properties({
                     target: target,
                     placement: placement[ Math.max(distance.top, distance.right, distance.bottom, distance.left) ],
-                    properties: ["key-name", "color", "border", "opacity", "radius", "shadow", "font-size", "font-face", "character", "line-height"]
+                    properties: ["layer-name", "color", "border", "opacity", "radius", "shadow", "font-size", "font-face", "character", "line-height", "paragrapht"]
                 });
             }
         }

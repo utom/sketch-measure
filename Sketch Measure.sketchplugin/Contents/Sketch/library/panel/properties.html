@@ -20,10 +20,10 @@
                         '<div class="item">',
                             '<label>',
                                 '<div class="checkbox">',
-                                    '<input id="key-name" type="checkbox" name="properties" value="key-name">',
-                                    '<label for="key-name"></label>',
+                                    '<input id="layer-name" type="checkbox" name="properties" value="layer-name">',
+                                    '<label for="layer-name"></label>',
                                 '</div>',
-                                _('Key-Name'),
+                                _('Layer name'),
                             '</label>',
                         '</div>',
                         '<div class="item">',
@@ -112,6 +112,15 @@
                         '<div class="item">',
                             '<label>',
                                 '<div class="checkbox">',
+                                    '<input id="paragraph" type="checkbox" name="properties" value="paragraph">',
+                                    '<label for="paragrapht"></label>',
+                                '</div>',
+                                _('Paragraph'),
+                            '</label>',
+                        '</div>',
+                        '<div class="item">',
+                            '<label>',
+                                '<div class="checkbox">',
                                     '<input id="style-name" type="checkbox" name="properties" value="style-name">',
                                     '<label for="style-name"></label>',
                                 '</div>',
@@ -155,6 +164,7 @@
                     properties: ['color', 'border'],
                     placement: 'top'
                 }, options);
+        console.log(options)
         $.each(options.properties, function(i, property){
             $('#' + property).attr('checked', true);
         });
