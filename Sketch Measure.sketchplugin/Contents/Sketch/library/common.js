@@ -2637,12 +2637,12 @@ SM.extend({
                     overrides = layer.overrides(),
                     idx = 0;
 
-                overrides = (overrides)? overrides.objectForKey(0): {};
+                overrides = (overrides)? overrides.objectForKey(0): undefined;
 
                 while(tempSymbolLayer = tempSymbolLayers.nextObject()){
                     if( self.is(tempSymbolLayer, MSSymbolInstance) ){
                         var symbolMasterObjectID = self.toJSString(symbolChildren[idx].objectID());
-                        if(overrides[symbolMasterObjectID] && overrides[symbolMasterObjectID].symbolID){
+                        if(overrides && overrides[symbolMasterObjectID] && overrides[symbolMasterObjectID].symbolID){
                             var changeSymbol = self.find({key: "(symbolID != NULL) && (symbolID == %@)", match: self.toJSString(overrides[symbolMasterObjectID].symbolID)}, self.document.documentData().allSymbols());
                             tempSymbolLayer.changeInstanceToSymbol(changeSymbol);
                         }
