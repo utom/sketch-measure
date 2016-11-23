@@ -2642,17 +2642,28 @@ SM.extend({
                 while(tempSymbolLayer = tempSymbolLayers.nextObject()){
                     if( self.is(tempSymbolLayer, MSSymbolInstance) ){
                         var symbolMasterObjectID = self.toJSString(symbolChildren[idx].objectID());
-                        if(overrides && overrides[symbolMasterObjectID] && overrides[symbolMasterObjectID].symbolID){
-                            var changeSymbol = self.find({key: "(symbolID != NULL) && (symbolID == %@)", match: self.toJSString(overrides[symbolMasterObjectID].symbolID)}, self.document.documentData().allSymbols());
+                        if(
+                          overrides &&
+                          overrides[symbolMasterObjectID] &&
+                          !!overrides[symbolMasterObjectID].symbolID
+                        ){
+                          var changeSymbol = self.find({key: "(symbolID != NULL) && (symbolID == %@)", match: self.toJSString(overrides[symbolMasterObjectID].symbolID)}, self.document.documentData().allSymbols());
+                          if(changeSymbol){
                             tempSymbolLayer.changeInstanceToSymbol(changeSymbol);
+                          }
+                          else{
+                            tempSymbolLayer = undefined;
+                          }
                         }
                     }
-                    self.getLayer(
-                        artboard,
-                        tempSymbolLayer,
-                        data,
-                        symbolChildren[idx]
-                    );
+                    if(tempSymbolLayer){
+                      self.getLayer(
+                          artboard,
+                          tempSymbolLayer,
+                          data,
+                          symbolChildren[idx]
+                      );
+                    }
                     idx++
                 }
                 this.removeLayer(tempGroup);
@@ -2944,7 +2955,6 @@ SM.extend({
                           self.wantsStop = true;
                           processing.evaluateWebScript("$('#processing-text').html('<strong>Error:</strong> <small>" + self.toHTMLEncode(e.message) + "</small>');");
                         }
-
 
                         if( self.is(layer, MSArtboardGroup) || self.is(layer, MSSymbolMaster)){
                             var objectID = artboard.objectID(),
