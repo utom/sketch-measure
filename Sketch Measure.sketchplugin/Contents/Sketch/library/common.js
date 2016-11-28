@@ -1672,8 +1672,9 @@ SM.extend({
                     break;
                 case "line-height":
                     if(!self.is(target, MSTextLayer)) return false;
-                    var defaultLineHeight = target.font().defaultLineHeightForFont();
-                    content.push("line: " + self.convertUnit(target.lineHeight() || defaultLineHeight, true) + " (" + Math.round((target.lineHeight() || defaultLineHeight) / target.fontSize() * 10) / 10  + ")" );
+                    var defaultLineHeight = target.font().defaultLineHeightForFont(),
+                        lineHeight = target.lineHeight() || defaultLineHeight;
+                    content.push("line: " + self.convertUnit(lineHeight, true) + " (" + Math.round(lineHeight / target.fontSize() * 10) / 10  + ")" );
                     break;
                 case "font-face":
                     if(!self.is(target, MSTextLayer)) return false;
@@ -2740,9 +2741,9 @@ SM.extend({
                     textLayer.setFontSize(tData["font-size"] || layerData.fontSize);
 
                     var defaultLineHeight = layer.font().defaultLineHeightForFont();
-                    if(defaultLineHeight != layer.lineHeight()){
-                        textLayer.setLineHeight(layer.lineHeight());
-                    }
+
+                    textLayer.setLineHeight(layer.lineHeight() || defaultLineHeight);
+
                     textLayer.setCharacterSpacing(self.toJSNumber(tData["letter-spacing"]) || layer.characterSpacing());
                     textLayer.setTextAlignment(layer.textAlignment())
 
@@ -3109,7 +3110,7 @@ SM.extend({
 
             data.notes.push({
                 rect: this.rectToJSON(textLayer.absoluteRect(), artboardRect),
-                note: this.toHTMLEncode(this.emojiToEntities(textLayer.stringValue()).replace(/\n/g, "<br>"))
+                note: this.toHTMLEncode(this.emojiToEntities(textLayer.stringValue())).replace(/\n/g, "<br>")
             });
 
             layer.setIsVisible(false);
@@ -3164,7 +3165,7 @@ SM.extend({
             layerData.fontFace = this.toJSString(layer.fontPostscriptName());
             layerData.textAlign = TextAligns[layer.textAlignment()];
             layerData.letterSpacing = this.toJSNumber(layer.characterSpacing()) || 0;
-            layerData.lineHeight = layer.lineHeight();
+            layerData.lineHeight = layer.lineHeight() || layer.font().defaultLineHeightForFont();
         }
 
         var layerCSSAttributes = layer.CSSAttributes(),
