@@ -1021,10 +1021,6 @@ var I18N = {},
             }
             return colorCode;
         },
-        getAndroidImageScr: function (layerData) {
-            if (layerData.type != "slice" || typeof(layerData.exportable) == 'undefined' || layerData.exportable == 0) return "";
-            return "android:src=\"\@mipmap/" + layerData.exportable[0].name + "." + layerData.exportable[0].format + "\"\r\n";
-        },
         propertyType: function(title, content){
             return ['<section>',
                     '<h3>' + _(title) + '</h3>',
