@@ -1007,6 +1007,24 @@ var I18N = {},
             }
             $('#inspector').addClass('active').html(html.join(''));
         },
+        getAndroidWithHeight: function (layerData) {
+            return "android:layout_width=\"" + this.unitSize(layerData.rect.width, false) + "\"\r\n" + "android:layout_height=\"" + this.unitSize(layerData.rect.height, false) + "\"\r\n";
+        },
+        getAndroidShapeBackground: function (layerData) {
+            var colorCode = "";
+            if (layerData.type != "shape" || typeof(layerData.fills) == 'undefined' || layerData.fills.length == 0) return colorCode;
+            var f;
+            for (f in layerData.fills) {
+                if(layerData.fills[f].fillType == "color"){
+                    return "android:background=\"" + layerData.fills[f].color["argb-hex"] + "\"\r\n";
+                }
+            }
+            return colorCode;
+        },
+        getAndroidImageScr: function (layerData) {
+            if (layerData.type != "slice" || typeof(layerData.exportable) == 'undefined' || layerData.exportable == 0) return "";
+            return "android:src=\"\@mipmap/" + layerData.exportable[0].name + "." + layerData.exportable[0].format + "\"\r\n";
+        },
         propertyType: function(title, content){
             return ['<section>',
                     '<h3>' + _(title) + '</h3>',
