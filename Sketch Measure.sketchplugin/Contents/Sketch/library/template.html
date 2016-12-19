@@ -66,6 +66,14 @@ main{position:relative;height:calc(100vh - 60px);}
 .tab li.current:before{background-position-x:0;}
 .tab li.icon-slices:before{background-position-y:-50px;}
 .tab li.icon-colors:before{background-position-y:-100px;}
+#inspector .code-item{display:none!important;}
+#inspector .code-item.select{display: block!important;}
+#inspector .tab li:before{background-image:url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAMgAAAEsCAMAAACxJAyMAAAAY1BMVEUAAABfYmTY2NjY2NhgYGPa2tpdYGNfYGHZ2dlgYGRfX2LY2NhfYGPZ2dldX2Pb29vV1dXR0dFdYWNgYGPb29vU1NRdXV1aYWVdXWNYWGJbYGLX19fX19fa2trX19fY2NhgYmTufXliAAAAH3RSTlMA8/LjZq/mrzHHnp3VyIJqRQv7VVQbC0csGjrSX4l65F0P9QAAAvFJREFUeNrt3Nlu4kAURdHrCTMYM8ZAGKr+/yubSkdcRJy3OlI6vdcbj1vIPlEkrgEAAAAAAACAUnjy5XMm8cnrZ0IIIYQQQn5XyDNJyAtCCPnXQn7Nw04IIY6HnxBCzHjYCSGEEEII+ZEhAAAAAAAAAAAAAAAAAAAAAAAAAAD8HOEbllH8BiHjITYid4iNIIQQQgjJE+Kmi8VaE+KO8/lBHTItQ1iIQ96LGOfikLd7R2i0Icd7R2y1IW9VuLtIQ06TeFdLQzbL4F+IKGSYRf9CVCFN6lhupCFt6pgN0pBF6qjeTBkyTx2TkylDbqmjnEp3pE8dxVG6I5eQrKWDWKeO7UE6iOuQrKTLftj6C0sVMi1Tx9VEIT4gsTdViA/I0lQhPiAzU4ZszuHDRRgydPFDrQnxAVE/I7MYs5eETz4gD/vc/3zwAXnYqUKu3tGYKKT3jtZEVt6xMJHaO+Ymsn5klBcT8AFJitoEfECSamoi70X81B1NwAckuZmAD0hS9OZEHc2bqZy6+Fd7MpllSMrF1DR8QIr50XSaVNGsNibUpoq2Hkzoem5uU9Pqu7Z/NwAAAAAAAAAAAAAAAAAAAAAAAAAA/jO3m8n1vcmtQliZWB1jbWKXsVsP+TvkJXu/kCCz26aQ7c6E1uHT2mQOqeP1Qo2gQ13iv8ov3k3Erwv49SNFh67EO9QlR+94ueOU+7qA88taua8kuMnJ8luGF0vLbhZfzCy7VXghGMY6vlDMSRW+qCyzSfxiYi7fEjrJLu7iiNy7uAhOdXJnHp3s5M45jDhbVl0c0VleZRhRWlZFHFFYXmGUZbWNI7aWVxWC/LU1iVH62vI51E2iz6F6Eq9hxNWy6uOI3vJaB6f6W/4QRxwss7Ps7es63dvX7WXD7nbCYXcL2a67uXrX/d6yW24su2EmfGV5SROeNBsTGNr4pB1MY1U9pnBlIvXkMYW1yWz2TVWWVbPfmMywa7ui6NrdYAAAAAAAAAAAAAAAAADw5A96XDaWeHqp+wAAAABJRU5ErkJggg==);
+}
+#inspector .tab li.select{background-color:rgba(255,255,255,.05);}
+#inspector .tab li.select:before{background-position-x: 0;}
+#inspector .tab li.icon-android-panel:before {background-position-y: -50px;}
+#inspector .tab li.icon-ios-panel:before {background-position-y: -100px;}
 .screen-viewer{position:absolute;width:100vw;height:calc(100vh - 60px);background:#191919 url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgAQMAAABJtOi3AAAABlBMVEUAAAAAAAClZ7nPAAAAAnRSTlMAUvP2/eAAAAARSURBVAjXY6ASYD6ATlAHAADy5gMN0fCqFwAAAABJRU5ErkJggg==);background-size:16px 16px;overflow:auto;}
 .screen-viewer,.screen-viewer .overlay{position:absolute;width:100vw;height:calc(100vh - 60px);background:#191919 url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgAQMAAABJtOi3AAAABlBMVEUAAAAAAAClZ7nPAAAAAnRSTlMAUvP2/eAAAAARSURBVAjXY6ASYD6ATlAHAADy5gMN0fCqFwAAAABJRU5ErkJggg==);background-size:16px 16px;overflow:auto;}
 .screen-viewer .overlay{display:none;position:fixed;top:60px;left:0;background:transparent;overflow:hidden;z-index:2;cursor:none;}
@@ -982,13 +990,84 @@ var I18N = {},
                 });
                 html.push(this.propertyType('SHADOWS', shadows.join('')));
             }
-            // CSS STYLE
+            // CODE TEMPLATE
             if(layerData.css && layerData.css.length > 0){
-                html.push(this.propertyType('CSS STYLE', [
-                    '<div class="item">',
-                        '<label><textarea id="css" rows="' + (layerData.css.length + 1) + '" readonly="readonly">' + layerData.css.join("\r\n") + '</textarea></label>',
+                var tab =  ['<ul class="tab" id="code-tab" >',
+                        '<li class="icon-css-panel" data-id="css-panel" data-codeType="css"></li>',
+                        '<li class="icon-android-panel" data-id="android-panel" data-codeType="android" ></li>',
+                        '<li class="icon-ios-panel" data-id="ios-panel" data-codeType="ios" ></li>',
+                        '</ul>'].join('')
+                var css = [
+                    '<div id="css-panel" class="code-item item">',
+                    '<label><textarea id="css" rows="' + (layerData.css.length + 1) + '" readonly="readonly">' + layerData.css.join("\r\n") + '</textarea></label>',
                     '</div>'
-                ].join('')));
+                ].join('');
+
+                var android = [];
+                if(layerData.type == "text"){
+                    android.push(
+                            '<div id="android-panel"  class="code-item item">',
+                            '<label><textarea id="css" rows="6" readonly="readonly">'
+                            + "&lt;TextView\r\n" + this.getAndroidWithHeight(layerData)
+                            + "android:text=\"" + layerData.content + "\"\r\n" + "android:textColor=\"" + layerData.color["argb-hex"] + "\"\r\n"
+                            + "android:textSize=\"" + this.unitSize(layerData.fontSize, true) + "\"\r\n" + "/&gt;" + '</textarea></label>',
+                            '</div>'
+                    );
+                }else if (layerData.type == "shape"){
+                    android.push(
+                            '<div id="android-panel" class="code-item item">',
+                            '<label><textarea id="css" rows="6" readonly="readonly">'
+                            + "&lt;View\r\n" + this.getAndroidWithHeight(layerData)
+                            + this.getAndroidShapeBackground(layerData)
+                            + "/&gt;" + '</textarea></label>',
+                            '</div>'
+                    );
+                } else if (layerData.type = "slice"){
+                    android.push(
+                            '<div id="android-panel" class="code-item item">',
+                            '<label><textarea id="css" rows="6" readonly="readonly">'
+                            + "&lt;ImageView\r\n" + this.getAndroidWithHeight(layerData)
+                            + this.getAndroidImageSrc(layerData) + "/&gt;"
+                            + '</textarea></label>',
+                            '</div>'
+                    );
+                }
+
+                var ios = [];
+                if(layerData.type == "text"){
+                    ios.push(
+                            '<div id="ios-panel"  class="code-item item">',
+                            '<label><textarea id="css" rows="6" readonly="readonly">'
+                            + "UILabel *label = [[UILabel alloc] init];\r\n"
+                            + "label.frame = CGRectMake(" + layerData.rect.x + "\, " + layerData.rect.y + "\, " + layerData.rect.width + "\, " + layerData.rect.height + ");\r\n"
+                            + "label.text = \@\"" + layerData.content + "\";\r\n"
+                            + "label.font = [UIFont fontWithName:\@\"" + layerData.fontFace + "\" size:" + layerData.fontSize + "];\r\n"
+                            + "label.textColor = [UIColor colorWithRed:" + layerData.color.r + "/255.0 green:" + layerData.color.g + "/255.0 blue:" + layerData.color.b + "/255.0 alpha:" + layerData.color.a + "/1.0];\r\n"
+                            + '</textarea></label>',
+                            '</div>'
+                    );
+                }else if (layerData.type == "shape"){
+                    ios.push(
+                            '<div id="ios-panel" class="code-item item">',
+                            '<label><textarea id="css" rows="6" readonly="readonly">'
+                            + "UIView *view = [[UIView alloc] init];\r\n"
+                            + "view.frame = CGRectMake(" + layerData.rect.x + "\, " + layerData.rect.y + "\, " + layerData.rect.width + "\, " + layerData.rect.height + ");\r\n"
+                            + this.getIOSShapeBackground(layerData)
+                            + '</textarea></label>',
+                            '</div>'
+                    );
+                } else if (layerData.type = "slice"){
+                    ios.push(
+                            '<div id="ios-panel" class="code-item item">',
+                            '<label><textarea id="css" rows="6" readonly="readonly">'
+                            + "UIImageView *imageView = [[UIImageView alloc] init];\r\n"
+                            + "imageView.frame = CGRectMake(" + layerData.rect.x + "\, " + layerData.rect.y + "\, " + layerData.rect.width + "\, " + layerData.rect.height + ");\r\n"
+                            + this.getIOSImageSrc(layerData)
+                            + '</textarea></label>',
+                            '</div>'
+                    );
+                }
+                html.push(this.propertyType('CODE TEMPLATE', [ tab,css, android.join(''), ios.join('') ].join('')));
             }
             //  EXPORTABLE
             if(layerData.exportable && layerData.exportable.length > 0){
@@ -1005,7 +1084,7 @@ var I18N = {},
                 expHTML.push('</ul>')
                 html.push(this.propertyType('EXPORTABLE', expHTML.join('')));
             }
-            $('#inspector').addClass('active').html(html.join(''));
+            self.renderInspector(html);
         },
         getAndroidWithHeight: function (layerData) {
             return "android:layout_width=\"" + this.unitSize(layerData.rect.width, false) + "\"\r\n" + "android:layout_height=\"" + this.unitSize(layerData.rect.height, false) + "\"\r\n";
@@ -1020,6 +1099,40 @@ var I18N = {},
                 }
             }
             return colorCode;
+        },
+        getAndroidImageSrc: function (layerData) {
+            if (layerData.type != "slice" || typeof(layerData.exportable) == 'undefined' || layerData.exportable == 0) return "";
+            return "android:src=\"\@mipmap/" + layerData.exportable[0].name + "." + layerData.exportable[0].format + "\"\r\n";
+        },
+        getIOSShapeBackground: function (layerData) {
+            var colorCode = "";
+            if (layerData.type != "shape" || typeof(layerData.fills) == 'undefined' || layerData.fills.length == 0) return colorCode;
+            var f;
+            for (f in layerData.fills) {
+                if(layerData.fills[f].fillType == "color"){
+                    return "view.backgroundColor = [UIColor colorWithRed:" + layerData.fills[f].color.r + "/255.0 green:" + layerData.fills[f].color.g  + "/255.0 blue:" + layerData.fills[f].color.b + "/255.0 alpha:" + layerData.fills[f].color.a + "/1.0]\;\r\n";
+                }
+            }
+            return colorCode;
+        },
+        getIOSImageSrc: function (layerData) {
+            if (layerData.type != "slice" || typeof(layerData.exportable) == 'undefined' || layerData.exportable == 0) return "";
+            return "imageView.image = [UIImage imageNamed:\@\"" + layerData.exportable[0].name + "." + layerData.exportable[0].format + "\"];\r\n";
+        },
+        renderInspector: function (html) {
+            var self = this;
+            $('#inspector').addClass('active').html(html.join(''));
+            $('#inspector').find('[data-codeType=' + self.configs.codeType +']').addClass('select');
+            $('#code-tab').unbind('click')
+                    .on('click', 'li', function(){
+                        var $this = $(this), id = $this.attr('data-id');
+                        self.configs.codeType = $(this).attr('data-codeType')
+                        $this.parent().find('li.select').removeClass('select')
+                        $this.addClass('select')
+                        $("#inspector").find('div.item.select').removeClass('select');
+                        $("#inspector").find("#"+id).addClass('select');
+                    });
+            $('#code-tab').find('li.select').trigger('click');
         },
         propertyType: function(title, content){
             return ['<section>',
@@ -1405,7 +1518,8 @@ var I18N = {},
         this.configs = {
                 scale: this.project.scale,
                 unit: this.project.unit,
-                colorFormat: this.project.colorFormat
+                colorFormat: this.project.colorFormat,
+                codeType: 'css'
             };
         this.artboardIndex = (!isNaN(path.artboard))? path.artboard: 0;
         this.current = this.project.artboards[this.artboardIndex];
