@@ -23,14 +23,9 @@ var SM = {
             this.context = context;
 
             this.version = this.context.plugin.version() + "";
-            var SMVersion = this.prefs.stringForKey("SMVersion") + "" || 0;
-
-            if(!SMVersion || SMVersion != this.version ){
-                this.prefs.setObject_forKey (this.version, "SMVersion");
-                NSApplication.sharedApplication().delegate().pluginManager().reloadPlugins();
-                SM.init(context, command);
-                return false;
-            }
+            this.language = lang;
+            this.SMVersion = this.prefs.stringForKey("SMVersion") + "" || 0;
+            this.SMLanguage = this.prefs.stringForKey("SMLanguage") + "" || 0;
 
             this.extend(context);
             this.pluginRoot = this.scriptPath
@@ -49,7 +44,7 @@ var SM = {
             coscript.setShouldKeepAround(true);
 
             if(command && command == "init"){
-                this.menu();
+                this.manifest();
                 this.checkUpdate();
                 return false;
             }
@@ -180,6 +175,31 @@ SM.extend({
         webView.setMainFrameURL_("http://utom.design/measure/package.json?" + timestamp);
     }
 });
+
+SM.extend({
+    manifest: function(){
+      var self = this,
+          manifestURL = self.pluginSketch + "/i18n/manifest-" + lang + ".json";
+
+      if( ( !self.SMVersion || self.SMVersion != this.version ) || ( !self.SMLanguage || self.SMLanguage != self.language ) ){
+        log("manifest")
+        self.prefs.setObject_forKey (self.version, "SMVersion");
+        self.prefs.setObject_forKey (self.language, "SMLanguage");
+        if(NSFileManager.defaultManager().fileExistsAtPath(manifestURL)){
+            manifest = NSString.stringWithContentsOfFile_encoding_error(manifestURL, 4, nil);
+            self.writeFile({
+                content: manifest,
+                path: self.pluginRoot + "/Contents/Sketch/",
+                fileName: "manifest.json"
+            });
+            AppController.sharedInstance().pluginManager().reloadPlugins();
+        }
+
+      }
+
+    }
+})
+
 SM.extend({
     prefix: "SMConfigs2",
     regexNames: /OVERLAY\#|WIDTH\#|HEIGHT\#|TOP\#|RIGHT\#|BOTTOM\#|LEFT\#|VERTICAL\#|HORIZONTAL\#|NOTE\#|PROPERTY\#|LITE\#/,
@@ -211,28 +231,6 @@ SM.extend({
         }
     }
 });
-
-SM.extend({
-    menu: function(){
-        var itemArray = NSApplication.sharedApplication().mainMenu().itemArray();
-        itemArray = this.getMenu(itemArray, "Plugins");
-        itemArray = this.getMenu(itemArray, "Sketch Measure");
-
-        for (var i = 0; i < itemArray.count(); i++) {
-            var menuItem = itemArray[i];
-            menuItem.setTitle(_(menuItem.title()));
-        }
-
-    },
-    getMenu: function(itemArray, title){
-        for (var i = 0; i < itemArray.count(); i++) {
-            var menuItem = itemArray[i];
-            if (menuItem.title() == title) {
-                return menuItem.submenu().itemArray();
-            }
-        }
-    }
-})
 
 // api.js
 SM.extend({
@@ -328,18 +326,18 @@ SM.extend({
     rectToJSON: function(rect, referenceRect) {
         if (referenceRect) {
             return {
-                x: Math.round( rect.x() - referenceRect.x() ),
-                y: Math.round( rect.y() - referenceRect.y() ),
-                width: Math.round( rect.width() ),
-                height: Math.round( rect.height() )
+                x: Math.round( ( rect.x() - referenceRect.x() ) * 10 ) / 10,
+                y: Math.round( ( rect.y() - referenceRect.y() ) * 10 ) / 10,
+                width: Math.round( rect.width() * 10 ) / 10,
+                height: Math.round( rect.height() * 10 ) / 10
             };
         }
 
         return {
-            x: Math.round( rect.x() ),
-            y: Math.round( rect.y() ),
-            width: Math.round( rect.width() ),
-            height: Math.round( rect.height() )
+            x: Math.round( rect.x() * 10 ) / 10,
+            y: Math.round( rect.y() * 10 ) / 10,
+            width: Math.round( rect.width() * 10 ) / 10,
+            height: Math.round( rect.height() * 10 ) / 10
         };
     },
     colorToJSON: function(color) {
@@ -2360,32 +2358,9 @@ SM.extend({
 
             slice.exportOptions().removeAllExportFormats();
 
-            var formats =
-                (this.configs.unit == "dp/sp")? [
-                  { scale: 1 / this.configs.scale, suffix: "" },
-                  { scale: 1.5 / this.configs.scale, suffix: "@1.5x" },
-                  { scale: 2 / this.configs.scale, suffix: "@2x" },
-                  { scale: 3 / this.configs.scale, suffix: "@3x" },
-                  { scale: 4 / this.configs.scale, suffix: "@4x" }
-                ]:
-                (this.configs.unit == "pt")? [
-                  { scale: 1 / this.configs.scale, suffix: "" },
-                  { scale: 2 / this.configs.scale, suffix: "@2x" },
-                  { scale: 3 / this.configs.scale, suffix: "@3x" }
-                ]:
-                [
-                  { scale: 1, suffix: "" }
-                ];
-
-            if(this.configs.unit == "pt"){
-
-            }
-
-            for(format of formats) {
-                var size = slice.exportOptions().addExportFormat();
-                size.setName(format.suffix);
-                size.setScale(format.scale);
-            }
+            var size = slice.exportOptions().addExportFormat();
+                size.setName("");
+                size.setScale(1);
 
             if(!optionKey || this.is(layer, MSSliceLayer)){
                 layer.setIsSelected(0);
@@ -2474,7 +2449,7 @@ SM.extend({
             isEmpty: isEmpty
         }
     },
-    checkMask: function(group, layer, layerData, layerStates){
+    getMask: function(group, layer, layerData, layerStates){
         if(layer.hasClippingMask()){
             if(layerStates.isMaskChildLayer){
                 this.maskCache.push({
@@ -2527,63 +2502,47 @@ SM.extend({
         var self = this,
             exportable = [],
             size, sizes = layer.exportOptions().exportFormats(),
-            sizesInter = sizes.objectEnumerator();
+            fileFormat = this.toJSString(sizes[0].fileFormat()),
+            matchFormat = /png|jpg|tiff|webp/.exec(fileFormat);
+        var formats =
+            (self.configs.unit == "dp/sp" && matchFormat)? [
+              { scale: 1 / self.configs.scale, drawable: "drawable-mdpi/" },
+              { scale: 1.5 / self.configs.scale, drawable: "drawable-hdpi/" },
+              { scale: 2 / self.configs.scale, drawable: "drawable-xhdpi/" },
+              { scale: 3 / self.configs.scale, drawable: "drawable-xxhdpi/" },
+              { scale: 4 / self.configs.scale, drawable: "drawable-xxxhdpi/"}
+            ]:
+            (this.configs.unit == "pt" && matchFormat)? [
+              { scale: 1 / self.configs.scale, suffix: "" },
+              { scale: 2 / self.configs.scale, suffix: "@2x" },
+              { scale: 3 / self.configs.scale, suffix: "@3x" }
+            ]:
+            [
+              { scale: 1, drawablePath: "", suffix: "" }
+            ];
 
-        var androidDensity = {
-            "@0.75x": "ldpi",
-            "@1x": "mdpi",
-            "@1.5x": "hdpi",
-            "@2x": "xhdpi",
-            "@3x": "xxhdpi",
-            "@4x": "xxxhdpi"
-        }
+        for(format of formats) {
+          var drawable = format.drawable || "",
+              suffix = format.suffix || "";
+          self.exportImage({
+                  layer: layer,
+                  path: self.assetsPath,
+                  scale: format.scale,
+                  name: drawable + layer.name(),
+                  suffix: suffix,
+                  format: fileFormat
+              });
 
-        while (size = sizesInter.nextObject()) {
-
-            var size = this.toJSString(size).split(" "),
-                scale = self.toJSNumber(size[0]),
-                format = size[2],
-                suffix = this.toJSString(size[1]),
-                suffix = suffix || "",
-                density = suffix,
-                drawablePath = "";
-
-            if( sizes.count() == 1 && self.configs.scale != 1 && !density ){
-                suffix = "@" + self.configs.scale + "x";
-                density = suffix;
-            }
-
-            if( ( ( sizes.count() == 1 && scale == 1 && self.configs.scale == 1 ) && !density ) || ( sizes.count() > 1 && !density ) ){
-                density = "@1x";
-            }
-
-            // Android
-            if(self.configs.unit == "dp/sp"){
-                drawablePath = "drawable-" + androidDensity[density] + "/";
-                density = androidDensity[density];
-                suffix = "";
-            }
-
-            this.exportImage({
-                    layer: layer,
-                    path: self.assetsPath,
-                    scale: scale,
-                    name: drawablePath + layer.name(),
-                    suffix: suffix,
-                    format: format
-                });
-
-            exportable.push({
-                    name: self.toJSString(layer.name()),
-                    density: density,
-                    format: format,
-                    path: drawablePath + layer.name() + suffix + "." + format
-                });
+          exportable.push({
+                  name: self.toJSString(layer.name()),
+                  format: fileFormat,
+                  path: drawable + layer.name() + suffix + ".png"
+              });
         }
 
         return exportable;
     },
-    checkSlice: function(layer, layerData, symbolLayer){
+    getSlice: function(layer, layerData, symbolLayer){
         var objectID = ( layerData.type == "symbol" )? this.toJSString(layer.symbolMaster().objectID()):
                         ( symbolLayer )? this.toJSString(symbolLayer.objectID()):
                         layerData.objectID;
@@ -2619,7 +2578,7 @@ SM.extend({
             layerData.exportable = this.sliceCache[objectID];
         }
     },
-    checkSymbol: function(artboard, layer, layerData, data){
+    getSymbol: function(artboard, layer, layerData, data){
         if( layerData.type == "symbol" ){
             var self = this,
                 symbolObjectID = this.toJSString(layer.symbolMaster().objectID());
@@ -2685,7 +2644,7 @@ SM.extend({
         }
         return data;
     },
-    checkText: function(artboard, layer, layerData, data){
+    getText: function(artboard, layer, layerData, data){
 
         if(layerData.type == "text" && layer.attributedString().treeAsDictionary().value.attributes.length > 1){
             if(this.hasEmoji(layer)){
@@ -3177,11 +3136,11 @@ SM.extend({
         }
         if(css.length > 0) layerData.css = css;
 
-        this.checkMask(group, layer, layerData, layerStates);
-        this.checkSlice(layer, layerData, symbolLayer);
+        this.getMask(group, layer, layerData, layerStates);
+        this.getSlice(layer, layerData, symbolLayer);
         data.layers.push(layerData);
-        this.checkSymbol(artboard, layer, layerData, data);
-        this.checkText(artboard, layer, layerData, data);
+        this.getSymbol(artboard, layer, layerData, data);
+        this.getText(artboard, layer, layerData, data);
     },
     template: function(content, data) {
         var content = content.replace(new RegExp("\\<\\!\\-\\-\\s([^\\s\\-\\-\\>]+)\\s\\-\\-\\>", "gi"), function($0, $1) {

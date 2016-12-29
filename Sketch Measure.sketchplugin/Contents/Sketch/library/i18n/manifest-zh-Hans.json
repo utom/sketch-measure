@@ -2,122 +2,122 @@
     "author": "utom",
     "commands" : [
         {
-            "name": "Toolbar",
+            "name": "工具栏",
             "identifier": "commandToolbar",
             "shortcut": "ctrl shift b",
             "handler" : "commandToolbar",
             "script": "mark.sketchscript"
         },
         {
-            "name": "Mark Overlay",
+            "name": "标注区域",
             "identifier": "commandOverlays",
             "shortcut": "ctrl shift 1",
             "handler" : "commandOverlays",
             "script": "mark.sketchscript"
         },
         {
-            "name": "Mark Sizes",
+            "name": "标注尺寸",
             "identifier": "commandSizes",
             "shortcut": "ctrl shift 2",
             "handler" : "commandSizes",
             "script": "mark.sketchscript"
         },
         {
-            "name": "Mark Spacings",
+            "name": "标注间隔",
             "identifier": "commandSpacings",
             "shortcut": "ctrl shift 3",
             "handler" : "commandSpacings",
             "script": "mark.sketchscript"
         },
         {
-            "name": "Mark Properties",
+            "name": "标注属性",
             "identifier": "commandProperties",
             "shortcut": "ctrl shift 4",
             "handler" : "commandProperties",
             "script": "mark.sketchscript"
         },
         {
-            "name": "Mark Note",
+            "name": "标注备注",
             "identifier": "commandNote",
             "shortcut": "ctrl shift 5",
             "handler" : "commandNote",
             "script": "mark.sketchscript"
         },
         {
-            "name": "Spec Export",
+            "name": "导出规范",
             "identifier": "commandExport",
             "shortcut": "ctrl shift e",
             "handler" : "commandExport",
             "script": "mark.sketchscript"
         },
         {
-            "name": "Toggle Hidden",
+            "name": "切换隐藏",
             "identifier": "commandHidden",
             "shortcut": "ctrl shift h",
             "handler": "commandHidden",
             "script": "mark.sketchscript"
         },
         {
-            "name": "Toggle Locked",
+            "name": "切换锁定",
             "identifier": "commandLocked",
             "shortcut": "ctrl shift l",
             "handler": "commandLocked",
             "script": "mark.sketchscript"
         },
         {
-            "name": "Clear Marks",
+            "name": "清除标注",
             "identifier": "commandClear",
             "shortcut": "",
             "handler": "commandClear",
             "script": "mark.sketchscript"
         },
         {
-            "name": "Settings",
+            "name": "设置",
             "identifier": "commandSettings",
             "shortcut": "",
             "handler": "commandSettings",
             "script": "mark.sketchscript"
         },
         {
-            "name": "Color Names",
+            "name": "颜色命名",
             "identifier": "commandColor",
             "shortcut": "ctrl shift c",
             "handler": "commandColor",
             "script": "mark.sketchscript"
         },
         {
-            "name": "Make Exportable",
+            "name": "设置切图",
             "identifier": "commandExportable",
             "shortcut": "ctrl shift s",
             "handler": "commandExportable",
             "script": "mark.sketchscript"
         },
         {
-            "name": "Documention",
-            "identifier": "linkHelp",
-            "handler": "linkHelp",
+            "name": "使用文档",
+            "identifier": "linkZhCNHelp",
+            "handler": "linkZhCNHelp",
             "script": "links.sketchscript"
         },
         {
-            "name": "Feedback",
+            "name": "意见反馈",
             "identifier": "linkFeedback",
             "handler": "linkFeedback",
             "script": "links.sketchscript"
         },
         {
-            "name": "Donate",
+            "name": "赞助作者",
             "identifier": "linkDonate",
             "handler": "linkDonate",
             "script": "links.sketchscript"
         },
         {
-            "name": "Design Sites",
+            "name": "设计师导航",
             "identifier": "linkNiudana",
             "handler": "linkNiudana",
             "script": "links.sketchscript"
         },
         {
-            "name": "Sketch.im",
+            "name": "素材下载",
             "identifier": "linkSketchim",
             "handler": "linkSketchim",
             "script": "links.sketchscript"
@@ -156,11 +156,14 @@
             "commandSettings",
             "linkDonate",
             {
-              "title": "Help",
+              "title": "帮助",
               "items": [
                 "linkHelp",
                 "linkFeedback",
-                "linkDonate"
+                "linkDonate",
+                "-",
+                "linkNiudana",
+                "linkSketchim"
               ]
             }
         ],

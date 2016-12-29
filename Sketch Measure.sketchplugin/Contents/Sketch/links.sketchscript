@@ -1,0 +1,28 @@
+function openURL(url){
+  var nsurl = NSURL.URLWithString(url + '?ref=smp');
+  NSWorkspace.sharedWorkspace().openURL(nsurl)
+}
+
+function linkDonate(){
+  openURL('http://utom.design/measure/donate.html');
+}
+
+function linkHelp(){
+  openURL('http://utom.design/measure/how-to.html');
+}
+
+function linkZhCNHelp(){
+  openURL('http://sketch.im/plugins/1');
+}
+
+function linkFeedback(){
+  openURL('https://github.com/utom/sketch-measure/issues/new');
+}
+
+function linkNiudana(){
+  openURL('http://www.niudana.com');
+}
+
+function linkSketchim(){
+  openURL('http://sketch.im');
+}
