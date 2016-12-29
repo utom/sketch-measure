@@ -66,6 +66,14 @@ main{position:relative;height:calc(100vh - 60px);}
 .tab li.current:before{background-position-x:0;}
 .tab li.icon-slices:before{background-position-y:-50px;}
 .tab li.icon-colors:before{background-position-y:-100px;}
+#inspector .code-item{display:none!important;}
+#inspector .code-item.select{display: block!important;}
+#inspector .tab li:before{background-image:url(data:image/png;base64,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);
+}
+#inspector .tab li.select{background-color:rgba(255,255,255,.05);}
+#inspector .tab li.select:before{background-position-x: 0;}
+#inspector .tab li.icon-android-panel:before {background-position-y: -50px;}
+#inspector .tab li.icon-ios-panel:before {background-position-y: -100px;}
 .screen-viewer{position:absolute;width:100vw;height:calc(100vh - 60px);background:#191919 url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgAQMAAABJtOi3AAAABlBMVEUAAAAAAAClZ7nPAAAAAnRSTlMAUvP2/eAAAAARSURBVAjXY6ASYD6ATlAHAADy5gMN0fCqFwAAAABJRU5ErkJggg==);background-size:16px 16px;overflow:auto;}
 .screen-viewer,.screen-viewer .overlay{position:absolute;width:100vw;height:calc(100vh - 60px);background:#191919 url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgAQMAAABJtOi3AAAABlBMVEUAAAAAAAClZ7nPAAAAAnRSTlMAUvP2/eAAAAARSURBVAjXY6ASYD6ATlAHAADy5gMN0fCqFwAAAABJRU5ErkJggg==);background-size:16px 16px;overflow:auto;}
 .screen-viewer .overlay{display:none;position:fixed;top:60px;left:0;background:transparent;overflow:hidden;z-index:2;cursor:none;}
@@ -229,6 +237,9 @@ var I18N = {},
                 unit = units[1];
             }
             return length + unit;
+        },
+        scaleSize: function (length){
+            return Math.round( length / this.configs.scale * 10 ) / 10;
         },
         positive: function(number) {
             return number < 0 ? -number :number;
@@ -982,13 +993,87 @@ var I18N = {},
                 });
                 html.push(this.propertyType('SHADOWS', shadows.join('')));
             }
-            // CSS STYLE
+            // CODE TEMPLATE
             if(layerData.css && layerData.css.length > 0){
-                html.push(this.propertyType('CSS STYLE', [
-                    '<div class="item">',
-                        '<label><textarea id="css" rows="' + (layerData.css.length + 1) + '" readonly="readonly">' + layerData.css.join("\r\n") + '</textarea></label>',
+                var tab =  ['<ul class="tab" id="code-tab" >',
+                        '<li class="icon-css-panel" data-id="css-panel" data-codeType="css"></li>',
+                        '<li class="icon-android-panel" data-id="android-panel" data-codeType="android" ></li>',
+                        '<li class="icon-ios-panel" data-id="ios-panel" data-codeType="ios" ></li>',
+                        '</ul>'].join('')
+                var css = [
+                    '<div id="css-panel" class="code-item item">',
+                    '<label><textarea id="css" rows="' + (layerData.css.length + 1) + '" readonly="readonly">' + layerData.css.join("\r\n") + '</textarea></label>',
                     '</div>'
-                ].join('')));
+                ].join('');
+
+                var android = [];
+                if(layerData.type == "text"){
+                    android.push(
+                            '<div id="android-panel"  class="code-item item">',
+                            '<label><textarea id="css" rows="6" readonly="readonly">'
+                            + "&lt;TextView\r\n" + this.getAndroidWithHeight(layerData)
+                            + "android:text=\"" + layerData.content + "\"\r\n" + "android:textColor=\"" + layerData.color["argb-hex"] + "\"\r\n"
+                            + "android:textSize=\"" + this.unitSize(layerData.fontSize, true) + "\"\r\n" + "/&gt;" + '</textarea></label>',
+                            '</div>'
+                    );
+                }else if (layerData.type == "shape"){
+                    android.push(
+                            '<div id="android-panel" class="code-item item">',
+                            '<label><textarea id="css" rows="6" readonly="readonly">'
+                            + "&lt;View\r\n" + this.getAndroidWithHeight(layerData)
+                            + this.getAndroidShapeBackground(layerData)
+                            + "/&gt;" + '</textarea></label>',
+                            '</div>'
+                    );
+                } else if (layerData.type = "slice"){
+                    android.push(
+                            '<div id="android-panel" class="code-item item">',
+                            '<label><textarea id="css" rows="6" readonly="readonly">'
+                            + "&lt;ImageView\r\n" + this.getAndroidWithHeight(layerData)
+                            + this.getAndroidImageSrc(layerData) + "/&gt;"
+                            + '</textarea></label>',
+                            '</div>'
+                    );
+                }
+
+                var ios = [];
+                if(layerData.type == "text"){
+                    ios.push(
+                            '<div id="ios-panel"  class="code-item item">',
+                            '<label><textarea id="css" rows="6" readonly="readonly">'
+                            + "UILabel *label = [[UILabel alloc] init];\r\n"
+                            + "label.frame = CGRectMake(" + this.scaleSize(layerData.rect.x) + "\, " + this.scaleSize(layerData.rect.y) + "\, "
+                            + this.scaleSize(layerData.rect.width) + "\, " + this.scaleSize(layerData.rect.height) + ");\r\n"
+                            + "label.text = \@\"" + layerData.content + "\";\r\n"
+                            + "label.font = [UIFont fontWithName:\@\"" + layerData.fontFace + "\" size:" + this.scaleSize(layerData.fontSize) + "];\r\n"
+                            + "label.textColor = [UIColor colorWithRed:" + layerData.color.r + "/255.0 green:" + layerData.color.g + "/255.0 blue:" + layerData.color.b + "/255.0 alpha:" + layerData.color.a + "/1.0];\r\n"
+                            + '</textarea></label>',
+                            '</div>'
+                    );
+                }else if (layerData.type == "shape"){
+                    ios.push(
+                            '<div id="ios-panel" class="code-item item">',
+                            '<label><textarea id="css" rows="6" readonly="readonly">'
+                            + "UIView *view = [[UIView alloc] init];\r\n"
+                            + "view.frame = CGRectMake(" + this.scaleSize(layerData.rect.x) + "\, " + this.scaleSize(layerData.rect.y) + "\, "
+                            + this.scaleSize(layerData.rect.width) + "\, " + this.scaleSize(layerData.rect.height) + ");\r\n"
+                            + this.getIOSShapeBackground(layerData)
+                            + '</textarea></label>',
+                            '</div>'
+                    );
+                } else if (layerData.type = "slice"){
+                    ios.push(
+                            '<div id="ios-panel" class="code-item item">',
+                            '<label><textarea id="css" rows="6" readonly="readonly">'
+                            + "UIImageView *imageView = [[UIImageView alloc] init];\r\n"
+                            + "imageView.frame = CGRectMake(" + this.scaleSize(layerData.rect.x) + "\, " + this.scaleSize(layerData.rect.y) + "\, "
+                            + this.scaleSize(layerData.rect.width) + "\, " + this.scaleSize(layerData.rect.height) + ");\r\n"
+                            + this.getIOSImageSrc(layerData)
+                            + '</textarea></label>',
+                            '</div>'
+                    );
+                }
+                html.push(this.propertyType('CODE TEMPLATE', [ tab,css, android.join(''), ios.join('') ].join('')));
             }
             //  EXPORTABLE
             if(layerData.exportable && layerData.exportable.length > 0){
@@ -1005,7 +1090,55 @@ var I18N = {},
                 expHTML.push('</ul>')
                 html.push(this.propertyType('EXPORTABLE', expHTML.join('')));
             }
+            self.renderInspector(html);
+        },
+        getAndroidWithHeight: function (layerData) {
+            return "android:layout_width=\"" + this.unitSize(layerData.rect.width, false) + "\"\r\n" + "android:layout_height=\"" + this.unitSize(layerData.rect.height, false) + "\"\r\n";
+        },
+        getAndroidShapeBackground: function (layerData) {
+            var colorCode = "";
+            if (layerData.type != "shape" || typeof(layerData.fills) == 'undefined' || layerData.fills.length == 0) return colorCode;
+            var f;
+            for (f in layerData.fills) {
+                if(layerData.fills[f].fillType == "color"){
+                    return "android:background=\"" + layerData.fills[f].color["argb-hex"] + "\"\r\n";
+                }
+            }
+            return colorCode;
+        },
+        getAndroidImageSrc: function (layerData) {
+            if (layerData.type != "slice" || typeof(layerData.exportable) == 'undefined' || layerData.exportable == 0) return "";
+            return "android:src=\"\@mipmap/" + layerData.exportable[0].name + "." + layerData.exportable[0].format + "\"\r\n";
+        },
+        getIOSShapeBackground: function (layerData) {
+            var colorCode = "";
+            if (layerData.type != "shape" || typeof(layerData.fills) == 'undefined' || layerData.fills.length == 0) return colorCode;
+            var f;
+            for (f in layerData.fills) {
+                if(layerData.fills[f].fillType == "color"){
+                    return "view.backgroundColor = [UIColor colorWithRed:" + layerData.fills[f].color.r + "/255.0 green:" + layerData.fills[f].color.g  + "/255.0 blue:" + layerData.fills[f].color.b + "/255.0 alpha:" + layerData.fills[f].color.a + "/1.0]\;\r\n";
+                }
+            }
+            return colorCode;
+        },
+        getIOSImageSrc: function (layerData) {
+            if (layerData.type != "slice" || typeof(layerData.exportable) == 'undefined' || layerData.exportable == 0) return "";
+            return "imageView.image = [UIImage imageNamed:\@\"" + layerData.exportable[0].name + "." + layerData.exportable[0].format + "\"];\r\n";
+        },
+        renderInspector: function (html) {
+            var self = this;
             $('#inspector').addClass('active').html(html.join(''));
+            $('#inspector').find('[data-codeType=' + self.configs.codeType +']').addClass('select');
+            $('#code-tab').unbind('click')
+                    .on('click', 'li', function(){
+                        var $this = $(this), id = $this.attr('data-id');
+                        self.configs.codeType = $(this).attr('data-codeType')
+                        $this.parent().find('li.select').removeClass('select')
+                        $this.addClass('select')
+                        $("#inspector").find('div.item.select').removeClass('select');
+                        $("#inspector").find("#"+id).addClass('select');
+                    });
+            $('#code-tab').find('li.select').trigger('click');
         },
         propertyType: function(title, content){
             return ['<section>',
@@ -1255,7 +1388,7 @@ var I18N = {},
                 .on('click', 'h3, .overlay', function(){
                     $('#unit').blur();
                 });
-            $('#inspector').on('click', 'input, textarea', function(){
+            $('#inspector').on('dblclick', 'input, textarea', function(){
                 $(this).select();
             });
             $('#show-notes').change(function(){
@@ -1391,7 +1524,8 @@ var I18N = {},
         this.configs = {
                 scale: this.project.scale,
                 unit: this.project.unit,
-                colorFormat: this.project.colorFormat
+                colorFormat: this.project.colorFormat,
+                codeType: 'css'
             };
         this.artboardIndex = (!isNaN(path.artboard))? path.artboard: 0;
         this.current = this.project.artboards[this.artboardIndex];
