@@ -182,7 +182,6 @@ SM.extend({
           manifestURL = self.pluginSketch + "/i18n/manifest-" + lang + ".json";
 
       if( ( !self.SMVersion || self.SMVersion != this.version ) || ( !self.SMLanguage || self.SMLanguage != self.language ) ){
-        log("manifest")
         self.prefs.setObject_forKey (self.version, "SMVersion");
         self.prefs.setObject_forKey (self.language, "SMLanguage");
         if(NSFileManager.defaultManager().fileExistsAtPath(manifestURL)){
@@ -2498,45 +2497,55 @@ SM.extend({
 
         }
     },
+    getFormats: function( exportFormats ) {
+      var formats = [];
+      for (var i = 0; i < exportFormats.length; i++) {
+        var format = exportFormats[i];
+        formats.push({
+          scale: format.scale(),
+          suffix: format.name(),
+          format: format.fileFormat()
+        })
+      }
+      return formats;
+    },
     getExportable: function(layer, savePath){
         var self = this,
             exportable = [],
             size, sizes = layer.exportOptions().exportFormats(),
             fileFormat = this.toJSString(sizes[0].fileFormat()),
             matchFormat = /png|jpg|tiff|webp/.exec(fileFormat);
-        var formats =
+        var exportFormats =
             (self.configs.unit == "dp/sp" && matchFormat)? [
-              { scale: 1 / self.configs.scale, drawable: "drawable-mdpi/" },
-              { scale: 1.5 / self.configs.scale, drawable: "drawable-hdpi/" },
-              { scale: 2 / self.configs.scale, drawable: "drawable-xhdpi/" },
-              { scale: 3 / self.configs.scale, drawable: "drawable-xxhdpi/" },
-              { scale: 4 / self.configs.scale, drawable: "drawable-xxxhdpi/"}
+              { scale: 1 / self.configs.scale, drawable: "drawable-mdpi/", format: "png" },
+              { scale: 1.5 / self.configs.scale, drawable: "drawable-hdpi/", format: "png" },
+              { scale: 2 / self.configs.scale, drawable: "drawable-xhdpi/", format: "png" },
+              { scale: 3 / self.configs.scale, drawable: "drawable-xxhdpi/", format: "png" },
+              { scale: 4 / self.configs.scale, drawable: "drawable-xxxhdpi/", format: "png" }
             ]:
             (this.configs.unit == "pt" && matchFormat)? [
-              { scale: 1 / self.configs.scale, suffix: "" },
-              { scale: 2 / self.configs.scale, suffix: "@2x" },
-              { scale: 3 / self.configs.scale, suffix: "@3x" }
+              { scale: 1 / self.configs.scale, suffix: "", format: "png" },
+              { scale: 2 / self.configs.scale, suffix: "@2x", format: "png" },
+              { scale: 3 / self.configs.scale, suffix: "@3x", format: "png" }
             ]:
-            [
-              { scale: 1, drawablePath: "", suffix: "" }
-            ];
+            self.getFormats(sizes);
 
-        for(format of formats) {
-          var drawable = format.drawable || "",
-              suffix = format.suffix || "";
+        for(exportFormat of exportFormats) {
+          var drawable = exportFormat.drawable || "",
+              suffix = exportFormat.suffix || "";
           self.exportImage({
                   layer: layer,
                   path: self.assetsPath,
-                  scale: format.scale,
+                  scale: exportFormat.scale,
                   name: drawable + layer.name(),
                   suffix: suffix,
-                  format: fileFormat
+                  format: exportFormat.format
               });
 
           exportable.push({
                   name: self.toJSString(layer.name()),
                   format: fileFormat,
-                  path: drawable + layer.name() + suffix + ".png"
+                  path: drawable + layer.name() + suffix + "." + exportFormat.format
               });
         }
 
