@@ -24,6 +24,7 @@ var SM = {
 
             this.version = this.context.plugin.version() + "";
             this.language = lang;
+            this.SketchVersion = this.context.api()._metadata.appVersion;
             this.SMVersion = this.prefs.stringForKey("SMVersion") + "" || 0;
             this.SMLanguage = this.prefs.stringForKey("SMLanguage") + "" || 0;
 
@@ -492,7 +493,7 @@ SM.extend({
     },
     updateContext: function(){
         this.context.document = NSDocumentController.sharedDocumentController().currentDocument();
-        this.context.selection = this.context.document.selectedLayers();
+        this.context.selection = this.SketchVersion >= "42"? this.context.document.selectedLayers().layers(): this.context.document.selectedLayers();
 
         return this.context;
     }
@@ -2500,10 +2501,26 @@ SM.extend({
     getFormats: function( exportFormats ) {
       var formats = [];
       for (var i = 0; i < exportFormats.length; i++) {
-        var format = exportFormats[i];
+        var format = exportFormats[i],
+            prefix = "",
+            suffix = "";
+
+        if(format.namingScheme){
+          if(format.namingScheme()){
+            prefix = format.name();
+          }
+          else{
+            suffix = format.name();
+          }
+        }
+        else{
+          suffix = format.name();
+        }
+
         formats.push({
           scale: format.scale(),
-          suffix: format.name(),
+          prefix: prefix,
+          suffix: suffix,
           format: format.fileFormat()
         })
       }
@@ -2517,11 +2534,11 @@ SM.extend({
             matchFormat = /png|jpg|tiff|webp/.exec(fileFormat);
         var exportFormats =
             (self.configs.unit == "dp/sp" && matchFormat)? [
-              { scale: 1 / self.configs.scale, drawable: "drawable-mdpi/", format: "png" },
-              { scale: 1.5 / self.configs.scale, drawable: "drawable-hdpi/", format: "png" },
-              { scale: 2 / self.configs.scale, drawable: "drawable-xhdpi/", format: "png" },
-              { scale: 3 / self.configs.scale, drawable: "drawable-xxhdpi/", format: "png" },
-              { scale: 4 / self.configs.scale, drawable: "drawable-xxxhdpi/", format: "png" }
+              { scale: 1 / self.configs.scale, prefix: "drawable-mdpi/", format: "png" },
+              { scale: 1.5 / self.configs.scale, prefix: "drawable-hdpi/", format: "png" },
+              { scale: 2 / self.configs.scale, prefix: "drawable-xhdpi/", format: "png" },
+              { scale: 3 / self.configs.scale, prefix: "drawable-xxhdpi/", format: "png" },
+              { scale: 4 / self.configs.scale, prefix: "drawable-xxxhdpi/", format: "png" }
             ]:
             (this.configs.unit == "pt" && matchFormat)? [
               { scale: 1 / self.configs.scale, suffix: "", format: "png" },
@@ -2531,13 +2548,14 @@ SM.extend({
             self.getFormats(sizes);
 
         for(exportFormat of exportFormats) {
-          var drawable = exportFormat.drawable || "",
+          var prefix = exportFormat.prefix || "",
               suffix = exportFormat.suffix || "";
           self.exportImage({
                   layer: layer,
                   path: self.assetsPath,
                   scale: exportFormat.scale,
-                  name: drawable + layer.name(),
+                  name: layer.name(),
+                  prefix: prefix,
                   suffix: suffix,
                   format: exportFormat.format
               });
@@ -2545,7 +2563,7 @@ SM.extend({
           exportable.push({
                   name: self.toJSString(layer.name()),
                   format: fileFormat,
-                  path: drawable + layer.name() + suffix + "." + exportFormat.format
+                  path: prefix + layer.name() + suffix + "." + exportFormat.format
               });
         }
 
@@ -3044,6 +3062,7 @@ SM.extend({
                 path: this.toJSString(NSTemporaryDirectory()),
                 scale: 1,
                 name: "preview",
+                prefix: "",
                 suffix: "",
                 format: "png"
             }),
@@ -3057,6 +3076,7 @@ SM.extend({
         savePathName.push(
                 options.path,
                 "/",
+                options.prefix,
                 options.name,
                 options.suffix,
                 ".",
