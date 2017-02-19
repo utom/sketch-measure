@@ -2830,7 +2830,7 @@ SM.extend({
         return this.SMPanel({
             url: this.pluginSketch + "/panel/export.html",
             width: 320,
-            height: 567,
+            height: 577,
             data: data,
             callback: function( data ){
                 var allData = self.allData;
