@@ -3125,11 +3125,28 @@ SM.extend({
             layer.setTextBehaviour(0); // fixed for v40
         } // fixed for v40
 
+        var exportLayerRect;
+        
+        if(true){
+            // export the influence rect.(include the area of shadows and outside borders...)
+            var influenceCGRect = layer.absoluteInfluenceRect();
+            exportLayerRect = {
+                        x: function(){return influenceCGRect.origin.x;},
+                        y: function(){return influenceCGRect.origin.y;},
+                        width: function(){return influenceCGRect.size.width;},
+                        height: function(){return influenceCGRect.size.height;}
+            }
+        }
+        else{
+            // export the default rect.
+            exportLayerRect = layer.absoluteRect();
+        }
+        
         var layerData = {
                     objectID: this.toJSString( layer.objectID() ),
                     type: layerType,
                     name: this.toHTMLEncode(this.emojiToEntities(layer.name())),
-                    rect: this.rectToJSON(layer.absoluteRect(), artboardRect)
+                    rect: this.rectToJSON(exportLayerRect, artboardRect)
                 };
 
         if(symbolLayer) layerData.objectID = this.toJSString( symbolLayer.objectID() );
