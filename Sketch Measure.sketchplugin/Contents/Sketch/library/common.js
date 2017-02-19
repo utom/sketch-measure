@@ -3126,8 +3126,7 @@ SM.extend({
         } // fixed for v40
 
         var exportLayerRect;
-        
-        if(true){
+        if(true && layerType != "text"){
             // export the influence rect.(include the area of shadows and outside borders...)
             var influenceCGRect = layer.absoluteInfluenceRect();
             exportLayerRect = {
