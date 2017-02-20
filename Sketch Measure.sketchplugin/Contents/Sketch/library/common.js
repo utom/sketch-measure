@@ -2790,6 +2790,11 @@ SM.extend({
             data.exportOption = true;
         }
 
+        data.exportInfluenceRect = self.configs.exportInfluenceRect;
+        if(data.exportInfluenceRect == undefined){
+            data.exportInfluenceRect = false;
+        }
+
         self.configs.order = (self.configs.order)? self.configs.order: "positive";
         data.order = self.configs.order;
 
@@ -2868,6 +2873,7 @@ SM.extend({
 
                 self.configs = self.setConfigs({
                     exportOption: data.exportOption,
+                    exportInfluenceRect: data.exportInfluenceRect,
                     order: data.order
                 });
             }
@@ -3126,7 +3132,8 @@ SM.extend({
         } // fixed for v40
 
         var exportLayerRect;
-        if(true && layerType != "text"){
+        log(this.configs);
+        if(this.configs.exportInfluenceRect == true && layerType != "text"){
             // export the influence rect.(include the area of shadows and outside borders...)
             var influenceCGRect = layer.absoluteInfluenceRect();
             exportLayerRect = {
