@@ -1,4 +1,9 @@
-# Add new feature to Sketch Measure: Export Layer's influence Rect to Spec.
+# A new feature for Sketch Measure: Export Layer's influence Rect to Spec.
+
+Layer's influence rect includes the area of shadows and outside borders, it's exactly the same size with the exported image.
+
+Sometime, shadows will not implement by engineers, it should be a part of image. Designer need to show the influence rect in for engineers, not the regular rect. This is the feature using for.
+
 
 # Sketch Measure
 
