@@ -20,12 +20,10 @@ Make it fun to create specs for developers and teammates. **Sketch 41.* support*
 - [How to](http://utom.design/measure/how-to.html)
 - [中文说明](http://sketch.im/plugins/1)
 
-#### [Sponsor me to buy a new iPhone](http://utom.design/measure/donate.html)
-
 ![Logo](http://utom.design/logo@2x.png)
 
 ## Installing Plugins
-1. [Download the ZIP file](https://github.com/utom/sketch-measure/archive/master.zip) and unzip
+1. [Download the ZIP file](https://github.com/forestlin1212/sketch-measure/archive/master.zip) and unzip
 2. Open `Sketch Measure.sketchplugin`
 
 ## New UI
