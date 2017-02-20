@@ -2,8 +2,8 @@
 
 Layer's influence rect includes the area of shadows and outside borders, it's exactly the same size with the exported image.
 
-![regular-rect](https://i1.hoopchina.com.cn/blogfile/201702/20/BbsImg148759897674324_600x601.png)
-![influence-rect](https://i1.hoopchina.com.cn/blogfile/201702/20/BbsImg148759897548900_600x600.png)
+![regular-rect](https://i1.hoopchina.com.cn/blogfile/201702/20/BbsImg14875992091129_300x300big.png)
+![influence-rect](https://i1.hoopchina.com.cn/blogfile/201702/20/BbsImg14875992091129_300x300big.png)
 
 Sometime, shadows will not implement by engineers, it should be a part of image. Designer need to show the influence rect in for engineers, not the regular rect. This is the feature using for.
 
