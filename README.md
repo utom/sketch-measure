@@ -1,3 +1,5 @@
+# Add new feature to Sketch Measure: Export Layer's influence Rect to Spec.
+
 # Sketch Measure
 
 Make it fun to create specs for developers and teammates. **Sketch 41.* support**.
