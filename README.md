@@ -2,7 +2,7 @@
 
 Layer's influence rect includes the area of shadows and outside borders, it's exactly the same size with the exported image.
 
-                          Regular rect                                                      Influence rect
+                                       Regular rect                                                           Influence rect
               
 ![regular-rect](https://pic4.zhimg.com/v2-c1792b8300fca0cdc90b564a27b8da8b_b.png)
 ![influence-rect](https://pic3.zhimg.com/v2-a639e906f8fea576da8d9a8cc1cc752a_b.png)
