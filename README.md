@@ -4,8 +4,8 @@ Layer's influence rect includes the area of shadows and outside borders, it's ex
 
                                       Regular rect                                                                       Influence rect
               
-![regular-rect](https://i1.hoopchina.com.cn/blogfile/201702/20/BbsImg148759987287898_400x400big.png)
-![influence-rect](https://i1.hoopchina.com.cn/blogfile/201702/20/BbsImg148759987158747_400x399big.png)
+![regular-rect](https://pic4.zhimg.com/v2-c1792b8300fca0cdc90b564a27b8da8b_b.png)
+![influence-rect](https://pic3.zhimg.com/v2-a639e906f8fea576da8d9a8cc1cc752a_b.png)
 
 Sometime, shadows will not implement by engineers, it should be a part of image. Designer need to show the influence rect to engineers, not the regular rect. This is the feature using for. 
 
