@@ -3,7 +3,7 @@
 Layer's influence rect includes the area of shadows and outside borders, it's exactly the same size with the exported image.
 
                                        Regular rect                                                           Influence rect
-              
+​              
 ![regular-rect](https://pic4.zhimg.com/v2-c1792b8300fca0cdc90b564a27b8da8b_b.png)
 ![influence-rect](https://pic3.zhimg.com/v2-a639e906f8fea576da8d9a8cc1cc752a_b.png)
 
@@ -23,7 +23,7 @@ Make it fun to create specs for developers and teammates. **Sketch 41.* support*
 ![Logo](http://utom.design/logo@2x.png)
 
 ## Installing Plugins
-1. [Download the ZIP file](https://github.com/forestlin1212/sketch-measure/archive/master.zip) and unzip
+1. [Download the ZIP file](https://github.com/utom/sketch-measure/archive/master.zip) and unzip
 2. Open `Sketch Measure.sketchplugin`
 
 ## New UI
@@ -50,7 +50,9 @@ To create your own custom shortcuts, go to Keyboard in your System Preferences a
 
 ##Contributors
 * Author [@utom](http://utom.design)
-* [@cute](http://liguangming.com) ([SketchI18N](https://github.com/cute/SketchI18N)) and [@esseak](https://github.com/esseak)
+* [@cute](http://liguangming.com) ([SketchI18N](https://github.com/cute/SketchI18N))
+* [@forestlin1212](https://github.com/forestlin1212)
+* [@ashung](https://github.com/Ashung) ([Automate-Sketch](https://github.com/Ashung/Automate-Sketch))
 * [@mkl87](https://github.com/mkl87), [@Skykai521](https://github.com/Skykai521), [@whyfind](https://github.com/whyfind) and [@Nora](https://www.behance.net/liyinuo)
 * @Kai and [@Zih-Hong](http://zihhonglin.com)
 * And [Other](https://github.com/utom/sketch-measure/contributors)

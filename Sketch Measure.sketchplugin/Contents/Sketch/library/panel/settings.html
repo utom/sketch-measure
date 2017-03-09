@@ -24,7 +24,7 @@
             if($('#' + id).length <= 0) return 'custom';
 
             return id;
-            
+
         },
         getScaleWidthUnit = function( id ){
             if (id == 'custom') return false;
@@ -75,6 +75,7 @@
                                     '<li class="sub-title">' + _('Web View') + '</li>',
                                     '<li><label id="rem-12"><input type="radio" name="resolution-type" value="rem-12"><span>' + _('CSS Rem') + ' 12px</span></label></li>',
                                     '<li><label id="rem-14"><input type="radio" name="resolution-type" value="rem-14"><span>' + _('CSS Rem') + ' 14px</span></label></li>',
+                                    '<li><label id="rem-16"><input type="radio" name="resolution-type" value="rem-16"><span>' + _('CSS Rem') + ' 16px</span></label></li>',
                                 '</ul>',
                             '</div>',
                         '</div>',
@@ -119,7 +120,7 @@
                 if(!scaleWidthUnit) return false;
                 $('input[name=scale]').val(scaleWidthUnit.scale);
                 $('input[name=unit]').val(scaleWidthUnit.unit);
-            }); 
+            });
 
             checkResolution(id);
             $('#' + data.colorFormat).click();

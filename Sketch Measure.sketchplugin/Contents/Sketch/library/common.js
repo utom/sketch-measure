@@ -286,20 +286,19 @@ SM.extend({
         // return str.replace(/\&/g, "&amp;").replace(/\"/g, "&quot;").replace(/\'/g, "&#39;").replace(/\</g, "&lt;").replace(/\>/g, '&gt;');
     },
     emojiToEntities: function(str) {
-      var emojiRanges = [
-            "\ud83c[\udf00-\udfff]", // U+1F300 to U+1F3FF
-            "\ud83d[\udc00-\ude4f]", // U+1F400 to U+1F64F
-            "\ud83d[\ude80-\udeff]"  // U+1F680 to U+1F6FF
-          ];
+      var self = this,
+          emojiRegExp = new RegExp("(?:[\u2700-\u27bf]|(?:\ud83c[\udde6-\uddff]){2}|[\ud800-\udbff][\udc00-\udfff]|[\u0023-\u0039]\ufe0f?\u20e3|\u3299|\u3297|\u303d|\u3030|\u24c2|\ud83c[\udd70-\udd71]|\ud83c[\udd7e-\udd7f]|\ud83c\udd8e|\ud83c[\udd91-\udd9a]|\ud83c[\udde6-\uddff]|[\ud83c[\ude01-\ude02]|\ud83c\ude1a|\ud83c\ude2f|[\ud83c[\ude32-\ude3a]|[\ud83c[\ude50-\ude51]|\u203c|\u2049|[\u25aa-\u25ab]|\u25b6|\u25c0|[\u25fb-\u25fe]|\u00a9|\u00ae|\u2122|\u2139|\ud83c\udc04|[\u2600-\u26FF]|\u2b05|\u2b06|\u2b07|\u2b1b|\u2b1c|\u2b50|\u2b55|\u231a|\u231b|\u2328|\u23cf|[\u23e9-\u23f3]|[\u23f8-\u23fa]|\ud83c\udccf|\u2934|\u2935|[\u2190-\u21ff])", "g");
         return str.replace(
-              new RegExp(emojiRanges.join("|"), "g"),
+              emojiRegExp,
               function(match) {
-                  var c = encodeURIComponent(match).split("%"),
-                      h = ((parseInt(c[1], 16) & 0x0F))
-                        + ((parseInt(c[2], 16) & 0x1F) << 12)
-                        + ((parseInt(c[3], 16) & 0x3F) << 6)
-                        + (parseInt(c[4], 16) & 0x3F);
-                  return "&#" + h.toString() + ";";
+                  var u = "";
+                  for (var i = 0; i < match.length; i++) {
+                      if( !(i%2) ){
+                        u += "&#" + match.codePointAt(i)
+                      }
+                  }
+
+                  return u;
               });
     },
     toSlug: function(str){
@@ -2327,31 +2326,18 @@ SM.extend({
             var layer = this.selection[i],
                 slice = layer;
 
-            if(optionKey && !this.is(layer, MSSliceLayer)){
+            if(!optionKey && !this.is(layer, MSSliceLayer)){
                 slice = MSSliceLayer.sliceLayerFromLayer(layer);
 
-                var layerRect = this.getRect(layer),
-                    sliceRect = this.getRect(slice);
+                var msRect = MSRect.rectWithUnionOfRects([
+                        MSRect.alloc().initWithRect(slice.absoluteRect().rect()),
+                        MSRect.alloc().initWithRect(layer.absoluteRect().rect())
+                    ]);
 
-                if(layerRect.width > sliceRect.width){
-                    sliceRect.setX(layerRect.x);
-                    sliceRect.setWidth(layerRect.width);
-                }
-
-                if(layerRect.height > sliceRect.height){
-                    sliceRect.setY(layerRect.y);
-                    sliceRect.setHeight(layerRect.height);
-                }
+                slice.absoluteRect().setRect(msRect.rect());
 
                 if(this.is(layer, MSLayerGroup)){
-                    var sliceCopy = slice.copy();
-                    layer.addLayers([sliceCopy]);
-
-                    var sliceCopyRect = this.getRect(sliceCopy);
-                    sliceCopyRect.setX(sliceRect.x);
-                    sliceCopyRect.setY(sliceRect.y);
-                    this.removeLayer(slice);
-                    slice = sliceCopy;
+                    slice.moveToLayer_beforeLayer(layer, layer.firstLayer());
                     slice.exportOptions().setLayerOptions(2);
                 }
             }
@@ -2362,7 +2348,7 @@ SM.extend({
                 size.setName("");
                 size.setScale(1);
 
-            if(!optionKey || this.is(layer, MSSliceLayer)){
+            if(optionKey || this.is(layer, MSSliceLayer)){
                 layer.setIsSelected(0);
                 layer.setIsSelected(1);
             }
@@ -2835,7 +2821,7 @@ SM.extend({
         return this.SMPanel({
             url: this.pluginSketch + "/panel/export.html",
             width: 320,
-            height: 577,
+            height: 597,
             data: data,
             callback: function( data ){
                 var allData = self.allData;
@@ -3132,7 +3118,6 @@ SM.extend({
         } // fixed for v40
 
         var exportLayerRect;
-        log(this.configs);
         if(this.configs.exportInfluenceRect == true && layerType != "text"){
             // export the influence rect.(include the area of shadows and outside borders...)
             var influenceCGRect = layer.absoluteInfluenceRect();
@@ -3147,7 +3132,7 @@ SM.extend({
             // export the default rect.
             exportLayerRect = layer.absoluteRect();
         }
-        
+
         var layerData = {
                     objectID: this.toJSString( layer.objectID() ),
                     type: layerType,
