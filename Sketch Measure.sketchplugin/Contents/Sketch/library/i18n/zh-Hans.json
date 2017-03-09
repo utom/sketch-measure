@@ -89,6 +89,7 @@
     "Import complete!": "导入完成!",
     "Processing layer %@ of %@": "图层处理中... %@ \/ %@",
     "Advanced mode": "高级模式",
+    "Export layer influence rect": "导出图层的影响尺寸",
     "Set Name...": "设置名称...",
     "Import Colors": "导入颜色",
     "Export Colors": "导出颜色",

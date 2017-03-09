@@ -2790,6 +2790,11 @@ SM.extend({
             data.exportOption = true;
         }
 
+        data.exportInfluenceRect = self.configs.exportInfluenceRect;
+        if(data.exportInfluenceRect == undefined){
+            data.exportInfluenceRect = false;
+        }
+
         self.configs.order = (self.configs.order)? self.configs.order: "positive";
         data.order = self.configs.order;
 
@@ -2830,7 +2835,7 @@ SM.extend({
         return this.SMPanel({
             url: this.pluginSketch + "/panel/export.html",
             width: 320,
-            height: 567,
+            height: 577,
             data: data,
             callback: function( data ){
                 var allData = self.allData;
@@ -2868,6 +2873,7 @@ SM.extend({
 
                 self.configs = self.setConfigs({
                     exportOption: data.exportOption,
+                    exportInfluenceRect: data.exportInfluenceRect,
                     order: data.order
                 });
             }
@@ -3125,11 +3131,28 @@ SM.extend({
             layer.setTextBehaviour(0); // fixed for v40
         } // fixed for v40
 
+        var exportLayerRect;
+        log(this.configs);
+        if(this.configs.exportInfluenceRect == true && layerType != "text"){
+            // export the influence rect.(include the area of shadows and outside borders...)
+            var influenceCGRect = layer.absoluteInfluenceRect();
+            exportLayerRect = {
+                        x: function(){return influenceCGRect.origin.x;},
+                        y: function(){return influenceCGRect.origin.y;},
+                        width: function(){return influenceCGRect.size.width;},
+                        height: function(){return influenceCGRect.size.height;}
+            }
+        }
+        else{
+            // export the default rect.
+            exportLayerRect = layer.absoluteRect();
+        }
+        
         var layerData = {
                     objectID: this.toJSString( layer.objectID() ),
                     type: layerType,
                     name: this.toHTMLEncode(this.emojiToEntities(layer.name())),
-                    rect: this.rectToJSON(layer.absoluteRect(), artboardRect)
+                    rect: this.rectToJSON(exportLayerRect, artboardRect)
                 };
 
         if(symbolLayer) layerData.objectID = this.toJSString( symbolLayer.objectID() );

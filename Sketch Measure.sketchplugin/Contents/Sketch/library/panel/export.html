@@ -246,6 +246,17 @@
                                     _('Advanced mode'),
                                 '</label>',
                             '</div>',
+                            //export influence rect option
+                            '<div class="item">',
+                                '<label>',
+                                    '<div class="checkbox">',
+                                        '<input id="export-influenceRect" type="checkbox" name="export-influenceRect" value="0">',
+                                        '<label for="export-influenceRect"></label>',
+                                    '</div>',
+                                    _('Export layer influence rect'),
+                                '</label>',
+                            '</div>',
+
                         '</div>',
                         '<div class="footer">',
                             '<button id="submit" class="submit" disabled="disabled">' + _('Export') + '</button>',
@@ -300,6 +311,10 @@
 
             if(data.exportOption){
                 $('#export-option').attr('checked', true);
+            }
+
+            if(data.exportInfluenceRect){
+                $('#export-influenceRect').attr('checked', true);
             }
 
             $('.checkbutton')
@@ -376,6 +391,9 @@
                 });
                 data.exportOption = false;
                 if( $('input[name=export-option]:checked').length > 0 ) data.exportOption = true;
+
+                data.exportInfluenceRect = false;
+                if( $('input[name=export-influenceRect]:checked').length > 0 ) data.exportInfluenceRect = true;
 
                 data.order = $('input[name=order]:checked').val();
 
