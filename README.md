@@ -26,6 +26,11 @@ Make it fun to create specs for developers and teammates. **Sketch 41.* support*
 1. [Download the ZIP file](https://github.com/utom/sketch-measure/archive/master.zip) and unzip
 2. Open `Sketch Measure.sketchplugin`
 
+## Install with Sketch Runner
+With Sketch Runner, just go to the `install` command and search for `Sketch Measure`. Runner allows you to manage plugins and do much more to speed up your workflow in Sketch. [Download Runner here](http://www.sketchrunner.com).
+
+![Install with Sketch Runner](sketch-measure-runner.png)
+
 ## New UI
 Friendly user interface offers you a more intuitive way of making marks.
 
