@@ -127,7 +127,7 @@
             "identifier": "commandInit",
             "handlers": {
                     "actions": {
-                        "OpenDocument": "commandInit",
+                        "OpenDocument": "commandInit"
                     }
                 },
             "script": "mark.sketchscript"
