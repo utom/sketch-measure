@@ -28,11 +28,10 @@ Make it fun to create specs for developers and teammates. **Sketch 41.* support*
 
 ## Install with Sketch Runner
 With Sketch Runner, just go to the `install` command and search for `Sketch Measure`. Runner allows you to manage plugins and do much more to speed up your workflow in Sketch. [Download Runner here](http://www.sketchrunner.com).
+![Install with Sketch Runner](sketch-measure-runner.png)
 
 ## Install with Sketchpacks
 [![Install PLUGIN NAME with Sketchpacks](http://sketchpacks-com.s3.amazonaws.com/assets/badges/sketchpacks-badge-install.png "Install PLUGIN NAME with Sketchpacks")](https://sketchpacks.com/YOUR_NAME/PLUGIN_NAME/install)
-
-![Install with Sketch Runner](sketch-measure-runner.png)
 
 ## New UI
 Friendly user interface offers you a more intuitive way of making marks.
