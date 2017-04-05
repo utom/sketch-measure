@@ -7,7 +7,7 @@ Layer's influence rect includes the area of shadows and outside borders, it's ex
 ![regular-rect](https://pic4.zhimg.com/v2-c1792b8300fca0cdc90b564a27b8da8b_b.png)
 ![influence-rect](https://pic3.zhimg.com/v2-a639e906f8fea576da8d9a8cc1cc752a_b.png)
 
-Sometime, shadows will not implement by engineers, it should be a part of image. Designer need to show the influence rect to engineers, not the regular rect. This is the feature using for. 
+Sometime, shadows will not implement by engineers, it should be a part of image. Designer need to show the influence rect to engineers, not the regular rect. This is the feature using for.
 
 Just select the option in Export UI
 
@@ -28,6 +28,9 @@ Make it fun to create specs for developers and teammates. **Sketch 41.* support*
 
 ## Install with Sketch Runner
 With Sketch Runner, just go to the `install` command and search for `Sketch Measure`. Runner allows you to manage plugins and do much more to speed up your workflow in Sketch. [Download Runner here](http://www.sketchrunner.com).
+
+## Install with Sketchpacks
+[![Install PLUGIN NAME with Sketchpacks](http://sketchpacks-com.s3.amazonaws.com/assets/badges/sketchpacks-badge-install.png "Install PLUGIN NAME with Sketchpacks")](https://sketchpacks.com/YOUR_NAME/PLUGIN_NAME/install)
 
 ![Install with Sketch Runner](sketch-measure-runner.png)
 
@@ -53,7 +56,7 @@ To create your own custom shortcuts, go to Keyboard in your System Preferences a
 
 ![Settings](http://sketchshortcuts.com/images/mac@2x.png)
 
-##Contributors
+## Contributors
 * Author [@utom](http://utom.design)
 * [@cute](http://liguangming.com) ([SketchI18N](https://github.com/cute/SketchI18N))
 * [@forestlin1212](https://github.com/forestlin1212)
@@ -62,7 +65,7 @@ To create your own custom shortcuts, go to Keyboard in your System Preferences a
 * @Kai and [@Zih-Hong](http://zihhonglin.com)
 * And [Other](https://github.com/utom/sketch-measure/contributors)
 
-##Contact
+## Contact
 
 * Follow [@utom](http://twitter.com/utom) on Twitter
 * Email <utombox@gmail.com>
