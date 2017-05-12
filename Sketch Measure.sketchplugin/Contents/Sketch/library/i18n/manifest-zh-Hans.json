@@ -11,7 +11,7 @@
         {
             "name": "工具栏 2.0(beta)",
             "identifier": "commandToolbar2",
-            "shortcut": "ctrl shift b",
+            "shortcut": "ctrl shift x",
             "handler" : "commandToolbar2",
             "script": "mark.sketchscript"
         },
