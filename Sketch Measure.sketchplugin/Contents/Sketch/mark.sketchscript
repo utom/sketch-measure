@@ -90,7 +90,7 @@ function commandToolbar2(context) {
       return Configs.sync();
     },
     handlers( data ){
-      Object.keys(data).map( (prop) => {
+      Object.keys(data).map( function(prop){
           Configs[prop] = data[prop];
       })
       Configs.save()
