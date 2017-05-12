@@ -19,12 +19,13 @@ function _(str, data){
 
 var SM = {
         init: function(context, command){
+            Sketch = new API();
+            ga = new Analytics(context);
+
             this.prefs = NSUserDefaults.standardUserDefaults();
             this.context = context;
-
             this.version = this.context.plugin.version() + "";
             this.language = lang;
-            this.SketchVersion = this.context.api()._metadata.appVersion;
             this.SMVersion = this.prefs.stringForKey("SMVersion") + "" || 0;
             this.SMLanguage = this.prefs.stringForKey("SMLanguage") + "" || 0;
 
@@ -45,7 +46,6 @@ var SM = {
             coscript.setShouldKeepAround(true);
 
             if(command && command == "init"){
-                this.manifest();
                 this.checkUpdate();
                 return false;
             }
@@ -176,29 +176,6 @@ SM.extend({
         webView.setMainFrameURL_("http://utom.design/measure/package.json?" + timestamp);
     }
 });
-
-SM.extend({
-    manifest: function(){
-      var self = this,
-          manifestURL = self.pluginSketch + "/i18n/manifest-" + lang + ".json";
-
-      if( ( !self.SMVersion || self.SMVersion != this.version ) || ( !self.SMLanguage || self.SMLanguage != self.language ) ){
-        self.prefs.setObject_forKey (self.version, "SMVersion");
-        self.prefs.setObject_forKey (self.language, "SMLanguage");
-        if(NSFileManager.defaultManager().fileExistsAtPath(manifestURL)){
-            manifest = NSString.stringWithContentsOfFile_encoding_error(manifestURL, 4, nil);
-            self.writeFile({
-                content: manifest,
-                path: self.pluginRoot + "/Contents/Sketch/",
-                fileName: "manifest.json"
-            });
-            AppController.sharedInstance().pluginManager().reloadPlugins();
-        }
-
-      }
-
-    }
-})
 
 SM.extend({
     prefix: "SMConfigs2",
@@ -492,7 +469,7 @@ SM.extend({
     },
     updateContext: function(){
         this.context.document = NSDocumentController.sharedDocumentController().currentDocument();
-        this.context.selection = this.SketchVersion >= "42"? this.context.document.selectedLayers().layers(): this.context.document.selectedLayers();
+        this.context.selection = this.context.document.selectedLayers().layers();
 
         return this.context;
     }
@@ -2763,6 +2740,7 @@ SM.extend({
         return savePanel.URL().path();
     },
     exportPanel: function(){
+        if(ga) ga.sendEvent('spec', 'export to spec viewer');
         var self = this;
         this.artboardsData = [];
         this.selectionArtboards = {};

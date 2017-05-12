@@ -9,6 +9,13 @@
             "script": "mark.sketchscript"
         },
         {
+            "name": "Toolbar 2.0 (beta)",
+            "identifier": "commandToolbar2",
+            "shortcut": "ctrl shift x",
+            "handler" : "commandToolbar2",
+            "script": "mark.sketchscript"
+        },
+        {
             "name": "Mark Overlay",
             "identifier": "commandOverlays",
             "shortcut": "ctrl shift 1",
@@ -138,6 +145,7 @@
         "shortcut" : "",
         "items" : [
             "commandToolbar",
+            "commandToolbar2",
             "-",
             "commandOverlays",
             "commandSizes",
@@ -168,7 +176,7 @@
     },
     "identifier": "com.utom.measure",
     "homepage": "http://utom.design/measure/",
-    "version": "2.5",
+    "version": "2.6",
     "description" : "Make it a fun to create spec for developers and teammates",
     "authorEmail" : "utombox@gmail.com",
     "name" : "Sketch Measure"
