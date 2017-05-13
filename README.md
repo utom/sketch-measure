@@ -23,20 +23,26 @@ Make it fun to create specs for developers and teammates. **Sketch 41.* support*
 ![Logo](http://utom.design/logo@2x.png)
 
 ## Installing Plugins
+
+### Install from download
 1. [Download the ZIP file](https://github.com/utom/sketch-measure/archive/master.zip) and unzip
 2. Open `Sketch Measure.sketchplugin`
 
-## Install with Sketchpacks
+### Install with Sketch Plugin Manager
+1. With [Sketch Plugin Manager](https://mludowise.github.io/Sketch-Plugin-Manager/), just search `Sketch Measure`
+2. Will see the `Sketch Measure` plugin listed at the top, Click the `Install` inside it
+#[!Install with Sketch Plugin Manager](https://github.com/mludowise/Sketch-Plugin-Manager/raw/master/img/catalog-view.png)
 
+### Install with Sketchpacks
 1. With [Sketchpacks](https://sketchpacks.com), search for `Sketch Measure`
 2. Click `Install`
 3. Get automatic updates for `Sketch Measure`
 
-### Already have Sketchpacks?
+**Already have Sketchpacks?**
 
 [![Install Sketch Measure with Sketchpacks](http://sketchpacks-com.s3.amazonaws.com/assets/badges/sketchpacks-badge-install.png "Install Sketch Measure with Sketchpacks")](https://sketchpacks.com/utom/sketch-measure/install)
 
-## Install with Sketch Runner
+### Install with Sketch Runner
 With Sketch Runner, just go to the `install` command and search for `Sketch Measure`. Runner allows you to manage plugins and do much more to speed up your workflow in Sketch. [Download Runner here](http://www.sketchrunner.com).
 ![Install with Sketch Runner](sketch-measure-runner.png)
 
