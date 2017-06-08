@@ -1,3 +1,5 @@
+[![Compatible Sketch Version](https://badges.sketchpacks.com/plugins/com.utom.measure/compatibility.svg)](https://sketchpacks.com/utom/sketch-measure) [![Download from Sketchpacks.com](https://badges.sketchpacks.com/plugins/com.utom.measure/version.svg)](https://api.sketchpacks.com/v1/plugins/com.utom.measure/download) [![View on Sketchpacks.com](https://badges.sketchpacks.com/plugins/com.utom.measure/downloads/monthly.svg)](https://api.sketchpacks.com/v1/plugins/com.utom.measure)
+
 # A new feature for Sketch Measure: Export Layer's influence Rect to Spec.
 
 Layer's influence rect includes the area of shadows and outside borders, it's exactly the same size with the exported image.
