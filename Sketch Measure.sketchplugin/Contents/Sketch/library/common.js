@@ -46,7 +46,7 @@ var SM = {
             coscript.setShouldKeepAround(true);
 
             if(command && command == "init"){
-                this.checkUpdate();
+                this.checkVersion();
                 return false;
             }
 
@@ -139,41 +139,29 @@ var SM = {
     TextAligns = ["left", "right", "center", "justify", "left"],
     ResizingType = ["stretch", "corner", "resize", "float"];
 SM.extend({
-    checkUpdate: function(){
-        var self = this,
-            webView = WebView.new(),
-            windowObject = webView.windowScriptObject(),
-            timestamp = new Date().getTime(),
-            delegate = new MochaJSDelegate({
-                "webView:didFinishLoadForFrame:": (function(webView, webFrame){
-                    var packageJSON = JSON.parse(self.toJSString(windowObject.evaluateWebScript("document.body.innerText"))),
-                        currentVersion = self.toJSString( self.context.plugin.version() ),
-                        lastestVersion = self.toJSString( packageJSON.version ),
-                        updated = self.prefs.integerForKey("SMUpdated") || 0;
+    checkVersion: function(){
+        var self = this;
 
-                    if( lastestVersion > currentVersion && timestamp > (updated + 1000 * 60 * 60 * 24) ){
-                        self.prefs.setInteger_forKey(timestamp, "SMUpdated");
-                        self.SMPanel({
-                            url: self.pluginSketch + "/panel/update.html",
-                            width: 480,
-                            height: 229,
-                            hiddenClose: true,
-                            data: {
-                                title: _("New Version!"),
-                                content: _("Just checked Sketch Measure has a new version (%@)", [packageJSON.version]),
-                                donate: _("Donate"),
-                                cancel: _("Cancel"),
-                                download: _("Download")
-                            },
-                            callback: function( data ){
-                                NSWorkspace.sharedWorkspace().openURL(NSURL.URLWithString("http://utom.design/measure/?ref=update"));
-                            }
-                        });
-                    }
-                })
-            });
-        webView.setFrameLoadDelegate_(delegate.getClassInstance());
-        webView.setMainFrameURL_("http://utom.design/measure/package.json?" + timestamp);
+        if( this.SMVersion && this.SMVersion < this.version ){
+
+          this.prefs.setObject_forKey(this.version, "SMVersion");
+          this.SMPanel({
+              url: this.pluginSketch + "/panel/update.html",
+              width: 480,
+              height: 229,
+              hiddenClose: true,
+              data: {
+                  title: _("New Version!"),
+                  content: _("You need to restart the Sketch.app"),
+                  donate: _("Donate"),
+                  download: _("Restart the Sketch.app")
+              },
+              callback: function( data ){
+                var manifestCore = new manifestMaster(self.context);
+                manifestCore.restartSketch();
+              }
+          });
+        }
     }
 });
 
