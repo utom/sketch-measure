@@ -1620,12 +1620,11 @@ SM.extend({
                     }
                     break;
                 case "shadow":
-                    if(targetStyle.shadow() || (targetStyle.shadow() && targetStyle.shadow().isEnabled()) ){
-                        content.push("shadow: outer\r\n" + self.shadowContent(targetStyle.shadow()));
+                    if( targetStyle.firstEnabledShadow() ){
+                        content.push("shadow: outer\r\n" + self.shadowContent(targetStyle.firstEnabledShadow()));
                     }
-
-                    if(targetStyle.innerShadow() || (targetStyle.innerShadow() && targetStyle.innerShadow().isEnabled()) ){
-                        content.push("shadow: inner\r\n" + self.shadowContent(targetStyle.innerShadow()));
+                    if( targetStyle.enabledInnerShadows().firstObject() ){
+                        content.push("shadow: inner\r\n" + self.shadowContent(targetStyle.enabledInnerShadows().firstObject()));
                     }
                     break;
                 case "font-size":
