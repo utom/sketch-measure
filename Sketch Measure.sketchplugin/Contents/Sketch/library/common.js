@@ -2484,16 +2484,16 @@ SM.extend({
             matchFormat = /png|jpg|tiff|webp/.exec(fileFormat);
         var exportFormats =
             (self.configs.unit == "dp/sp" && matchFormat)? [
-              { scale: 1 / self.configs.scale, prefix: "drawable-mdpi/", format: "png" },
-              { scale: 1.5 / self.configs.scale, prefix: "drawable-hdpi/", format: "png" },
-              { scale: 2 / self.configs.scale, prefix: "drawable-xhdpi/", format: "png" },
-              { scale: 3 / self.configs.scale, prefix: "drawable-xxhdpi/", format: "png" },
-              { scale: 4 / self.configs.scale, prefix: "drawable-xxxhdpi/", format: "png" }
+              { scale: 1 / self.configs.scale, prefix: "drawable-mdpi/", format: fileFormat },
+              { scale: 1.5 / self.configs.scale, prefix: "drawable-hdpi/", format: fileFormat },
+              { scale: 2 / self.configs.scale, prefix: "drawable-xhdpi/", format: fileFormat },
+              { scale: 3 / self.configs.scale, prefix: "drawable-xxhdpi/", format: fileFormat },
+              { scale: 4 / self.configs.scale, prefix: "drawable-xxxhdpi/", format: fileFormat }
             ]:
             (this.configs.unit == "pt" && matchFormat)? [
-              { scale: 1 / self.configs.scale, suffix: "", format: "png" },
-              { scale: 2 / self.configs.scale, suffix: "@2x", format: "png" },
-              { scale: 3 / self.configs.scale, suffix: "@3x", format: "png" }
+              { scale: 1 / self.configs.scale, suffix: "", format: fileFormat },
+              { scale: 2 / self.configs.scale, suffix: "@2x", format: fileFormat },
+              { scale: 3 / self.configs.scale, suffix: "@3x", format: fileFormat }
             ]:
             self.getFormats(sizes);
 
