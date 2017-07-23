@@ -6,7 +6,7 @@
     <description>Make it a fun to create spec for developers and teammates</description>
     <language>en</language>
     <item>
-      <title>Version 2.6.11</title>
+      <title>Version 2.6.12</title>
       <description>
         <![CDATA[
           <ul>
@@ -14,7 +14,7 @@
           </ul>
         ]]>
       </description>
-      <enclosure url="https://github.com/utom/sketch-measure/archive/master.zip" sparkle:version="2.6.11" type="application/octet-stream" />
+      <enclosure url="https://github.com/utom/sketch-measure/archive/master.zip" sparkle:version="2.6.12" type="application/octet-stream" />
     </item>
     <item>
       <title>Version 2.6.6</title>
