@@ -1,6 +1,6 @@
 @import "library/common.js"
 @import "library/MochaJSDelegate.js"
-@import 'SMFramework-v1.framework/Versions/A/Resources/SMFramework.js'
+@import 'SMFramework.framework/Versions/A/Resources/SMFramework.js'
 
 var threadDictionary = NSThread.mainThread().threadDictionary();
 var Sketch, Configs, Settings, Toolbar, Mark, Properties, ga;
