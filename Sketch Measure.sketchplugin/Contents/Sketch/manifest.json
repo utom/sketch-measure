@@ -175,7 +175,7 @@
         "title" : "Sketch Measure"
     },
     "identifier": "com.utom.measure",
-    "appcast": "http://utom.design/measure/appcast.xml",
+    "appcast": "https://api.sketchpacks.com/v1/plugins/com.utom.measure/appcast",
     "homepage": "http://utom.design/measure/",
     "version": "2.6.7",
     "description" : "Make it a fun to create spec for developers and teammates",
