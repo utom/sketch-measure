@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<rss version="2.0" xmlns:sparkle="http://www.andymatuschak.org/xml-namespaces/sparkle"  xmlns:dc="http://purl.org/dc/elements/1.1/">
+  <channel>
+    <title>Sketch Measure</title>
+    <link>http://utom.design/measure/appcast.xml</link>
+    <description>Make it a fun to create spec for developers and teammates</description>
+    <language>en</language>
+    <item>
+      <title>Version 2.6.7</title>
+      <description>
+        <![CDATA[
+          <ul>
+            <li>Fixed “Update issue”</li>
+          </ul>
+        ]]>
+      </description>
+      <enclosure url="https://github.com/utom/sketch-measure/archive/master.zip" sparkle:version="2.6.7" type="application/octet-stream" />
+    </item>
+    <item>
+      <title>Version 2.6.6</title>
+      <description>
+        <![CDATA[
+          <ul>
+            <li>Fixed “Cannot export JPG”</li>
+          </ul>
+        ]]>
+      </description>
+      <enclosure url="https://github.com/utom/sketch-measure/archive/2.6.6.zip" sparkle:version="2.6.6" type="application/octet-stream" />
+    </item>
+    <item>
+      <title>Version 2.5</title>
+      <description>
+        <![CDATA[
+          <ul>
+            <li>Export layer influence rect</li>
+            <li>Emoji support</li>
+            <li>CSS Rem 16px</li>
+          </ul>
+        ]]>
+      </description>
+      <enclosure url="https://github.com/utom/sketch-measure/archive/2.5.zip" sparkle:version="2.5.0" type="application/octet-stream" />
+    </item>
+  </channel>
+</rss>
