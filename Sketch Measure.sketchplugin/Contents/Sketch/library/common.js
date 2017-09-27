@@ -2190,7 +2190,7 @@ SM.extend({
         openPanel.setDirectoryURL(NSURL.fileURLWithPath("~/Documents/"));
         openPanel.setTitle(_("Choose a &quot;colors.json&quot;"));
         openPanel.setPrompt(_("Choose"));
-        openPanel.setAllowedFileTypes(NSArray.arrayWithObjects("json"))
+        openPanel.setAllowedFileTypes(["json"])
 
         if (openPanel.runModal() != NSOKButton) {
             return false;
@@ -2975,7 +2975,7 @@ SM.extend({
                                     });
                                 selectingPath = savePath + "/index.html";
                             }
-                            NSWorkspace.sharedWorkspace().activateFileViewerSelectingURLs(NSArray.arrayWithObjects(NSURL.fileURLWithPath(selectingPath)));
+                            NSWorkspace.sharedWorkspace().activateFileViewerSelectingURLs([NSURL.fileURLWithPath(selectingPath)]);
 
                             self.message(_("Export complete!"));
                             self.wantsStop = true;
