@@ -6,16 +6,16 @@
     <description>Make it a fun to create spec for developers and teammates</description>
     <language>en</language>
     <item>
-      <title>Version 2.6.12.1</title>
+      <title>Version 2.6.13</title>
       <description>
         <![CDATA[
           <ul>
-            <li>Support macOS 10.12.1</li>
+            <li>Support macOS 10.12</li>
             <li>Fixed the new toolbar CSS RGBa bugs</li>
           </ul>
         ]]>
       </description>
-      <enclosure url="https://github.com/utom/sketch-measure/archive/master.zip" sparkle:version="2.6.12.1" type="application/octet-stream" />
+      <enclosure url="https://github.com/utom/sketch-measure/archive/master.zip" sparkle:version="2.6.13" type="application/octet-stream" />
     </item>
     <item>
       <title>Version 2.6.12</title>
