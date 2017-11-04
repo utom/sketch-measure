@@ -671,7 +671,7 @@ SM.extend({
                 alignment = alignment || 0, //[left, right, center, justify]
                 text = this.addText(this.page);
 
-            text.setTextColor(color);
+            text.changeTextColorTo(color.NSColorWithColorSpace(nil));
 
             text.setFontSize(12);
             text.setFontPostscriptName("HelveticaNeue");
@@ -1516,7 +1516,7 @@ SM.extend({
         var targetRect = this.getRect(target),
             name = "OVERLAY#" + target.objectID(),
             container = this.find({key: "(name != NULL) && (name == %@)", match: name}),
-            overlayStyle = this.sharedLayerStyle("@Overlay / Layer", this.colors.overlay.layer);
+            overlayStyle = this.sharedLayerStyle("Sketch Measure / Overlay", this.colors.overlay.layer);
 
         if (container) this.removeLayer(container);
         container = this.addGroup();
@@ -1580,8 +1580,8 @@ SM.extend({
             properties = options.properties,
             placement = options.placement,
             styles = {
-                layer: this.sharedLayerStyle("@Property / Layer", this.colors.property.layer),
-                text: this.sharedTextStyle("@Property / Text", this.colors.property.text)
+                layer: this.sharedLayerStyle("Sketch Measure / Property", this.colors.property.layer),
+                text: this.sharedTextStyle("Sketch Measure / Property", this.colors.property.text)
             },
             target = options.target,
             targetStyle = target.style(),
@@ -1713,8 +1713,8 @@ SM.extend({
 
         if(this.sizesPanel()){
             var sizeStyles = {
-                    layer: this.sharedLayerStyle("@Size / Layer", this.colors.size.layer),
-                    text: this.sharedTextStyle("@Size / Text", this.colors.size.text, 2)
+                    layer: this.sharedLayerStyle("Sketch Measure / Size", this.colors.size.layer),
+                    text: this.sharedTextStyle("Sketch Measure / Size", this.colors.size.text, 2)
                 };
 
             for (var i = 0; i < selection.count(); i++) {
@@ -1759,8 +1759,8 @@ SM.extend({
                 layer = (selection.count() == 1)? this.current: selection[0],
                 placements = ["top", "right", "bottom", "left"],
                 spacingStyles = {
-                        layer: this.sharedLayerStyle("@Spacing / Layer", this.colors.spacing.layer),
-                        text: this.sharedTextStyle("@Spacing / Text", this.colors.spacing.text, 2)
+                        layer: this.sharedLayerStyle("Sketch Measure / Spacing", this.colors.spacing.layer),
+                        text: this.sharedTextStyle("Sketch Measure / Spacing", this.colors.spacing.text, 2)
                     };
 
             if( this.isIntersect(this.getRect(target), this.getRect(layer)) ){
@@ -1810,8 +1810,8 @@ SM.extend({
         }
 
         var sizeStyles = {
-                layer: this.sharedLayerStyle("@Size / Layer", this.colors.size.layer),
-                text: this.sharedTextStyle("@Size / Text", this.colors.size.text, 2)
+                layer: this.sharedLayerStyle("Sketch Measure / Size", this.colors.size.layer),
+                text: this.sharedTextStyle("Sketch Measure / Size", this.colors.size.text, 2)
             };
 
             for (var i = 0; i < selection.count(); i++) {
@@ -1860,8 +1860,8 @@ SM.extend({
         var target = (selection.count() == 1)? selection[0]: selection[1],
             layer = (selection.count() == 1)? this.current: selection[0],
             spacingStyles = {
-                    layer: this.sharedLayerStyle("@Spacing / Layer", this.colors.spacing.layer),
-                    text: this.sharedTextStyle("@Spacing / Text", this.colors.spacing.text, 2)
+                    layer: this.sharedLayerStyle("Sketch Measure / Spacing", this.colors.spacing.layer),
+                    text: this.sharedTextStyle("Sketch Measure / Spacing", this.colors.spacing.text, 2)
                 },
             placements = ["top", "right", "bottom", "left"];
 
@@ -1936,8 +1936,8 @@ SM.extend({
         var targetRect = this.getRect(target),
             objectID = target.objectID(),
             noteStyle = {
-                layer: this.sharedLayerStyle("@Note / Layer", this.colors.note.layer, this.colors.note.border),
-                text: this.sharedTextStyle("@Note / Text", this.colors.note.text)
+                layer: this.sharedLayerStyle("Sketch Measure / Note", this.colors.note.layer, this.colors.note.border),
+                text: this.sharedTextStyle("Sketch Measure / Note", this.colors.note.text)
             },
             container = this.addGroup();
 
