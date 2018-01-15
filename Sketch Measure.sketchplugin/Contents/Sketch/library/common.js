@@ -2199,9 +2199,19 @@ SM.extend({
             colorsData = [];
 
         colors.forEach(function(color){
-            if( color.color && color.color.a && color.color.r && color.color.g && color.color.b && color.color["argb-hex"] && color.color["color-hex"] && color.color["css-rgba"] && color.color["ui-color"] ){
-                colorsData.push(color);
-            }
+          if(
+              (color.color !== null && color.color !== undefined) &&
+              (color.color.a !== null && color.color.a !== undefined) &&
+              (color.color.r !== null && color.color.r !== undefined) &&
+              (color.color.g !== null && color.color.g !== undefined) &&
+              (color.color.b !== null && color.color.b !== undefined) &&
+              (color.color["argb-hex"] !== null && color.color["argb-hex"] !== undefined) &&
+              (color.color["color-hex"] !== null && color.color["color-hex"] !== undefined) &&
+              (color.color["css-rgba"] !== null && color.color["css-rgba"] !== undefined) &&
+              (color.color["ui-color"] !== null && color.color["ui-color"] !== undefined)
+          ){
+              colorsData.push(color);
+          }
         });
 
         if(colorsData.length <= 0){
