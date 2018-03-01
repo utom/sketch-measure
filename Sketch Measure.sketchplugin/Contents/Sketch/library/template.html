@@ -943,7 +943,7 @@ var I18N = {},
                         ].join(''),
                     content = [
                             '<div class="item">',
-                                '<label data-label="' + _('Content') + '"><textarea id="content" rows="2" readonly="readonly">' + layerData.content + '</textarea></label>',
+                                '<label data-label="' + _('Content') + '"><textarea id="content" rows="2" readonly="readonly" style="font-family: ' + layerData.fontFace + ', sans-serif">' + layerData.content + '</textarea></label>',
                             '</div>'
                         ].join('');
                 html.push(this.propertyType('TYPEFACE', [ fontFamily, textColor, fontSize, spacing, content ].join('')));
