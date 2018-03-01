@@ -2863,6 +2863,7 @@ SM.extend({
                 var idx = 1,
                     artboardIndex = 0,
                     layerIndex = 0,
+                    layerCount = 0,
                     exporting = false,
                     data = {
                         scale: self.configs.scale,
@@ -2895,7 +2896,6 @@ SM.extend({
                         var artboard = self.selectionArtboards[artboardIndex],
                             page = artboard.parentGroup(),
                             layer = artboard.children()[layerIndex];
-
                         // log( page.name() + ' - ' + artboard.name() + ' - ' + layer.name());
                         try {
                           self.getLayer(
@@ -2904,13 +2904,14 @@ SM.extend({
                               data.artboards[artboardIndex] // Save to data
                           );
                           layerIndex++;
+                          layerCount++;
                           exporting = false;
                         } catch (e) {
                           self.wantsStop = true;
                           processing.evaluateWebScript("$('#processing-text').html('<strong>Error:</strong> <small>" + self.toHTMLEncode(e.message) + "</small>');");
                         }
 
-                        if( self.is(layer, MSArtboardGroup) || self.is(layer, MSSymbolMaster)){
+                        if( layerIndex >= artboard.children().length ){
                             var objectID = artboard.objectID(),
                                 artboardRect = self.getRect(artboard),
                                 page = artboard.parentGroup(),
@@ -2967,7 +2968,7 @@ SM.extend({
                             artboardIndex++;
                         }
 
-                        if(artboardIndex >= self.selectionArtboards.length){
+                        if(artboardIndex >= self.selectionArtboards.length && layerCount >= self.allCount){
                             if(self.slices.length > 0){
                                 data.slices = self.slices;
                             }
@@ -2990,6 +2991,7 @@ SM.extend({
                             self.message(_("Export complete!"));
                             self.wantsStop = true;
                         }
+
                     }
 
                     if( self.wantsStop === true ){
