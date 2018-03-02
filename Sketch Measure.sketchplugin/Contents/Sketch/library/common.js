@@ -3063,13 +3063,11 @@ SM.extend({
             layerStates = this.getStates(layer);
 
         if(layer && this.is(layer, MSLayerGroup) && /NOTE\#/.exec(layer.name())){
-            var textLayer = layer.children()[2];
-
+            var textLayer = layer.children()[3];
             data.notes.push({
                 rect: this.rectToJSON(textLayer.absoluteRect(), artboardRect),
                 note: this.toHTMLEncode(this.emojiToEntities(textLayer.stringValue())).replace(/\n/g, "<br>")
             });
-
             layer.setIsVisible(false);
         }
 
