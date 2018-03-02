@@ -2896,7 +2896,7 @@ SM.extend({
                         var artboard = self.selectionArtboards[artboardIndex],
                             page = artboard.parentGroup(),
                             layer = artboard.children()[layerIndex];
-                        // log( page.name() + ' - ' + artboard.name() + ' - ' + layer.name());
+                        log( page.name() + ' - ' + artboard.name() + ' - ' + layer.name());
                         try {
                           self.getLayer(
                               artboard, // Sketch artboard element
@@ -3064,6 +3064,7 @@ SM.extend({
 
         if(layer && this.is(layer, MSLayerGroup) && /NOTE\#/.exec(layer.name())){
             var textLayer = layer.children()[3];
+            log(textLayer)
             data.notes.push({
                 rect: this.rectToJSON(textLayer.absoluteRect(), artboardRect),
                 note: this.toHTMLEncode(this.emojiToEntities(textLayer.stringValue())).replace(/\n/g, "<br>")
