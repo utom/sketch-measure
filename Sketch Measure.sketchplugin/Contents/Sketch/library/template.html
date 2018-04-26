@@ -88,6 +88,7 @@ main{position:relative;height:calc(100vh - 60px);}
 .layer b,.layer i{position:absolute;width:5px;height:5px;background:#FFF;border:1px solid #EE6723;border-radius:50%;overflow:hidden;display:none;}
 .layer b{width:3px;height:3px;background:#EE6723;}
 .selected i{display:block;}
+.distance {pointer-events: none;}
 .distance.h div[data-width]:before,.distance.v div[data-height]:before,.selected:after,.selected:before{position:absolute;display:block;left:50%;top:-23px;transform:translateX(-50%);content:attr(data-width);font-size:12px;color:#FFF;height:12px;line-height:12px;padding:4px;background:#EE6723;border-radius:2px;z-index:1;}
 .percentage-mode .distance.h div[data-width]:before,.percentage-mode .distance.v div[data-height]:before,.percentage-mode .selected:after,.percentage-mode .selected:before{content:attr(percentage-width);}
 .selected.hidden:after,.selected.hidden:before{display:none;}
