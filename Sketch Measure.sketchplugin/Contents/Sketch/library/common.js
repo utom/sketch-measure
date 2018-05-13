@@ -655,7 +655,8 @@ SM.extend({
                 border.position = 1;
             }
 
-            sharedStyles.addSharedStyleWithName_firstInstance(name, style);
+            const s = MSSharedStyle.alloc().initWithName_firstInstance(name, style);
+            sharedStyles.addSharedObject(s);
         }
 
         return (style.newInstance)? style.newInstance(): style;
@@ -678,7 +679,8 @@ SM.extend({
             text.setTextAlignment(alignment);
 
             style = text.style();
-            sharedStyles.addSharedStyleWithName_firstInstance(name, style);
+            const s = MSSharedStyle.alloc().initWithName_firstInstance(name, style);
+            sharedStyles.addSharedObject(s);
             this.removeLayer(text);
         }
 
@@ -3064,7 +3066,7 @@ SM.extend({
 
         if(layer && this.is(layer, MSLayerGroup) && /NOTE\#/.exec(layer.name())){
             var textLayer = layer.children()[3];
-            log(textLayer)
+
             data.notes.push({
                 rect: this.rectToJSON(textLayer.absoluteRect(), artboardRect),
                 note: this.toHTMLEncode(this.emojiToEntities(textLayer.stringValue())).replace(/\n/g, "<br>")
