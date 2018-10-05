@@ -208,8 +208,7 @@ SM.extend({
         return MSLayerGroup.new();
     },
     addShape: function(){
-        var shape = MSRectangleShape.alloc().initWithFrame(NSMakeRect(0, 0, 100, 100));
-        return MSShapeGroup.shapeWithPath(shape);
+        return MSShapeGroup.shapeWithRect(NSMakeRect(0, 0, 100, 100));
     },
     addText: function(container){
         var text = MSTextLayer.new();
@@ -443,7 +442,7 @@ SM.extend({
     getStyleName: function(layer){
         var styles = (this.is(layer, MSTextLayer))? this.document.documentData().layerTextStyles(): this.document.documentData().layerStyles(),
             layerStyle = layer.style(),
-            sharedObjectID = layerStyle.sharedObjectID(),
+            sharedObjectID = layerStyle.objectID(),
             style;
 
         styles = styles.objectsSortedByName();
