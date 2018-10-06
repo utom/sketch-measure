@@ -208,8 +208,8 @@ SM.extend({
         return MSLayerGroup.new();
     },
     addShape: function(){
-        var shape = MSRectangleShape.alloc().initWithFrame(NSMakeRect(0, 0, 100, 100));
-        return MSShapeGroup.shapeWithPath(shape);
+			return MSShapeGroup.shapeWithRect(NSMakeRect(0, 0, 100, 100));
+
     },
     addText: function(container){
         var text = MSTextLayer.new();
@@ -441,9 +441,9 @@ SM.extend({
         return style.contextSettings().opacity()
     },
     getStyleName: function(layer){
-        var styles = (this.is(layer, MSTextLayer))? this.document.documentData().layerTextStyles(): this.document.documentData().layerStyles(),
+				var styles = (this.is(layer, MSTextLayer))? this.document.documentData().layerTextStyles(): this.document.documentData().layerStyles(),
             layerStyle = layer.style(),
-            sharedObjectID = layerStyle.sharedObjectID(),
+						sharedObjectID = layerStyle.objectID(),
             style;
 
         styles = styles.objectsSortedByName();
@@ -655,11 +655,12 @@ SM.extend({
                 border.position = 1;
             }
 
-            const s = MSSharedStyle.alloc().initWithName_firstInstance(name, style);
+						const s = MSSharedStyle.alloc().initWithName_style(name, style);
             sharedStyles.addSharedObject(s);
         }
 
-        return (style.newInstance)? style.newInstance(): style;
+				var style =  this.find({key: "(name != NULL) && (name == %@)", match: name}, sharedStyles);
+				return style;
     },
     sharedTextStyle: function(name, color, alignment){
         var sharedStyles = this.document.documentData().layerTextStyles(),
@@ -679,12 +680,16 @@ SM.extend({
             text.setTextAlignment(alignment);
 
             style = text.style();
-            const s = MSSharedStyle.alloc().initWithName_firstInstance(name, style);
+
+						const s = MSSharedStyle.alloc().initWithName_style(name, style);
+
             sharedStyles.addSharedObject(s);
             this.removeLayer(text);
         }
 
-        return (style.newInstance)? style.newInstance(): style;
+				var style =  this.find({key: "(name != NULL) && (name == %@)", match: name}, sharedStyles);
+				return style;
+
     }
 });
 
@@ -704,10 +709,9 @@ SM.extend({
             placement = options.placement,
             shapeTemp = this.addShape();
 
-        if(styles){
-            shapeTemp.setStyle(styles.layer);
-        }
-        else{
+				if(styles){
+						shapeTemp.setSharedStyle(styles.layer);
+        } else {
             shapeTemp.style().addStylePartOfType(0);
         }
 
@@ -816,10 +820,9 @@ SM.extend({
             textTemp = this.addText();
 
         if(styles){
-            shapeTemp.setStyle(styles.layer);
-            textTemp.setStyle(styles.text);
-        }
-        else{
+						shapeTemp.setSharedStyle(styles.layer);
+						textTemp.setSharedStyle(styles.text);
+        } else {
             shape.style().addStylePartOfType(0);
         }
 
@@ -903,13 +906,11 @@ SM.extend({
         boxRect.setWidth(textRect.width + 8);
         boxRect.setHeight(textRect.height + 8);
 
-        arrow.setRotation(45);
-        arrow.flatten();
         arrowRect.setWidth(8);
         arrowRect.setHeight(8);
-
         arrowRect.setX(arrowX);
         arrowRect.setY(arrowY);
+				arrow.setRotation(45);
 
         return {
             element: box,
@@ -1366,7 +1367,7 @@ SM.extend({
         temp.setStringValue(text);
         temp.setTextBehaviour(1);
         temp.setTextBehaviour(0);
-        temp.setStyle(styles.text);
+        temp.setSharedStyle(styles.text);
 
         var tempRect = this.getRect(temp),
             ruler = this.setRuler({
@@ -1957,8 +1958,8 @@ SM.extend({
         text.setStringValue(target.stringValue());
         text.setTextBehaviour(1);
         text.setTextBehaviour(0);
-        note.setStyle(noteStyle.layer);
-        text.setStyle(noteStyle.text);
+        note.setSharedStyle(noteStyle.layer);
+        text.setSharedStyle(noteStyle.text);
 
         var noteRect = this.getRect(note),
             textRect = this.getRect(text),
@@ -2353,6 +2354,7 @@ SM.extend({
     isExportable: function(layer) {
         return this.is(layer, MSTextLayer) ||
                this.is(layer, MSShapeGroup) ||
+							 this.is(layer, MSRectangleShape) ||
                this.is(layer, MSBitmapLayer) ||
                this.is(layer, MSSliceLayer) ||
                this.is(layer, MSSymbolInstance) ||
