@@ -5,7 +5,19 @@
     <link>http://utom.design/measure/appcast.xml</link>
     <description>Make it a fun to create spec for developers and teammates</description>
     <language>en</language>
-    <item>
+		<item>
+			<title>Version 2.7.5</title>
+			<description>
+				<![CDATA[
+					<ul>
+						<li>Support Sketch v52</li>
+					</ul>
+				]]>
+			</description>
+			<enclosure url="https://github.com/utom/sketch-measure/archive/master.zip" sparkle:version="2.7.6" type="application/octet-stream" />
+		</item>
+		<item>
+		<item>
       <title>Version 2.7.5</title>
       <description>
         <![CDATA[
@@ -14,7 +26,7 @@
           </ul>
         ]]>
       </description>
-      <enclosure url="https://github.com/utom/sketch-measure/archive/master.zip" sparkle:version="2.7.5" type="application/octet-stream" />
+      <enclosure url="https://github.com/utom/sketch-measure/archive/2.7.5.zip" sparkle:version="2.7.5" type="application/octet-stream" />
     </item>
     <item>
       <title>Version 2.7.4</title>
