@@ -208,7 +208,7 @@ SM.extend({
         return MSLayerGroup.new();
     },
     addShape: function(){
-			return MSShapeGroup.shapeWithRect(NSMakeRect(0, 0, 100, 100));
+		return MSShapeGroup.shapeWithRect(NSMakeRect(0, 0, 100, 100));
 
     },
     addText: function(container){
@@ -441,10 +441,10 @@ SM.extend({
         return style.contextSettings().opacity()
     },
     getStyleName: function(layer){
-				var styles = (this.is(layer, MSTextLayer))? this.document.documentData().layerTextStyles(): this.document.documentData().layerStyles(),
-            layerStyle = layer.style(),
-						sharedObjectID = layerStyle.objectID(),
-            style;
+        var styles = (this.is(layer, MSTextLayer))? this.document.documentData().layerTextStyles(): this.document.documentData().layerStyles(),
+        layerStyle = layer.style(),
+        sharedObjectID = layerStyle.objectID(),
+        style;
 
         styles = styles.objectsSortedByName();
 
@@ -655,12 +655,12 @@ SM.extend({
                 border.position = 1;
             }
 
-						const s = MSSharedStyle.alloc().initWithName_style(name, style);
+			const s = MSSharedStyle.alloc().initWithName_style(name, style);
             sharedStyles.addSharedObject(s);
         }
 
-				var style =  this.find({key: "(name != NULL) && (name == %@)", match: name}, sharedStyles);
-				return style;
+			var style =  this.find({key: "(name != NULL) && (name == %@)", match: name}, sharedStyles);
+			return style;
     },
     sharedTextStyle: function(name, color, alignment){
         var sharedStyles = this.document.documentData().layerTextStyles(),
@@ -681,14 +681,14 @@ SM.extend({
 
             style = text.style();
 
-						const s = MSSharedStyle.alloc().initWithName_style(name, style);
+			const s = MSSharedStyle.alloc().initWithName_style(name, style);
 
             sharedStyles.addSharedObject(s);
             this.removeLayer(text);
         }
 
-				var style =  this.find({key: "(name != NULL) && (name == %@)", match: name}, sharedStyles);
-				return style;
+			var style =  this.find({key: "(name != NULL) && (name == %@)", match: name}, sharedStyles);
+			return style;
 
     }
 });
@@ -709,8 +709,8 @@ SM.extend({
             placement = options.placement,
             shapeTemp = this.addShape();
 
-				if(styles){
-						shapeTemp.setSharedStyle(styles.layer);
+		if(styles){
+			shapeTemp.setSharedStyle(styles.layer);
         } else {
             shapeTemp.style().addStylePartOfType(0);
         }
@@ -820,8 +820,8 @@ SM.extend({
             textTemp = this.addText();
 
         if(styles){
-						shapeTemp.setSharedStyle(styles.layer);
-						textTemp.setSharedStyle(styles.text);
+			shapeTemp.setSharedStyle(styles.layer);
+			textTemp.setSharedStyle(styles.text);
         } else {
             shape.style().addStylePartOfType(0);
         }
@@ -910,7 +910,7 @@ SM.extend({
         arrowRect.setHeight(8);
         arrowRect.setX(arrowX);
         arrowRect.setY(arrowY);
-				arrow.setRotation(45);
+		arrow.setRotation(45);
 
         return {
             element: box,
@@ -1516,6 +1516,7 @@ SM.extend({
 
 SM.extend({
     overlay: function(target){
+        //Crashing on exception: -[MSImmutableSharedStyle hasMarkers]: unrecognized selector sent to instance 0x608002a4f510
         var targetRect = this.getRect(target),
             name = "OVERLAY#" + target.objectID(),
             container = this.find({key: "(name != NULL) && (name == %@)", match: name}),
@@ -1531,7 +1532,7 @@ SM.extend({
 
         container.addLayers([overlay]);
 
-        overlay.setStyle(overlayStyle);
+        overlay.setSharedStyle(overlayStyle);
         overlay.setName("overlay");
         overlayRect.setX(targetRect.x);
         overlayRect.setY(targetRect.y);
@@ -1658,8 +1659,8 @@ SM.extend({
                         content.push("style-name: " + styleName);
                     }
                     break;
-        				case "layer-name":
-        					   content.push("layer-name: " + target.name());
+        		case "layer-name":
+        		content.push("layer-name: " + target.name());
                      break;
                 default:
                     render = false;
@@ -2354,7 +2355,7 @@ SM.extend({
     isExportable: function(layer) {
         return this.is(layer, MSTextLayer) ||
                this.is(layer, MSShapeGroup) ||
-							 this.is(layer, MSRectangleShape) ||
+               this.is(layer, MSRectangleShape) ||
                this.is(layer, MSBitmapLayer) ||
                this.is(layer, MSSliceLayer) ||
                this.is(layer, MSSymbolInstance) ||
