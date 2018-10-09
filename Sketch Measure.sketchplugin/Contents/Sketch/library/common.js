@@ -675,7 +675,7 @@ SM.extend({
 
             text.changeTextColorTo(color.NSColorWithColorSpace(nil));
 
-            text.setFontSize(12);
+            text.setFontSize(8);
             text.setFontPostscriptName("HelveticaNeue");
             text.setTextAlignment(alignment);
 
@@ -1543,6 +1543,13 @@ SM.extend({
     }
 });
 
+// SM.extend({
+//     url: function(content){
+//         var urlRegex = /[\w\.\-\+]+:)\/{2}(([\w\d\.]+):([\w\d\.]+))?@?(([a-zA-Z0-9\.\-_]+)(?::(\d{1,5}))?))?(\/(?:[a-zA-Z0-9\.\-\/\+\%]+)?)(?:\?([a-zA-Z0-9=%\-_\.\*&;]+))?(?:#([a-zA-Z0-9\-=,&%;\/\\"'\?]+)?)?/g;
+//         return content.replace(urlRegex, '<a href="$1"'>$1</a>');
+//     }
+// });
+
 // properties.js
 SM.extend({
     fillTypeContent: function( fillJSON ){
@@ -2356,6 +2363,11 @@ SM.extend({
         return this.is(layer, MSTextLayer) ||
                this.is(layer, MSShapeGroup) ||
                this.is(layer, MSRectangleShape) ||
+               this.is(layer, MSOvalShape) ||
+               this.is(layer, MSShapePathLayer) ||
+               this.is(layer, MSTriangleShape) ||
+               this.is(layer, MSStarShape) ||
+               this.is(layer, MSPolygonShape) ||
                this.is(layer, MSBitmapLayer) ||
                this.is(layer, MSSliceLayer) ||
                this.is(layer, MSSymbolInstance) ||
