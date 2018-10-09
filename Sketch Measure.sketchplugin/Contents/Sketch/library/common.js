@@ -675,7 +675,7 @@ SM.extend({
 
             text.changeTextColorTo(color.NSColorWithColorSpace(nil));
 
-            text.setFontSize(8);
+            text.setFontSize(12);
             text.setFontPostscriptName("HelveticaNeue");
             text.setTextAlignment(alignment);
 
@@ -2362,15 +2362,15 @@ SM.extend({
     isExportable: function(layer) {
         return this.is(layer, MSTextLayer) ||
                this.is(layer, MSShapeGroup) ||
+							 this.is(layer, MSSymbolInstance) ||
+							 this.is(layer, MSBitmapLayer) ||
+               this.is(layer, MSSliceLayer) ||
                this.is(layer, MSRectangleShape) ||
                this.is(layer, MSOvalShape) ||
                this.is(layer, MSShapePathLayer) ||
                this.is(layer, MSTriangleShape) ||
                this.is(layer, MSStarShape) ||
                this.is(layer, MSPolygonShape) ||
-               this.is(layer, MSBitmapLayer) ||
-               this.is(layer, MSSliceLayer) ||
-               this.is(layer, MSSymbolInstance) ||
                this.isSliceGroup(layer)
     },
     getStates: function(layer){
