@@ -357,7 +357,7 @@ SM.extend({
         };
     },
     getRadius: function(layer){
-        return ( layer.layers && this.is(layer.layers().firstObject(), MSRectangleShape) ) ? layer.layers().firstObject().fixedRadius(): 0;
+        return (layer.layers && this.is(layer.layers().firstObject(), MSRectangleShape)) ? layer.layers().firstObject().fixedRadius() : (this.is(layer, MSRectangleShape))? layer.fixedRadius() : 0;
     },
     getBorders: function(style) {
         var bordersData = [],
@@ -1626,7 +1626,7 @@ SM.extend({
                     content.push("opacity: " + Math.round( targetStyle.contextSettings().opacity() * 100) + "%");
                     break;
                 case "radius":
-                    if(self.is(target, MSShapeGroup) && self.is(target.layers().firstObject(), MSRectangleShape)){
+                    if((self.is(target, MSShapeGroup) && self.is(target.layers().firstObject(), MSRectangleShape)) || self.is(target, MSRectangleShape)){
                         content.push("radius: " + self.convertUnit( self.getRadius(target) ) );
                     }
                     break;
@@ -2362,15 +2362,15 @@ SM.extend({
     isExportable: function(layer) {
         return this.is(layer, MSTextLayer) ||
                this.is(layer, MSShapeGroup) ||
-							 this.is(layer, MSSymbolInstance) ||
-							 this.is(layer, MSBitmapLayer) ||
-               this.is(layer, MSSliceLayer) ||
                this.is(layer, MSRectangleShape) ||
                this.is(layer, MSOvalShape) ||
                this.is(layer, MSShapePathLayer) ||
                this.is(layer, MSTriangleShape) ||
                this.is(layer, MSStarShape) ||
                this.is(layer, MSPolygonShape) ||
+               this.is(layer, MSBitmapLayer) ||
+               this.is(layer, MSSliceLayer) ||
+               this.is(layer, MSSymbolInstance) ||
                this.isSliceGroup(layer)
     },
     getStates: function(layer){
