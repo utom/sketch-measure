@@ -357,7 +357,13 @@ SM.extend({
         };
     },
     getRadius: function(layer){
-        return (layer.layers && this.is(layer.layers().firstObject(), MSRectangleShape)) ? layer.layers().firstObject().fixedRadius() : (this.is(layer, MSRectangleShape))? layer.fixedRadius() : 0;
+        if(layer.layers && this.is(layer.layers().firstObject(), MSRectangleShape)){
+            return (layer.layers().firstObject().cornerRadiusString().split(';').map(Number).length == 1) ? layer.layers().firstObject().fixedRadius() : layer.layers().firstObject().cornerRadiusString().split(';').map(Number);
+        } else if(this.is(layer, MSRectangleShape)) {
+            return (layer.cornerRadiusString().split(';').map(Number).length == 1) ? layer.fixedRadius() : layer.cornerRadiusString().split(';').map(Number);
+        } else {
+            return 0;
+        }
     },
     getBorders: function(style) {
         var bordersData = [],
@@ -469,26 +475,46 @@ SM.extend({
         return Math.round( number / 2 );
     },
     convertUnit: function(length, isText, percentageType){
-        if(percentageType && this.artboard){
-            var artboardRect = this.getRect( this.artboard );
-            if (percentageType == "width") {
-                 return Math.round((length / artboardRect.width) * 1000) / 10 + "%";
-
+        if(length.length){
+            var units = this.configs.unit.split("/"),
+                unit = units[0];
+        
+            if( units.length > 1 && isText){
+                unit = units[1];
             }
-            else if(percentageType == "height"){
-                return Math.round((length / artboardRect.height) * 1000) / 10 + "%";
+
+            var scale = this.configs.scale;
+            var tempLegth = [];
+
+            length.forEach(function(element) {
+                tempLegth.push(Math.round( element / scale * 10 ) / 10);
+            });
+              
+            return tempLegth.join(unit + ' ') + unit;  
+
+        } else {
+
+            if(percentageType && this.artboard){
+                var artboardRect = this.getRect( this.artboard );
+                if (percentageType == "width") {
+                     return Math.round((length / artboardRect.width) * 1000) / 10 + "%";
+                }
+                else if(percentageType == "height"){
+                    return Math.round((length / artboardRect.height) * 1000) / 10 + "%";
+                }
             }
+    
+            var length = Math.round( length / this.configs.scale * 10 ) / 10,
+                units = this.configs.unit.split("/"),
+                unit = units[0];
+    
+            if( units.length > 1 && isText){
+                unit = units[1];
+            }
+    
+            return length + unit;
         }
-
-        var length = Math.round( length / this.configs.scale * 10 ) / 10,
-            units = this.configs.unit.split("/"),
-            unit = units[0];
-
-        if( units.length > 1 && isText){
-            unit = units[1];
-        }
-
-        return length + unit;
+        
     },
     toHex:function(c) {
         var hex = Math.round(c).toString(16).toUpperCase();
@@ -1542,13 +1568,6 @@ SM.extend({
         container.resizeToFitChildrenWithOption(0);
     }
 });
-
-// SM.extend({
-//     url: function(content){
-//         var urlRegex = /[\w\.\-\+]+:)\/{2}(([\w\d\.]+):([\w\d\.]+))?@?(([a-zA-Z0-9\.\-_]+)(?::(\d{1,5}))?))?(\/(?:[a-zA-Z0-9\.\-\/\+\%]+)?)(?:\?([a-zA-Z0-9=%\-_\.\*&;]+))?(?:#([a-zA-Z0-9\-=,&%;\/\\"'\?]+)?)?/g;
-//         return content.replace(urlRegex, '<a href="$1"'>$1</a>');
-//     }
-// });
 
 // properties.js
 SM.extend({
@@ -3164,7 +3183,12 @@ SM.extend({
             var c = layerCSSAttributes[i]
             if(! /\/\*/.exec(c) ) css.push(this.toJSString(c));
         }
-        if(css.length > 0) layerData.css = css;
+        if(css.length > 0) {
+            layerData.css = css;
+            if(this.is(layer, MSRectangleShape) && !!layer.fixedRadius()){
+                layerData.css.push('border-radius: ' + layer.cornerRadiusString().replace(/;/g,'px ') + 'px;');
+            }
+        }
 
         this.getMask(group, layer, layerData, layerStates);
         this.getSlice(layer, layerData, symbolLayer);

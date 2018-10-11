@@ -232,13 +232,35 @@ var I18N = {},
             return (Math.round( size / size2 * 1000 ) / 10) + "%";
         },
         unitSize: function(length, isText){
-            var length = Math.round( length / this.configs.scale * 100 ) / 100,
-                units = this.configs.unit.split("/"),
-                unit = units[0];
-            if( units.length > 1 && isText){
-                unit = units[1];
+            if(length.length){
+            
+                var units = this.configs.unit.split("/"),
+                    unit = units[0];
+            
+                if( units.length > 1 && isText){
+                    unit = units[1];
+                }
+
+                var scale = this.configs.scale;
+                var tempLegth = [];
+
+                length.forEach(function(element) {
+                    tempLegth.push(Math.round( element / scale * 10 ) / 10);
+                });
+                
+                return tempLegth.join(unit + ' ') + unit;   
+
+            } else {
+        
+                var length = Math.round( length / this.configs.scale * 10 ) / 10,
+                    units = this.configs.unit.split("/"),
+                    unit = units[0];
+                if( units.length > 1 && isText){
+                    unit = units[1];
+                }      
+                return length + unit;
             }
-            return length + unit;
+
         },
         scaleSize: function (length){
             return Math.round( length / this.configs.scale * 10 ) / 10;
@@ -886,7 +908,6 @@ var I18N = {},
                 radius = (layerData.radius)? [
                         '<div class="item" data-label="' +_('Radius') + ':">',
                             '<label><input id="radius" type="text" value="' + this.unitSize(layerData.radius) + '" readonly="readonly"></label>',
-                            '<label></label>',
                         '</div>'
                     ].join(''): '',
                 styleName = (layerData.styleName)? [
