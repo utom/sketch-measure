@@ -475,7 +475,7 @@ SM.extend({
         return Math.round( number / 2 );
     },
     convertUnit: function(length, isText, percentageType){
-        if(length.length){
+        if(Array.isArray(length)){
             var units = this.configs.unit.split("/"),
                 unit = units[0];
         
