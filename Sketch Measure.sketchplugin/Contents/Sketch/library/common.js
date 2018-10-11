@@ -1539,10 +1539,8 @@ SM.extend({
     }
 });
 
-
 SM.extend({
     overlay: function(target){
-        //Crashing on exception: -[MSImmutableSharedStyle hasMarkers]: unrecognized selector sent to instance 0x608002a4f510
         var targetRect = this.getRect(target),
             name = "OVERLAY#" + target.objectID(),
             container = this.find({key: "(name != NULL) && (name == %@)", match: name}),
@@ -3114,7 +3112,8 @@ SM.extend({
             ( layerStates.isLocked && !this.is(layer, MSSliceLayer) ) ||
             layerStates.isEmpty ||
             layerStates.hasSlice ||
-            layerStates.isMeasure
+            layerStates.isMeasure ||
+            layer.isMasked()
         ){
             return this;
         }
@@ -3178,14 +3177,15 @@ SM.extend({
 
         var layerCSSAttributes = layer.CSSAttributes(),
             css = [];
-
+        
         for(var i = 0; i < layerCSSAttributes.count(); i++) {
             var c = layerCSSAttributes[i]
             if(! /\/\*/.exec(c) ) css.push(this.toJSString(c));
         }
+
         if(css.length > 0) {
             layerData.css = css;
-            if(this.is(layer, MSRectangleShape) && !!layer.fixedRadius()){
+            if(this.is(layer, MSRectangleShape) && !!layer.cornerRadiusString() && layer.cornerRadiusString() != 0){
                 layerData.css.push('border-radius: ' + layer.cornerRadiusString().replace(/;/g,'px ') + 'px;');
             }
         }
