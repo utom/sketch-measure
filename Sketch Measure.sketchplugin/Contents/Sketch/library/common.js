@@ -447,19 +447,38 @@ SM.extend({
         return style.contextSettings().opacity()
     },
     getStyleName: function(layer){
-        var styles = (this.is(layer, MSTextLayer))? this.document.documentData().layerTextStyles(): this.document.documentData().layerStyles(),
-            layerStyle = layer.style(),
-            sharedObjectID = layer.sharedStyleID(),
-            style;
+        if(layer.sharedStyleID()){
+            var styles = (this.is(layer, MSTextLayer))? this.document.documentData().layerTextStyles(): this.document.documentData().layerStyles(),
+                layerStyle = layer.style(),
+                sharedObjectID = layer.sharedStyleID(),
+                style;
+            
+            styles = styles.objectsSortedByName();
 
-        styles = styles.objectsSortedByName();
+            if(styles.count() > 0){
+                style = this.find({key: "(objectID != NULL) && (objectID == %@)", match: sharedObjectID}, styles);
+            }
 
-        if(styles.count() > 0){
-            style = this.find({key: "(objectID != NULL) && (objectID == %@)", match: sharedObjectID}, styles);
+            if(!style){
+                var styles = (this.is(layer, MSTextLayer))? this.document.documentData().foreignTextStyles(): this.document.documentData().foreignLayerStyles(),
+                layerStyle = layer.style(),
+                sharedObjectID = layer.sharedStyleID(),
+                style;
+
+                styles.forEach(libraryStyle => {
+                    if(String(libraryStyle.localSharedStyle().objectID()) == String(sharedObjectID)){
+                        style = libraryStyle.localSharedStyle().name();
+                    }
+                });
+                
+                if(!style) return "";
+                return this.toJSString(style);
+            }
+            return this.toJSString(style.name());
+
+        } else {
+            return "";
         }
-
-        if(!style) return "";
-        return this.toJSString(style.name());
     },
     updateContext: function(){
         this.context.document = NSDocumentController.sharedDocumentController().currentDocument();
