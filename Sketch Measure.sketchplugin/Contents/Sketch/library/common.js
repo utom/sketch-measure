@@ -3097,7 +3097,9 @@ SM.extend({
             layerStates = this.getStates(layer);
 
         if(layer && this.is(layer, MSLayerGroup) && /NOTE\#/.exec(layer.name())){
-            var textLayer = layer.children()[3];
+            for (var i = 0; i < layer.children().count(); i++) {
+                if(this.is(layer.children()[i], MSTextLayer)) var textLayer = layer.children()[i];
+            }
 
             data.notes.push({
                 rect: this.rectToJSON(textLayer.absoluteRect(), artboardRect),
