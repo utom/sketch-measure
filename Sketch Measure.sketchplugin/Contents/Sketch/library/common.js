@@ -448,9 +448,9 @@ SM.extend({
     },
     getStyleName: function(layer){
         var styles = (this.is(layer, MSTextLayer))? this.document.documentData().layerTextStyles(): this.document.documentData().layerStyles(),
-        layerStyle = layer.style(),
-        sharedObjectID = layerStyle.objectID(),
-        style;
+            layerStyle = layer.style(),
+            sharedObjectID = layer.sharedStyleID(),
+            style;
 
         styles = styles.objectsSortedByName();
 
