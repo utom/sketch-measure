@@ -3185,7 +3185,7 @@ SM.extend({
             if(! /\/\*/.exec(c) ) css.push(this.toJSString(c));
         }
 
-        if(css.length > 0) {
+        if(css.length > 0 || layer.CSSAttributes().length > 0) {
             layerData.css = css;
             if(this.is(layer, MSRectangleShape) && !!layer.cornerRadiusString() && layer.cornerRadiusString() != 0){
                 layerData.css.push('border-radius: ' + layer.cornerRadiusString().replace(/;/g,'px ') + 'px;');
