@@ -6,7 +6,7 @@
     <description>Make it a fun to create spec for developers and teammates</description>
     <language>en</language>
 		<item>
-			<title>Version 2.7.5</title>
+			<title>Version 2.7.7</title>
 			<description>
 				<![CDATA[
 					<ul>
@@ -14,76 +14,7 @@
 					</ul>
 				]]>
 			</description>
-			<enclosure url="https://github.com/utom/sketch-measure/archive/master.zip" sparkle:version="2.7.6" type="application/octet-stream" />
+			<enclosure url="https://github.com/utom/sketch-measure/archive/master.zip" sparkle:version="2.7.7" type="application/octet-stream" />
 		</item>
-		<item>
-		<item>
-      <title>Version 2.7.5</title>
-      <description>
-        <![CDATA[
-          <ul>
-            <li>Support Sketch v50</li>
-          </ul>
-        ]]>
-      </description>
-      <enclosure url="https://github.com/utom/sketch-measure/archive/2.7.5.zip" sparkle:version="2.7.5" type="application/octet-stream" />
-    </item>
-    <item>
-      <title>Version 2.7.4</title>
-      <description>
-        <![CDATA[
-          <ul>
-            <li>Support Sketch v49</li>
-          </ul>
-        ]]>
-      </description>
-      <enclosure url="https://github.com/utom/sketch-measure/archive/2.7.4.zip" sparkle:version="2.7.4" type="application/octet-stream" />
-    </item>
-    <item>
-      <title>Version 2.7</title>
-      <description>
-        <![CDATA[
-          <ul>
-            <li>Support Sketch v48</li>
-          </ul>
-        ]]>
-      </description>
-      <enclosure url="https://github.com/utom/sketch-measure/archive/2.7.zip" sparkle:version="2.7" type="application/octet-stream" />
-    </item>
-    <item>
-      <title>Version 2.6.12</title>
-      <description>
-        <![CDATA[
-          <ul>
-            <li>Fixed “Update issue”</li>
-          </ul>
-        ]]>
-      </description>
-      <enclosure url="https://github.com/utom/sketch-measure/archive/2.6.12.zip" sparkle:version="2.6.12" type="application/octet-stream" />
-    </item>
-    <item>
-      <title>Version 2.6.6</title>
-      <description>
-        <![CDATA[
-          <ul>
-            <li>Fixed “Cannot export JPG”</li>
-          </ul>
-        ]]>
-      </description>
-      <enclosure url="https://github.com/utom/sketch-measure/archive/2.6.6.zip" sparkle:version="2.6.6" type="application/octet-stream" />
-    </item>
-    <item>
-      <title>Version 2.5</title>
-      <description>
-        <![CDATA[
-          <ul>
-            <li>Export layer influence rect</li>
-            <li>Emoji support</li>
-            <li>CSS Rem 16px</li>
-          </ul>
-        ]]>
-      </description>
-      <enclosure url="https://github.com/utom/sketch-measure/archive/2.5.zip" sparkle:version="2.5.0" type="application/octet-stream" />
-    </item>
   </channel>
 </rss>
