@@ -537,14 +537,14 @@ SM.extend({
     },
     toHex:function(c) {
         var hex = Math.round(c).toString(16).toUpperCase();
-        return hex.length == 1 ? "0" + hex :hex;
+        return hex.length == 1 ? "0" + hex : hex;
     },
     hexToRgb:function(hex) {
         var result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
         return result ? {
-            r: this.toHex(result[1]),
-            g: this.toHex(result[2]),
-            b: this.toHex(result[3])
+            r: parseInt(result[1], 16),
+            g: parseInt(result[2], 16),
+            b: parseInt(result[3], 16)
         } : null;
     },
     isIntersect: function(targetRect, layerRect){
@@ -2702,6 +2702,7 @@ SM.extend({
             for (var a = 0; a < svgSpans.length; a++) {
                 var attrsData = this.getTextAttrs(svgSpans[a]);
                 attrsData.content = svgSpans[a].match(regExpContent)[1];
+
                 offsetX = (
                         !offsetX ||
                         ( offsetX && offsetX > this.toJSNumber(attrsData.x) )
@@ -2727,7 +2728,7 @@ SM.extend({
                     tData["content"].trim() &&
                     (
                         colorHex != tData.fill ||
-                        Object.getOwnPropertyNames(tData).length > 4
+                        Object.getOwnPropertyNames(tData).length >= 4
                     )
                 ){
                     var textLayer = self.addText(),
@@ -2738,11 +2739,6 @@ SM.extend({
                     textLayer.setStringValue(tData.content);
                     textLayer.setTextColor(color);
                     textLayer.setFontSize(tData["font-size"] || layerData.fontSize);
-
-                    var defaultLineHeight = layer.font().defaultLineHeightForFont();
-
-                    textLayer.setLineHeight(layer.lineHeight() || defaultLineHeight);
-
                     textLayer.setCharacterSpacing(self.toJSNumber(tData["letter-spacing"]) || layer.characterSpacing());
                     textLayer.setTextAlignment(layer.textAlignment())
 
@@ -2753,13 +2749,29 @@ SM.extend({
                         textLayer.setFontPostscriptName(layer.fontPostscriptName());
                     }
 
+                    var defaultLineHeight = layer.font().defaultLineHeightForFont();
+                    var textLayerDefaultLineHeight = textLayer.font().defaultLineHeightForFont();
+
+
+                    if(!!tData["line-spacing"]){
+                        textLayer.setLineHeight(tData["line-spacing"] || textLayerDefaultLineHeight || defaultLineHeight || layer.lineHeight());
+                    } 
+                    else{
+                        if(layer.lineHeight() !=0){
+                            textLayer.setLineHeight(layer.lineHeight());
+                        }
+                        else{
+                            textLayer.setLineHeight(textLayerDefaultLineHeight);
+                        }
+                    }
+
                     parentGroup.addLayers([textLayer]);
 
                     var textLayerRect = self.getRect(textLayer);
 
                     textLayerRect.setX(layerRect.x + (self.toJSNumber(tData.x) - offsetX));
                     textLayerRect.setY(layerRect.y + (self.toJSNumber(tData.y) - offsetY));
-
+                    
                     self.getLayer(
                         artboard,
                         textLayer,
