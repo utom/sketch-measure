@@ -18,6 +18,7 @@ Inside Sketch, Go to the menu:
 # Changelog:
 
 ### **FIXED**
+- fixed a bug with hex colors and multiline text line heights
 - fixed bug to show radius when rectangle fill is an image when exporting
 - fixed bug where styles would not show when exporting
 - fixed radius support when exporting and marking
