@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<rss version="2.0" xmlns:sparkle="http://www.andymatuschak.org/xml-namespaces/sparkle"  xmlns:dc="http://purl.org/dc/elements/1.1/">
+  <channel>
+    <title>Sketch Measure</title>
+    <link>http://utom.design/measure/appcast.xml</link>
+    <description>Make it a fun to create spec for developers and teammates</description>
+    <language>en</language>
+		<item>
+			<title>Version 2.7.7</title>
+			<description>
+				<![CDATA[
+					<ul>
+						<li>Support Sketch v52</li>
+					</ul>
+				]]>
+			</description>
+			<enclosure url="https://github.com/utom/sketch-measure/archive/master.zip" sparkle:version="2.7.7" type="application/octet-stream" />
+		</item>
+  </channel>
+</rss>

@@ -1,0 +1,465 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Settings</title>
+
+    <link href="assets/css/normalize.css" rel="stylesheet">
+    <link href="assets/css/app.css" rel="stylesheet">
+
+  </head>
+  <body>
+    <div id="app" class="container">
+      <div class="options" style="height:194px">
+        <div class="resolution selectbox mrb16" tabindex="0">
+          <div class="selectwrap" @click="blurSelectbox">
+            <h3>Design resolution</h3>
+            <p>{{ checkedResolution() }}</p>
+            <ul>
+              <template v-for="item in resolutionData">
+              <li v-if="!item.ico">
+                <label><input type="radio" name="resolution-type" :checked="item.scale==configs.scale && item.units.join('/') == configs.units" :value="JSON.stringify(item)" @click="setConfigs({scale: item.scale, units: item.units.join('/')})"><span>{{ item.name }}</span></label>
+              </li>
+              <li v-else class="sub-title">{{ item.name }}</li>
+              </template>
+            </ul>
+          </div>
+        </div>
+        <div class="input-text mrb16">
+          <input type="text" name="scale" v-model="scale"><label for="top">Scale</label>
+        </div>
+        <div class="input-text mrb24">
+          <input type="text" name="units" v-model="units"><label for="top">Units</label>
+        </div>
+        <h3 class="title">Color format</h3>
+        <div class="color-format selectbox" tabindex="0">
+          <div class="selectwrap" @click="blurSelectbox">
+            <h3>Color format</h3>
+            <p>{{ checkedFormat() }}</p>
+            <ul>
+              <li v-for="item in formatData" @click="setConfigs({format: item.value})"><label><input type="radio" name="format" :value="item.value" :checked="configs.format == item.value"><span>{{ item.name }}</span><i>{{ item.example }}</i></label></li>
+            </ul>
+          </div>
+        </div>
+      </div>
+      <div class="footer">
+        <button id="submit" class="submit" @click="submit()">Save</button>
+      </div>
+    </div>
+  <script src="assets/js/vue.min.js"></script>
+  <script>
+  // var resolutionData = [
+	// 	{
+	// 		name: 'Standard',
+	// 		type: 'other',
+	// 		scale: 1,
+	// 		units: ['px']
+	// 	},
+	// 	{
+	// 		name: 'iOS Devices',
+	// 		type: 'ios',
+	// 		ico: 'ico-ios'
+	// 	},
+	// 	{
+	// 		name: 'Points @1x',
+	// 		type: 'ios',
+	// 		scale: 1,
+	// 		units: ['pt']
+	// 	},
+	// 	{
+	// 		name: 'Retina @2x',
+	// 		type: 'ios',
+	// 		scale: 2,
+	// 		units: ['pt']
+	// 	},
+	// 	{
+	// 		name: 'Retina HD @3x',
+	// 		type: 'ios',
+	// 		scale: 3,
+	// 		units: ['pt']
+	// 	},
+	// 	{
+	// 		name: 'Android Devices',
+	// 		ico: 'ico-android'
+	// 	},
+	// 	{
+	// 		name: '100% MDPI',
+	// 		type: 'android',
+	// 		scale: 1,
+	// 		units: ['dp', 'sp']
+	// 	},
+	// 	{
+	// 		name: '130% TVDPI',
+	// 		type: 'android',
+	// 		scale: 1.3,
+	// 		units: ['dp', 'sp']
+	// 	},
+	// 	{
+	// 		name: '150% HDPI',
+	// 		type: 'android',
+	// 		scale: 1.5,
+	// 		units: ['dp', 'sp']
+	// 	},
+	// 	{
+	// 		name: '200% XHDPI',
+	// 		type: 'android',
+	// 		scale: 2,
+	// 		units: ['dp', 'sp']
+	// 	},
+	// 	{
+	// 		name: '300% XXHDPI',
+	// 		type: 'android',
+	// 		scale: 3,
+	// 		units: ['dp', 'sp']
+	// 	},
+	// 	{
+	// 		name: '350% XXXHDPI',
+	// 		type: 'android',
+	// 		scale: 3.5,
+	// 		units: ['dp', 'sp']
+	// 	},
+	// 	{
+	// 		name: '400% XXXHDPI',
+	// 		type: 'android',
+	// 		scale: 4,
+	// 		units: ['dp', 'sp']
+	// 	},
+	// 	{
+	// 		name: 'Web',
+	// 		ico: 'ico-other'
+	// 	},
+	// 	{
+	// 		name: 'CSS Rem 10px',
+	// 		type: 'other',
+	// 		scale: 10,
+	// 		units: ['rem']
+	// 	},
+	// 	{
+	// 		name: 'CSS Rem 12px',
+	// 		type: 'other',
+	// 		scale: 12,
+	// 		units: ['rem']
+	// 	},
+	// 	{
+	// 		name: 'CSS Rem 14px',
+	// 		type: 'other',
+	// 		scale: 14,
+	// 		units: ['rem']
+	// 	},
+	// 	{
+	// 		name: 'CSS Rem 16px',
+	// 		type: 'other',
+	// 		scale: 16,
+	// 		units: ['rem']
+	// 	},
+	// 	{
+	// 		name: 'CSS Rem 18px',
+	// 		type: 'other',
+	// 		scale: 18,
+	// 		units: ['rem']
+	// 	},
+	// 	{
+	// 		name: 'CSS Rem 20px',
+	// 		type: 'other',
+	// 		scale: 20,
+	// 		units: ['rem']
+	// 	}
+	// ];
+  //
+  // var formatData = [
+  //   {
+  //     name: 'Color hex',
+  //     value: 'color-hex',
+  //     example: '#000000 100%'
+  //   },
+  //   {
+  //     name: 'ARGB hex',
+  //     value: 'argb-hex',
+  //     example: '#FF000000'
+  //   },
+  //   {
+  //     name: 'RGBA CSS',
+  //     value: 'rgba-css',
+  //     example: 'rgba(0, 0, 0, 1)'
+  //   },
+  //   {
+  //     name: 'UIColor',
+  //     value: 'ui-color',
+  //     example: 'r: 1.0, g: 0.0, b: 0.0, a: 1.0'
+  //   }
+  // ];
+  //
+  // var configs = {
+  //   scale: 1,
+  //   units: 'px',
+  //   format: 'color-hex'
+  // };
+  //
+  // var init = (options) => {
+  //   for (var key in options) {
+  //     configs[key] = options[key];
+  //   }
+  // }
+  //
+  // var appVue = new Vue({
+  //   el: '#app',
+  //   data: {
+  //     resolutionData,
+  //     formatData,
+  //     configs
+  //   },
+  //   computed: {
+  //     scale: {
+  //       get(){
+  //           return this.configs.scale;
+  //       },
+  //       set(newValue){
+  //           var scale = Number(newValue.replace(/[^\d\.]/g,''));
+  //           this.configs.scale = scale ? scale : 1;
+  //       }
+  //     },
+  //     units: {
+  //       get(){
+  //           return this.configs.units;
+  //       },
+  //       set(newValue){
+  //           var units = newValue.split('/');
+  //           this.configs.units = units.length >= 3 || units.length <= 0 ? 'px' : newValue;
+  //       }
+  //     }
+  //   },
+  //   methods: {
+  //     checkedResolution() {
+  //       var self = this;
+  //       var resolution = this.resolutionData.find(function(value){
+  //         return !value.ico && value.scale == self.configs.scale && value.units.join('/') == self.configs.units
+  //       })
+  //       if(!self.configs.units) return resolution? resolution.name: `Custom: ${self.configs.scale} scale`;
+  //       return resolution? resolution.name: `Custom: ${self.configs.scale} scale, ${self.configs.units}`;
+  //     },
+  //     checkedFormat() {
+  //       var self = this;
+  //       var format = this.formatData.find(function(value){
+  //         return value.value == self.configs.format;
+  //       })
+  //       return format.name;
+  //     },
+  //     setConfigs(configs){
+  //       var target = this.configs;
+  //       for (var key in configs) {
+  //         target[key] = configs[key];
+  //       }
+  //       this.configs = target;
+  //       return this.configs;
+  //     },
+  //     blurSelectbox(){
+  //       this.$el.querySelectorAll('.selectbox')[0].blur();
+  //       this.$el.querySelectorAll('.selectbox')[1].blur();
+  //     },
+  //     submit(){
+  //       window.SMAction('submit', this.configs);
+  //     }
+	// 	}
+  // });
+  'use strict';
+
+var resolutionData = [{
+		name: 'Standard',
+		type: 'other',
+		scale: 1,
+		units: ['px']
+}, {
+		name: 'iOS Devices',
+		type: 'ios',
+		ico: 'ico-ios'
+}, {
+		name: 'Points @1x',
+		type: 'ios',
+		scale: 1,
+		units: ['pt']
+}, {
+		name: 'Retina @2x',
+		type: 'ios',
+		scale: 2,
+		units: ['pt']
+}, {
+		name: 'Retina HD @3x',
+		type: 'ios',
+		scale: 3,
+		units: ['pt']
+}, {
+		name: 'Android Devices',
+		ico: 'ico-android'
+}, {
+		name: '100% MDPI',
+		type: 'android',
+		scale: 1,
+		units: ['dp', 'sp']
+}, {
+		name: '130% TVDPI',
+		type: 'android',
+		scale: 1.3,
+		units: ['dp', 'sp']
+}, {
+		name: '150% HDPI',
+		type: 'android',
+		scale: 1.5,
+		units: ['dp', 'sp']
+}, {
+		name: '200% XHDPI',
+		type: 'android',
+		scale: 2,
+		units: ['dp', 'sp']
+}, {
+		name: '300% XXHDPI',
+		type: 'android',
+		scale: 3,
+		units: ['dp', 'sp']
+}, {
+		name: '350% XXXHDPI',
+		type: 'android',
+		scale: 3.5,
+		units: ['dp', 'sp']
+}, {
+		name: '400% XXXHDPI',
+		type: 'android',
+		scale: 4,
+		units: ['dp', 'sp']
+}, {
+		name: 'Web',
+		ico: 'ico-other'
+}, {
+		name: 'CSS Rem 10px',
+		type: 'other',
+		scale: 10,
+		units: ['rem']
+}, {
+		name: 'CSS Rem 12px',
+		type: 'other',
+		scale: 12,
+		units: ['rem']
+}, {
+		name: 'CSS Rem 14px',
+		type: 'other',
+		scale: 14,
+		units: ['rem']
+}, {
+		name: 'CSS Rem 16px',
+		type: 'other',
+		scale: 16,
+		units: ['rem']
+}, {
+		name: 'CSS Rem 18px',
+		type: 'other',
+		scale: 18,
+		units: ['rem']
+}, {
+		name: 'CSS Rem 20px',
+		type: 'other',
+		scale: 20,
+		units: ['rem']
+}];
+
+var formatData = [{
+		name: 'Color hex',
+		value: 'color-hex',
+		example: '#000000 100%'
+}, {
+		name: 'ARGB hex',
+		value: 'argb-hex',
+		example: '#FF000000'
+}, {
+		name: 'RGBA CSS',
+		value: 'rgba-css',
+		example: 'rgba(0, 0, 0, 1)'
+}, {
+		name: 'UIColor',
+		value: 'ui-color',
+		example: 'r: 1.0, g: 0.0, b: 0.0, a: 1.0'
+}];
+
+var configs = {
+		scale: 1,
+		units: 'px',
+		format: 'color-hex'
+};
+
+var init = function init(options) {
+		for (var key in options) {
+				configs[key] = options[key];
+		}
+};
+
+var appVue = new Vue({
+		el: '#app',
+		data: {
+				resolutionData: resolutionData,
+				formatData: formatData,
+				configs: configs
+		},
+		computed: {
+				scale: {
+						get: function get() {
+								return this.configs.scale;
+						},
+						set: function set(newValue) {
+								var scale = Number(newValue.replace(/[^\d\.]/g, ''));
+								this.configs.scale = scale ? scale : 1;
+						}
+				},
+				units: {
+						get: function get() {
+								return this.configs.units;
+						},
+						set: function set(newValue) {
+								var units = newValue.split('/');
+								this.configs.units = units.length >= 3 || units.length <= 0 ? 'px' : newValue;
+						}
+				}
+		},
+		methods: {
+				checkedResolution: function checkedResolution() {
+						var self = this;
+						var resolution = this.resolutionData.find(function (value) {
+								return !value.ico && value.scale == self.configs.scale && value.units.join('/') == self.configs.units;
+						});
+						if (!self.configs.units) return resolution ? resolution.name : 'Custom: ' + self.configs.scale + ' scale';
+						return resolution ? resolution.name : 'Custom: ' + self.configs.scale + ' scale, ' + self.configs.units;
+				},
+				checkedFormat: function checkedFormat() {
+						var self = this;
+						var format = this.formatData.find(function (value) {
+								return value.value == self.configs.format;
+						});
+						return format.name;
+				},
+				setConfigs: function setConfigs(configs) {
+						var target = this.configs;
+						for (var key in configs) {
+								target[key] = configs[key];
+						}
+						this.configs = target;
+						return this.configs;
+				},
+				blurSelectbox: function blurSelectbox() {
+						this.$el.querySelectorAll('.selectbox')[0].blur();
+						this.$el.querySelectorAll('.selectbox')[1].blur();
+				},
+				submit: function submit() {
+						window.SMAction('submit', this.configs);
+				}
+		}
+});
+
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-81011936-2');
+  ga('send', 'pageview');
+  </script>
+  </body>
+</html>

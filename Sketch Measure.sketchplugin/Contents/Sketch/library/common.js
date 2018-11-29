@@ -19,12 +19,13 @@ function _(str, data){
 
 var SM = {
         init: function(context, command){
+            Sketch = new API();
+            ga = new Analytics(context);
+
             this.prefs = NSUserDefaults.standardUserDefaults();
             this.context = context;
-
             this.version = this.context.plugin.version() + "";
             this.language = lang;
-            this.SketchVersion = this.context.api()._metadata.appVersion;
             this.SMVersion = this.prefs.stringForKey("SMVersion") + "" || 0;
             this.SMLanguage = this.prefs.stringForKey("SMLanguage") + "" || 0;
 
@@ -45,8 +46,7 @@ var SM = {
             coscript.setShouldKeepAround(true);
 
             if(command && command == "init"){
-                this.manifest();
-                this.checkUpdate();
+                this.checkVersion();
                 return false;
             }
 
@@ -139,66 +139,31 @@ var SM = {
     TextAligns = ["left", "right", "center", "justify", "left"],
     ResizingType = ["stretch", "corner", "resize", "float"];
 SM.extend({
-    checkUpdate: function(){
-        var self = this,
-            webView = WebView.new(),
-            windowObject = webView.windowScriptObject(),
-            timestamp = new Date().getTime(),
-            delegate = new MochaJSDelegate({
-                "webView:didFinishLoadForFrame:": (function(webView, webFrame){
-                    var packageJSON = JSON.parse(self.toJSString(windowObject.evaluateWebScript("document.body.innerText"))),
-                        currentVersion = self.toJSString( self.context.plugin.version() ),
-                        lastestVersion = self.toJSString( packageJSON.version ),
-                        updated = self.prefs.integerForKey("SMUpdated") || 0;
+    checkVersion: function(){
+        var self = this;
 
-                    if( lastestVersion > currentVersion && timestamp > (updated + 1000 * 60 * 60 * 24) ){
-                        self.prefs.setInteger_forKey(timestamp, "SMUpdated");
-                        self.SMPanel({
-                            url: self.pluginSketch + "/panel/update.html",
-                            width: 480,
-                            height: 229,
-                            hiddenClose: true,
-                            data: {
-                                title: _("New Version!"),
-                                content: _("Just checked Sketch Measure has a new version (%@)", [packageJSON.version]),
-                                donate: _("Donate"),
-                                cancel: _("Cancel"),
-                                download: _("Download")
-                            },
-                            callback: function( data ){
-                                NSWorkspace.sharedWorkspace().openURL(NSURL.URLWithString("http://utom.design/measure/?ref=update"));
-                            }
-                        });
-                    }
-                })
-            });
-        webView.setFrameLoadDelegate_(delegate.getClassInstance());
-        webView.setMainFrameURL_("http://utom.design/measure/package.json?" + timestamp);
+        if( this.SMVersion && this.SMVersion < this.version ){
+
+          this.prefs.setObject_forKey(this.version, "SMVersion");
+          this.SMPanel({
+              url: this.pluginSketch + "/panel/update.html",
+              width: 480,
+              height: 229,
+              hiddenClose: true,
+              data: {
+                  title: _("New Version!"),
+                  content: _("You need to restart the Sketch.app"),
+                  donate: _("Donate"),
+                  download: _("Restart the Sketch.app")
+              },
+              callback: function( data ){
+                var manifestCore = new manifestMaster(self.context);
+                manifestCore.restartSketch();
+              }
+          });
+        }
     }
 });
-
-SM.extend({
-    manifest: function(){
-      var self = this,
-          manifestURL = self.pluginSketch + "/i18n/manifest-" + lang + ".json";
-
-      if( ( !self.SMVersion || self.SMVersion != this.version ) || ( !self.SMLanguage || self.SMLanguage != self.language ) ){
-        self.prefs.setObject_forKey (self.version, "SMVersion");
-        self.prefs.setObject_forKey (self.language, "SMLanguage");
-        if(NSFileManager.defaultManager().fileExistsAtPath(manifestURL)){
-            manifest = NSString.stringWithContentsOfFile_encoding_error(manifestURL, 4, nil);
-            self.writeFile({
-                content: manifest,
-                path: self.pluginRoot + "/Contents/Sketch/",
-                fileName: "manifest.json"
-            });
-            AppController.sharedInstance().pluginManager().reloadPlugins();
-        }
-
-      }
-
-    }
-})
 
 SM.extend({
     prefix: "SMConfigs2",
@@ -243,8 +208,8 @@ SM.extend({
         return MSLayerGroup.new();
     },
     addShape: function(){
-        var shape = MSRectangleShape.alloc().initWithFrame(NSMakeRect(0, 0, 100, 100));
-        return MSShapeGroup.shapeWithPath(shape);
+		return MSShapeGroup.shapeWithRect(NSMakeRect(0, 0, 100, 100));
+
     },
     addText: function(container){
         var text = MSTextLayer.new();
@@ -286,20 +251,19 @@ SM.extend({
         // return str.replace(/\&/g, "&amp;").replace(/\"/g, "&quot;").replace(/\'/g, "&#39;").replace(/\</g, "&lt;").replace(/\>/g, '&gt;');
     },
     emojiToEntities: function(str) {
-      var emojiRanges = [
-            "\ud83c[\udf00-\udfff]", // U+1F300 to U+1F3FF
-            "\ud83d[\udc00-\ude4f]", // U+1F400 to U+1F64F
-            "\ud83d[\ude80-\udeff]"  // U+1F680 to U+1F6FF
-          ];
+      var self = this,
+          emojiRegExp = new RegExp("(?:[\u2700-\u27bf]|(?:\ud83c[\udde6-\uddff]){2}|[\ud800-\udbff][\udc00-\udfff]|[\u0023-\u0039]\ufe0f?\u20e3|\u3299|\u3297|\u303d|\u3030|\u24c2|\ud83c[\udd70-\udd71]|\ud83c[\udd7e-\udd7f]|\ud83c\udd8e|\ud83c[\udd91-\udd9a]|\ud83c[\udde6-\uddff]|[\ud83c[\ude01-\ude02]|\ud83c\ude1a|\ud83c\ude2f|[\ud83c[\ude32-\ude3a]|[\ud83c[\ude50-\ude51]|\u203c|\u2049|[\u25aa-\u25ab]|\u25b6|\u25c0|[\u25fb-\u25fe]|\u00a9|\u00ae|\u2122|\u2139|\ud83c\udc04|[\u2600-\u26FF]|\u2b05|\u2b06|\u2b07|\u2b1b|\u2b1c|\u2b50|\u2b55|\u231a|\u231b|\u2328|\u23cf|[\u23e9-\u23f3]|[\u23f8-\u23fa]|\ud83c\udccf|\u2934|\u2935|[\u2190-\u21ff])", "g");
         return str.replace(
-              new RegExp(emojiRanges.join("|"), "g"),
+              emojiRegExp,
               function(match) {
-                  var c = encodeURIComponent(match).split("%"),
-                      h = ((parseInt(c[1], 16) & 0x0F))
-                        + ((parseInt(c[2], 16) & 0x1F) << 12)
-                        + ((parseInt(c[3], 16) & 0x3F) << 6)
-                        + (parseInt(c[4], 16) & 0x3F);
-                  return "&#" + h.toString() + ";";
+                  var u = "";
+                  for (var i = 0; i < match.length; i++) {
+                      if( !(i%2) ){
+                        u += "&#" + match.codePointAt(i)
+                      }
+                  }
+
+                  return u;
               });
     },
     toSlug: function(str){
@@ -393,7 +357,13 @@ SM.extend({
         };
     },
     getRadius: function(layer){
-        return ( layer.layers && this.is(layer.layers().firstObject(), MSRectangleShape) ) ? layer.layers().firstObject().fixedRadius(): 0;
+        if(layer.layers && this.is(layer.layers().firstObject(), MSRectangleShape)){
+            return (layer.layers().firstObject().cornerRadiusString().split(';').map(Number).length == 1) ? layer.layers().firstObject().fixedRadius() : layer.layers().firstObject().cornerRadiusString().split(';').map(Number);
+        } else if(this.is(layer, MSRectangleShape)) {
+            return (layer.cornerRadiusString().split(';').map(Number).length == 1) ? layer.fixedRadius() : layer.cornerRadiusString().split(';').map(Number);
+        } else {
+            return 0;
+        }
     },
     getBorders: function(style) {
         var bordersData = [],
@@ -478,9 +448,9 @@ SM.extend({
     },
     getStyleName: function(layer){
         var styles = (this.is(layer, MSTextLayer))? this.document.documentData().layerTextStyles(): this.document.documentData().layerStyles(),
-            layerStyle = layer.style(),
-            sharedObjectID = layerStyle.sharedObjectID(),
-            style;
+        layerStyle = layer.style(),
+        sharedObjectID = layerStyle.objectID(),
+        style;
 
         styles = styles.objectsSortedByName();
 
@@ -493,7 +463,7 @@ SM.extend({
     },
     updateContext: function(){
         this.context.document = NSDocumentController.sharedDocumentController().currentDocument();
-        this.context.selection = this.SketchVersion >= "42"? this.context.document.selectedLayers().layers(): this.context.document.selectedLayers();
+        this.context.selection = this.context.document.selectedLayers().layers();
 
         return this.context;
     }
@@ -505,26 +475,46 @@ SM.extend({
         return Math.round( number / 2 );
     },
     convertUnit: function(length, isText, percentageType){
-        if(percentageType && this.artboard){
-            var artboardRect = this.getRect( this.artboard );
-            if (percentageType == "width") {
-                 return Math.round((length / artboardRect.width) * 1000) / 10 + "%";
+        if(length.length){
+            var units = this.configs.unit.split("/"),
+                unit = units[0];
 
+            if( units.length > 1 && isText){
+                unit = units[1];
             }
-            else if(percentageType == "height"){
-                return Math.round((length / artboardRect.height) * 1000) / 10 + "%";
+
+            var scale = this.configs.scale;
+            var tempLegth = [];
+
+            length.forEach(function(element) {
+                tempLegth.push(Math.round( element / scale * 10 ) / 10);
+            });
+
+            return tempLegth.join(unit + ' ') + unit;
+
+        } else {
+
+            if(percentageType && this.artboard){
+                var artboardRect = this.getRect( this.artboard );
+                if (percentageType == "width") {
+                     return Math.round((length / artboardRect.width) * 1000) / 10 + "%";
+                }
+                else if(percentageType == "height"){
+                    return Math.round((length / artboardRect.height) * 1000) / 10 + "%";
+                }
             }
+
+            var length = Math.round( length / this.configs.scale * 10 ) / 10,
+                units = this.configs.unit.split("/"),
+                unit = units[0];
+
+            if( units.length > 1 && isText){
+                unit = units[1];
+            }
+
+            return length + unit;
         }
 
-        var length = Math.round( length / this.configs.scale * 10 ) / 10,
-            units = this.configs.unit.split("/"),
-            unit = units[0];
-
-        if( units.length > 1 && isText){
-            unit = units[1];
-        }
-
-        return length + unit;
     },
     toHex:function(c) {
         var hex = Math.round(c).toString(16).toUpperCase();
@@ -691,10 +681,12 @@ SM.extend({
                 border.position = 1;
             }
 
-            sharedStyles.addSharedStyleWithName_firstInstance(name, style);
+			const s = MSSharedStyle.alloc().initWithName_style(name, style);
+            sharedStyles.addSharedObject(s);
         }
 
-        return (style.newInstance)? style.newInstance(): style;
+			var style =  this.find({key: "(name != NULL) && (name == %@)", match: name}, sharedStyles);
+			return style;
     },
     sharedTextStyle: function(name, color, alignment){
         var sharedStyles = this.document.documentData().layerTextStyles(),
@@ -707,18 +699,23 @@ SM.extend({
                 alignment = alignment || 0, //[left, right, center, justify]
                 text = this.addText(this.page);
 
-            text.setTextColor(color);
+            text.changeTextColorTo(color.NSColorWithColorSpace(nil));
 
             text.setFontSize(12);
             text.setFontPostscriptName("HelveticaNeue");
             text.setTextAlignment(alignment);
 
             style = text.style();
-            sharedStyles.addSharedStyleWithName_firstInstance(name, style);
+
+			const s = MSSharedStyle.alloc().initWithName_style(name, style);
+
+            sharedStyles.addSharedObject(s);
             this.removeLayer(text);
         }
 
-        return (style.newInstance)? style.newInstance(): style;
+			var style =  this.find({key: "(name != NULL) && (name == %@)", match: name}, sharedStyles);
+			return style;
+
     }
 });
 
@@ -738,10 +735,9 @@ SM.extend({
             placement = options.placement,
             shapeTemp = this.addShape();
 
-        if(styles){
-            shapeTemp.setStyle(styles.layer);
-        }
-        else{
+		if(styles){
+			shapeTemp.setSharedStyle(styles.layer);
+        } else {
             shapeTemp.style().addStylePartOfType(0);
         }
 
@@ -850,10 +846,9 @@ SM.extend({
             textTemp = this.addText();
 
         if(styles){
-            shapeTemp.setStyle(styles.layer);
-            textTemp.setStyle(styles.text);
-        }
-        else{
+			shapeTemp.setSharedStyle(styles.layer);
+			textTemp.setSharedStyle(styles.text);
+        } else {
             shape.style().addStylePartOfType(0);
         }
 
@@ -888,8 +883,8 @@ SM.extend({
         // rect function
         var x = targetRect.x + this.mathHalf(targetRect.width) - this.mathHalf(textRect.width),
             y = targetRect.y + this.mathHalf(targetRect.height) - this.mathHalf(textRect.height),
-            arrowX = x - 4 + this.mathHalf(textRect.width + 8) - 4,
-            arrowY = y - 4 + this.mathHalf(textRect.height + 8) - 4;
+            arrowX = x - 3 + this.mathHalf(textRect.width + 6) - 3,
+            arrowY = y - 3 + this.mathHalf(textRect.height + 6) - 3;
 
         if(!this.is(target, MSPage) && !this.is(target, MSArtboardGroup)){
             switch(placement){
@@ -937,13 +932,11 @@ SM.extend({
         boxRect.setWidth(textRect.width + 8);
         boxRect.setHeight(textRect.height + 8);
 
-        arrow.setRotation(45);
-        arrow.flatten();
-        arrowRect.setWidth(8);
-        arrowRect.setHeight(8);
-
+        arrowRect.setWidth(6);
+        arrowRect.setHeight(6);
         arrowRect.setX(arrowX);
         arrowRect.setY(arrowY);
+    		arrow.setRotation(45);
 
         return {
             element: box,
@@ -1400,7 +1393,7 @@ SM.extend({
         temp.setStringValue(text);
         temp.setTextBehaviour(1);
         temp.setTextBehaviour(0);
-        temp.setStyle(styles.text);
+        temp.setSharedStyle(styles.text);
 
         var tempRect = this.getRect(temp),
             ruler = this.setRuler({
@@ -1549,10 +1542,11 @@ SM.extend({
 
 SM.extend({
     overlay: function(target){
+        //Crashing on exception: -[MSImmutableSharedStyle hasMarkers]: unrecognized selector sent to instance 0x608002a4f510
         var targetRect = this.getRect(target),
             name = "OVERLAY#" + target.objectID(),
             container = this.find({key: "(name != NULL) && (name == %@)", match: name}),
-            overlayStyle = this.sharedLayerStyle("@Overlay / Layer", this.colors.overlay.layer);
+            overlayStyle = this.sharedLayerStyle("Sketch Measure / Overlay", this.colors.overlay.layer);
 
         if (container) this.removeLayer(container);
         container = this.addGroup();
@@ -1564,7 +1558,7 @@ SM.extend({
 
         container.addLayers([overlay]);
 
-        overlay.setStyle(overlayStyle);
+        overlay.setSharedStyle(overlayStyle);
         overlay.setName("overlay");
         overlayRect.setX(targetRect.x);
         overlayRect.setY(targetRect.y);
@@ -1616,8 +1610,8 @@ SM.extend({
             properties = options.properties,
             placement = options.placement,
             styles = {
-                layer: this.sharedLayerStyle("@Property / Layer", this.colors.property.layer),
-                text: this.sharedTextStyle("@Property / Text", this.colors.property.text)
+                layer: this.sharedLayerStyle("Sketch Measure / Property", this.colors.property.layer),
+                text: this.sharedTextStyle("Sketch Measure / Property", this.colors.property.text)
             },
             target = options.target,
             targetStyle = target.style(),
@@ -1651,17 +1645,16 @@ SM.extend({
                     content.push("opacity: " + Math.round( targetStyle.contextSettings().opacity() * 100) + "%");
                     break;
                 case "radius":
-                    if(self.is(target, MSShapeGroup) && self.is(target.layers().firstObject(), MSRectangleShape)){
+                    if((self.is(target, MSShapeGroup) && self.is(target.layers().firstObject(), MSRectangleShape)) || self.is(target, MSRectangleShape)){
                         content.push("radius: " + self.convertUnit( self.getRadius(target) ) );
                     }
                     break;
                 case "shadow":
-                    if(targetStyle.shadow() || (targetStyle.shadow() && targetStyle.shadow().isEnabled()) ){
-                        content.push("shadow: outer\r\n" + self.shadowContent(targetStyle.shadow()));
+                    if( targetStyle.firstEnabledShadow() ){
+                        content.push("shadow: outer\r\n" + self.shadowContent(targetStyle.firstEnabledShadow()));
                     }
-
-                    if(targetStyle.innerShadow() || (targetStyle.innerShadow() && targetStyle.innerShadow().isEnabled()) ){
-                        content.push("shadow: inner\r\n" + self.shadowContent(targetStyle.innerShadow()));
+                    if( targetStyle.enabledInnerShadows().firstObject() ){
+                        content.push("shadow: inner\r\n" + self.shadowContent(targetStyle.enabledInnerShadows().firstObject()));
                     }
                     break;
                 case "font-size":
@@ -1692,8 +1685,8 @@ SM.extend({
                         content.push("style-name: " + styleName);
                     }
                     break;
-        				case "layer-name":
-        					   content.push("layer-name: " + target.name());
+        		case "layer-name":
+        		content.push("layer-name: " + target.name());
                      break;
                 default:
                     render = false;
@@ -1750,8 +1743,8 @@ SM.extend({
 
         if(this.sizesPanel()){
             var sizeStyles = {
-                    layer: this.sharedLayerStyle("@Size / Layer", this.colors.size.layer),
-                    text: this.sharedTextStyle("@Size / Text", this.colors.size.text, 2)
+                    layer: this.sharedLayerStyle("Sketch Measure / Size", this.colors.size.layer),
+                    text: this.sharedTextStyle("Sketch Measure / Size", this.colors.size.text, 2)
                 };
 
             for (var i = 0; i < selection.count(); i++) {
@@ -1796,8 +1789,8 @@ SM.extend({
                 layer = (selection.count() == 1)? this.current: selection[0],
                 placements = ["top", "right", "bottom", "left"],
                 spacingStyles = {
-                        layer: this.sharedLayerStyle("@Spacing / Layer", this.colors.spacing.layer),
-                        text: this.sharedTextStyle("@Spacing / Text", this.colors.spacing.text, 2)
+                        layer: this.sharedLayerStyle("Sketch Measure / Spacing", this.colors.spacing.layer),
+                        text: this.sharedTextStyle("Sketch Measure / Spacing", this.colors.spacing.text, 2)
                     };
 
             if( this.isIntersect(this.getRect(target), this.getRect(layer)) ){
@@ -1847,8 +1840,8 @@ SM.extend({
         }
 
         var sizeStyles = {
-                layer: this.sharedLayerStyle("@Size / Layer", this.colors.size.layer),
-                text: this.sharedTextStyle("@Size / Text", this.colors.size.text, 2)
+                layer: this.sharedLayerStyle("Sketch Measure / Size", this.colors.size.layer),
+                text: this.sharedTextStyle("Sketch Measure / Size", this.colors.size.text, 2)
             };
 
             for (var i = 0; i < selection.count(); i++) {
@@ -1897,8 +1890,8 @@ SM.extend({
         var target = (selection.count() == 1)? selection[0]: selection[1],
             layer = (selection.count() == 1)? this.current: selection[0],
             spacingStyles = {
-                    layer: this.sharedLayerStyle("@Spacing / Layer", this.colors.spacing.layer),
-                    text: this.sharedTextStyle("@Spacing / Text", this.colors.spacing.text, 2)
+                    layer: this.sharedLayerStyle("Sketch Measure / Spacing", this.colors.spacing.layer),
+                    text: this.sharedTextStyle("Sketch Measure / Spacing", this.colors.spacing.text, 2)
                 },
             placements = ["top", "right", "bottom", "left"];
 
@@ -1973,8 +1966,8 @@ SM.extend({
         var targetRect = this.getRect(target),
             objectID = target.objectID(),
             noteStyle = {
-                layer: this.sharedLayerStyle("@Note / Layer", this.colors.note.layer, this.colors.note.border),
-                text: this.sharedTextStyle("@Note / Text", this.colors.note.text)
+                layer: this.sharedLayerStyle("Sketch Measure / Note", this.colors.note.layer, this.colors.note.border),
+                text: this.sharedTextStyle("Sketch Measure / Note", this.colors.note.text)
             },
             container = this.addGroup();
 
@@ -1992,8 +1985,8 @@ SM.extend({
         text.setStringValue(target.stringValue());
         text.setTextBehaviour(1);
         text.setTextBehaviour(0);
-        note.setStyle(noteStyle.layer);
-        text.setStyle(noteStyle.text);
+        note.setSharedStyle(noteStyle.layer);
+        text.setSharedStyle(noteStyle.text);
 
         var noteRect = this.getRect(note),
             textRect = this.getRect(text),
@@ -2227,7 +2220,7 @@ SM.extend({
         openPanel.setDirectoryURL(NSURL.fileURLWithPath("~/Documents/"));
         openPanel.setTitle(_("Choose a &quot;colors.json&quot;"));
         openPanel.setPrompt(_("Choose"));
-        openPanel.setAllowedFileTypes(NSArray.arrayWithObjects("json"))
+        openPanel.setAllowedFileTypes(["json"])
 
         if (openPanel.runModal() != NSOKButton) {
             return false;
@@ -2236,9 +2229,19 @@ SM.extend({
             colorsData = [];
 
         colors.forEach(function(color){
-            if( color.color && color.color.a && color.color.r && color.color.g && color.color.b && color.color["argb-hex"] && color.color["color-hex"] && color.color["css-rgba"] && color.color["ui-color"] ){
-                colorsData.push(color);
-            }
+          if(
+              (color.color !== null && color.color !== undefined) &&
+              (color.color.a !== null && color.color.a !== undefined) &&
+              (color.color.r !== null && color.color.r !== undefined) &&
+              (color.color.g !== null && color.color.g !== undefined) &&
+              (color.color.b !== null && color.color.b !== undefined) &&
+              (color.color["argb-hex"] !== null && color.color["argb-hex"] !== undefined) &&
+              (color.color["color-hex"] !== null && color.color["color-hex"] !== undefined) &&
+              (color.color["css-rgba"] !== null && color.color["css-rgba"] !== undefined) &&
+              (color.color["ui-color"] !== null && color.color["ui-color"] !== undefined)
+          ){
+              colorsData.push(color);
+          }
         });
 
         if(colorsData.length <= 0){
@@ -2327,31 +2330,18 @@ SM.extend({
             var layer = this.selection[i],
                 slice = layer;
 
-            if(optionKey && !this.is(layer, MSSliceLayer)){
+            if(!optionKey && !this.is(layer, MSSliceLayer)){
                 slice = MSSliceLayer.sliceLayerFromLayer(layer);
 
-                var layerRect = this.getRect(layer),
-                    sliceRect = this.getRect(slice);
+                var msRect = MSRect.rectWithUnionOfRects([
+                        MSRect.alloc().initWithRect(slice.absoluteRect().rect()),
+                        MSRect.alloc().initWithRect(layer.absoluteRect().rect())
+                    ]);
 
-                if(layerRect.width > sliceRect.width){
-                    sliceRect.setX(layerRect.x);
-                    sliceRect.setWidth(layerRect.width);
-                }
-
-                if(layerRect.height > sliceRect.height){
-                    sliceRect.setY(layerRect.y);
-                    sliceRect.setHeight(layerRect.height);
-                }
+                slice.absoluteRect().setRect(msRect.rect());
 
                 if(this.is(layer, MSLayerGroup)){
-                    var sliceCopy = slice.copy();
-                    layer.addLayers([sliceCopy]);
-
-                    var sliceCopyRect = this.getRect(sliceCopy);
-                    sliceCopyRect.setX(sliceRect.x);
-                    sliceCopyRect.setY(sliceRect.y);
-                    this.removeLayer(slice);
-                    slice = sliceCopy;
+                    slice.moveToLayer_beforeLayer(layer, layer.firstLayer());
                     slice.exportOptions().setLayerOptions(2);
                 }
             }
@@ -2362,7 +2352,7 @@ SM.extend({
                 size.setName("");
                 size.setScale(1);
 
-            if(!optionKey || this.is(layer, MSSliceLayer)){
+            if(optionKey || this.is(layer, MSSliceLayer)){
                 layer.setIsSelected(0);
                 layer.setIsSelected(1);
             }
@@ -2391,6 +2381,12 @@ SM.extend({
     isExportable: function(layer) {
         return this.is(layer, MSTextLayer) ||
                this.is(layer, MSShapeGroup) ||
+               this.is(layer, MSRectangleShape) ||
+               this.is(layer, MSOvalShape) ||
+               this.is(layer, MSShapePathLayer) ||
+               this.is(layer, MSTriangleShape) ||
+               this.is(layer, MSStarShape) ||
+               this.is(layer, MSPolygonShape) ||
                this.is(layer, MSBitmapLayer) ||
                this.is(layer, MSSliceLayer) ||
                this.is(layer, MSSymbolInstance) ||
@@ -2534,16 +2530,16 @@ SM.extend({
             matchFormat = /png|jpg|tiff|webp/.exec(fileFormat);
         var exportFormats =
             (self.configs.unit == "dp/sp" && matchFormat)? [
-              { scale: 1 / self.configs.scale, prefix: "drawable-mdpi/", format: "png" },
-              { scale: 1.5 / self.configs.scale, prefix: "drawable-hdpi/", format: "png" },
-              { scale: 2 / self.configs.scale, prefix: "drawable-xhdpi/", format: "png" },
-              { scale: 3 / self.configs.scale, prefix: "drawable-xxhdpi/", format: "png" },
-              { scale: 4 / self.configs.scale, prefix: "drawable-xxxhdpi/", format: "png" }
+              { scale: 1 / self.configs.scale, prefix: "drawable-mdpi/", format: fileFormat },
+              { scale: 1.5 / self.configs.scale, prefix: "drawable-hdpi/", format: fileFormat },
+              { scale: 2 / self.configs.scale, prefix: "drawable-xhdpi/", format: fileFormat },
+              { scale: 3 / self.configs.scale, prefix: "drawable-xxhdpi/", format: fileFormat },
+              { scale: 4 / self.configs.scale, prefix: "drawable-xxxhdpi/", format: fileFormat }
             ]:
             (this.configs.unit == "pt" && matchFormat)? [
-              { scale: 1 / self.configs.scale, suffix: "", format: "png" },
-              { scale: 2 / self.configs.scale, suffix: "@2x", format: "png" },
-              { scale: 3 / self.configs.scale, suffix: "@3x", format: "png" }
+              { scale: 1 / self.configs.scale, suffix: "", format: fileFormat },
+              { scale: 2 / self.configs.scale, suffix: "@2x", format: fileFormat },
+              { scale: 3 / self.configs.scale, suffix: "@3x", format: fileFormat }
             ]:
             self.getFormats(sizes);
 
@@ -2777,6 +2773,7 @@ SM.extend({
         return savePanel.URL().path();
     },
     exportPanel: function(){
+        if(ga) ga.sendEvent('spec', 'export to spec viewer');
         var self = this;
         this.artboardsData = [];
         this.selectionArtboards = {};
@@ -2835,7 +2832,7 @@ SM.extend({
         return this.SMPanel({
             url: this.pluginSketch + "/panel/export.html",
             width: 320,
-            height: 577,
+            height: 597,
             data: data,
             callback: function( data ){
                 var allData = self.allData;
@@ -2902,6 +2899,7 @@ SM.extend({
                 var idx = 1,
                     artboardIndex = 0,
                     layerIndex = 0,
+                    layerCount = 0,
                     exporting = false,
                     data = {
                         scale: self.configs.scale,
@@ -2933,8 +2931,8 @@ SM.extend({
                         exporting = true;
                         var artboard = self.selectionArtboards[artboardIndex],
                             page = artboard.parentGroup(),
-                            layer = artboard.children()[layerIndex];
-
+                            layer = artboard.children()[layerIndex],
+                            message = page.name() + ' - ' + artboard.name() + ' - ' + layer.name();
                         // log( page.name() + ' - ' + artboard.name() + ' - ' + layer.name());
                         try {
                           self.getLayer(
@@ -2943,13 +2941,15 @@ SM.extend({
                               data.artboards[artboardIndex] // Save to data
                           );
                           layerIndex++;
+                          layerCount++;
                           exporting = false;
                         } catch (e) {
                           self.wantsStop = true;
-                          processing.evaluateWebScript("$('#processing-text').html('<strong>Error:</strong> <small>" + self.toHTMLEncode(e.message) + "</small>');");
+                          log(e)
+                          processing.evaluateWebScript("$('#processing-text').html('<small>" + self.toHTMLEncode(message) + "</small>');");
                         }
 
-                        if( self.is(layer, MSArtboardGroup) || self.is(layer, MSSymbolMaster)){
+                        if( layerIndex >= artboard.children().length ){
                             var objectID = artboard.objectID(),
                                 artboardRect = self.getRect(artboard),
                                 page = artboard.parentGroup(),
@@ -3006,7 +3006,7 @@ SM.extend({
                             artboardIndex++;
                         }
 
-                        if(artboardIndex >= self.selectionArtboards.length){
+                        if(artboardIndex >= self.selectionArtboards.length && layerCount >= self.allCount){
                             if(self.slices.length > 0){
                                 data.slices = self.slices;
                             }
@@ -3024,11 +3024,12 @@ SM.extend({
                                     });
                                 selectingPath = savePath + "/index.html";
                             }
-                            NSWorkspace.sharedWorkspace().activateFileViewerSelectingURLs(NSArray.arrayWithObjects(NSURL.fileURLWithPath(selectingPath)));
+                            NSWorkspace.sharedWorkspace().activateFileViewerSelectingURLs([NSURL.fileURLWithPath(selectingPath)]);
 
                             self.message(_("Export complete!"));
                             self.wantsStop = true;
                         }
+
                     }
 
                     if( self.wantsStop === true ){
@@ -3106,7 +3107,6 @@ SM.extend({
                 rect: this.rectToJSON(textLayer.absoluteRect(), artboardRect),
                 note: this.toHTMLEncode(this.emojiToEntities(textLayer.stringValue())).replace(/\n/g, "<br>")
             });
-
             layer.setIsVisible(false);
         }
 
@@ -3132,7 +3132,6 @@ SM.extend({
         } // fixed for v40
 
         var exportLayerRect;
-        log(this.configs);
         if(this.configs.exportInfluenceRect == true && layerType != "text"){
             // export the influence rect.(include the area of shadows and outside borders...)
             var influenceCGRect = layer.absoluteInfluenceRect();
@@ -3147,7 +3146,7 @@ SM.extend({
             // export the default rect.
             exportLayerRect = layer.absoluteRect();
         }
-        
+
         var layerData = {
                     objectID: this.toJSString( layer.objectID() ),
                     type: layerType,
@@ -3186,7 +3185,12 @@ SM.extend({
             var c = layerCSSAttributes[i]
             if(! /\/\*/.exec(c) ) css.push(this.toJSString(c));
         }
-        if(css.length > 0) layerData.css = css;
+        if(css.length > 0) {
+            layerData.css = css;
+            if(this.is(layer, MSRectangleShape) && !!layer.fixedRadius()){
+                layerData.css.push('border-radius: ' + layer.cornerRadiusString().replace(/;/g,'px ') + 'px;');
+            }
+        }
 
         this.getMask(group, layer, layerData, layerStates);
         this.getSlice(layer, layerData, symbolLayer);
