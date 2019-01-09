@@ -2546,8 +2546,10 @@ SM.extend({
               { scale: 3 / self.configs.scale, suffix: "@3x", format: fileFormat }
             ]:
             self.getFormats(sizes);
-
-        for(exportFormat of exportFormats) {
+        
+        //only export 1x images. multi-size images is not necessary. ---forty
+        var exportFormat = exportFormats[0];
+        // for(exportFormat of exportFormats) {
           var prefix = exportFormat.prefix || "",
               suffix = exportFormat.suffix || "";
           self.exportImage({
@@ -2565,7 +2567,7 @@ SM.extend({
                   format: fileFormat,
                   path: prefix + layer.name() + suffix + "." + exportFormat.format
               });
-        }
+        // }
 
         return exportable;
     },
@@ -3080,8 +3082,11 @@ SM.extend({
             document = this.document,
             slice = MSExportRequest.exportRequestsFromExportableLayer(options.layer).firstObject(),
             savePathName = [];
-
-        slice.scale = options.scale;
+        
+        //only export 1x images. multi-size images is not necessary. ---forty
+        slice.scale = 1;
+        //slice.scale = options.scale;
+        
         slice.format = options.format;
 
         savePathName.push(
