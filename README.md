@@ -1,5 +1,5 @@
 
-# 2.7.8 Fork (2.7.7 SMFramework + 2.7.6 Fixes)
+# 2.7.9 Fork (2.7.7 SMFramework + 2.7.7 Fixes)
 This is a fork I've created some time ago to fix Measure for Sketch v52+.
 
 It includes a lot of changes, fixes and aditions, the latest being the addition of the SMFramework from the v2.7.7 released by @utom recently, allowing for the `Toolbar 2.0` to work to certain extent.
@@ -13,11 +13,12 @@ Remember to **uninstall current plugin version**, **restart sketch** then, insta
 Inside Sketch, Go to the menu:
 - Plugins > Manage Plugins...
 - Scroll down to "Sketch Measure"
-    - It should say 2.7.8
+    - It should say 2.7.9
 
 # Changelog:
 
 ### **FIXED**
+- support Sketch v53
 - fixed bug to show radius when rectangle fill is an image when exporting
 - fixed bug where styles would not show when exporting
 - fixed radius support when exporting and marking
@@ -26,7 +27,7 @@ Inside Sketch, Go to the menu:
 
 ### **CHANGED**
 - updated SMFramework to latest version by @utom
-- changed version to 2.7.8 for all languages
+- changed version to 2.7.9 for all languages
 - changed radius validation to array, making it less prone to erros
 
 ### **ADDED**

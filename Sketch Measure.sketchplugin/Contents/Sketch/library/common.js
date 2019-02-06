@@ -2629,9 +2629,9 @@ SM.extend({
                 var symbolRect = this.getRect(layer),
                     symbolChildren = layer.symbolMaster().children(),
                     tempSymbol = layer.duplicate(),
-                    tempGroup = tempSymbol.detachByReplacingWithGroup();
+                    tempGroup = tempSymbol.detachStylesAndReplaceWithGroupRecursively(0);
 
-                tempGroup.resizeToFitChildrenWithOption(0)
+                tempGroup.fixGeometryWithOptions(0)
 
                 var tempSymbolLayers = tempGroup.children().objectEnumerator(),
                     overrides = layer.overrides(),
