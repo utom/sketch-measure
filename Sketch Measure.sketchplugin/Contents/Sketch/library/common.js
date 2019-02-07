@@ -2639,7 +2639,10 @@ SM.extend({
 
                 overrides = (overrides)? overrides.objectForKey(0): undefined;
 
-                while(tempSymbolLayer = tempSymbolLayers.nextObject()){
+                for(idx = 0; idx < tempSymbolLayers.length; idx++){
+                    
+                    tempSymbolLayer = tempSymbolLayers[idx];
+
                     if( self.is(tempSymbolLayer, MSSymbolInstance) ){
                         var symbolMasterObjectID = self.toJSString(symbolChildren[idx].objectID());
                         if(
@@ -2664,8 +2667,7 @@ SM.extend({
                           symbolChildren[idx]
                       );
                     }
-                    idx++
-                }
+                }    
                 this.removeLayer(tempGroup);
             }
         }
