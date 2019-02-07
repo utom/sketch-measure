@@ -1,5 +1,5 @@
 
-# 2.7.9 Fork (2.7.7 SMFramework + 2.7.7 Fixes)
+# 2.7.9 Fork (2.7.7 SMFramework + 2.7.6 Fixes)
 This is a fork I've created some time ago to fix Measure for Sketch v52+.
 
 It includes a lot of changes, fixes and aditions, the latest being the addition of the SMFramework from the v2.7.7 released by @utom recently, allowing for the `Toolbar 2.0` to work to certain extent.
@@ -26,8 +26,9 @@ Inside Sketch, Go to the menu:
 - baseline fixes for Sketch v52+
 
 ### **CHANGED**
+- changed version to 2.7.8 for all languages
 - updated SMFramework to latest version by @utom
-- changed version to 2.7.9 for all languages
+- changed version to 2.7.6 for all languages
 - changed radius validation to array, making it less prone to erros
 
 ### **ADDED**
