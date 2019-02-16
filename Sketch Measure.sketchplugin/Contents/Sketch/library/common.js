@@ -2629,20 +2629,16 @@ SM.extend({
                 var symbolRect = this.getRect(layer),
                     symbolChildren = layer.symbolMaster().children(),
                     tempSymbol = layer.duplicate(),
-                    tempGroup = tempSymbol.detachStylesAndReplaceWithGroupRecursively(0);
+                    tempGroup = tempSymbol.detachStylesAndReplaceWithGroupRecursively(1);
 
-                tempGroup.fixGeometryWithOptions(0)
+                tempGroup.fixGeometryWithOptions(1);
 
                 var tempSymbolLayers = tempGroup.children().objectEnumerator(),
-                    overrides = layer.overrides(),
-                    idx = 0;
+                    overrides = layer.overrides();
 
                 overrides = (overrides)? overrides.objectForKey(0): undefined;
 
-                for(idx = 0; idx < tempSymbolLayers.length; idx++){
-                    
-                    tempSymbolLayer = tempSymbolLayers[idx];
-
+                while(tempSymbolLayer = tempSymbolLayers.nextObject()){
                     if( self.is(tempSymbolLayer, MSSymbolInstance) ){
                         var symbolMasterObjectID = self.toJSString(symbolChildren[idx].objectID());
                         if(
@@ -2663,11 +2659,10 @@ SM.extend({
                       self.getLayer(
                           artboard,
                           tempSymbolLayer,
-                          data,
-                          symbolChildren[idx]
+                          data
                       );
                     }
-                }    
+                }
                 this.removeLayer(tempGroup);
             }
         }
