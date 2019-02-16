@@ -27,6 +27,7 @@ Inside Sketch, Go to the menu:
 - baseline fixes for Sketch v52+
 
 ### **CHANGED**
+- changed version to 2.7.9 for all languages
 - changed version to 2.7.8 for all languages
 - updated SMFramework to latest version by @utom
 - changed version to 2.7.6 for all languages
