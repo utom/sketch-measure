@@ -1447,7 +1447,7 @@ SM.extend({
             });
 
         this.removeLayer(temp);
-        container.resizeToFitChildrenWithOption(0);
+        container.fixGeometryWithOptions(0);
     },
     spacings: function( options ){
         var options = this.extend(options, {}),
@@ -1582,7 +1582,7 @@ SM.extend({
         overlayRect.setWidth(targetRect.width);
         overlayRect.setHeight(targetRect.height);
 
-        container.resizeToFitChildrenWithOption(0);
+        container.fixGeometryWithOptions(0);
     }
 });
 
@@ -1730,7 +1730,7 @@ SM.extend({
 
         this.setConfigs({placement: placement}, container);
 
-        container.resizeToFitChildrenWithOption(0);
+        container.fixGeometryWithOptions(0);
     }
 });
 
@@ -2024,7 +2024,7 @@ SM.extend({
         noteRect.setWidth(textRect.width + 12 * scale);
         noteRect.setHeight(textRect.height + 12 * scale);
 
-        container.resizeToFitChildrenWithOption(0);
+        container.fixGeometryWithOptions(0);
         this.removeLayer(target);
     }
 });
@@ -2099,7 +2099,7 @@ SM.extend({
         text.setTextBehaviour(1);
         text.setTextBehaviour(0);
 
-        container.resizeToFitChildrenWithOption(0);
+        container.fixGeometryWithOptions(0);
     },
     resizeNote: function(container) {
         var text = this.find({key: "(class != NULL) && (class == %@)", match: MSTextLayer}),
@@ -2126,7 +2126,7 @@ SM.extend({
         text.setTextBehaviour(1);
         text.setTextBehaviour(0);
 
-        container.resizeToFitChildrenWithOption(0);
+        container.fixGeometryWithOptions(0);
     }
 });
 
@@ -2631,7 +2631,7 @@ SM.extend({
                     tempSymbol = layer.duplicate(),
                     tempGroup = tempSymbol.detachStylesAndReplaceWithGroupRecursively(1);
 
-                tempGroup.fixGeometryWithOptions(1);
+                tempGroup.fixGeometryWithOptions(0);
 
                 var tempSymbolLayers = tempGroup.children().objectEnumerator(),
                     overrides = layer.overrides();
