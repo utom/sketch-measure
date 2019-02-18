@@ -18,6 +18,7 @@ Inside Sketch, Go to the menu:
 # Changelog:
 
 ### **FIXED**
+- fixed a bug where marking sizes and spacings would not have the desired outcome
 - fixed a bug where symbols would not get exported after v53 support fix
 - support Sketch v53
 - fixed bug to show radius when rectangle fill is an image when exporting
