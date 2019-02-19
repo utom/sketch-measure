@@ -447,38 +447,19 @@ SM.extend({
         return style.contextSettings().opacity()
     },
     getStyleName: function(layer){
-        if(layer.sharedStyleID()){
-            var styles = (this.is(layer, MSTextLayer))? this.document.documentData().layerTextStyles(): this.document.documentData().layerStyles(),
-                layerStyle = layer.style(),
-                sharedObjectID = layer.sharedStyleID(),
-                style;
-            
-            styles = styles.objectsSortedByName();
+        var styles = (this.is(layer, MSTextLayer))? this.document.documentData().layerTextStyles(): this.document.documentData().layerStyles(),
+        layerStyle = layer.style(),
+        sharedObjectID = layerStyle.objectID(),
+        style;
 
-            if(styles.count() > 0){
-                style = this.find({key: "(objectID != NULL) && (objectID == %@)", match: sharedObjectID}, styles);
-            }
+        styles = styles.objectsSortedByName();
 
-            if(!style){
-                var styles = (this.is(layer, MSTextLayer))? this.document.documentData().foreignTextStyles(): this.document.documentData().foreignLayerStyles(),
-                layerStyle = layer.style(),
-                sharedObjectID = layer.sharedStyleID(),
-                style;
-
-                styles.forEach(libraryStyle => {
-                    if(String(libraryStyle.localSharedStyle().objectID()) == String(sharedObjectID)){
-                        style = libraryStyle.localSharedStyle().name();
-                    }
-                });
-                
-                if(!style) return "";
-                return this.toJSString(style);
-            }
-            return this.toJSString(style.name());
-
-        } else {
-            return "";
+        if(styles.count() > 0){
+            style = this.find({key: "(objectID != NULL) && (objectID == %@)", match: sharedObjectID}, styles);
         }
+
+        if(!style) return "";
+        return this.toJSString(style.name());
     },
     updateContext: function(){
         this.context.document = NSDocumentController.sharedDocumentController().currentDocument();
@@ -494,10 +475,10 @@ SM.extend({
         return Math.round( number / 2 );
     },
     convertUnit: function(length, isText, percentageType){
-        if(Array.isArray(length)){
+        if(length.length){
             var units = this.configs.unit.split("/"),
                 unit = units[0];
-        
+
             if( units.length > 1 && isText){
                 unit = units[1];
             }
@@ -508,8 +489,8 @@ SM.extend({
             length.forEach(function(element) {
                 tempLegth.push(Math.round( element / scale * 10 ) / 10);
             });
-              
-            return tempLegth.join(unit + ' ') + unit;  
+
+            return tempLegth.join(unit + ' ') + unit;
 
         } else {
 
@@ -522,18 +503,18 @@ SM.extend({
                     return Math.round((length / artboardRect.height) * 1000) / 10 + "%";
                 }
             }
-    
+
             var length = Math.round( length / this.configs.scale * 10 ) / 10,
                 units = this.configs.unit.split("/"),
                 unit = units[0];
-    
+
             if( units.length > 1 && isText){
                 unit = units[1];
             }
-    
+
             return length + unit;
         }
-        
+
     },
     toHex:function(c) {
         var hex = Math.round(c).toString(16).toUpperCase();
@@ -902,8 +883,8 @@ SM.extend({
         // rect function
         var x = targetRect.x + this.mathHalf(targetRect.width) - this.mathHalf(textRect.width),
             y = targetRect.y + this.mathHalf(targetRect.height) - this.mathHalf(textRect.height),
-            arrowX = x - 4 + this.mathHalf(textRect.width + 8) - 4,
-            arrowY = y - 4 + this.mathHalf(textRect.height + 8) - 4;
+            arrowX = x - 3 + this.mathHalf(textRect.width + 6) - 3,
+            arrowY = y - 3 + this.mathHalf(textRect.height + 6) - 3;
 
         if(!this.is(target, MSPage) && !this.is(target, MSArtboardGroup)){
             switch(placement){
@@ -951,11 +932,11 @@ SM.extend({
         boxRect.setWidth(textRect.width + 8);
         boxRect.setHeight(textRect.height + 8);
 
-        arrowRect.setWidth(8);
-        arrowRect.setHeight(8);
+        arrowRect.setWidth(6);
+        arrowRect.setHeight(6);
         arrowRect.setX(arrowX);
         arrowRect.setY(arrowY);
-		arrow.setRotation(45);
+    		arrow.setRotation(45);
 
         return {
             element: box,
@@ -1558,8 +1539,10 @@ SM.extend({
     }
 });
 
+
 SM.extend({
     overlay: function(target){
+        //Crashing on exception: -[MSImmutableSharedStyle hasMarkers]: unrecognized selector sent to instance 0x608002a4f510
         var targetRect = this.getRect(target),
             name = "OVERLAY#" + target.objectID(),
             container = this.find({key: "(name != NULL) && (name == %@)", match: name}),
@@ -2957,8 +2940,9 @@ SM.extend({
                         exporting = true;
                         var artboard = self.selectionArtboards[artboardIndex],
                             page = artboard.parentGroup(),
-                            layer = artboard.children()[layerIndex];
-                        log( page.name() + ' - ' + artboard.name() + ' - ' + layer.name());
+                            layer = artboard.children()[layerIndex],
+                            message = page.name() + ' - ' + artboard.name() + ' - ' + layer.name();
+                        // log( page.name() + ' - ' + artboard.name() + ' - ' + layer.name());
                         try {
                           self.getLayer(
                               artboard, // Sketch artboard element
@@ -2970,7 +2954,8 @@ SM.extend({
                           exporting = false;
                         } catch (e) {
                           self.wantsStop = true;
-                          processing.evaluateWebScript("$('#processing-text').html('<strong>Error:</strong> <small>" + self.toHTMLEncode(e.message) + "</small>');");
+                          log(e)
+                          processing.evaluateWebScript("$('#processing-text').html('<small>" + self.toHTMLEncode(message) + "</small>');");
                         }
 
                         if( layerIndex >= artboard.children().length ){
@@ -3125,9 +3110,7 @@ SM.extend({
             layerStates = this.getStates(layer);
 
         if(layer && this.is(layer, MSLayerGroup) && /NOTE\#/.exec(layer.name())){
-            for (var i = 0; i < layer.children().count(); i++) {
-                if(this.is(layer.children()[i], MSTextLayer)) var textLayer = layer.children()[i];
-            }
+            var textLayer = layer.children()[2];
 
             data.notes.push({
                 rect: this.rectToJSON(textLayer.absoluteRect(), artboardRect),
@@ -3142,8 +3125,7 @@ SM.extend({
             ( layerStates.isLocked && !this.is(layer, MSSliceLayer) ) ||
             layerStates.isEmpty ||
             layerStates.hasSlice ||
-            layerStates.isMeasure ||
-            layer.isMasked()
+            layerStates.isMeasure
         ){
             return this;
         }
@@ -3207,15 +3189,14 @@ SM.extend({
 
         var layerCSSAttributes = layer.CSSAttributes(),
             css = [];
-        
+
         for(var i = 0; i < layerCSSAttributes.count(); i++) {
             var c = layerCSSAttributes[i]
             if(! /\/\*/.exec(c) ) css.push(this.toJSString(c));
         }
-
-        if(css.length > 0 || layer.CSSAttributes().length > 0) {
+        if(css.length > 0) {
             layerData.css = css;
-            if(this.is(layer, MSRectangleShape) && !!layer.cornerRadiusString() && layer.cornerRadiusString() != 0 && !/border-radius/.exec(layer.CSSAttributes())){
+            if(this.is(layer, MSRectangleShape) && !!layer.fixedRadius()){
                 layerData.css.push('border-radius: ' + layer.cornerRadiusString().replace(/;/g,'px ') + 'px;');
             }
         }
