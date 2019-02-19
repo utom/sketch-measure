@@ -6,15 +6,15 @@
     <description>Make it a fun to create spec for developers and teammates</description>
     <language>en</language>
 		<item>
-			<title>Version 2.7.7</title>
+			<title>Version 2.7.8</title>
 			<description>
 				<![CDATA[
 					<ul>
-						<li>Support Sketch v52</li>
+						<li>Support Sketch v53</li>
 					</ul>
 				]]>
 			</description>
-			<enclosure url="https://github.com/utom/sketch-measure/archive/master.zip" sparkle:version="2.7.7" type="application/octet-stream" />
+			<enclosure url="https://github.com/utom/sketch-measure/archive/master.zip" sparkle:version="2.7.8" type="application/octet-stream" />
 		</item>
   </channel>
 </rss>
