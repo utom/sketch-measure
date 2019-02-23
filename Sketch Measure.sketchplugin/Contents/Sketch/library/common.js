@@ -1428,7 +1428,7 @@ SM.extend({
             });
 
         this.removeLayer(temp);
-        container.resizeToFitChildrenWithOption(0);
+        container.fixGeometryWithOptions(0);
     },
     spacings: function( options ){
         var options = this.extend(options, {}),
@@ -1565,7 +1565,7 @@ SM.extend({
         overlayRect.setWidth(targetRect.width);
         overlayRect.setHeight(targetRect.height);
 
-        container.resizeToFitChildrenWithOption(0);
+        container.fixGeometryWithOptions(0);
     }
 });
 
@@ -1713,7 +1713,7 @@ SM.extend({
 
         this.setConfigs({placement: placement}, container);
 
-        container.resizeToFitChildrenWithOption(0);
+        container.fixGeometryWithOptions(0);
     }
 });
 
@@ -2007,7 +2007,7 @@ SM.extend({
         noteRect.setWidth(textRect.width + 12 * scale);
         noteRect.setHeight(textRect.height + 12 * scale);
 
-        container.resizeToFitChildrenWithOption(0);
+        container.fixGeometryWithOptions(0);
         this.removeLayer(target);
     }
 });
@@ -2082,7 +2082,7 @@ SM.extend({
         text.setTextBehaviour(1);
         text.setTextBehaviour(0);
 
-        container.resizeToFitChildrenWithOption(0);
+        container.fixGeometryWithOptions(0);
     },
     resizeNote: function(container) {
         var text = this.find({key: "(class != NULL) && (class == %@)", match: MSTextLayer}),
@@ -2109,7 +2109,7 @@ SM.extend({
         text.setTextBehaviour(1);
         text.setTextBehaviour(0);
 
-        container.resizeToFitChildrenWithOption(0);
+        container.fixGeometryWithOptions(0);
     }
 });
 
@@ -2612,9 +2612,9 @@ SM.extend({
                 var symbolRect = this.getRect(layer),
                     symbolChildren = layer.symbolMaster().children(),
                     tempSymbol = layer.duplicate(),
-                    tempGroup = tempSymbol.detachByReplacingWithGroup();
+                    tempGroup = tempSymbol.detachStylesAndReplaceWithGroupRecursively(0);
 
-                tempGroup.resizeToFitChildrenWithOption(0)
+                tempGroup.fixGeometryWithOptions(0)
 
                 var tempSymbolLayers = tempGroup.children().objectEnumerator(),
                     overrides = layer.overrides(),
@@ -2643,11 +2643,10 @@ SM.extend({
                       self.getLayer(
                           artboard,
                           tempSymbolLayer,
-                          data,
-                          symbolChildren[idx]
+                          data
                       );
                     }
-                    idx++
+                    idx++;
                 }
                 this.removeLayer(tempGroup);
             }
