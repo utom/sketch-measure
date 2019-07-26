@@ -1428,7 +1428,7 @@ SM.extend({
             });
 
         this.removeLayer(temp);
-        container.resizeToFitChildrenWithOption(0);
+        container.fixGeometryWithOptions(0);
     },
     spacings: function( options ){
         var options = this.extend(options, {}),
@@ -1565,7 +1565,7 @@ SM.extend({
         overlayRect.setWidth(targetRect.width);
         overlayRect.setHeight(targetRect.height);
 
-        container.resizeToFitChildrenWithOption(0);
+        container.fixGeometryWithOptions(0);
     }
 });
 
@@ -1713,7 +1713,7 @@ SM.extend({
 
         this.setConfigs({placement: placement}, container);
 
-        container.resizeToFitChildrenWithOption(0);
+        container.fixGeometryWithOptions(0);
     }
 });
 
@@ -2007,7 +2007,7 @@ SM.extend({
         noteRect.setWidth(textRect.width + 12 * scale);
         noteRect.setHeight(textRect.height + 12 * scale);
 
-        container.resizeToFitChildrenWithOption(0);
+        container.fixGeometryWithOptions(0);
         this.removeLayer(target);
     }
 });
@@ -2082,7 +2082,7 @@ SM.extend({
         text.setTextBehaviour(1);
         text.setTextBehaviour(0);
 
-        container.resizeToFitChildrenWithOption(0);
+        container.fixGeometryWithOptions(0);
     },
     resizeNote: function(container) {
         var text = this.find({key: "(class != NULL) && (class == %@)", match: MSTextLayer}),
@@ -2109,7 +2109,7 @@ SM.extend({
         text.setTextBehaviour(1);
         text.setTextBehaviour(0);
 
-        container.resizeToFitChildrenWithOption(0);
+        container.fixGeometryWithOptions(0);
     }
 });
 
@@ -2398,13 +2398,18 @@ SM.extend({
             hasSlice = false,
             isEmpty = false,
             isMaskChildLayer = false,
-            isMeasure = false;
+            isMeasure = false,
+            isShapeGroup = false;
 
         while (!( this.is(layer, MSArtboardGroup) || this.is(layer, MSSymbolMaster) ) ) {
             var group = layer.parentGroup();
 
             if( this.regexNames.exec(group.name()) ){
                 isMeasure = true;
+            }
+
+            if( this.is(group, MSShapeGroup) ){
+                isShapeGroup = true;
             }
 
             if (!layer.isVisible()) {
@@ -2442,7 +2447,8 @@ SM.extend({
             hasSlice: hasSlice,
             isMaskChildLayer: isMaskChildLayer,
             isMeasure: isMeasure,
-            isEmpty: isEmpty
+            isEmpty: isEmpty,
+            isShapeGroup: isShapeGroup
         }
     },
     getMask: function(group, layer, layerData, layerStates){
@@ -2612,9 +2618,7 @@ SM.extend({
                 var symbolRect = this.getRect(layer),
                     symbolChildren = layer.symbolMaster().children(),
                     tempSymbol = layer.duplicate(),
-                    tempGroup = tempSymbol.detachByReplacingWithGroup();
-
-                tempGroup.resizeToFitChildrenWithOption(0)
+                    tempGroup = tempSymbol.detachStylesAndReplaceWithGroupRecursively(false);
 
                 var tempSymbolLayers = tempGroup.children().objectEnumerator(),
                     overrides = layer.overrides(),
@@ -2947,6 +2951,7 @@ SM.extend({
                           self.wantsStop = true;
                           log(e)
                           processing.evaluateWebScript("$('#processing-text').html('<small>" + self.toHTMLEncode(message) + "</small>');");
+                          if(ga) ga.sendError(message)
                         }
 
                         if( layerIndex >= artboard.children().length ){
@@ -3033,6 +3038,7 @@ SM.extend({
                     }
 
                     if( self.wantsStop === true ){
+                        if(ga) ga.sendEvent('spec', 'spec done');
                         return interval.cancel();
                     }
 
@@ -3116,7 +3122,8 @@ SM.extend({
             ( layerStates.isLocked && !this.is(layer, MSSliceLayer) ) ||
             layerStates.isEmpty ||
             layerStates.hasSlice ||
-            layerStates.isMeasure
+            layerStates.isMeasure ||
+            layerStates.isShapeGroup
         ){
             return this;
         }

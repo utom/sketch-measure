@@ -14,13 +14,13 @@
     <div id="app" class="container">
       <div class="options" style="height:194px">
         <div class="resolution selectbox mrb16" tabindex="0">
-          <div class="selectwrap" @click="blurSelectbox">
-            <h3>Design resolution</h3>
+          <div class="selectwrap">
+            <h3 @click="blurSelectbox">Design resolution</h3>
             <p>{{ checkedResolution() }}</p>
             <ul>
               <template v-for="item in resolutionData">
               <li v-if="!item.ico">
-                <label><input type="radio" name="resolution-type" :checked="item.scale==configs.scale && item.units.join('/') == configs.units" :value="JSON.stringify(item)" @click="setConfigs({scale: item.scale, units: item.units.join('/')})"><span>{{ item.name }}</span></label>
+                <label><input type="radio" name="resolution-type" :checked="item.scale==configs.scale && item.units.join('/') == configs.units" :value="JSON.stringify(item)" @click="setConfigs({scale: item.scale, units: item.units.join('/')});blurSelectbox();"><span>{{ item.name }}</span></label>
               </li>
               <li v-else class="sub-title">{{ item.name }}</li>
               </template>
@@ -35,11 +35,11 @@
         </div>
         <h3 class="title">Color format</h3>
         <div class="color-format selectbox" tabindex="0">
-          <div class="selectwrap" @click="blurSelectbox">
-            <h3>Color format</h3>
+          <div class="selectwrap">
+            <h3 @click="blurSelectbox">Color format</h3>
             <p>{{ checkedFormat() }}</p>
             <ul>
-              <li v-for="item in formatData" @click="setConfigs({format: item.value})"><label><input type="radio" name="format" :value="item.value" :checked="configs.format == item.value"><span>{{ item.name }}</span><i>{{ item.example }}</i></label></li>
+              <li v-for="item in formatData" @click="setConfigs({format: item.value});blurSelectbox();"><label><input type="radio" name="format" :value="item.value" :checked="configs.format == item.value"><span>{{ item.name }}</span><i>{{ item.example }}</i></label></li>
             </ul>
           </div>
         </div>
