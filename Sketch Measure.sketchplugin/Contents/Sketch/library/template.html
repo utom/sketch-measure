@@ -1330,6 +1330,44 @@ var I18N = {},
                         $('#screen').removeClass('percentage-mode');
                         event.preventDefault();
                     }
+                    else if(event.which == 38) {
+                        if (self.artboardIndex === 0) return;
+
+                        self.maxSize = undefined;
+                        self.artboardIndex = self.artboardIndex - 1;
+                        self.selectedIndex = undefined;
+                        self.current = self.project.artboards[self.artboardIndex];
+                        self.hideDistance();
+                        self.screen();
+                        self.layers();
+                        self.notes();
+                        var currActive = $('.active');
+                        currActive.prev('li.artboard').addClass('active');
+                        currActive.removeClass('active');
+                        self.locationHash({
+                            artboard: self.artboardIndex
+                        });
+                    }
+                    else if(event.which == 40) {
+                        var count = $('li.artboard').length;
+                        var nextArtboardIndex = self.artboardIndex + 1;
+                        if (nextArtboardIndex >= count) return;
+
+                        self.maxSize = undefined;
+                        self.artboardIndex = nextArtboardIndex;
+                        self.selectedIndex = undefined;
+                        self.current = self.project.artboards[self.artboardIndex];
+                        self.hideDistance();
+                        self.screen();
+                        self.layers();
+                        self.notes();
+                        var currActive = $('.active');
+                        currActive.next('li.artboard').addClass('active');
+                        currActive.removeClass('active');
+                        self.locationHash({
+                            artboard: self.artboardIndex
+                        });
+                    }
                 })
                 .mousemove(function(event){
                     $('#cursor')
