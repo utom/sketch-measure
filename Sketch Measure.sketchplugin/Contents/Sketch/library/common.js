@@ -3109,6 +3109,14 @@ SM.extend({
         if(layer && this.is(layer, MSLayerGroup) && /NOTE\#/.exec(layer.name())){
             var textLayer = layer.children()[2];
 
+            var _i = 2;
+            while (!(textLayer instanceof MSTextLayer) && layer.children()[++_i]) {
+                textLayer = layer.children()[_i];
+            }
+            if (!(textLayer instanceof MSTextLayer)) {
+                textLayer = this.addText({}); // add example text
+            }
+
             data.notes.push({
                 rect: this.rectToJSON(textLayer.absoluteRect(), artboardRect),
                 note: this.toHTMLEncode(this.emojiToEntities(textLayer.stringValue())).replace(/\n/g, "<br>")
