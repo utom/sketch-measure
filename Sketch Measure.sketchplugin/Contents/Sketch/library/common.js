@@ -2889,6 +2889,9 @@ SM.extend({
                 savePath = this.getSavePath();
 
             if(savePath){
+                // Delete the files that are currently there to avoid building up cruft
+                NSFileManager.defaultManager().removeItemAtPath_error(savePath, nil);
+
                 // self.message(_("Exporting..."));
                 var processingPanel = this.SMPanel({
                         url: this.pluginSketch + "/panel/processing.html",
