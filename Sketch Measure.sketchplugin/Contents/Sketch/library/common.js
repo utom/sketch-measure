@@ -2625,10 +2625,30 @@ SM.extend({
                     idx = 0;
 
                 overrides = (overrides)? overrides.objectForKey(0): undefined;
-
+                var hasSymbolBackgroud = symbolChildren.length < tempGroup.children().length;
+                
                 while(tempSymbolLayer = tempSymbolLayers.nextObject()){
+                    var symbolLayer = undefined;
+                    if (!hasSymbolBackgroud) {
+                        symbolLayer=symbolChildren[idx]
+                    } else {
+                        switch (idx) {
+                          case 0:
+                            symbolLayer = symbolChildren[0];
+                            break;
+                          case 1:
+                            symbolLayer = undefined;
+                            break;
+                          default:
+                            symbolLayer = symbolChildren[idx-1];
+                            break;
+                        }
+                    }
+                    // if(layer) console.log(tempSymbolLayer.name());
+                    // if(symbolLayer) console.log(symbolLayer.name());
+                    // console.log("====");
                     if( self.is(tempSymbolLayer, MSSymbolInstance) ){
-                        var symbolMasterObjectID = self.toJSString(symbolChildren[idx].objectID());
+                        var symbolMasterObjectID = self.toJSString(symbolLayer.objectID());
                         if(
                           overrides &&
                           overrides[symbolMasterObjectID] &&
@@ -2648,7 +2668,7 @@ SM.extend({
                           artboard,
                           tempSymbolLayer,
                           data,
-                          symbolChildren[idx]
+                          symbolLayer
                       );
                     }
                     idx++
