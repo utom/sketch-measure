@@ -1,0 +1,6 @@
+framework module SMFramework {
+  umbrella header "SMFramework.h"
+
+  export *
+  module * { export * }
+}

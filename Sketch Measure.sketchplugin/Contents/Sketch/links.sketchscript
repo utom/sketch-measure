@@ -12,7 +12,7 @@ function linkHelp(){
 }
 
 function linkZhCNHelp(){
-  openURL('http://sketch.im/plugins/1');
+  openURL('http://sketch.cm/plugins/1');
 }
 
 function linkFeedback(){

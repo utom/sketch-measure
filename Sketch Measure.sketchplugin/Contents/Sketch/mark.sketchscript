@@ -1,5 +1,12 @@
 @import "library/common.js"
 @import "library/MochaJSDelegate.js"
+@import 'SMFramework.framework/Versions/A/Resources/SMFramework.js'
+
+var threadDictionary = NSThread.mainThread().threadDictionary();
+var Sketch, Configs, Settings, Toolbar, Mark, Properties, ga;
+var Core = SMFramework.core();
+var emojiRegExp = new RegExp('(?:[\u2700-\u27bf]|(?:\ud83c[\udde6-\uddff]){2}|[\ud800-\udbff][\udc00-\udfff]|[\u0023-\u0039]\ufe0f?\u20e3|\u3299|\u3297|\u303d|\u3030|\u24c2|\ud83c[\udd70-\udd71]|\ud83c[\udd7e-\udd7f]|\ud83c\udd8e|\ud83c[\udd91-\udd9a]|\ud83c[\udde6-\uddff]|[\ud83c[\ude01-\ude02]|\ud83c\ude1a|\ud83c\ude2f|[\ud83c[\ude32-\ude3a]|[\ud83c[\ude50-\ude51]|\u203c|\u2049|[\u25aa-\u25ab]|\u25b6|\u25c0|[\u25fb-\u25fe]|\u00a9|\u00ae|\u2122|\u2139|\ud83c\udc04|[\u2600-\u26FF]|\u2b05|\u2b06|\u2b07|\u2b1b|\u2b1c|\u2b50|\u2b55|\u231a|\u231b|\u2328|\u23cf|[\u23e9-\u23f3]|[\u23f8-\u23fa]|\ud83c\udccf|\u2934|\u2935|[\u2190-\u21ff])', 'g');
+Core.execute();
 
 function commandOverlays(context) {
     SM.init(context, "mark-overlays");
@@ -73,6 +80,39 @@ function commandToolbar(context) {
     SM.init(context, "toolbar");
 }
 
+function commandToolbar2(context) {
+  Sketch = new API();
+  ga = new Analytics(context);
+
+  Configs = new ConfigsMaster(['scale', 'units', 'format', 'properties', 'byInfluence', 'byPercentage', 'isLocked', 'isHidden']);
+
+  Settings = new Panel(context, {
+    data (){
+      return Configs.sync();
+    },
+    handlers( data ){
+      Object.keys(data).map( function(prop){
+          Configs[prop] = data[prop];
+      })
+      Configs.save()
+
+      return data;
+    }
+  });
+
+  Properties = new PropertiesPanel(context);
+
+  Mark = new Marker();
+
+  Toolbar = new ToolbarMaster(context);
+  Toolbar.open();
+}
+
 function commandInit(context){
-    SM.init(context, "init");
+  Sketch = new API();
+  ga = new Analytics(context);
+  if(ga) ga.sendEvent('file', 'open sketch file');
+  var manifestCore = new manifestMaster(context);
+  manifestCore.init()
+  SM.init(context, "init");
 }
