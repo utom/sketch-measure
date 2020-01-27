@@ -10,11 +10,11 @@
 			<description>
 				<![CDATA[
 					<ul>
-						<li>Support Sketch v52</li>
+						<li>Support Sketch v62</li>
 					</ul>
 				]]>
 			</description>
-			<enclosure url="https://github.com/utom/sketch-measure/archive/master.zip" sparkle:version="2.8.1" type="application/octet-stream" />
+			<enclosure url="https://github.com/forestlin1212/sketch-measure/archive/master.zip" sparkle:version="2.8.1" type="application/octet-stream" />
 		</item>
   </channel>
 </rss>
