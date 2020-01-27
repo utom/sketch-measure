@@ -17,6 +17,10 @@ function _(str, data){
     });
 }
 
+//Artboard image format
+var gArtboadImageFormat = "jpg"
+
+
 var SM = {
         init: function(context, command){
             Sketch = new API();
@@ -950,7 +954,7 @@ SM.extend({
     getImage: function(size, name){
         var isRetinaDisplay = (NSScreen.mainScreen().backingScaleFactor() > 1)? true: false;
             suffix = (isRetinaDisplay)? "@2x": "",
-            imageURL = NSURL.fileURLWithPath(this.pluginSketch + "/toolbar/" + name + suffix + ".png"),
+            imageURL = NSURL.fileURLWithPath(this.pluginSketch + "/toolbar/" + name + suffix + "." + gArtboadImageFormat),
             image = NSImage.alloc().initWithContentsOfURL(imageURL);
 
         return image
@@ -2548,8 +2552,10 @@ SM.extend({
               { scale: 3 / self.configs.scale, suffix: "@3x", format: fileFormat }
             ]:
             self.getFormats(sizes);
-
-        for(exportFormat of exportFormats) {
+        
+        //only export 1x images. multi-size images is not necessary. ---forty
+        var exportFormat = exportFormats[0];
+        // for(exportFormat of exportFormats) {
           var prefix = exportFormat.prefix || "",
               suffix = exportFormat.suffix || "";
           self.exportImage({
@@ -2567,7 +2573,7 @@ SM.extend({
                   format: fileFormat,
                   path: prefix + layer.name() + suffix + "." + exportFormat.format
               });
-        }
+        // }
 
         return exportable;
     },
@@ -2977,7 +2983,7 @@ SM.extend({
                                     })),
                                     imageData = NSData.dataWithContentsOfURL(imageURL),
                                     imageBase64 = imageData.base64EncodedStringWithOptions(0);
-                                data.artboards[artboardIndex].imageBase64 = 'data:image/png;base64,' + imageBase64;
+                                data.artboards[artboardIndex].imageBase64 = 'data:image/'+ gArtboadImageFormat + ';base64,' + imageBase64;
 
                                 var newData =  JSON.parse(JSON.stringify(data));
                                 newData.artboards = [data.artboards[artboardIndex]];
@@ -2989,7 +2995,7 @@ SM.extend({
                             }
                             else{
                                 // data.artboards[artboardIndex].imagePath = "preview/" + objectID + ".png";
-                                data.artboards[artboardIndex].imagePath = "preview/" + encodeURI(slug) + ".png";
+                                data.artboards[artboardIndex].imagePath = "preview/" + encodeURI(slug) + "."+ gArtboadImageFormat;
 
                                 self.exportImage({
                                         layer: artboard,
@@ -3077,13 +3083,16 @@ SM.extend({
                 name: "preview",
                 prefix: "",
                 suffix: "",
-                format: "png"
+                format: gArtboadImageFormat
             }),
             document = this.document,
             slice = MSExportRequest.exportRequestsFromExportableLayer(options.layer).firstObject(),
             savePathName = [];
-
-        slice.scale = options.scale;
+        
+        //only export 1x images. multi-size images is not necessary. ---forty
+        slice.scale = 1;
+        //slice.scale = options.scale;
+        
         slice.format = options.format;
 
         savePathName.push(
@@ -3108,6 +3117,14 @@ SM.extend({
 
         if(layer && this.is(layer, MSLayerGroup) && /NOTE\#/.exec(layer.name())){
             var textLayer = layer.children()[2];
+
+            var _i = 2;
+            while (!(textLayer instanceof MSTextLayer) && layer.children()[++_i]) {
+                textLayer = layer.children()[_i];
+            }
+            if (!(textLayer instanceof MSTextLayer)) {
+                textLayer = this.addText({}); // add example text
+            }
 
             data.notes.push({
                 rect: this.rectToJSON(textLayer.absoluteRect(), artboardRect),
