@@ -17,10 +17,6 @@ function _(str, data){
     });
 }
 
-//Artboard image format
-var gArtboadImageFormat = "jpg"
-
-
 var SM = {
         init: function(context, command){
             Sketch = new API();
@@ -954,7 +950,7 @@ SM.extend({
     getImage: function(size, name){
         var isRetinaDisplay = (NSScreen.mainScreen().backingScaleFactor() > 1)? true: false;
             suffix = (isRetinaDisplay)? "@2x": "",
-            imageURL = NSURL.fileURLWithPath(this.pluginSketch + "/toolbar/" + name + suffix + "." + gArtboadImageFormat),
+            imageURL = NSURL.fileURLWithPath(this.pluginSketch + "/toolbar/" + name + suffix + ".png"),
             image = NSImage.alloc().initWithContentsOfURL(imageURL);
 
         return image
@@ -2552,10 +2548,8 @@ SM.extend({
               { scale: 3 / self.configs.scale, suffix: "@3x", format: fileFormat }
             ]:
             self.getFormats(sizes);
-        
-        //only export 1x images. multi-size images is not necessary. ---forty
-        var exportFormat = exportFormats[0];
-        // for(exportFormat of exportFormats) {
+
+        for(exportFormat of exportFormats) {
           var prefix = exportFormat.prefix || "",
               suffix = exportFormat.suffix || "";
           self.exportImage({
@@ -2573,7 +2567,7 @@ SM.extend({
                   format: fileFormat,
                   path: prefix + layer.name() + suffix + "." + exportFormat.format
               });
-        // }
+        }
 
         return exportable;
     },
@@ -2983,7 +2977,7 @@ SM.extend({
                                     })),
                                     imageData = NSData.dataWithContentsOfURL(imageURL),
                                     imageBase64 = imageData.base64EncodedStringWithOptions(0);
-                                data.artboards[artboardIndex].imageBase64 = 'data:image/'+ gArtboadImageFormat + ';base64,' + imageBase64;
+                                data.artboards[artboardIndex].imageBase64 = 'data:image/png;base64,' + imageBase64;
 
                                 var newData =  JSON.parse(JSON.stringify(data));
                                 newData.artboards = [data.artboards[artboardIndex]];
@@ -2995,7 +2989,7 @@ SM.extend({
                             }
                             else{
                                 // data.artboards[artboardIndex].imagePath = "preview/" + objectID + ".png";
-                                data.artboards[artboardIndex].imagePath = "preview/" + encodeURI(slug) + "."+ gArtboadImageFormat;
+                                data.artboards[artboardIndex].imagePath = "preview/" + encodeURI(slug) + ".png";
 
                                 self.exportImage({
                                         layer: artboard,
@@ -3083,16 +3077,13 @@ SM.extend({
                 name: "preview",
                 prefix: "",
                 suffix: "",
-                format: gArtboadImageFormat
+                format: "png"
             }),
             document = this.document,
             slice = MSExportRequest.exportRequestsFromExportableLayer(options.layer).firstObject(),
             savePathName = [];
-        
-        //only export 1x images. multi-size images is not necessary. ---forty
-        slice.scale = 1;
-        //slice.scale = options.scale;
-        
+
+        slice.scale = options.scale;
         slice.format = options.format;
 
         savePathName.push(
@@ -3116,18 +3107,13 @@ SM.extend({
             layerStates = this.getStates(layer);
 
         if(layer && this.is(layer, MSLayerGroup) && /NOTE\#/.exec(layer.name())){
-            //fix the note stuck issue on Sketch 60+
-            for(let i=0; i<layer.containedLayersCount(); i++){
-                childLayer = layer.layerAtIndex(i);
-                if (this.is(childLayer, MSTextLayer)) {
-                    data.notes.push({
-                        rect: this.rectToJSON(childLayer.absoluteRect(), artboardRect),
-                        note: this.toHTMLEncode(this.emojiToEntities(childLayer.stringValue())).replace(/\n/g, "<br>")
-                    });
-                    layer.setIsVisible(false);
-                    break;
-                }
-            }
+            var textLayer = layer.children()[2];
+
+            data.notes.push({
+                rect: this.rectToJSON(textLayer.absoluteRect(), artboardRect),
+                note: this.toHTMLEncode(this.emojiToEntities(textLayer.stringValue())).replace(/\n/g, "<br>")
+            });
+            layer.setIsVisible(false);
         }
 
         if (
