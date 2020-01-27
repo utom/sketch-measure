@@ -3107,13 +3107,18 @@ SM.extend({
             layerStates = this.getStates(layer);
 
         if(layer && this.is(layer, MSLayerGroup) && /NOTE\#/.exec(layer.name())){
-            var textLayer = layer.children()[2];
-
-            data.notes.push({
-                rect: this.rectToJSON(textLayer.absoluteRect(), artboardRect),
-                note: this.toHTMLEncode(this.emojiToEntities(textLayer.stringValue())).replace(/\n/g, "<br>")
-            });
-            layer.setIsVisible(false);
+            //fix the note stuck issue on Sketch 60+
+            for(let i=0; i<layer.containedLayersCount(); i++){
+                childLayer = layer.layerAtIndex(i);
+                if (this.is(childLayer, MSTextLayer)) {
+                    data.notes.push({
+                        rect: this.rectToJSON(childLayer.absoluteRect(), artboardRect),
+                        note: this.toHTMLEncode(this.emojiToEntities(childLayer.stringValue())).replace(/\n/g, "<br>")
+                    });
+                    layer.setIsVisible(false);
+                    break;
+                }
+            }
         }
 
         if (
