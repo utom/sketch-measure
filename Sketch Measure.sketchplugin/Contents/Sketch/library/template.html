@@ -547,7 +547,7 @@ var I18N = {},
                 pagesData[artboard.pageObjectID].count++;
                 var classNames = (self.artboardIndex == index && !artboard.fileName)? ' active': '',
                     fileName = (artboard.fileName)? ' data-file="' + artboard.fileName + '"': '',
-                    imageData = (artboard.imageBase64)? artboard.imageBase64: artboard.imagePath + '?' + timestamp;
+                    imageData = (artboard.imageBase64)? artboard.imageBase64: artboard.imageMiniPath + '?' + timestamp;
                 artboardListHTML.push(
                         '<li id="artboard-' + index + '"' + fileName + ' class="artboard' + classNames + '" data-page-id="' + artboard.pageObjectID + '" data-id="' + artboard.objectID + '" data-index="' + index + '" >',
                             '<picture class="preview-img" data-name="' + artboard.name + '">',

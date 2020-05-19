@@ -2989,8 +2989,17 @@ SM.extend({
                             }
                             else{
                                 // data.artboards[artboardIndex].imagePath = "preview/" + objectID + ".png";
+                                const miniSlugName = slug + '-mini';
                                 data.artboards[artboardIndex].imagePath = "preview/" + encodeURI(slug) + ".png";
+                                data.artboards[artboardIndex].imageMiniPath = "preview/" + encodeURI(miniSlugName) + ".png";
 
+                                self.exportImage({
+                                    layer: artboard,
+                                    path: self.toJSString(savePath) + "/preview",
+                                    scale: 0.1,
+                                    // name: objectID,
+                                    name: miniSlugName
+                                });
                                 self.exportImage({
                                         layer: artboard,
                                         path: self.toJSString(savePath) + "/preview",
