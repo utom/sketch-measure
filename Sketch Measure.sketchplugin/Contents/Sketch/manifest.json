@@ -175,7 +175,7 @@
         "title" : "SSUI Sketch Measure"
     },
     "identifier": "com.utom.measure",
-    "appcast": "https://github.com/nintendos/sketch-measure/blob/master/appcast.xml",
+    "appcast": "https://raw.githubusercontent.com/nintendos/sketch-measure/ssui-measure/appcast.xml",
     "homepage": "http://utom.design/measure/",
     "version": "2.8.1",
     "description" : "Live Better",

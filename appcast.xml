@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <rss version="2.0" xmlns:sparkle="http://www.andymatuschak.org/xml-namespaces/sparkle"  xmlns:dc="http://purl.org/dc/elements/1.1/">
   <channel>
-    <title>Sketch Measure</title>
-    <link>https://raw.githubusercontent.com/utom/sketch-measure/master/appcast.xml</link>
-    <description>Make it a fun to create spec for developers and teammates</description>
+    <title>SSUI Measure</title>
+    <link>https://raw.githubusercontent.com/nintendos/sketch-measure/ssui-measure/appcast.xml</link>
+    <description>Live Better</description>
     <language>en</language>
 		<item>
 			<title>Version 2.8.1</title>
@@ -14,7 +14,7 @@
 					</ul>
 				]]>
 			</description>
-			<enclosure url="https://github.com/utom/sketch-measure/archive/master.zip" sparkle:version="2.8.1" type="application/octet-stream" />
+			<enclosure url="https://github.com/nintendos/sketch-measure/archive/ssui-measure.zip" sparkle:version="2.8.1" type="application/octet-stream" />
 		</item>
   </channel>
 </rss>
