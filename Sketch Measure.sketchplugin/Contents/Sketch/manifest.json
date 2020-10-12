@@ -172,13 +172,13 @@
               ]
             }
         ],
-        "title" : "Sketch Measure"
+        "title" : "SSUI Sketch Measure"
     },
     "identifier": "com.utom.measure",
-    "appcast": "https://raw.githubusercontent.com/utom/sketch-measure/master/appcast.xml",
+    "appcast": "https://github.com/nintendos/sketch-measure/blob/master/appcast.xml",
     "homepage": "http://utom.design/measure/",
     "version": "2.8.1",
-    "description" : "Make it a fun to create spec for developers and teammates",
-    "authorEmail" : "utombox@gmail.com",
-    "name" : "Sketch Measure"
+    "description" : "Live Better",
+    "authorEmail" : "sodnetnin@gmail.com",
+    "name" : "SSUI Sketch Measure"
 }
