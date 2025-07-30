@@ -1,0 +1,130 @@
+{
+  "compatibleVersion": 3,
+  "bundleVersion": 1,
+  "identifier": "com.sketchmeasure.modern",
+  "version": "1.0.0",
+  "name": "Sketch Measure Modern",
+  "description": "A modern Sketch plugin for design measurement and specification generation. Supports the latest Sketch features including Frames, Stacks, and Smart Animate.",
+  "author": "Sketch Measure Team",
+  "authorEmail": "developer@sketchmeasure.com",
+  "homepage": "https://github.com/utom/sketch-measure",
+  "appcast": "https://raw.githubusercontent.com/utom/sketch-measure/master/appcast.xml",
+  "commands": [
+    {
+      "name": "🔧 Toolbar",
+      "identifier": "toolbar",
+      "shortcut": "ctrl shift b",
+      "script": "commands/toolbar.js",
+      "handlers": {
+        "run": "onToolbar"
+      }
+    },
+    {
+      "name": "📐 Mark Overlay",
+      "identifier": "mark-overlay", 
+      "shortcut": "ctrl shift 1",
+      "script": "commands/mark-overlay.js",
+      "handlers": {
+        "run": "onMarkOverlay"
+      }
+    },
+    {
+      "name": "📏 Mark Sizes",
+      "identifier": "mark-sizes",
+      "shortcut": "ctrl shift 2", 
+      "script": "commands/mark-sizes.js",
+      "handlers": {
+        "run": "onMarkSizes"
+      }
+    },
+    {
+      "name": "↔️ Mark Spacings",
+      "identifier": "mark-spacings",
+      "shortcut": "ctrl shift 3",
+      "script": "commands/mark-spacings.js", 
+      "handlers": {
+        "run": "onMarkSpacings"
+      }
+    },
+    {
+      "name": "🎨 Mark Properties",
+      "identifier": "mark-properties",
+      "shortcut": "ctrl shift 4",
+      "script": "commands/mark-properties.js",
+      "handlers": {
+        "run": "onMarkProperties"
+      }
+    },
+    {
+      "name": "📝 Mark Note",
+      "identifier": "mark-note", 
+      "shortcut": "ctrl shift 5",
+      "script": "commands/mark-note.js",
+      "handlers": {
+        "run": "onMarkNote"
+      }
+    },
+    {
+      "name": "📤 Export Specs",
+      "identifier": "export-specs",
+      "shortcut": "ctrl shift e",
+      "script": "commands/export-specs.js",
+      "handlers": {
+        "run": "onExportSpecs"
+      }
+    },
+    {
+      "name": "🎯 Make Exportable",
+      "identifier": "make-exportable",
+      "shortcut": "ctrl shift s", 
+      "script": "commands/make-exportable.js",
+      "handlers": {
+        "run": "onMakeExportable"
+      }
+    },
+    {
+      "name": "🎨 Color Manager",
+      "identifier": "color-manager",
+      "shortcut": "ctrl shift c",
+      "script": "commands/color-manager.js", 
+      "handlers": {
+        "run": "onColorManager"
+      }
+    },
+    {
+      "name": "🔄 Clear Marks",
+      "identifier": "clear-marks",
+      "script": "commands/clear-marks.js",
+      "handlers": {
+        "run": "onClearMarks"
+      }
+    },
+    {
+      "name": "⚙️ Settings", 
+      "identifier": "settings",
+      "script": "commands/settings.js",
+      "handlers": {
+        "run": "onSettings"
+      }
+    }
+  ],
+  "menu": {
+    "title": "Sketch Measure Modern",
+    "items": [
+      "toolbar",
+      "-",
+      "mark-overlay",
+      "mark-sizes",
+      "mark-spacings", 
+      "mark-properties",
+      "mark-note",
+      "-",
+      "make-exportable",
+      "color-manager",
+      "export-specs",
+      "-",
+      "clear-marks",
+      "settings"
+    ]
+  }
+}

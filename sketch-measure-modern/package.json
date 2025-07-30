@@ -1,0 +1,61 @@
+{
+  "name": "sketch-measure-modern",
+  "version": "1.0.0",
+  "description": "A modern Sketch plugin for design measurement and specification generation",
+  "engines": {
+    "sketch": ">=84.0"
+  },
+  "skpm": {
+    "name": "Sketch Measure Modern",
+    "manifest": "src/manifest.json",
+    "main": "sketch-measure-modern.sketchplugin"
+  },
+  "scripts": {
+    "build": "skpm-build",
+    "watch": "skpm-build --watch",
+    "start": "skpm-build --watch --run",
+    "postinstall": "npm run build && skpm-link",
+    "lint-staged": "lint-staged",
+    "prettier:base": "prettier --single-quote --trailing-comma es5 --no-semi --write",
+    "prettify": "npm run prettier:base \"./src/**/*.{js,ts}\"",
+    "type-check": "tsc --noEmit",
+    "dev": "npm run watch"
+  },
+  "devDependencies": {
+    "@skpm/builder": "^0.4.2",
+    "eslint": "^4.8.0",
+    "eslint-config-airbnb-base": "^12.0.2",
+    "eslint-config-prettier": "^2.6.0",
+    "eslint-plugin-import": "^2.7.0",
+    "eslint-plugin-no-not-accumulator-reassign": "^0.1.0",
+    "eslint-plugin-prettier": "^2.3.1",
+    "lint-staged": "^4.2.3",
+    "pre-commit": "^1.2.2",
+    "prettier": "^1.7.4",
+    "typescript": "^5.7.3"
+  },
+  "pre-commit": [
+    "lint-staged"
+  ],
+  "lint-staged": {
+    "*.{js,ts}": [
+      "npm run prettier:base",
+      "eslint --quiet --rule 'prettier/prettier: [\"error\", {\"trailingComma\": \"es5\", \"singleQuote\": true}]'",
+      "git add"
+    ]
+  },
+  "keywords": [
+    "sketch",
+    "plugin",
+    "measure",
+    "spec",
+    "design",
+    "annotation"
+  ],
+  "author": "Sketch Measure Team",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/utom/sketch-measure"
+  }
+}
